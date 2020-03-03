@@ -1,0 +1,46 @@
+.home {
+  &.greeting {
+    height: 1039px;
+    .angle {
+      background-color: #093c5e;
+      height: inherit;
+      width: 1393px;
+      .title {
+        height: 976px;
+        &.text {
+          position: relative;
+          margin: 0 115px;
+          height: 525px;
+        }
+      }
+      .title-image {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+    }
+  }
+}
+
+.navbar {
+  .MuiPaper-root {
+    height: 140px;
+  }
+  .MuiPaper-elevation4 {
+    box-shadow: none;
+  }
+  .bar {
+    height: inherit;
+  }
+  .link {
+    font-weight: bold;
+    &.contactUs {
+      height: 48px;
+      line-height: 48px;
+      padding: 0 30px;
+      background-color: #093c5e;
+      font-weight: bold;
+      font-family: 'Roboto', sans-serif;
+    }
+  }
+}
