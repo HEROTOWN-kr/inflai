@@ -2,8 +2,24 @@ body {
   margin: 0;
   background-color: #fefefe;
   font-family: 'Roboto', sans-serif;
+  height:100%;
+  width:100%;
 }
 
 .link {
   color: #ffffff;
+}
+
+.wraper {
+  height: inherit;
+  &.one {
+    margin: 0 137px;
+  }
+  &.two {
+    margin: 0 306px;
+  }
+  &.vertical {
+    padding-top: 167px;
+    padding-bottom: 167px;
+  }
 }

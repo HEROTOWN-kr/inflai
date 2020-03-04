@@ -1,10 +1,13 @@
+$colorBg: #fefefe;
+$colorBlue: #093c5e;
+
 .home {
-  &.greeting {
-    height: 1039px;
+  .greeting {
+    min-height: 1039px;
     .angle {
-      background-color: #093c5e;
+      background-color: $colorBlue;
       height: inherit;
-      width: 1393px;
+      max-width: 1393px;
       .title {
         height: 976px;
         &.text {
@@ -14,9 +17,44 @@
         }
       }
       .title-image {
+        z-index: 1;
         position: absolute;
-        right: 0;
+        right: 45px;
         bottom: 0;
+      }
+    }
+  }
+  .about {
+    min-height: 1330px;
+    .image {
+      height: 740px;
+    }
+    .text {
+      min-height: 403px;
+    }
+  }
+  .profit {
+    height: 1218px;
+    background-image: url("../img/profit1.jpg");
+    background-size: cover;
+    .content {
+      height: 905px;
+    }
+    .func-button {
+      border-color: #fefefe;
+      color: white;
+      padding-left: 42px;
+      padding-right: 42px;
+    }
+    .detail {
+      min-height: 374px;
+    }
+    .laptop {
+      .laptop-image {
+        height: 340px;
+        background-image: url("../img/LAPTOP.png");
+        background-size: contain;
+        background-repeat: no-repeat;
       }
     }
   }
@@ -38,7 +76,7 @@
       height: 48px;
       line-height: 48px;
       padding: 0 30px;
-      background-color: #093c5e;
+      background-color: $colorBlue;
       font-weight: bold;
       font-family: 'Roboto', sans-serif;
     }
