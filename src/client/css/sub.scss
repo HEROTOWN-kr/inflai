@@ -48,15 +48,42 @@ $colorBlue: #093c5e;
     }
     .detail {
       min-height: 374px;
+      margin-bottom: 100px;
     }
     .laptop {
       .laptop-image {
         height: 340px;
-        background-image: url("../img/LAPTOP.png");
-        background-size: contain;
-        background-repeat: no-repeat;
+        background-image: url("../img/3.png");
+        background-size: cover;
+        //background-repeat: no-repeat;/
       }
     }
+  }
+  .rating {
+    height: 1824px;
+    border: 1px solid black;
+    .image {
+
+    }
+  }
+  .service {
+    margin: 310px 0;
+    min-height: 100%;
+    .main-text {
+      font-size: 111px;
+      font-weight: 900;
+      color: #e5e5e5;
+      text-align: center;
+      margin: 0 0 150px 0;
+    }
+    .category-name {
+      font-size: 28px;
+      text-align: center;
+      //font-weight: 600;
+    }
+  }
+  .register-link {
+    margin: 25px 0;
   }
 }
 
