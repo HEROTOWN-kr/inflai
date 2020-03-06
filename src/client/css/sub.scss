@@ -1,6 +1,29 @@
 $colorBg: #fefefe;
 $colorBlue: #093c5e;
 
+.navbar {
+  .MuiPaper-root {
+    height: 140px;
+  }
+  .MuiPaper-elevation4 {
+    box-shadow: none;
+  }
+  .bar {
+    height: inherit;
+  }
+  .link {
+    font-weight: bold;
+    &.contactUs {
+      height: 48px;
+      line-height: 48px;
+      padding: 0 30px;
+      background-color: $colorBlue;
+      font-weight: bold;
+      font-family: 'Roboto', sans-serif;
+    }
+  }
+}
+
 .home {
   .greeting {
     min-height: 1039px;
@@ -49,6 +72,14 @@ $colorBlue: #093c5e;
     .detail {
       min-height: 374px;
       margin-bottom: 100px;
+      img {
+        position: absolute;
+        right: -5%;
+        top: 18%;
+        &.left {
+          right: 105%;
+        }
+      }
     }
     .laptop {
       .laptop-image {
@@ -61,9 +92,8 @@ $colorBlue: #093c5e;
   }
   .rating {
     height: 1824px;
-    border: 1px solid black;
     .image {
-
+      right: -1px;
     }
   }
   .service {
@@ -80,32 +110,146 @@ $colorBlue: #093c5e;
       font-size: 28px;
       text-align: center;
       //font-weight: 600;
+      position: relative;
+      img {
+        position: absolute;
+        top: 3%;
+        left: 2%;
+      }
     }
   }
   .register-link {
     margin: 25px 0;
+    .main-title {
+      font-size: 106px;
+      color: $colorBlue;
+      font-weight: bold;
+    }
+    .second-title {
+      font-size: 40px;
+    }
+    .y-wrap {
+      margin: 193px 0;
+    }
+    .job-type {
+      font-size: 40px;
+      margin: 35px 0;
+    }
+    .influencer {
+      background: $colorBlue;
+      color: $colorBg;
+      .func-button {
+        color: $colorBg;
+        border-color: $colorBg;
+      }
+    }
+    .advertiser {
+      img {
+        padding-top: 47px
+      }
+    }
+  }
+  .influencer-list {
+    margin: 290px 0;
+    .main-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 61px;
+    }
+    .paper {
+      height: 370px;
+      width: 350px;
+      .social-name {
+        font-size: 12px;
+        color: #a1a1a1;
+        font-weight: bold;
+        margin: 27px 0 17px 0;
+      }
+      .avatar {
+
+      }
+      .social-type {
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .social-image {
+        margin: 20px 0 32px 0;
+      }
+    }
+  }
+  .triangle {
+    z-index: 0 !important;
+    position: absolute;
+    top: 0;
+    right: 510px;
+    width: 0;
+    height: 0;
+    border-bottom: 1039px solid #fefefe;
+    border-left: 577px solid transparent;
   }
 }
 
-.navbar {
-  .MuiPaper-root {
-    height: 140px;
+.footer {
+  padding: 43px 0;
+  background: $colorBlue;
+  color: $colorBg;
+  .info {
+    margin: 28px 0;
   }
-  .MuiPaper-elevation4 {
-    box-shadow: none;
-  }
-  .bar {
-    height: inherit;
-  }
-  .link {
-    font-weight: bold;
-    &.contactUs {
-      height: 48px;
-      line-height: 48px;
-      padding: 0 30px;
-      background-color: $colorBlue;
-      font-weight: bold;
-      font-family: 'Roboto', sans-serif;
+}
+
+
+
+
+.carousel-zone {
+  //height: 522px;
+  //box-sizing: border-box;
+}
+
+@media only screen and (max-width: 1536px) {
+  .home{
+    .greeting {
+      .angle {
+        .title-image {
+          width: 50%;
+        }
+      }
     }
   }
 }
+
+@media only screen and (max-width: 1024px) {
+  .home{
+    .greeting {
+      .angle {
+        .title-image {
+          width: 50%;
+        }
+      }
+    }
+  }
+}
+@media only screen and (max-width: 768px) {
+  .home{
+    .greeting {
+      .angle {
+        .title-image {
+          width: 50%;
+        }
+      }
+      .triangle {
+        display: none;
+      }
+    }
+    .triangle {
+      display: none;
+    }
+  }
+}
+@media only screen and (max-width: 640px) {
+  .class{
+    height: 300px;
+  }
+}
+
+

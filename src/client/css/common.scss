@@ -1,3 +1,7 @@
+$colorBg: #fefefe;
+$colorBlue: #093c5e;
+$colorAqua: #23c9cf;
+
 html, body {
   margin: 0;
   background-color: #fefefe;
@@ -28,5 +32,35 @@ html, body {
   &.vertical {
     padding-top: 167px;
     padding-bottom: 167px;
+  }
+}
+
+.slick-slide {
+  //padding: 0 17px;
+}
+
+/*.slick-dots li button:before {
+  color: $colorAqua;
+}*/
+
+.slick-dots {
+  position: static;
+  margin-top: 100px;
+  li {
+    padding: 0 10px;
+    button {
+      &:before {
+        color: $colorAqua;
+        font-size: 20px;
+        //line-height: 20px;
+      }
+    }
+    &.slick-active {
+      button {
+        &:before {
+          color: $colorBlue !important;
+        }
+      }
+    }
   }
 }

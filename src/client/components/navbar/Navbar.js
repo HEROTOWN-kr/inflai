@@ -30,7 +30,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function CustomNavbar() {
-
   return (
     <div className="navbar">
       <AppBar position="fixed" color="transparent">
