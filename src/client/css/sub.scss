@@ -215,6 +215,17 @@ $colorBlue: #093c5e;
         }
       }
     }
+    .about {
+      .text {
+        min-height: 278px;
+      }
+      .image {
+        img {
+          width: 88%;
+          height: 83%;
+        }
+      }
+    }
   }
 }
 
