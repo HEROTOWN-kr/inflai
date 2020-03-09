@@ -498,6 +498,197 @@ $white: #ffffff;
   }
 }
 
+@media only screen and (max-width: 1366px) {
+  .home{
+    .greeting {
+      .greeting-image {
+        right: 42px;
+        bottom: 83px;
+      }
+      .greeting-content {
+        .wraper {
+          margin: 216px 0 140px 94px;
+          .title {
+            font-size: 34px;
+          }
+          .main-title {
+            padding-top: 20px;
+            font-size: 54px;
+          }
+          .main-text {
+            font-size: 16px;
+            line-height: 180%;
+            padding-top: 52px;
+          }
+          .start-button {
+            margin-top: 170px;
+            width: 178px;
+            height: 50px;
+            border: 2px solid #23c9cf;
+            font-size: 20px;
+          }
+        }
+      }
+      .triangle-content {
+        width: 0;
+        height: 0;
+        border-bottom: 858px solid #fefefe;
+        border-left: 455px solid transparent;
+      }
+    }
+    .about {
+      .text {
+        min-height: 278px;
+        .title {
+          font-weight: bold;
+          font-size: 47px;
+          color: $colorBlue;
+        }
+        .main-text {
+          font-size: 30px;
+          color: #454545;
+        }
+        .text-footer {
+          font-size: 14px;
+          color: #454545;
+        }
+      }
+      .image {
+        img {
+          width: 88%;
+          height: 83%;
+        }
+      }
+    }
+    .profit {
+      height: 1030px;
+      .content {
+        height: 660px;
+        .title {
+          font-size: 38px;
+          margin: 30px 0;
+        }
+        .main-text {
+          font-size: 15px;
+          margin-bottom: 88px;
+        }
+        .detail {
+
+        }
+      }
+      .func-button {
+        padding-left: 35px;
+        padding-right: 35px;
+      }
+      .detail {
+        min-height: 290px;
+        margin-bottom: 85px;
+        img {
+          right: -5%;
+          top: 18%;
+          &.left {
+            right: 105%;
+          }
+        }
+        .profit-name {
+          font-size: 28px;
+        }
+        .profit-desc {
+          font-size: 16px;
+        }
+      }
+      .laptop {
+        .laptop-image {
+          height: 330px;
+        }
+      }
+    }
+
+
+    .rating {
+      height: 1150px;
+      img {
+        width: 75%;
+      }
+      .title {
+        font-size: 51px;
+        margin: 41px 0;
+      }
+      .main-text {
+        font-size: 14px;
+      }
+    }
+    .service {
+      margin: 200px 0;
+      .main-text {
+        margin: 0 0 120px 0;
+        font-size: 100px;
+      }
+      .category-name {
+        img {
+          left: -3%;
+        }
+      }
+    }
+    .register-link {
+      .title-holder {
+        margin-bottom: 80px;
+        .main-title {
+          font-size: 55px;
+        }
+        .second-title {
+          font-size: 23px;
+        }
+        .arrow-image {
+          width: 17%;
+        }
+      }
+      .y-wrap {
+        margin: 135px 0;
+      }
+      .link-field {
+        img {
+          width: 65%;
+        }
+      }
+      .advertiser {
+        img {
+          padding-top: 62px;
+        }
+      }
+    }
+
+
+    .influencer-list {
+      margin: 190px 0;
+      .main-title {
+        font-size: 42px;
+        margin-bottom: 61px;
+      }
+      .paper {
+        height: 370px;
+        width: 248px;
+        .paper-content {
+          top: -95px;
+          .social-name {
+            font-size: 12px;
+            margin: 27px 0 17px 0;
+          }
+          .avatar {
+            width: 80%;
+          }
+          .social-type {
+            font-size: 24px;
+          }
+          .social-image {
+            margin: 20px 0 32px 0;
+          }
+        }
+      }
+    }
+  }
+}
+
 @media only screen and (max-width: 1024px) {
   .home{
     .greeting {

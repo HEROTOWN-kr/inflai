@@ -70,6 +70,28 @@ html, body {
 
 }
 
+@media only screen and (max-width: 1366px) {
+  .wraper {
+    height: inherit;
+
+    &.one {
+      margin: 206px 50px;
+    }
+
+    &.two {
+      margin: 0 60px;
+    }
+
+    &.three {
+
+    }
+
+    &.vertical {
+
+    }
+  }
+}
+
 @media only screen and (max-width: 1024px) {
   .wraper {
     height: inherit;
