@@ -10,6 +10,8 @@ import Slider from 'react-slick';
 import TitleImage from '../../img/home-title.png';
 import AboutImage from '../../img/home-about.png';
 import RatingImage from '../../img/rating.png';
+import {Hidden} from '@material-ui/core';
+
 
 import categoryOne from '../../img/icons/one.png';
 import categoryTwo from '../../img/icons/two.png';
@@ -213,24 +215,32 @@ function Home() {
        <Test />
       <div className="wraper one">
         <Grid className="about" container alignItems="center">
-          <Grid container xs={8} className="image">
+          <Grid container xs={12} md={8} className="image">
             <img src={AboutImage} />
           </Grid>
-          <Grid container xs={4} className="text">
+          <Grid container xs={12} md={4} className="text">
             <Grid container alignContent="baseline" className="title">
 INFL
               <span style={FontSettings.aqua}>Ai</span>
 ?
             </Grid>
-            <Grid container className="main-text">
-아직도 팔로워나
-              <br />
-              좋아요 숫자에 연연하시나요?
-              <br />
-              구매전환율이 높은
-              <br />
-              인플루언서를 매칭해드립니다.
-            </Grid>
+            <Hidden smDown>
+              <Grid container className="main-text">
+                아직도 팔로워나
+                <br />
+                좋아요 숫자에 연연하시나요?
+                <br />
+                구매전환율이 높은
+                <br />
+                인플루언서를 매칭해드립니다.
+              </Grid>
+            </Hidden>
+            <Hidden smUp>
+              <Grid container className="main-text">
+                아직도 팔로워나 좋아요 숫자에 연연하시나요? 구매전환율이 높은 인플루언서를 매칭해드립니다.
+              </Grid>
+            </Hidden>
+
             <Grid container alignContent="flex-end" className="text-footer">
 AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               <br />
@@ -244,7 +254,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
           <Grid container style={{ height: 'inherit' }} alignItems="center">
             <div className="content">
               <Grid container justify="center">
-                <Grid container xs={3} justify="space-between">
+                <Grid container xs={12} md={3} justify="space-between">
                   <Button variant="outlined" className="func-button">광고주</Button>
                   <Button variant="outlined" className="func-button">인플루언서</Button>
                 </Grid>
@@ -261,7 +271,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                 인플루언서들에게 우리는 그들의 팔로워들이 좋아할 서비스나 제품을 제공합니다.
               </div>
               <Grid container className="detail">
-                <Grid container xs={3} style={FontSettings.textRight}>
+                <Grid container xs={12} md={3} style={FontSettings.textRight}>
                   <Grid container alignContent="flex-start">
                     <div className="profit-name">
                       효율성
@@ -293,10 +303,10 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                     </div>
                   </Grid>
                 </Grid>
-                <Grid container xs={6} className="laptop" justify="center" alignItems="flex-end">
+                <Grid container xs={12} md={6} className="laptop" justify="center" alignItems="flex-end">
                   <Grid container xs={10} className="laptop-image" />
                 </Grid>
-                <Grid container xs={3} style={FontSettings.textLeft}>
+                <Grid container xs={12} md={3} style={FontSettings.textLeft}>
                   <Grid container alignContent="flex-start">
                     <div className="profit-name">
                       편한 관리
@@ -360,7 +370,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
       <div className="service">
         <div className="main-text">INFLAi</div>
         <Grid container>
-          <Grid container xs={5} style={{ height: '102px' }}>
+          <Grid container xs={12} md={5} style={{ height: '102px' }}>
             <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
             <Grid container xs={12} md={10} lg={8} xl={6} justify="center" className="category-name">
               <div>
@@ -371,8 +381,8 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               </div>
             </Grid>
           </Grid>
-          <Grid container xs={2} />
-          <Grid container xs={5} style={{ height: '102px' }}>
+          <Grid container md={2} />
+          <Grid container md={5} style={{ height: '102px' }}>
             <Grid container xs={12} md={10} lg={8} xl={6} justify="center" className="category-name">
               <div>
                 <img src={Rectangle} />
@@ -381,7 +391,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
             </Grid>
             <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
           </Grid>
-          <Grid container xs={5} style={{ height: '318px' }}>
+          <Grid container xs={12} md={5} style={{ height: '318px' }}>
             <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6}/>
             <Grid container xs={12} md={10} lg={8} xl={6}>
               <Grid container justify="space-between">
@@ -428,8 +438,8 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               </Grid>
             </Grid>
           </Grid>
-          <Grid xs={2} />
-          <Grid container xs={5} style={{ height: '318px' }}>
+          <Grid md={2} />
+          <Grid container xs={12} md={5} style={{ height: '318px' }}>
             <Grid container xs={12} md={10} lg={8} xl={6}>
               <Grid container justify="space-between">
                 <div style={{
@@ -503,7 +513,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
           </Grid>
         </div>
         <Grid container className="link-field">
-          <Grid xs={6} className="advertiser">
+          <Grid xs={12} md={6} className="advertiser">
             <div className="y-wrap">
               <Grid container justify="center">
                 <img src={Advertiser} />
@@ -516,7 +526,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               </Grid>
             </div>
           </Grid>
-          <Grid xs={6} className="influencer">
+          <Grid xs={12} md={6} className="influencer">
             <div className="y-wrap">
               <Grid container justify="center">
                 <img src={Influencer} />
@@ -531,7 +541,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
           </Grid>
         </Grid>
       </div>
-      <div className="influencer-list">
+      {/*<div className="influencer-list">
         <div className="main-title">
           <Grid container justify="center">
             <span style={FontSettings.aqua}>#</span>
@@ -539,7 +549,7 @@ INFLAi Influencers
           </Grid>
         </div>
         <Grid container justify="center">
-          <Grid md={10} lg={7}>
+          <Grid item only={['lg']} lg={7}>
             <div className="carousel-zone">
               <Slider {...settings}>
                 {influencers.map(person => (
@@ -574,7 +584,7 @@ INFLAi Influencers
             </div>
           </Grid>
         </Grid>
-      </div>
+      </div>*/}
     </div>
   );
 }

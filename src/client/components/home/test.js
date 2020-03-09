@@ -2,10 +2,23 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import '../../css/sub.scss';
 import TitleImage from '../../img/home-title.png';
+import {Hidden} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 function Test({
 
 }) {
+
+  const useStyles = makeStyles(theme => ({
+    root: {
+      [theme.breakpoints.down('xs')]: {
+        justifyContent: 'center',
+      }
+    },
+  }));
+
+  const classes = useStyles();
+
   const $colorBg = '#fefefe'; const $colorBlue = '#093c5e'; const $aqua = '#23c9cf'; const
     $white = '#ffffff';
 
@@ -41,7 +54,7 @@ function Test({
   return (
     <div>
       <Grid container className="greeting">
-        <Grid xs={5} className="greeting-content">
+        <Grid item xs={12} md={5} className="greeting-content">
           <div className="wraper">
             <Grid container>
               <Grid container alignContent="flex-start" className="title">Show me your brand</Grid>
@@ -61,12 +74,14 @@ function Test({
             </Grid>
           </div>
         </Grid>
-        <Grid xs={4} style={{ background: '#093c5e' }}>
-          <div className="triangle-content" />
-        </Grid>
-          <Grid xs={3} style={{ background: '#fefefe' }}>
-              <img src={TitleImage} className="greeting-image" />
+        <Hidden xsDown>
+          <Grid item md={4} style={{ background: '#093c5e' }}>
+            <div className="triangle-content" />
           </Grid>
+          <Grid item md={3} style={{ background: '#fefefe' }}>
+            <img src={TitleImage} className="greeting-image" />
+          </Grid>
+        </Hidden>
       </Grid>
     </div>
   );
