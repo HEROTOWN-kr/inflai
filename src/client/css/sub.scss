@@ -1,5 +1,7 @@
 $colorBg: #fefefe;
 $colorBlue: #093c5e;
+$aqua: #23c9cf;
+$white: #ffffff;
 
 .navbar {
   .MuiPaper-root {
@@ -26,6 +28,53 @@ $colorBlue: #093c5e;
 
 .home {
   .greeting {
+    .greeting-image {
+      z-index: 1;
+      position: absolute;
+      right: 68px;
+      bottom: 0;
+      width: 54%;
+    }
+    .greeting-content {
+      background: #093c5e;
+      .wraper {
+        margin: 247px 0 247px 142px;
+        .title {
+          font-size: 30px;
+          color: $aqua
+        }
+        .main-title {
+          padding-top: 15px;
+          font-weight: bold;
+          font-size: 72px;
+          color: $aqua;
+        }
+        .main-text {
+          font-size: 18px;
+          color: $white;
+          font-weight: bold;
+          line-height: 180%;
+          padding-top: 80px;
+        }
+        .start-button {
+          margin-top: 170px;
+          width: 178px;
+          height: 50px;
+          border: 2px solid #23c9cf;
+          font-size: 20px;
+          color: $white;
+          border-radius: 25px;
+        }
+      }
+    }
+    .triangle-content {
+      width: 0;
+      height: 0;
+      border-bottom: 1039px solid #fefefe;
+      border-left: 634px solid transparent;
+    }
+  }
+  /*.greeting {
     min-height: 1039px;
     .angle {
       background-color: $colorBlue;
@@ -46,14 +95,27 @@ $colorBlue: #093c5e;
         bottom: 0;
       }
     }
-  }
+  }*/
   .about {
-    min-height: 1330px;
+    //min-height: 1330px;
     .image {
-      height: 740px;
+      //height: 740px;
     }
     .text {
       min-height: 403px;
+      .title {
+        font-weight: bold;
+        font-size: 58px;
+        color: $colorBlue;
+      }
+      .main-text {
+        font-size: 36px;
+        color: #454545;
+      }
+      .text-footer {
+        font-size: 15px;
+        color: #454545;
+      }
     }
   }
   .profit {
@@ -62,6 +124,18 @@ $colorBlue: #093c5e;
     background-size: cover;
     .content {
       height: 905px;
+      .title {
+        font-size: 55px;
+        color: $aqua;
+        margin: 40px 0;
+        text-align: center;
+      }
+      .main-text {
+        font-size: 19px;
+        color: $colorBg;
+        text-align: center;
+        margin-bottom: 123px;
+      }
     }
     .func-button {
       border-color: #fefefe;
@@ -80,6 +154,15 @@ $colorBlue: #093c5e;
           right: 105%;
         }
       }
+      .profit-name {
+        position: relative;
+        width: inherit;
+        font-size: 30px;
+        font-weight: bold;
+      }
+      .profit-desc {
+
+      }
     }
     .laptop {
       .laptop-image {
@@ -94,6 +177,17 @@ $colorBlue: #093c5e;
     height: 1824px;
     .image {
       right: -1px;
+    }
+    .title {
+      font-size: 77px;
+      color: $aqua;
+      font-weight: bold;
+      text-align: center;
+      margin: 60px 0;
+    }
+    .main-text {
+      text-align: center;
+      font-size: 21px;
     }
   }
   .service {
@@ -120,14 +214,18 @@ $colorBlue: #093c5e;
   }
   .register-link {
     margin: 25px 0;
-    .main-title {
-      font-size: 106px;
-      color: $colorBlue;
-      font-weight: bold;
+    .title-holder {
+      margin-bottom: 136px;
+      .main-title {
+        font-size: 106px;
+        color: $colorBlue;
+        font-weight: bold;
+      }
+      .second-title {
+        font-size: 40px;
+      }
     }
-    .second-title {
-      font-size: 40px;
-    }
+
     .y-wrap {
       margin: 193px 0;
     }
@@ -159,21 +257,28 @@ $colorBlue: #093c5e;
     .paper {
       height: 370px;
       width: 350px;
-      .social-name {
-        font-size: 12px;
-        color: #a1a1a1;
-        font-weight: bold;
-        margin: 27px 0 17px 0;
-      }
-      .avatar {
+      .paper-content {
+        position: absolute;
+        top: -142px;
+        .social-name {
+          font-size: 12px;
+          color: #a1a1a1;
+          font-weight: bold;
+          margin: 27px 0 17px 0;
+        }
+        .avatar {
 
-      }
-      .social-type {
-        font-size: 24px;
-        font-weight: bold;
-      }
-      .social-image {
-        margin: 20px 0 32px 0;
+        }
+        .social-type {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        .social-image {
+          margin: 20px 0 32px 0;
+        }
+        .social-tags {
+
+        }
       }
     }
   }
@@ -209,20 +314,184 @@ $colorBlue: #093c5e;
 @media only screen and (max-width: 1536px) {
   .home{
     .greeting {
-      .angle {
-        .title-image {
-          width: 50%;
+      .greeting-image {
+        right: 42px;
+        bottom: 83px;
+      }
+      .greeting-content {
+        .wraper {
+          margin: 235px 0 164px 94px;
+          .title {
+            font-size: 36px;
+          }
+          .main-title {
+            padding-top: 20px;
+            font-size: 60px;
+          }
+          .main-text {
+            font-size: 16px;
+            line-height: 180%;
+            padding-top: 52px;
+          }
+          .start-button {
+            margin-top: 170px;
+            width: 178px;
+            height: 50px;
+            border: 2px solid #23c9cf;
+            font-size: 20px;
+          }
         }
+      }
+      .triangle-content {
+        width: 0;
+        height: 0;
+        border-bottom: 898px solid #fefefe;
+        border-left: 512px solid transparent;
       }
     }
     .about {
       .text {
         min-height: 278px;
+        .title {
+          font-weight: bold;
+          font-size: 47px;
+          color: $colorBlue;
+        }
+        .main-text {
+          font-size: 30px;
+          color: #454545;
+        }
+        .text-footer {
+          font-size: 14px;
+          color: #454545;
+        }
       }
       .image {
         img {
           width: 88%;
           height: 83%;
+        }
+      }
+    }
+    .profit {
+      height: 1030px;
+      .content {
+        height: 660px;
+        .title {
+          font-size: 38px;
+          margin: 30px 0;
+        }
+        .main-text {
+          font-size: 15px;
+          margin-bottom: 88px;
+        }
+        .detail {
+
+        }
+      }
+      .func-button {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .detail {
+        min-height: 290px;
+        margin-bottom: 85px;
+        img {
+          right: -5%;
+          top: 18%;
+          &.left {
+            right: 105%;
+          }
+        }
+        .profit-name {
+          font-size: 24px;
+        }
+        .profit-desc {
+          font-size: 13px;
+        }
+      }
+      .laptop {
+        .laptop-image {
+          height: 256px;
+        }
+      }
+    }
+    .rating {
+      height: 1150px;
+      img {
+        width: 75%;
+      }
+      .title {
+        font-size: 51px;
+        margin: 41px 0;
+      }
+      .main-text {
+        font-size: 14px;
+      }
+    }
+    .service {
+      margin: 200px 0;
+      .main-text {
+        margin: 0 0 120px 0;
+        font-size: 100px;
+      }
+      .category-name {
+        img {
+          left: -3%;
+        }
+      }
+    }
+    .register-link {
+      .title-holder {
+        margin-bottom: 80px;
+        .main-title {
+          font-size: 55px;
+        }
+        .second-title {
+          font-size: 23px;
+        }
+        .arrow-image {
+          width: 17%;
+        }
+      }
+      .y-wrap {
+        margin: 135px 0;
+      }
+      .link-field {
+        img {
+          width: 65%;
+        }
+      }
+      .advertiser {
+        img {
+          padding-top: 62px;
+        }
+      }
+    }
+    .influencer-list {
+      margin: 190px 0;
+      .main-title {
+        font-size: 42px;
+        margin-bottom: 61px;
+      }
+      .paper {
+        height: 370px;
+        width: 280px;
+        .paper-content {
+          top: -95px;
+          .social-name {
+            font-size: 12px;
+            margin: 27px 0 17px 0;
+          }
+          .avatar {
+            width: 80%;
+          }
+          .social-type {
+            font-size: 24px;
+          }
+          .social-image {
+            margin: 20px 0 32px 0;
+          }
         }
       }
     }
@@ -232,28 +501,407 @@ $colorBlue: #093c5e;
 @media only screen and (max-width: 1024px) {
   .home{
     .greeting {
-      .angle {
-        .title-image {
-          width: 50%;
+      .greeting-image {
+        right: 42px;
+        bottom: 83px;
+      }
+      .greeting-content {
+        .wraper {
+          margin: 235px 0 132px 70px;
+          .title {
+            font-size: 28px;
+          }
+          .main-title {
+            padding-top: 15px;
+            font-size: 43px;
+          }
+          .main-text {
+            font-size: 13px;
+            line-height: 180%;
+            padding-top: 52px;
+          }
+          .start-button {
+            margin-top: 170px;
+            width: 178px;
+            height: 50px;
+            border: 2px solid #23c9cf;
+            font-size: 20px;
+          }
+        }
+      }
+      .triangle-content {
+        width: 0;
+        height: 0;
+        border-bottom: 832px solid #fefefe;
+        border-left: 341px solid transparent;
+      }
+    }
+    .about {
+      .text {
+        min-height: 216px;
+        .title {
+          font-size: 33px;
+        }
+        .main-text {
+          font-size: 18px;
+        }
+        .text-footer {
+          font-size: 10px;
+        }
+      }
+      .image {
+        img {
+          width: 88%;
+          height: 83%;
+        }
+      }
+    }
+    .profit {
+      height: 1030px;
+      .content {
+        height: 660px;
+        .title {
+          font-size: 38px;
+          margin: 30px 0;
+        }
+        .main-text {
+          font-size: 15px;
+          margin-bottom: 88px;
+        }
+        .detail {
+
+        }
+      }
+      .func-button {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .detail {
+        min-height: 290px;
+        margin-bottom: 85px;
+        img {
+          right: -5%;
+          top: 18%;
+          &.left {
+            right: 105%;
+          }
+        }
+        .profit-name {
+          font-size: 24px;
+        }
+        .profit-desc {
+          font-size: 13px;
+        }
+      }
+      .laptop {
+        .laptop-image {
+          height: 256px;
+        }
+      }
+    }
+    .rating {
+      height: 950px;
+      img {
+        width: 65%;
+      }
+      .title {
+        font-size: 41px;
+        margin: 31px 0;
+      }
+      .main-text {
+        font-size: 11px;
+      }
+    }
+    .service {
+      margin: 150px 0;
+      .main-text {
+        margin: 0 0 100px 0;
+        font-size: 90px;
+      }
+      .category-name {
+        img {
+          left: -3%;
+        }
+      }
+    }
+    .register-link {
+      .title-holder {
+        margin-bottom: 80px;
+        .main-title {
+          font-size: 55px;
+        }
+        .second-title {
+          font-size: 23px;
+        }
+        .arrow-image {
+          width: 17%;
+        }
+      }
+      .y-wrap {
+        margin: 135px 0;
+      }
+      .link-field {
+        img {
+          width: 65%;
+        }
+      }
+      .advertiser {
+        img {
+          padding-top: 62px;
+        }
+      }
+    }
+    .influencer-list {
+      margin: 160px 0;
+      .main-title {
+        font-size: 36px;
+        margin-bottom: 61px;
+      }
+      .paper {
+        height: 370px;
+        width: 260px;
+        .paper-content {
+          top: -95px;
+          .social-name {
+            font-size: 12px;
+            margin: 27px 0 17px 0;
+          }
+          .avatar {
+            width: 80%;
+          }
+          .social-type {
+            font-size: 24px;
+          }
+          .social-image {
+            margin: 20px 0 32px 0;
+          }
         }
       }
     }
   }
 }
+
+@media only screen and (max-width: 960px) {
+  .home{
+    .greeting {
+      .greeting-image {
+        right: 42px;
+        bottom: 140px;
+      }
+      .greeting-content {
+        .wraper {
+          margin: 202px 0 132px 70px;
+          .title {
+            font-size: 26px;
+          }
+          .main-title {
+            padding-top: 15px;
+            font-size: 40px;
+          }
+          .main-text {
+            font-size: 12px;
+            line-height: 180%;
+            padding-top: 52px;
+          }
+          .start-button {
+            margin-top: 170px;
+            width: 178px;
+            height: 50px;
+            border: 2px solid #23c9cf;
+            font-size: 20px;
+          }
+        }
+      }
+      .triangle-content {
+        width: 0;
+        height: 0;
+        border-bottom: 770px solid #fefefe;
+        border-left: 320px solid transparent;
+      }
+    }
+
+  }
+}
+
 @media only screen and (max-width: 768px) {
   .home{
     .greeting {
-      .angle {
-        .title-image {
-          width: 50%;
+      .greeting-image {
+        right: 42px;
+        bottom: 83px;
+      }
+      .greeting-content {
+        .wraper {
+          margin: 235px 0 132px 70px;
+          .title {
+            font-size: 28px;
+          }
+          .main-title {
+            padding-top: 15px;
+            font-size: 43px;
+          }
+          .main-text {
+            font-size: 13px;
+            line-height: 180%;
+            padding-top: 52px;
+          }
+          .start-button {
+            margin-top: 170px;
+            width: 178px;
+            height: 50px;
+            border: 2px solid #23c9cf;
+            font-size: 20px;
+          }
         }
       }
-      .triangle {
-        display: none;
+      .triangle-content {
+        width: 0;
+        height: 0;
+        border-bottom: 832px solid #fefefe;
+        border-left: 341px solid transparent;
       }
     }
-    .triangle {
-      display: none;
+    .about {
+      .text {
+        min-height: 216px;
+        .title {
+          font-size: 33px;
+        }
+        .main-text {
+          font-size: 18px;
+        }
+        .text-footer {
+          font-size: 10px;
+        }
+      }
+      .image {
+        img {
+          width: 88%;
+          height: 83%;
+        }
+      }
+    }
+    .profit {
+      height: 1030px;
+      .content {
+        height: 660px;
+        .title {
+          font-size: 38px;
+          margin: 30px 0;
+        }
+        .main-text {
+          font-size: 15px;
+          margin-bottom: 88px;
+        }
+        .detail {
+
+        }
+      }
+      .func-button {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .detail {
+        min-height: 290px;
+        margin-bottom: 85px;
+        img {
+          right: -5%;
+          top: 18%;
+          &.left {
+            right: 105%;
+          }
+        }
+        .profit-name {
+          font-size: 24px;
+        }
+        .profit-desc {
+          font-size: 13px;
+        }
+      }
+      .laptop {
+        .laptop-image {
+          height: 256px;
+        }
+      }
+    }
+    .rating {
+      height: 950px;
+      img {
+        width: 65%;
+      }
+      .title {
+        font-size: 41px;
+        margin: 31px 0;
+      }
+      .main-text {
+        font-size: 11px;
+      }
+    }
+    .service {
+      margin: 150px 0;
+      .main-text {
+        margin: 0 0 100px 0;
+        font-size: 90px;
+      }
+      .category-name {
+        img {
+          left: -3%;
+        }
+      }
+    }
+    .register-link {
+      .title-holder {
+        margin-bottom: 80px;
+        .main-title {
+          font-size: 55px;
+        }
+        .second-title {
+          font-size: 23px;
+        }
+        .arrow-image {
+          width: 17%;
+        }
+      }
+      .y-wrap {
+        margin: 135px 0;
+      }
+      .link-field {
+        img {
+          width: 65%;
+        }
+      }
+      .advertiser {
+        img {
+          padding-top: 62px;
+        }
+      }
+    }
+    .influencer-list {
+      margin: 160px 0;
+      .main-title {
+        font-size: 36px;
+        margin-bottom: 61px;
+      }
+      .paper {
+        height: 370px;
+        width: 260px;
+        .paper-content {
+          top: -95px;
+          .social-name {
+            font-size: 12px;
+            margin: 27px 0 17px 0;
+          }
+          .avatar {
+            width: 80%;
+          }
+          .social-type {
+            font-size: 24px;
+          }
+          .social-image {
+            margin: 20px 0 32px 0;
+          }
+        }
+      }
     }
   }
 }

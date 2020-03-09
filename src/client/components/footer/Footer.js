@@ -8,7 +8,7 @@ function Footer() {
   return (
     <div className="footer">
       <Grid container justify="center">
-        <Grid container xs={6}>
+        <Grid container md={9} lg={6}>
           <Grid xs={2}>
             <img src={Logo} />
           </Grid>

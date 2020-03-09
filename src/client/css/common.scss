@@ -20,7 +20,7 @@ html, body {
 .wraper {
   height: inherit;
   &.one {
-    margin: 0 137px;
+    margin: 230px 137px;
   }
   &.two {
     margin: 0 306px;
@@ -64,3 +64,59 @@ html, body {
     }
   }
 }
+
+
+@media only screen and (max-width: 1536px) {
+
+}
+
+@media only screen and (max-width: 1024px) {
+  .wraper {
+    height: inherit;
+
+    &.one {
+
+    }
+
+    &.two {
+      margin: 0 60px;
+    }
+
+    &.three {
+
+    }
+
+    &.vertical {
+
+    }
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .wraper {
+    &.one {
+      margin: 176px 71px;
+    }
+
+    &.two {
+      margin: 0 60px;
+    }
+
+    &.three {
+
+    }
+
+    &.vertical {
+
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+
+}
+@media only screen and (max-width: 640px) {
+
+}
+
+
