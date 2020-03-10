@@ -1116,6 +1116,201 @@ $white: #ffffff;
   }
 }
 
+@media only screen and (max-width: 500px) {
+  .home{
+    .greeting {
+      .greeting-image {
+        right: 42px;
+        bottom: 83px;
+      }
+      .greeting-content {
+        .wraper {
+          margin: 163px 20px 81px 20px;
+          .title {
+            font-size: 28px;
+            justify-content: center;
+          }
+          .main-title {
+            padding-top: 15px;
+            font-size: 36px;
+            justify-content: center;
+          }
+          .main-text {
+            text-align: center;
+            font-size: 13px;
+            padding-top: 52px;
+          }
+          .start-button {
+            margin: 0 auto;
+            margin-top: 75px;
+          }
+        }
+      }
+      .triangle-content {
+        width: 0;
+        height: 0;
+        border-bottom: 832px solid #fefefe;
+        border-left: 341px solid transparent;
+      }
+    }
+    .about {
+      .text {
+        min-height: 216px;
+        .title {
+          font-size: 44px;
+          justify-content: center;
+          margin-top: 30px;
+        }
+        .main-text {
+          font-size: 21px;
+          margin-top: 32px;
+          text-align: center;
+        }
+        .text-footer {
+          font-size: 14px;
+          text-align: center;
+          margin-top: 60px;
+        }
+      }
+      .image {
+        justify-content: center;
+        img {
+          width: 100%;
+        }
+      }
+    }
+    .profit {
+      height: 1030px;
+      .content {
+        height: 977px;
+        .title {
+          font-size: 26px;
+          margin: 30px 0;
+        }
+        .main-text {
+          font-size: 10px;
+          margin-bottom: 46px;
+        }
+        .detail {
+
+        }
+      }
+      .func-button {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .detail {
+        min-height: 290px;
+        margin-bottom: 85px;
+        img {
+          right: -5%;
+          top: 18%;
+          &.left {
+            right: 105%;
+          }
+        }
+        .profit-name {
+          font-size: 24px;
+        }
+        .profit-desc {
+          font-size: 13px;
+        }
+      }
+      .laptop {
+        .laptop-image {
+          height: 133px;
+          margin: 20px 0;
+        }
+      }
+    }
+    .rating {
+      img {
+        width: 300px;
+        height: 200px;
+      }
+      .title {
+        font-size: 27px;
+        margin: 31px 0;
+      }
+      .main-text {
+        font-size: 11px;
+      }
+    }
+    .service {
+      margin: 80px 0;
+      .main-text {
+        margin-bottom: 30px;
+        font-size: 75px;
+      }
+      .category-name {
+        font-size: 23px;
+        img {
+          left: -3%;
+        }
+        &.left {
+          margin-top: 134px;
+          padding-bottom: 0;
+        }
+      }
+    }
+    .register-link {
+      .title-holder {
+        margin-bottom: 0;
+        .main-title {
+          font-size: 41px;
+        }
+        .second-title {
+          font-size: 17px;
+          margin-top: 10px;
+        }
+        .arrow-image {
+          width: 50%;
+        }
+      }
+      .y-wrap {
+        margin: 40px 0;
+      }
+      .link-field {
+        img {
+          width: 65%;
+        }
+      }
+      .advertiser {
+        img {
+          padding-top: 62px;
+        }
+      }
+    }
+    .influencer-list {
+      margin: 90px 0;
+      .main-title {
+        font-size: 36px;
+        margin-bottom: 61px;
+      }
+      .paper {
+        width: 260px;
+        margin: 0 auto;
+        .paper-content {
+          top: -95px;
+          .social-name {
+            font-size: 12px;
+            margin: 27px 0 17px 0;
+          }
+          .avatar {
+            width: 80%;
+          }
+          .social-type {
+            font-size: 24px;
+          }
+          .social-image {
+            margin: 20px 0 32px 0;
+          }
+        }
+      }
+    }
+  }
+}
+
 @media only screen and (max-width: 375px) {
   .home{
     .greeting {

@@ -163,7 +163,7 @@ function Home(props) {
     autoplaySpeed: 2000,
     responsive: [
       {
-        breakpoint: 375,
+        breakpoint: 500,
         settings: { slidesToShow: 1, slidesToScroll: 1, infinite: false }
       },
       /*{
