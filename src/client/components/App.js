@@ -3,7 +3,7 @@ import Main from './main/Main';
 import CustomNavBar from './navbar/Navbar';
 import Footer from './footer/Footer';
 
-function App() {
+function App(props) {
   return (
     <div>
       <CustomNavBar />

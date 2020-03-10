@@ -1,11 +1,13 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import '../../css/sub.scss';
-import TitleImage from '../../img/home-title.png';
 import {Hidden} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
-function Test({
+import TitleImage from '../../img/home-title.png';
+import IphoneImage from '../../img/iphone.png'
+
+function Greeting({
 
 }) {
 
@@ -87,4 +89,4 @@ function Test({
   );
 }
 
-export default Test;
+export default Greeting;

@@ -5,9 +5,17 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import MenuIcon from '@material-ui/icons/Menu';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+// import Link from '@material-ui/core/Link';
+import { Link } from 'react-router-dom';
 
-import Logo from '../../img/logo.png'
-import {Hidden} from "@material-ui/core";
+import { Drawer, Hidden } from '@material-ui/core';
+import Logo from '../../img/logo.png';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,34 +35,125 @@ const useStyles = makeStyles(theme => ({
   },
   bar: {
     background: 'unset'
-  }
+  },
+
+  list: {
+    width: 250,
+  },
+  fullList: {
+    width: 'auto',
+  },
 }));
 
-export default function CustomNavbar() {
+export default function CustomNavbar(props) {
+  const classes = useStyles();
+
+  const [openMenu, setOpenMenu] = React.useState(false);
+
+  const menuLinks = [
+    {
+      text: '홈',
+      link: '/'
+    },
+    {
+      text: '광고주',
+      link: '/Advertiser'
+    },
+    {
+      text: '인플루어너',
+      link: '/Influencer'
+    },
+    {
+      text: '서비스1',
+      link: '/Service1'
+    },
+    {
+      text: '서비스2',
+      link: '/Service2'
+    },
+  ];
+
+  const toggleDrawer = open => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setOpenMenu(open);
+  };
+
+  const sideList = () => (
+    <div
+      className={classes.list}
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
+      <List>
+        {['홈', '광고주', '인플루어너'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+      <Divider />
+      <List>
+        {['서비스1', '서비스2'].map((text, index) => (
+          <ListItem button key={text}>
+            <ListItemText primary={text} />
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
+
+
   return (
     <div className="navbar">
-      <AppBar position="fixed" color="transparent">
-        <Hidden xsDown>
-          <Grid container className="bar" alignItems="center">
-            <Grid container xs={2} justify="center">
-              <Grid item>
+      <AppBar position="static" color="transparent">
+        <Grid container className="bar" alignItems="center">
+          <Grid container xs={5} md={2} justify="center" className="nav-logo">
+            <Grid item>
+              <Link
+                className="link"
+                to="/"
+              >
                 <img src={Logo} />
-              </Grid>
-            </Grid>
-            <Grid container xs={4} justify="space-between">
-              <div className="link">홈</div>
-              <div className="link">광고주</div>
-              <div className="link">인플루어너</div>
-              <div className="link">서비스1</div>
-              <div className="link">서비스2</div>
-            </Grid>
-            <Grid container xs={4}></Grid>
-            <Grid container xs={2} justify="center">
-              <div className="link contactUs">CONTACT US</div>
+              </Link>
             </Grid>
           </Grid>
-        </Hidden>
-
+          <Hidden mdDown>
+            <Grid container xs={4} justify="space-between">
+              {menuLinks.map(link => (
+                <Link
+                  className="link"
+                  key={link.text}
+                  to={link.link}
+                >
+                  {link.text}
+                </Link>
+              ))}
+            </Grid>
+            <Grid container xs={4} />
+            <Grid container xs={2} justify="center">
+              <Link
+                className="link"
+                to="/Contact"
+              >
+                CONTACT US
+              </Link>
+            </Grid>
+          </Hidden>
+          <Hidden mdUp>
+            <Grid container xs={6} justify="flex-end">
+              <div onClick={toggleDrawer(true)} className="menu-icon">
+                <MenuIcon />
+              </div>
+            </Grid>
+          </Hidden>
+          <Drawer anchor="right" open={openMenu} onClose={toggleDrawer(false)}>
+            {sideList()}
+          </Drawer>
+        </Grid>
       </AppBar>
     </div>
   );

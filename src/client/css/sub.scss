@@ -4,17 +4,32 @@ $aqua: #23c9cf;
 $white: #ffffff;
 
 .navbar {
+  /*position: absolute;
+  width: 100%;*/
   .MuiPaper-root {
-    height: 140px;
+    height: 100px;
   }
   .MuiPaper-elevation4 {
     box-shadow: none;
   }
   .bar {
     height: inherit;
+    background: $colorBlue;
+  }
+  .nav-logo {
+
+  }
+  .menu-icon {
+    color: $colorBg
   }
   .link {
+    font-size: 17px;
     font-weight: bold;
+    color: $colorBg;
+    text-decoration: none;
+    &:hover {
+      color: $aqua;
+    }
     &.contactUs {
       height: 48px;
       line-height: 48px;
@@ -38,7 +53,7 @@ $white: #ffffff;
     .greeting-content {
       background: #093c5e;
       .wraper {
-        margin: 215px 0 215px 104px;
+        margin: 240px 0 240px 104px;
         .title {
           font-size: 30px;
           color: $aqua
@@ -46,7 +61,7 @@ $white: #ffffff;
         .main-title {
           padding-top: 15px;
           font-weight: bold;
-          font-size: 64px;
+          font-size: 78px;
           color: $aqua;
         }
         .main-text {
@@ -70,8 +85,8 @@ $white: #ffffff;
     .triangle-content {
       width: 0;
       height: 0;
-      border-bottom: 963px solid #fefefe;
-      border-left: 576px solid transparent;
+      border-bottom: 1034px solid #fefefe;
+      border-left: 634px solid transparent;
     }
   }
   /*.greeting {
@@ -166,7 +181,7 @@ $white: #ffffff;
     }
     .laptop {
       .laptop-image {
-        height: 340px;
+        height: 371px;
         background-image: url("../img/3.png");
         background-size: cover;
         //background-repeat: no-repeat;/
@@ -175,6 +190,9 @@ $white: #ffffff;
   }
   .rating {
     margin: 352px 0;
+    .rating-image {
+      text-align: center;
+    }
     .image {
       right: -1px;
     }
@@ -210,6 +228,9 @@ $white: #ffffff;
         position: absolute;
         top: 3%;
         left: 0%;
+      }
+      &.left {
+        padding-bottom: 35px;
       }
     }
   }
@@ -257,7 +278,10 @@ $white: #ffffff;
     }
     .paper {
       height: 370px;
-      width: 350px;
+      padding: 8px;
+      position: relative;
+      margin: 15px;
+
       .paper-content {
         position: absolute;
         top: -142px;
@@ -282,6 +306,18 @@ $white: #ffffff;
         }
       }
     }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      .card {
+        height: 370px;
+        padding: 8px;
+        position: relative;
+        margin: 15px;
+        border-radius: 4px;
+        box-shadow: 0 2px 3px 0 rgba(0,0,0,0.25);
+      }
+    }
   }
   .triangle {
     z-index: 0 !important;
@@ -292,6 +328,29 @@ $white: #ffffff;
     height: 0;
     border-bottom: 1039px solid #fefefe;
     border-left: 577px solid transparent;
+  }
+}
+
+.advertiser-page {
+  .container {
+    max-width: 256px;
+    margin: 0 auto;
+    position: relative;
+    .card {
+      height: 550px;
+      //padding: 8px;
+      position: relative;
+      //margin: 15px;
+      border-radius: 4px;
+      box-shadow: 0 2px 3px 0 rgba(0,0,0,0.25);
+      img {
+        width: 257px;
+        height: 550px;
+      }
+    }
+    img {
+
+    }
   }
 }
 
@@ -476,7 +535,6 @@ $white: #ffffff;
         margin-bottom: 61px;
       }
       .paper {
-        height: 370px;
         width: 280px;
         .paper-content {
           top: -95px;
@@ -624,7 +682,6 @@ $white: #ffffff;
         margin-bottom: 61px;
       }
       .paper {
-        height: 370px;
         width: 248px;
         .paper-content {
           top: -95px;
@@ -807,7 +864,6 @@ $white: #ffffff;
         margin-bottom: 61px;
       }
       .paper {
-        height: 370px;
         width: 260px;
         .paper-content {
           top: -95px;
@@ -1032,7 +1088,6 @@ $white: #ffffff;
         margin-bottom: 61px;
       }
       .paper {
-        height: 370px;
         width: 260px;
         .paper-content {
           top: -95px;
@@ -1170,7 +1225,8 @@ $white: #ffffff;
     }
     .rating {
       img {
-        width: 55%;
+        width: 300px;
+        height: 200px;
       }
       .title {
         font-size: 27px;
@@ -1190,6 +1246,10 @@ $white: #ffffff;
         font-size: 23px;
         img {
           left: -3%;
+        }
+        &.left {
+          margin-top: 134px;
+          padding-bottom: 0;
         }
       }
     }
@@ -1222,14 +1282,14 @@ $white: #ffffff;
       }
     }
     .influencer-list {
-      margin: 160px 0;
+      margin: 90px 0;
       .main-title {
         font-size: 36px;
         margin-bottom: 61px;
       }
       .paper {
-        height: 370px;
         width: 260px;
+        margin: 0 auto;
         .paper-content {
           top: -95px;
           .social-name {

@@ -4,14 +4,12 @@ import { boxSizing, height, spacing } from '@material-ui/system';
 import '../../css/sub.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { Button } from '@material-ui/core';
+import { Button, Hidden } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Slider from 'react-slick';
 import TitleImage from '../../img/home-title.png';
 import AboutImage from '../../img/home-about.png';
 import RatingImage from '../../img/rating.png';
-import {Hidden} from '@material-ui/core';
-
 
 import categoryOne from '../../img/icons/one.png';
 import categoryTwo from '../../img/icons/two.png';
@@ -46,7 +44,8 @@ import Youtube from '../../img/slider/youtube.png';
 import Naver from '../../img/slider/naver.png';
 import Dot from '../../img/dot.png';
 import Rectangle from '../../img/rectangle.png';
-import Test from './test';
+import Greeting from './Greeting';
+import SimpleSlider from './SimpleSlider';
 
 const $colorBg = '#fefefe'; const $colorBlue = '#093c5e'; const $aqua = '#23c9cf'; const
   $white = '#ffffff';
@@ -152,16 +151,30 @@ const FontSettings = {
 
 };
 
-function Home() {
+function Home(props) {
   const settings = {
     infinite: true,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
-    arrows: true,
+    arrows: false,
     autoplay: true,
     dots: true,
     autoplaySpeed: 2000,
+    responsive: [
+      {
+        breakpoint: 375,
+        settings: { slidesToShow: 1, slidesToScroll: 1, infinite: false }
+      },
+      /*{
+        breakpoint: 768,
+        settings: { slidesToShow: 2, slidesToScroll: 2, infinite: false }
+      },
+      {
+        breakpoint: 1024,
+        settings: { slidesToShow: 3, slidesToScroll: 3, infinite: false }
+      }*/
+    ]
     // centerMode: true
   };
 
@@ -212,7 +225,7 @@ function Home() {
 
   return (
     <div className="home">
-       <Test />
+       <Greeting />
       <div className="wraper one">
         <Grid className="about" container alignItems="center">
           <Grid container xs={12} md={8} className="image">
@@ -255,7 +268,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
             <div className="content">
               <Grid container justify="center">
                 <Grid container xs={12} md={3} justify="space-between">
-                  <Button variant="outlined" className="func-button">광고주</Button>
+                  <Button variant="outlined" className="func-button" onClick={() => console.log(props)}>광고주</Button>
                   <Button variant="outlined" className="func-button">인플루언서</Button>
                 </Grid>
               </Grid>
@@ -349,9 +362,12 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
       <div className="rating">
         <div className="wraper four">
           <Grid container justify="center" alignItems="center">
-            <Grid container justify="center">
+            {/*<Grid container justify="center">
               <img src={RatingImage} />
-            </Grid>
+            </Grid>*/}
+            <div className="rating-image">
+              <img src={RatingImage} />
+            </div>
             <div className="title">
               서비스 후 상호별점을 통한
               {' '}
@@ -561,7 +577,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
             <Grid item md={5} lg={4}>
               <Grid container justify="center">
                 <Grid item lg={12}>
-                  <div className="category-name" style={{paddingBottom: '35px'}}>
+                  <div className="category-name left">
                     <img src={Rectangle} />
                     우리 플랫폼의 인플루언서들
                   </div>
@@ -669,15 +685,15 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
           </Grid>
         </Grid>
       </div>
-      {/*<div className="influencer-list">
+      <div className="influencer-list">
         <div className="main-title">
           <Grid container justify="center">
             <span style={FontSettings.aqua}>#</span>
 INFLAi Influencers
           </Grid>
         </div>
-        <Grid container justify="center">
-          <Grid item only={['lg']} lg={7}>
+        {/*<Grid container justify="center">
+          <Grid item sm={2} lg={7}>
             <div className="carousel-zone">
               <Slider {...settings}>
                 {influencers.map(person => (
@@ -711,10 +727,15 @@ INFLAi Influencers
               </Slider>
             </div>
           </Grid>
-        </Grid>
-      </div>*/}
+        </Grid>*/}
+
+        <div className="container">
+          <SimpleSlider settings={settings} influencers={influencers} />
+        </div>
+      </div>
     </div>
   );
 }
+
 
 export default Home;
