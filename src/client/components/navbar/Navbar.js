@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 
 import Logo from '../../img/logo.png'
+import {Hidden} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,6 +34,7 @@ export default function CustomNavbar() {
   return (
     <div className="navbar">
       <AppBar position="fixed" color="transparent">
+        <Hidden xsDown>
           <Grid container className="bar" alignItems="center">
             <Grid container xs={2} justify="center">
               <Grid item>
@@ -51,6 +53,8 @@ export default function CustomNavbar() {
               <div className="link contactUs">CONTACT US</div>
             </Grid>
           </Grid>
+        </Hidden>
+
       </AppBar>
     </div>
   );

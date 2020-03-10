@@ -347,8 +347,8 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
         </div>
       </div>
       <div className="rating">
-        <Grid container justify="center" alignItems="center" style={{ height: '100%' }}>
-          <Grid style={{ height: '70%' }}>
+        <div className="wraper four">
+          <Grid container justify="center" alignItems="center">
             <Grid container justify="center">
               <img src={RatingImage} />
             </Grid>
@@ -364,12 +364,12 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               광고주의 별점을 통해 서로 보완하여 지속적인 사후체크 및 효과상승을 유도합니다
             </div>
           </Grid>
-        </Grid>
+        </div>
       </div>
       <hr align="center" width="90%" color="#454545" />
       <div className="service">
         <div className="main-text">INFLAi</div>
-        <Grid container>
+       {/* <Grid container>
           <Grid container xs={12} md={5} style={{ height: '102px' }}>
             <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
             <Grid container xs={12} md={10} lg={8} xl={6} justify="center" className="category-name">
@@ -392,7 +392,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
             <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
           </Grid>
           <Grid container xs={12} md={5} style={{ height: '318px' }}>
-            <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6}/>
+            <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
             <Grid container xs={12} md={10} lg={8} xl={6}>
               <Grid container justify="space-between">
                 <div style={{
@@ -496,9 +496,137 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                 />
               </Grid>
             </Grid>
-            <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6}/>
+            <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
           </Grid>
-        </Grid>
+        </Grid>*/}
+        <div className="wraper five">
+          <Grid container justify="space-between">
+            <Grid item md={5} lg={4}>
+              <Grid container justify="center">
+                <Grid item lg={12}>
+                  <div className="category-name">
+                    <img src={Rectangle} />
+                    인플루언서로 최적의 효과를
+                    <br />
+                    보는 카테고리
+                  </div>
+                </Grid>
+                <Grid></Grid>
+                <Grid container xs={12} md={12} style={{ height: '318px' }}>
+                  <Grid container justify="space-between">
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryOne})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwo})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryThree})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                  </Grid>
+                  <Grid container alignContent="center" justify="space-between">
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryFour})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryFive})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categorySix})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                  </Grid>
+                  <Grid container alignContent="flex-end" justify="space-between">
+                      <div style={{
+                        height: '80px', width: '80px', backgroundImage: `url(${categorySeven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                      }}
+                      />
+                      <div style={{
+                        height: '80px', width: '80px', backgroundImage: `url(${categoryEight})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                      }}
+                      />
+                      <div style={{
+                        height: '80px', width: '80px', backgroundImage: `url(${categoryNine})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                      }}
+                      />
+                    </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item md={5} lg={4}>
+              <Grid container justify="center">
+                <Grid item lg={12}>
+                  <div className="category-name" style={{paddingBottom: '35px'}}>
+                    <img src={Rectangle} />
+                    우리 플랫폼의 인플루언서들
+                  </div>
+                </Grid>
+                <Grid></Grid>
+                <Grid container xs={12} md={12} style={{ height: '318px' }}>
+                  <Grid container justify="space-between">
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryTen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryEleven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwelve})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryThirteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                  </Grid>
+                  <Grid container alignContent="center" justify="space-between">
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryFourteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryFifteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categorySixteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categorySeventeen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                  </Grid>
+                  <Grid container alignContent="flex-end" justify="space-between">
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryEighteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryNineteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwenty})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwentyOne})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </div>
       </div>
       <div className="register-link">
         <div className="title-holder">

@@ -38,7 +38,7 @@ $white: #ffffff;
     .greeting-content {
       background: #093c5e;
       .wraper {
-        margin: 247px 0 247px 142px;
+        margin: 215px 0 215px 104px;
         .title {
           font-size: 30px;
           color: $aqua
@@ -46,7 +46,7 @@ $white: #ffffff;
         .main-title {
           padding-top: 15px;
           font-weight: bold;
-          font-size: 72px;
+          font-size: 64px;
           color: $aqua;
         }
         .main-text {
@@ -70,8 +70,8 @@ $white: #ffffff;
     .triangle-content {
       width: 0;
       height: 0;
-      border-bottom: 1039px solid #fefefe;
-      border-left: 634px solid transparent;
+      border-bottom: 963px solid #fefefe;
+      border-left: 576px solid transparent;
     }
   }
   /*.greeting {
@@ -174,7 +174,7 @@ $white: #ffffff;
     }
   }
   .rating {
-    height: 1824px;
+    margin: 352px 0;
     .image {
       right: -1px;
     }
@@ -205,10 +205,11 @@ $white: #ffffff;
       text-align: center;
       //font-weight: 600;
       position: relative;
+      margin-bottom: 40px;
       img {
         position: absolute;
         top: 3%;
-        left: 2%;
+        left: 0%;
       }
     }
   }
@@ -417,7 +418,7 @@ $white: #ffffff;
       }
     }
     .rating {
-      height: 1150px;
+      margin: 300px 0;
       img {
         width: 75%;
       }
@@ -603,6 +604,19 @@ $white: #ffffff;
         }
       }
     }
+    .rating {
+      margin: 300px 0;
+      img {
+        width: 75%;
+      }
+      .title {
+        font-size: 51px;
+        margin: 41px 0;
+      }
+      .main-text {
+        font-size: 14px;
+      }
+    }
     .influencer-list {
       margin: 190px 0;
       .main-title {
@@ -735,7 +749,7 @@ $white: #ffffff;
       }
     }
     .rating {
-      height: 950px;
+      margin: 155px 0;
       img {
         width: 65%;
       }
@@ -960,7 +974,6 @@ $white: #ffffff;
       }
     }
     .rating {
-      height: 950px;
       img {
         width: 65%;
       }
@@ -975,10 +988,11 @@ $white: #ffffff;
     .service {
       margin: 150px 0;
       .main-text {
-        margin: 0 0 100px 0;
+        margin: 0 0 30px 0;
         font-size: 90px;
       }
       .category-name {
+        margin-top: 50px;
         img {
           left: -3%;
         }
@@ -1095,9 +1109,12 @@ $white: #ffffff;
         .main-text {
           font-size: 21px;
           margin-top: 32px;
+          text-align: center;
         }
         .text-footer {
-          font-size: 10px;
+          font-size: 14px;
+          text-align: center;
+          margin-top: 60px;
         }
       }
       .image {
@@ -1110,14 +1127,14 @@ $white: #ffffff;
     .profit {
       height: 1030px;
       .content {
-        height: 660px;
+        height: 977px;
         .title {
           font-size: 26px;
           margin: 30px 0;
         }
         .main-text {
           font-size: 10px;
-          margin-bottom: 88px;
+          margin-bottom: 46px;
         }
         .detail {
 
@@ -1146,17 +1163,17 @@ $white: #ffffff;
       }
       .laptop {
         .laptop-image {
-          height: 185px;
+          height: 133px;
+          margin: 20px 0;
         }
       }
     }
     .rating {
-      height: 950px;
       img {
-        width: 65%;
+        width: 55%;
       }
       .title {
-        font-size: 41px;
+        font-size: 27px;
         margin: 31px 0;
       }
       .main-text {
@@ -1164,12 +1181,13 @@ $white: #ffffff;
       }
     }
     .service {
-      margin: 150px 0;
+      margin: 80px 0;
       .main-text {
-        margin: 0 0 100px 0;
-        font-size: 90px;
+        margin-bottom: 30px;
+        font-size: 75px;
       }
       .category-name {
+        font-size: 23px;
         img {
           left: -3%;
         }
@@ -1177,7 +1195,7 @@ $white: #ffffff;
     }
     .register-link {
       .title-holder {
-        margin-bottom: 80px;
+        margin-bottom: 0;
         .main-title {
           font-size: 41px;
         }
@@ -1190,7 +1208,7 @@ $white: #ffffff;
         }
       }
       .y-wrap {
-        margin: 135px 0;
+        margin: 40px 0;
       }
       .link-field {
         img {

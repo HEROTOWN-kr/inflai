@@ -20,10 +20,10 @@ html, body {
 .wraper {
   height: inherit;
   &.one {
-    margin: 230px 137px;
+    margin: 230px 117px;
   }
   &.two {
-    margin: 0 306px;
+    margin: 0 215px;
   }
   &.three {
     padding-top: 167px;
@@ -32,6 +32,12 @@ html, body {
   &.vertical {
     padding-top: 167px;
     padding-bottom: 167px;
+  }
+  &.four {
+    margin: 0 150px;
+  }
+  &.five {
+    margin: 0 300px;
   }
 }
 
@@ -81,9 +87,11 @@ html, body {
     &.two {
       margin: 0 60px;
     }
-
-    &.three {
-
+    &.four {
+      margin: 0 150px;
+    }
+    &.five {
+      margin: 0 130px;
     }
 
     &.vertical {
@@ -103,9 +111,11 @@ html, body {
     &.two {
       margin: 0 60px;
     }
-
-    &.three {
-
+    &.four {
+      margin: 0 150px;
+    }
+    &.five {
+      margin: 0 60px;
     }
 
     &.vertical {
@@ -141,4 +151,31 @@ html, body {
 
 }
 
+@media only screen and (max-width: 375px) {
+  .wraper {
+    &.one {
+      margin: 176px 71px;
+    }
+
+    &.two {
+      margin: 0 60px;
+    }
+
+    &.three {
+
+    }
+
+    &.four {
+      margin: 0 44px;
+    }
+
+    &.five {
+      margin: 0 10px;
+    }
+
+    &.vertical {
+
+    }
+  }
+}
 
