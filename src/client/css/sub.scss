@@ -39,6 +39,20 @@ $white: #ffffff;
       font-family: 'Roboto', sans-serif;
     }
   }
+  .login-button {
+    box-sizing: border-box;
+    border-radius: 20px;
+    padding: 3px 20px;
+    color: $colorBg;
+    font-weight: 400;
+    border: 2px solid $colorBg;
+    &:hover {
+      color: $aqua
+    }
+  }
+  .name-holder {
+    color: $colorBg;
+  }
 }
 
 .home {

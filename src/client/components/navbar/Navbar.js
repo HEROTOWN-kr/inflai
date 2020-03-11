@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 
 import { Drawer, Hidden } from '@material-ui/core';
 import Logo from '../../img/logo.png';
+import LogInComponent from '../login/LogInComponent';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,7 +61,7 @@ export default function CustomNavbar(props) {
       link: '/Advertiser'
     },
     {
-      text: '인플루어너',
+      text: '인플루언서',
       link: '/Influencer'
     },
     {
@@ -89,17 +90,9 @@ export default function CustomNavbar(props) {
       onKeyDown={toggleDrawer(false)}
     >
       <List>
-        {['홈', '광고주', '인플루어너'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['서비스1', '서비스2'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemText primary={text} />
+        {menuLinks.map((link, index) => (
+          <ListItem button key={link.text} component={props => <Link to={link.link} {...props} />}>
+            <ListItemText primary={link.text} />
           </ListItem>
         ))}
       </List>
@@ -132,8 +125,11 @@ export default function CustomNavbar(props) {
                   {link.text}
                 </Link>
               ))}
+              <LogInComponent {...props} />
             </Grid>
-            <Grid container xs={4} />
+            <Grid container xs={4} justify="flex-end">
+              <Grid item xs={6} className="name-holder">{props.user.name ? props.user.name : null}</Grid>
+            </Grid>
             <Grid container xs={2} justify="center">
               <Link
                 className="link"

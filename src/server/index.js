@@ -40,9 +40,11 @@ passport.authenticate('jwt', { session: false });
 
 
 app.use(config.imgRoot, express.static(config.uploadDir));
-app.use('/attach', express.static('/home/indiens/upload/attach/'));
+app.use('/attach', express.static('/home/inflai/upload/attach/'));
 
 // routes
+
+app.use('/TB_ADVERTISER', require('./routes/TB_ADVERTISER'));
 
 
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));

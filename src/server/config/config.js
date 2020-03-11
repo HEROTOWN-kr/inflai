@@ -5,11 +5,11 @@
     var config = {};
 
     //이미지 파일을 올리는 파일위치 및 로딩을 위한 변수
-    config.tmp = '/home/indiens/tmp/';
-    config.uploadDir = '/home/indiens/upload/images/';
+    config.tmp = '/home/inflai/tmp/';
+    config.uploadDir = '/home/inflai/upload/images/';
     config.imgRoot = '/images';
-    config.attachRoot = '/home/indiens/upload/attach/';
-    config.downDir = '/home/indiens/upload';
+    config.attachRoot = '/home/inflai/upload/attach/';
+    config.downDir = '/home/inflai/upload';
     // 비밀번호 암호화
     config.enc_type = 'sha256';
     config.enc_key = 'vr_fetus_hash password';
