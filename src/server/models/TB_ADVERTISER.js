@@ -20,7 +20,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: true
     },
-    ADV_TOKEN: {
+    ADV_REG_ID: {
       type: DataTypes.STRING(200),
       allowNull: true
     },

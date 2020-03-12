@@ -4,7 +4,8 @@ class Common {
     return (localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo'))
       : {
         token: '',
-        name: ''
+        name: '',
+        social_type: ''
       });
   }
 

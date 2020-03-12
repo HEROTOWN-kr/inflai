@@ -14,11 +14,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     INF_TEL: {
       type: DataTypes.STRING(45),
-      allowNull: false
+      allowNull: true
     },
     INF_EMAIL: {
       type: DataTypes.STRING(45),
       allowNull: false
+    },
+    INF_REG_ID: {
+      type: DataTypes.STRING(200),
+      allowNull: true
     },
     INF_DT: {
       type: 'TIMESTAMP',

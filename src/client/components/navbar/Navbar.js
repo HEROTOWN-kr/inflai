@@ -15,6 +15,7 @@ import Divider from '@material-ui/core/Divider';
 import { Link } from 'react-router-dom';
 
 import { Drawer, Hidden } from '@material-ui/core';
+import NaverLogin from 'react-naver-login';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 
@@ -126,6 +127,13 @@ export default function CustomNavbar(props) {
                 </Link>
               ))}
               <LogInComponent {...props} />
+              <NaverLogin
+                clientId="4rBF5bJ4y2jKn0gHoSCf"
+                callbackUrl="http://127.0.0.1:3000/login"
+                render={(props) => <div onClick={props.onClick}>Naver Login</div>}
+                onSuccess={(result) => console.log(result)}
+                onFailure={(result) => console.error(result)}
+              />
             </Grid>
             <Grid container xs={4} justify="flex-end">
               <Grid item xs={6} className="name-holder">{props.user.name ? props.user.name : null}</Grid>

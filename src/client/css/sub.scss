@@ -55,6 +55,63 @@ $white: #ffffff;
   }
 }
 
+
+.login-dialog {
+  .MuiPaper-rounded {
+    border-radius: 36px;
+  }
+
+  .MuiDialogTitle-root {
+    background: $colorBlue;
+    h2 {
+      color: $colorBg;
+      text-align: center;
+      font-size: 25px;
+      font-weight: bold;
+    }
+  }
+
+  .signUpContent {
+    .MuiFormControl-root {
+      margin-top: 20px;
+      .MuiFormControlLabel-root {
+        margin: 0 20px;
+        .MuiTypography-body1 {
+          font-weight: bold;
+        }
+      }
+      .MuiFormLabel-root {
+        text-align: center;
+        font-size: 21px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+      .MuiFormGroup-root {
+        margin-bottom: 26px;
+      }
+    }
+  }
+}
+
+.greeting-content2 {
+  background: #093c5e;
+
+
+
+  background: red;
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    border-bottom: 500px solid white;
+    border-left: 400px solid red;
+    width: 0;
+  }
+
+}
+
+
 .home {
   .greeting {
     .greeting-image {
@@ -385,7 +442,7 @@ $white: #ffffff;
   //box-sizing: border-box;
 }
 
-@media only screen and (max-width: 1536px) {
+@media only screen and (max-width: 1800px) {
   .home{
     .greeting {
       .greeting-image {
