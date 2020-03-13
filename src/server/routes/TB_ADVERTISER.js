@@ -4,6 +4,7 @@ const Influenser = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const request = require('request');
 
 const router = express.Router();
 
@@ -13,6 +14,55 @@ router.get('/test', (req, res) => {
     message: 'success'
   });
 });
+
+router.get('/naverTest', (req, res) => {
+  const token = 'AAAAO7ObqHQmS2x-G4UYKZ4SDKDZnRVG_0xJLLZZ0FWqEraRQZLW4-jAv1qVlFzA_6WhL6Ilagtv5y3EVJmiTzuhhL4';
+  const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
+
+  const apiUrl = 'https://openapi.naver.com/v1/nid/me';
+  const options = {
+    url: apiUrl,
+    headers: { Authorization: header }
+  };
+  request.get(options, (error, response, body) => {
+    if (!error && response.statusCode == 200) {
+      res.json(JSON.parse(body));
+      /*res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
+      res.end(body);*/
+    } else {
+      console.log('error');
+      if (response != null) {
+        res.status(response.statusCode).end();
+        console.log(`error = ${response.statusCode}`);
+      }
+    }
+  });
+});
+
+router.get('/kakaoTest', (req, res) => {
+  const token = 'exSyjZ4_AIOevZTqbEukER_zDMadeRM0rb75Swo9dRsAAAFw0yssHA';
+  const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
+
+  const apiUrl = 'https://kapi.kakao.com/v1/user/logout';
+  const options = {
+    url: apiUrl,
+    headers: { Authorization: header }
+  };
+  request.post(options, (error, response, body) => {
+    if (!error && response.statusCode == 200) {
+      res.json(JSON.parse(body));
+      /*res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
+      res.end(body);*/
+    } else {
+      console.log('error');
+      if (response != null) {
+        res.status(response.statusCode).end();
+        console.log(`error = ${response.statusCode}`);
+      }
+    }
+  });
+});
+
 
 router.get('/test2', (req, res) => {
   console.log('getting all advertisers');
@@ -61,7 +111,7 @@ router.get('/loginGoogle', (req, res) => {
             code: 200,
             userToken: token,
             userName: result.dataValues.INF_NAME,
-            social_type: social_type
+            social_type
           });
         });
       } else {
@@ -69,7 +119,7 @@ router.get('/loginGoogle', (req, res) => {
           code: 200,
           userToken: token,
           userName: result.dataValues.INF_NAME,
-          social_type: social_type
+          social_type
         });
       }
     }).error((err) => {
@@ -101,7 +151,7 @@ router.get('/loginFacebook', (req, res) => {
           res.json({
             code: 200,
             userName: result.dataValues.ADV_NAME,
-            social_type: social_type
+            social_type
           });
         });
       } else {
@@ -109,7 +159,7 @@ router.get('/loginFacebook', (req, res) => {
           code: 200,
           userToken: token,
           userName: result.dataValues.ADV_NAME,
-          social_type: social_type
+          social_type
         });
       }
     }).error((err) => {
@@ -127,7 +177,7 @@ router.get('/loginFacebook', (req, res) => {
             code: 200,
             userToken: token,
             userName: result.dataValues.INF_NAME,
-            social_type: social_type
+            social_type
           });
         });
       } else {
@@ -135,7 +185,7 @@ router.get('/loginFacebook', (req, res) => {
           code: 200,
           userToken: token,
           userName: result.dataValues.INF_NAME,
-          social_type: social_type
+          social_type
         });
       }
     }).error((err) => {
@@ -144,6 +194,137 @@ router.get('/loginFacebook', (req, res) => {
   }
 });
 
+router.get('/loginNaver', (req, res) => {
+  const {
+    id, email, name, type, social_type
+  } = req.query;
+
+  const payload = {
+    sub: id
+  };
+
+  const token = jwt.sign(payload, config.jwtSecret);
+
+
+  if (type === '1') {
+    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
+      if (!result) {
+        Advertiser.create({
+          ADV_NAME: name,
+          ADV_EMAIL: email,
+          ADV_REG_ID: id
+        }).then((result) => {
+          res.json({
+            code: 200,
+            userName: result.dataValues.ADV_NAME,
+            social_type
+          });
+        });
+      } else {
+        res.json({
+          code: 200,
+          userToken: token,
+          userName: result.dataValues.ADV_NAME,
+          social_type
+        });
+      }
+    }).error((err) => {
+      res.send('error has occured');
+    });
+  } else {
+    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
+      if (!result) {
+        Influenser.create({
+          INF_NAME: name,
+          INF_EMAIL: email,
+          INF_REG_ID: id
+        }).then((result) => {
+          res.json({
+            code: 200,
+            userToken: token,
+            userName: result.dataValues.INF_NAME,
+            social_type
+          });
+        });
+      } else {
+        res.json({
+          code: 200,
+          userToken: token,
+          userName: result.dataValues.INF_NAME,
+          social_type
+        });
+      }
+    }).error((err) => {
+      res.send('error has occured');
+    });
+  }
+});
+
+router.get('/loginKakao', (req, res) => {
+  const {
+    id, email, name, type, social_type
+  } = req.query;
+
+  const payload = {
+    sub: id
+  };
+
+  const token = jwt.sign(payload, config.jwtSecret);
+
+
+  if (type === '1') {
+    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
+      if (!result) {
+        Advertiser.create({
+          ADV_NAME: name,
+          ADV_EMAIL: email,
+          ADV_REG_ID: id
+        }).then((result) => {
+          res.json({
+            code: 200,
+            userName: result.dataValues.ADV_NAME,
+            social_type
+          });
+        });
+      } else {
+        res.json({
+          code: 200,
+          userToken: token,
+          userName: result.dataValues.ADV_NAME,
+          social_type
+        });
+      }
+    }).error((err) => {
+      res.send('error has occured');
+    });
+  } else {
+    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
+      if (!result) {
+        Influenser.create({
+          INF_NAME: name,
+          INF_EMAIL: email,
+          INF_REG_ID: id
+        }).then((result) => {
+          res.json({
+            code: 200,
+            userToken: token,
+            userName: result.dataValues.INF_NAME,
+            social_type
+          });
+        });
+      } else {
+        res.json({
+          code: 200,
+          userToken: token,
+          userName: result.dataValues.INF_NAME,
+          social_type
+        });
+      }
+    }).error((err) => {
+      res.send('error has occured');
+    });
+  }
+});
 
 router.get('/:id', (req, res) => {
   console.log('getting one book');

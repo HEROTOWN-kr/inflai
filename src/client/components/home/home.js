@@ -47,6 +47,8 @@ import Rectangle from '../../img/rectangle.png';
 import Greeting from './Greeting';
 import SimpleSlider from './SimpleSlider';
 
+// import NaverLogin from 'react-naver-login';
+
 const $colorBg = '#fefefe'; const $colorBlue = '#093c5e'; const $aqua = '#23c9cf'; const
   $white = '#ffffff';
 

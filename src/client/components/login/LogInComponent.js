@@ -18,6 +18,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import GoogleLogin, { GoogleLogout } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import NaverLogin from 'react-naver-login';
+import KakaoLogin from 'react-kakao-login';
 
 
 import '../../css/sub.scss';
@@ -118,6 +119,62 @@ function LoginDialog({
     }
   };
 
+  const responseNaver = (response) => {
+    console.log(response);
+    /* if (response) {
+      axios.get('/api/TB_ADVERTISER/loginFacebook', {
+        params: {
+          id: response.userID,
+          email: response.email,
+          name: response.name,
+          type: userType,
+          social_type: response.graphDomain
+        }
+      }).then((res) => {
+        changeUser({
+          social_type: res.data.social_type,
+          type: userType,
+          token: res.data.userToken,
+          name: res.data.userName,
+        });
+        closeDialog();
+      });
+    } */
+  };
+
+  const responseKakao = (response) => {
+     if (response) {
+      axios.get('/api/TB_ADVERTISER/loginKakao', {
+        params: {
+          id: response.profile.id,
+          email: response.profile.kakao_account.email,
+          name: response.profile.properties.nickname,
+          type: userType,
+          social_type: response.graphDomain
+        }
+      }).then((res) => {
+        changeUser({
+          social_type: res.data.social_type,
+          type: userType,
+          token: res.data.userToken,
+          name: res.data.userName,
+        });
+        closeDialog();
+      });
+    }
+  };
+
+  const kakaoLoginForm = () => {
+    window.Kakao.Auth.loginForm({
+      success(authObj) {
+        alert(JSON.stringify(authObj));
+      },
+      fail(err) {
+        alert(JSON.stringify(err));
+      }
+    });
+  };
+
 
   return (
     <Dialog open={openDialog} className="login-dialog">
@@ -150,11 +207,14 @@ function LoginDialog({
 
           <NaverLogin
             clientId="4rBF5bJ4y2jKn0gHoSCf"
-            callbackUrl="http://127.0.0.1:3000/home"
-            render={props => <button>Naver Login</button>}
-            onSuccess={console.log(1)}
-            onFailure={console.log(2)}
+              // callbackUrl="http://127.0.0.1:3000/login"
+            callbackUrl="http://127.0.0.1:3000/login?naver=true"
+            render={props => <div onClick={props.onClick}>Naver Login</div>}
+            onSuccess={result => responseNaver(result)}
+            onFailure={result => responseNaver(result)}
           />
+
+          <button onClick={kakaoLoginForm}>LoginDialog</button>
 
         </Grid>
         <div className="error-message">{null}</div>
@@ -170,3 +230,14 @@ function LoginDialog({
 
 
 export default LogInComponent;
+
+
+// <KakaoLogin
+//             jsKey="621ae47398f559dd7479aaba4b841c4b"
+//             onSuccess={result => responseKakao(result)}
+//             onFailure={result => console.log(result)}
+//             /*render={props => (
+//                 <div onClick={props.onClick}>KAKAO LOGIN</div>
+//             )}*/
+//   // getProfile="true"
+//   />
