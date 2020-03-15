@@ -102,7 +102,6 @@ export default function CustomNavbar(props) {
     </div>
   );
 
-
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
@@ -130,17 +129,7 @@ export default function CustomNavbar(props) {
               ))}
               <LogInComponent {...props} />
 
-              {/* <button onClick={}>Logout</button> */}
-
-              <KakaoLogin
-                jsKey="621ae47398f559dd7479aaba4b841c4b"
-                onSuccess={result => console.log(result)}
-                onFailure={result => console.log(result)}
-                  /* render={props => (
-                      <div onClick={props.onClick}>KAKAO LOGIN</div>
-                  )} */
-                getProfile="true"
-              />
+                {/*<div id="naverIdLogin"></div>*/}
 
             </Grid>
             <Grid container xs={4} justify="flex-end">

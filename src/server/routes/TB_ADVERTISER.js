@@ -27,8 +27,8 @@ router.get('/naverTest', (req, res) => {
   request.get(options, (error, response, body) => {
     if (!error && response.statusCode == 200) {
       res.json(JSON.parse(body));
-      /*res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
-      res.end(body);*/
+      /* res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
+      res.end(body); */
     } else {
       console.log('error');
       if (response != null) {
@@ -40,19 +40,20 @@ router.get('/naverTest', (req, res) => {
 });
 
 router.get('/kakaoTest', (req, res) => {
-  const token = 'exSyjZ4_AIOevZTqbEukER_zDMadeRM0rb75Swo9dRsAAAFw0yssHA';
+  const { token } = req.query;
   const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
 
-  const apiUrl = 'https://kapi.kakao.com/v1/user/logout';
+  const apiUrl = 'https://kapi.kakao.com/v1/user/me';
   const options = {
     url: apiUrl,
     headers: { Authorization: header }
   };
   request.post(options, (error, response, body) => {
     if (!error && response.statusCode == 200) {
-      res.json(JSON.parse(body));
-      /*res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
-      res.end(body);*/
+      res.json(body);
+      // res.json(JSON.parse(body));
+      /* res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
+      res.end(body); */
     } else {
       console.log('error');
       if (response != null) {

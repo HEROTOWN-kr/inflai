@@ -25,21 +25,35 @@ import '../../css/sub.scss';
 
 
 function LogOutButton(props) {
+  let button;
+
+  const kakaoLogOut = (e) => {
+    e.preventDefault();
+    window.Kakao.Auth.logout((res) => {
+
+      props.changeUser({ token: null, name: '', social_type: '' });
+    });
+
+    // {
+    //   callback: function (data) {
+    //     alert(data);
+    //   }
+    // }
+  };
+
   return (
     <React.Fragment>
       {
-          props.user.social_type === 'facebook'
-            ?
-              // <a href="#" onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }}>logout</a>
-              <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">LogOut</Button>
-            : (
-              <GoogleLogout
-                clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
-                buttonText="Logout"
-                onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
-              />
-            )
-        }
+        {
+          facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">LogOut</Button>,
+          google: <GoogleLogout
+            clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
+            buttonText="Logout"
+            onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
+          />,
+          kakao: <button onClick={kakaoLogOut}>Logout</button>
+        }[props.user.social_type]
+      }
     </React.Fragment>
   );
 }
@@ -143,7 +157,7 @@ function LoginDialog({
   };
 
   const responseKakao = (response) => {
-     if (response) {
+    if (response) {
       axios.get('/api/TB_ADVERTISER/loginKakao', {
         params: {
           id: response.profile.id,
@@ -167,10 +181,34 @@ function LoginDialog({
   const kakaoLoginForm = () => {
     window.Kakao.Auth.loginForm({
       success(authObj) {
-        alert(JSON.stringify(authObj));
+        window.Kakao.API.request({
+          url: '/v2/user/me',
+          success(res) {
+            axios.get('/api/TB_ADVERTISER/loginKakao', {
+              params: {
+                id: res.id,
+                email: res.kakao_account.email,
+                name: res.kakao_account.profile.nickname,
+                type: userType,
+                social_type: 'kakao'
+              }
+            }).then((response) => {
+              changeUser({
+                social_type: response.data.social_type,
+                type: userType,
+                token: response.data.userToken,
+                name: response.data.userName,
+              });
+              closeDialog();
+            });
+          },
+          fail(error) {
+            console.log(JSON.stringify(error));
+          }
+        });
       },
       fail(err) {
-        alert(JSON.stringify(err));
+        console.log(JSON.stringify(err));
       }
     });
   };
