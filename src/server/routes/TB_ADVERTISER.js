@@ -1,10 +1,14 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const request = require('request');
+const bcrypt = require('bcryptjs');
+
+const config = require('../config');
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influenser = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
-const jwt = require('jsonwebtoken');
-const config = require('../config');
-const request = require('request');
+
+const saltRounds = 10;
 
 const router = express.Router();
 
@@ -323,6 +327,101 @@ router.get('/loginKakao', (req, res) => {
       }
     }).error((err) => {
       res.send('error has occured');
+    });
+  }
+});
+
+router.post('/signup', (req, res) => {
+  const data = req.body;
+  const { type } = data;
+
+  const userData = {};
+
+  if (type === '1') {
+    userData.ADV_EMAIL = data.email;
+    userData.ADV_NAME = data.name;
+
+    bcrypt.hash(data.password, saltRounds, (err, hash) => {
+      userData.ADV_PASS = hash;
+      if (err) {
+        console.log(err);
+      } else {
+        Advertiser.findOne({
+          where: { ADV_EMAIL: data.email }
+        }).then((user) => {
+          if (user) {
+            res.json({
+              code: 401,
+              message: 'This email is already taken.'
+            });
+          } else {
+            Advertiser.create(userData).then((result) => {
+              const insertedID = result.dataValues.ADV_ID;
+              const payload = {
+                sub: insertedID
+              };
+
+              const token = jwt.sign(payload, config.jwtSecret);
+
+              res.json({
+                code: 200,
+                userToken: token,
+                userName: data.name,
+                social_type: 'not-social'
+              });
+            }).catch((err) => {
+              res.json({
+                code: 400,
+                success: false,
+                error: err
+              });
+            });
+          }
+        });
+      }
+    });
+  } else {
+    userData.INF_EMAIL = data.email;
+    userData.INF_NAME = data.name;
+
+    bcrypt.hash(data.password, saltRounds, (err, hash) => {
+      userData.INF_PASS = hash;
+      if (err) {
+        console.log(err);
+      } else {
+        Influenser.findOne({
+          where: { INF_EMAIL: data.email }
+        }).then((user) => {
+          if (user) {
+            res.json({
+              code: 401,
+              message: 'This email is already taken.'
+            });
+          } else {
+            Influenser.create(userData).then((result) => {
+              const insertedID = result.dataValues.INF_ID;
+              const payload = {
+                sub: insertedID
+              };
+
+              const token = jwt.sign(payload, config.jwtSecret);
+
+              res.json({
+                code: 200,
+                userToken: token,
+                userName: data.name,
+                social_type: 'not-social'
+              });
+            }).catch((err) => {
+              res.json({
+                code: 400,
+                success: false,
+                error: err
+              });
+            });
+          }
+        });
+      }
     });
   }
 });

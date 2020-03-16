@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const bcrypt = require('bcryptjs');
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('TB_ADVERTISER', {
@@ -7,6 +8,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
+    },
+    ADV_PASS: {
+      type: DataTypes.STRING(300),
+      allowNull: true
     },
     ADV_NAME: {
       type: DataTypes.STRING(45),
@@ -30,6 +35,17 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
-    tableName: 'TB_ADVERTISER'
+    tableName: 'TB_ADVERTISER',
+    instanceMethods: {
+      generateHash(password) {
+        return bcrypt.hash(password, bcrypt.genSaltSync(8));
+      },
+      validPassword(password, hash, callback) {
+        return bcrypt.compare(password, hash, (err, res) => {
+          if (err) callback(err, null);
+          else callback(null, res);
+        });
+      }
+    }
   });
 };

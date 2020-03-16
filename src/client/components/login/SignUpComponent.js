@@ -1,48 +1,16 @@
 import React from 'react';
-import axios from 'axios';
-
 import { Button, TextField } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import axios from 'axios';
 import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
-
-import { GoogleLogout } from 'react-google-login';
-
-
-import '../../css/sub.scss';
-import SocialNetworks from './SocialNetworks';
+import DialogActions from '@material-ui/core/DialogActions';
 import UserType from './UserType';
+import SocialNetworks from './SocialNetworks';
 
-
-function LogOutButton(props) {
-  const kakaoLogOut = (e) => {
-    e.preventDefault();
-    window.Kakao.Auth.logout((res) => {
-      props.changeUser({ token: null, name: '', social_type: '' });
-    });
-  };
-
-  return (
-    <React.Fragment>
-      {
-        {
-          facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">LogOut</Button>,
-          google: <GoogleLogout
-            clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
-            buttonText="Logout"
-            onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
-          />,
-          kakao: <button onClick={kakaoLogOut}>Logout</button>
-        }[props.user.social_type]
-      }
-    </React.Fragment>
-  );
-}
-
-function LogInComponent(props) {
+function SignUpComponent(props) {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   function toggleLoginDialog() {
@@ -50,18 +18,13 @@ function LogInComponent(props) {
   }
   return (
     <div>
-      <LoginDialog {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />
-      {props.user.token
-        ? (
-          <LogOutButton {...props} />)
-
-        : <Button onClick={toggleLoginDialog} className="login-button">LogIn</Button>
-        }
+      <SignUpDialog {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />
+      <Button onClick={toggleLoginDialog} className="login-button">SignUp</Button>
     </div>
   );
 }
 
-function LoginDialog({
+function SignUpDialog({
   openDialog,
   closeDialog,
   user,
@@ -70,7 +33,9 @@ function LoginDialog({
   const [userType, setUserType] = React.useState('');
   const [userData, setUserData] = React.useState({
     email: '',
-    password: ''
+    password: '',
+    passwordConfirm: '',
+    name: ''
   });
   const [errors, setErrors] = React.useState({});
 
@@ -90,14 +55,27 @@ function LoginDialog({
       success: false
     };
 
+    if (data.password !== data.passwordConfirm) {
+      payload.errors.pwconfirm = 'Password confirmation doesn\'t match.';
+    }
+
+
     if (!data.password) {
       payload.errors.password = 'Please provide a password.';
     } else if (data.password.length < 8) {
       payload.errors.password = 'Password must have at least 8 characters.';
     }
 
+    if (!data.passwordConfirm) {
+      payload.errors.pwconfirm = 'Please confirm the password.';
+    }
+
     if (!data.email) {
       payload.errors.email = 'Please provide an email.';
+    }
+
+    if (!data.name) {
+      payload.errors.name = 'Please provide a name.';
     }
 
     payload.success = Object.entries(payload.errors).length === 0 && payload.errors.constructor === Object;
@@ -105,14 +83,10 @@ function LoginDialog({
     return payload;
   }
 
-  function logIn() {
-    const data = {
-      email: userData.email,
-      password: userData.password,
-      type: userType
-    };
+  function signUp() {
+    const data = { ...userData, type: userType };
 
-    axios.post('/api/auth/login', data)
+    axios.post('/api/TB_ADVERTISER/signup', data)
       .then((res) => {
         if (res.data.code === 200) {
           console.log(res);
@@ -129,7 +103,7 @@ function LoginDialog({
     const payload = validateCheck(userData);
     if (payload.success) {
       setErrors({});
-      logIn();
+      signUp();
     } else {
       const errorsObj = payload.errors;
       setErrors(errorsObj);
@@ -153,6 +127,14 @@ function LoginDialog({
               <TextField id="component-password" label="Password" name="password" value={userData.password} onChange={handleChange} error={errors.password} helperText={errors.password ? errors.password : ' '} />
             </FormControl>
 
+            <FormControl className="signUpFormElement">
+              <TextField id="component-passwordConfirm" label="Confirm Password" name="passwordConfirm" value={userData.passwordConfirm} onChange={handleChange} error={errors.pwconfirm} helperText={errors.pwconfirm ? errors.pwconfirm : ' '} />
+            </FormControl>
+
+            <FormControl className="signUpFormElement">
+              <TextField id="component-name" label="Name" name="name" value={userData.name} onChange={handleChange} error={errors.name} helperText={errors.name ? errors.name : ' '} />
+            </FormControl>
+
             <div className="error-message">{errors.message}</div>
           </Grid>
 
@@ -165,10 +147,10 @@ function LoginDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={closeDialog} color="primary">
-          Cancel
+            Cancel
         </Button>
         <Button onClick={handleClick} color="primary">
-          Log In
+            Log In
         </Button>
       </DialogActions>
     </Dialog>
@@ -176,15 +158,4 @@ function LoginDialog({
 }
 
 
-export default LogInComponent;
-
-
-// <KakaoLogin
-//             jsKey="621ae47398f559dd7479aaba4b841c4b"
-//             onSuccess={result => responseKakao(result)}
-//             onFailure={result => console.log(result)}
-//             /*render={props => (
-//                 <div onClick={props.onClick}>KAKAO LOGIN</div>
-//             )}*/
-//   // getProfile="true"
-//   />
+export default SignUpComponent;

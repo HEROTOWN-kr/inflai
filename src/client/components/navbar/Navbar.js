@@ -18,6 +18,7 @@ import { Drawer, Hidden } from '@material-ui/core';
 import KakaoLogin from 'react-kakao-login';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
+import SignUpComponent from '../login/SignUpComponent';
 // import NaverLogin from "react-naver-login";
 
 
@@ -128,8 +129,7 @@ export default function CustomNavbar(props) {
                 </Link>
               ))}
               <LogInComponent {...props} />
-
-                {/*<div id="naverIdLogin"></div>*/}
+              <SignUpComponent {...props} />
 
             </Grid>
             <Grid container xs={4} justify="flex-end">

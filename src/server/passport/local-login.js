@@ -1,86 +1,95 @@
 const jwt = require('jsonwebtoken');
 // const User = require('mongoose').model('User');
-var User = require('../models').TB_MEMBER;
 const PassportLocalStrategy = require('passport-local').Strategy;
 const config = require('../config');
+const Advertiser = require('../models').TB_ADVERTISER;
+const Influenser = require('../models').TB_INFLUENCER;
 
 
 /**
  * Return the Passport Local Strategy object.
  */
 module.exports = new PassportLocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password',
-    session: false,
-    passReqToCallback: true
+  usernameField: 'email',
+  passwordField: 'password',
+  session: false,
+  passReqToCallback: true
 }, (req, email, password, done) => {
-    const userData = {
-        email: email.trim(),
-        password: password.trim()
-    };
+  const { type } = req.body;
 
-    // find a user by email address
-    return User.findOne({
-        where: {MEM_EMAIL: userData.email}
-    }).then(user => {
-            /*console.log(user);
-            console.log(user.get({ raw: true }));
-            console.log(user.get({ plain: true }));*/
-            if (!user) {
-                const error = new Error('Incorrect email or password');
-                error.name = 'IncorrectCredentialsError';
+  const userData = {
+    email: email.trim(),
+    password: password.trim()
+  };
 
-                return done(error);
-            }
+  // find a user by email address
+  if (type === '1') {
+    return Advertiser.findOne({
+      where: { ADV_EMAIL: userData.email }
+    }).then((user) => {
+      if (!user) {
+        const error = new Error('Incorrect email or password');
+        error.name = 'IncorrectCredentialsError';
 
-            // check if a hashed user's password is equal to a value saved in the database
-            /*return user.comparePassword(userData.password, (passwordErr, isMatch) => {
-                if (err) { return done(err); }
+        return done(error);
+      }
 
-                if (!isMatch) {
-                    const error = new Error('Incorrect email or password');
-                    error.name = 'IncorrectCredentialsError';
+      return Advertiser.options.instanceMethods.validPassword(userData.password, user.dataValues.ADV_PASS, (passwordErr, isMatch) => {
+        if (passwordErr) { return done(passwordErr); }
 
-                    return done(error);
-                }
+        if (!isMatch) {
+          const error = new Error('Incorrect email or password');
+          error.name = 'IncorrectCredentialsError';
 
-                const payload = {
-                    sub: user._id
-                };
-
-                // create a token string
-                const token = jwt.sign(payload, config.jwtSecret);
-                const data = {
-                    name: user.name
-                };
-
-                return done(null, token, data);
-            });*/
-
-            return user._modelOptions.instanceMethods.validPassword(userData.password, user.dataValues.MEM_PASS, (passwordErr, isMatch) => {
-                if (passwordErr) { return done(passwordErr); }
-
-                if (!isMatch) {
-                    const error = new Error('Incorrect email or password');
-                    error.name = 'IncorrectCredentialsError';
-
-                    return done(error);
-                }
-
-                const payload = {
-                    sub: user.dataValues.MEM_ID
-                };
-
-                // create a token string
-                const token = jwt.sign(payload, config.jwtSecret);
-                const data = {
-                    id: user.dataValues.MEM_ID
-                };
-
-                return done(null, token, data);
-            });
+          return done(error);
         }
-    ).catch(err => {
-        return done(err);
+
+        const payload = {
+          sub: user.dataValues.ADV_ID
+        };
+
+        // create a token string
+        const token = jwt.sign(payload, config.jwtSecret);
+        const data = {
+          id: user.dataValues.ADV_ID
+        };
+
+        return done(null, token, data);
+      });
+    }).catch(err => done(err));
+  }
+
+  return Influenser.findOne({
+    where: { INF_EMAIL: userData.email }
+  }).then((user) => {
+    if (!user) {
+      const error = new Error('Incorrect email or password');
+      error.name = 'IncorrectCredentialsError';
+
+      return done(error);
+    }
+
+    return Influenser.options.instanceMethods.validPassword(userData.password, user.dataValues.INF_PASS, (passwordErr, isMatch) => {
+      if (passwordErr) { return done(passwordErr); }
+
+      if (!isMatch) {
+        const error = new Error('Incorrect email or password');
+        error.name = 'IncorrectCredentialsError';
+
+        return done(error);
+      }
+
+      const payload = {
+        sub: user.dataValues.INF_ID
+      };
+
+      // create a token string
+      const token = jwt.sign(payload, config.jwtSecret);
+      const data = {
+        id: user.dataValues.INF_ID
+      };
+
+      return done(null, token, data);
     });
+  }).catch(err => done(err));
 });
