@@ -46,6 +46,7 @@ app.use('/attach', express.static('/home/inflai/upload/attach/'));
 
 app.use('/auth', require('./routes/auth'));
 app.use('/TB_ADVERTISER', require('./routes/TB_ADVERTISER'));
+app.use('/testRoute', require('./routes/testRoute'));
 
 
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`));

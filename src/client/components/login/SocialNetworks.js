@@ -4,6 +4,12 @@ import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import NaverLogin from 'react-naver-login';
 import axios from 'axios';
+import SocialButton from './SocialButton';
+import NaverIcon from '../../img/naver-icon.png';
+import KakaoIcon from '../../img/kakao-logo.png';
+import GoogleIcon from '../../img/google-logo.png';
+import FacebookIcon from '../../img/facebook-logo.png';
+
 
 function SocialNetworks({
   userType,
@@ -137,22 +143,25 @@ function SocialNetworks({
 
   return (
     <React.Fragment>
-      <Grid container justify="center">
+      {/*<Grid container justify="center">
         <GoogleLogin
           clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID
           buttonText="LOGIN WITH GOOGLE"
           onSuccess={responseGoogle}
           onFailure={responseGoogle}
+          render={renderProps => (
+            <div onClick={renderProps.onClick} disabled={renderProps.disabled}>This is my custom Google button</div>
+          )}
         />
-      </Grid>
+      </Grid>*/}
 
-      <Grid container justify="center">
-        {/* <FacebookLogin
+      {/* <Grid container justify="center">
+         <FacebookLogin
               appId="139193384125564" // APP ID NOT CREATED YET
               fields="name,email,picture"
               callback={responseFacebook}
               // cssClass="facebook-button"
-            /> */}
+            />
         <FacebookLogin
           appId="139193384125564"
           autoLoad
@@ -163,9 +172,9 @@ function SocialNetworks({
           )}
         />
 
-      </Grid>
+      </Grid> */}
 
-      <Grid container justify="center">
+      {/* <Grid container justify="center">
         <NaverLogin
           clientId="4rBF5bJ4y2jKn0gHoSCf"
                 // callbackUrl="http://127.0.0.1:3000/login"
@@ -174,11 +183,51 @@ function SocialNetworks({
           onSuccess={result => responseNaver(result)}
           onFailure={result => responseNaver(result)}
         />
+      </Grid> */}
+
+      <Grid container justify="center">
+        <GoogleLogin
+          clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID
+          buttonText="LOGIN WITH GOOGLE"
+          onSuccess={responseGoogle}
+          onFailure={responseGoogle}
+          render={renderProps => (
+            <SocialButton clicked={renderProps.onClick} icon={GoogleIcon} text="구글 로그인" bgColor="#4285F4" textColor="#ffffff" />
+          )}
+        />
       </Grid>
 
       <Grid container justify="center">
-        <div onClick={kakaoLoginForm} className="social-login-button kakao" />
+        <FacebookLogin
+          appId="139193384125564"
+          autoLoad
+          fields="name,email,picture"
+          callback={responseFacebook}
+          render={renderProps => (
+            <SocialButton clicked={renderProps.onClick} icon={FacebookIcon} text="페이스북 로그인" bgColor="#3B5998" textColor="#FFFFFF" />
+          )}
+        />
+
       </Grid>
+
+      <Grid container justify="center">
+        <NaverLogin
+          clientId="4rBF5bJ4y2jKn0gHoSCf"
+            // callbackUrl="http://127.0.0.1:3000/login"
+          callbackUrl="http://127.0.0.1:3000/login"
+          render={props => <SocialButton clicked={props.onClick} icon={NaverIcon} text="네이버 로그인" bgColor="#00CE38" textColor="#FFFFFF" />}
+          onSuccess={result => responseNaver(result)}
+          onFailure={result => responseNaver(result)}
+        />
+      </Grid>
+
+      <Grid container justify="center">
+        <SocialButton clicked={kakaoLoginForm} icon={KakaoIcon} text="카카오 로그인" bgColor="#F7E317" textColor="#3C1E1E" />
+      </Grid>
+
+      {/* <Grid container justify="center">
+        <div onClick={kakaoLoginForm} className="social-login-button kakao" />
+      </Grid> */}
     </React.Fragment>
   );
 }

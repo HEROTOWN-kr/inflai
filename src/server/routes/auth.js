@@ -219,7 +219,7 @@ router.post('/login', (req, res, next) => {
       return res.json({
         code: 400,
         success: false,
-        message: 'Could not process the form.'
+        message: 'User not exist'
       });
     }
 
@@ -228,8 +228,9 @@ router.post('/login', (req, res, next) => {
       code: 200,
       success: true,
       message: 'You have successfully logged in!',
-      token,
-      user: userData
+      userToken: token,
+      userName: userData.name,
+      social_type: 'noSocial'
     });
   })(req, res, next);
 });

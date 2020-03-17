@@ -51,7 +51,7 @@ module.exports = new PassportLocalStrategy({
         // create a token string
         const token = jwt.sign(payload, config.jwtSecret);
         const data = {
-          id: user.dataValues.ADV_ID
+          name: user.dataValues.ADV_NAME
         };
 
         return done(null, token, data);
@@ -86,7 +86,7 @@ module.exports = new PassportLocalStrategy({
       // create a token string
       const token = jwt.sign(payload, config.jwtSecret);
       const data = {
-        id: user.dataValues.INF_ID
+        name: user.dataValues.INF_NAME
       };
 
       return done(null, token, data);

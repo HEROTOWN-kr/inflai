@@ -35,7 +35,8 @@ function LogOutButton(props) {
             buttonText="Logout"
             onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
           />,
-          kakao: <button onClick={kakaoLogOut}>Logout</button>
+          kakao: <button onClick={kakaoLogOut}>Logout</button>,
+          noSocial: <button onClick={e => props.changeUser({ token: null, name: '', social_type: '' })}>LogoutSample</button>
         }[props.user.social_type]
       }
     </React.Fragment>
@@ -91,13 +92,17 @@ function LoginDialog({
     };
 
     if (!data.password) {
-      payload.errors.password = 'Please provide a password.';
+      payload.errors.password = '비밀번호를 입력해 주세요';
     } else if (data.password.length < 8) {
-      payload.errors.password = 'Password must have at least 8 characters.';
+      payload.errors.password = '비밀번호는 8자 이상이어야합니다';
     }
 
     if (!data.email) {
-      payload.errors.email = 'Please provide an email.';
+      payload.errors.email = '이메일을 입력해 주세요';
+    }
+
+    if (!userType) {
+      payload.errors.type = '회원 직무를 선택해 주세요';
     }
 
     payload.success = Object.entries(payload.errors).length === 0 && payload.errors.constructor === Object;
@@ -115,11 +120,17 @@ function LoginDialog({
     axios.post('/api/auth/login', data)
       .then((res) => {
         if (res.data.code === 200) {
-          console.log(res);
+          changeUser({
+            social_type: res.data.social_type,
+            type: userType,
+            token: res.data.userToken,
+            name: res.data.userName,
+          });
+          closeDialog();
         } else if (res.data.code === 401) {
           setErrors({ message: res.data.message });
         } else {
-          console.log(res);
+          setErrors({ message: res.data.message });
         }
       })
       .catch(error => (error));
@@ -136,6 +147,11 @@ function LoginDialog({
     }
   }
 
+  function closeDialogButton() {
+    setErrors({});
+    closeDialog();
+  }
+
   return (
     <Dialog open={openDialog} className="login-dialog">
       <DialogTitle>Log In</DialogTitle>
@@ -144,7 +160,10 @@ function LoginDialog({
           <UserType userType={userType} changeUserType={changeUserType} />
         </Grid>
         <Grid container justify="center">
-          <Grid item xs={6}>
+          <div className="error-message mb-10">{errors.type}</div>
+        </Grid>
+        <Grid container>
+          <Grid container xs={6} justify="center">
             <FormControl className="signUpFormElement">
               <TextField id="component-email" label="Email" name="email" value={userData.email} onChange={handleChange} error={errors.email} helperText={errors.email ? errors.email : ' '} />
             </FormControl>
@@ -156,7 +175,7 @@ function LoginDialog({
             <div className="error-message">{errors.message}</div>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={6} className="social-networks">
             <SocialNetworks userType={userType} changeUser={changeUser} closeDialog={closeDialog} />
           </Grid>
 
@@ -164,7 +183,7 @@ function LoginDialog({
         <div className="error-message">{null}</div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeDialog} color="primary">
+        <Button onClick={closeDialogButton} color="primary">
           Cancel
         </Button>
         <Button onClick={handleClick} color="primary">

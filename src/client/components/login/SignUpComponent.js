@@ -56,26 +56,28 @@ function SignUpDialog({
     };
 
     if (data.password !== data.passwordConfirm) {
-      payload.errors.pwconfirm = 'Password confirmation doesn\'t match.';
-    }
-
-
-    if (!data.password) {
-      payload.errors.password = 'Please provide a password.';
-    } else if (data.password.length < 8) {
-      payload.errors.password = 'Password must have at least 8 characters.';
+      payload.errors.pwconfirm = '비밀번호 확인이 일치하지 않습니다.';
     }
 
     if (!data.passwordConfirm) {
-      payload.errors.pwconfirm = 'Please confirm the password.';
+      payload.errors.pwconfirm = '비밀번호를 확인하십시오';
+    }
+
+    if (!data.password) {
+      payload.errors.password = '비밀번호를 입력해 주세요';
+    } else if (data.password.length < 8) {
+      payload.errors.password = '비밀번호는 8자 이상이어야합니다';
     }
 
     if (!data.email) {
-      payload.errors.email = 'Please provide an email.';
+      payload.errors.email = '이메일을 입력해 주세요';
     }
 
+    if (!userType) {
+      payload.errors.type = '회원 직무를 선택해 주세요';
+    }
     if (!data.name) {
-      payload.errors.name = 'Please provide a name.';
+      payload.errors.name = '이름을 입력해 주세요';
     }
 
     payload.success = Object.entries(payload.errors).length === 0 && payload.errors.constructor === Object;
@@ -110,12 +112,20 @@ function SignUpDialog({
     }
   }
 
+  function closeDialogButton() {
+    setErrors({});
+    closeDialog();
+  }
+
   return (
     <Dialog open={openDialog} className="login-dialog">
-      <DialogTitle>Log In</DialogTitle>
+      <DialogTitle>Sign Up</DialogTitle>
       <DialogContent className="signUpContent">
         <Grid container justify="center">
           <UserType userType={userType} changeUserType={changeUserType} />
+        </Grid>
+        <Grid container justify="center">
+          <div className="error-message mb-10">{errors.type}</div>
         </Grid>
         <Grid container justify="center">
           <Grid item xs={6}>
@@ -138,7 +148,7 @@ function SignUpDialog({
             <div className="error-message">{errors.message}</div>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={6} className="social-networks">
             <SocialNetworks userType={userType} changeUser={changeUser} closeDialog={closeDialog} />
           </Grid>
 
@@ -146,11 +156,11 @@ function SignUpDialog({
         <div className="error-message">{null}</div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeDialog} color="primary">
+        <Button onClick={closeDialogButton} color="primary">
             Cancel
         </Button>
         <Button onClick={handleClick} color="primary">
-            Log In
+            SignUp
         </Button>
       </DialogActions>
     </Dialog>

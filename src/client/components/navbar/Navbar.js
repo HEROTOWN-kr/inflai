@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import axios from 'axios';
+
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -103,6 +105,37 @@ export default function CustomNavbar(props) {
     </div>
   );
 
+  function twitchLogin() {
+    /* fetch('https://id.twitch.tv/oauth2/authorize',
+      {
+        headers: {
+          client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
+          redirect_uri: 'http://localhost:8080/testRoute/twiterTest',
+          response_type: 'code',
+          scope: 'user:edit+user:read:email',
+        }
+      })
+      .then(resp => console.log(resp)); */
+    /* .then((resp) => { console.log(resp); })
+      .catch((err) => { console.log(err); }); */
+
+    axios.get('https://id.twitch.tv/oauth2/authorize', {
+      params: {
+        client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
+        redirect_uri: 'http://localhost:8080/testRoute/twiterTest',
+        response_type: 'code',
+        scope: 'user:edit+user:read:email',
+      }
+    }).then((res) => {
+      console.log(res);
+    });
+  }
+
+  function test(e) {
+    // e.preventDefault();
+  }
+
+
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
@@ -130,6 +163,16 @@ export default function CustomNavbar(props) {
               ))}
               <LogInComponent {...props} />
               <SignUpComponent {...props} />
+
+              {/*<Button onClick={twitchLogin}>TwitchLogin</Button>
+              <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
+                Sign In
+              </a>
+
+              <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email">
+                SignInLocal
+              </a>*/}
+
 
             </Grid>
             <Grid container xs={4} justify="flex-end">

@@ -5,6 +5,10 @@ $white: #ffffff;
 
 .error-message {
   color: red;
+  &.mb-10 {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
 }
 
 .navbar {
@@ -91,7 +95,7 @@ $white: #ffffff;
         margin-bottom: 20px;
       }
       .MuiFormGroup-root {
-        margin-bottom: 26px;
+        //margin-bottom: 26px;
       }
     }
     .social-login-button {
@@ -121,6 +125,29 @@ $white: #ffffff;
         background-image: url("../img/naver-login.png");
         margin: 10px 0;
       }
+    }
+  }
+  .social-networks {
+    .main-container {
+      height: 50px;
+      width: 222px;
+      border-radius: 5px;
+      margin: 2px 0;
+      &:hover {
+        cursor: pointer;
+        opacity: 0.9;
+      }
+    }
+    .button-icon {
+      padding: 6px 0 0 11px;
+      img {
+        height: 40px;
+        width: 40px;
+        border-radius: 100%;
+      }
+    }
+    .button-text {
+      font-weight: bold;
     }
   }
 }
