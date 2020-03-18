@@ -17,12 +17,33 @@ import SocialNetworks from './SocialNetworks';
 import UserType from './UserType';
 
 
+import Common from '../../lib/common';
+
 function LogOutButton(props) {
   const kakaoLogOut = (e) => {
     e.preventDefault();
     window.Kakao.Auth.logout((res) => {
       props.changeUser({ token: null, name: '', social_type: '' });
     });
+  };
+
+  const twitchLogOut = (e) => {
+    e.preventDefault();
+    const token = Common.getToken();
+    if (token) {
+      // POST https://id.twitch.tv/oauth2/revoke?client_id=uo6dggojyb8d6soh92zknwmi5ej1q2&token=0123456789abcdefghijABCDEFGHIJ
+      axios.post('https://id.twitch.tv/oauth2/revoke', {}, {
+        headers: {
+          client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
+          token: 'hc632de3r22mvr6dze94t17rozb3lw'
+        }
+      }).then((res) => {
+        // console.log(res);
+        if (res) {
+          console.log(res);
+        }
+      });
+    }
   };
 
   return (
@@ -36,6 +57,7 @@ function LogOutButton(props) {
             onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
           />,
           kakao: <button onClick={kakaoLogOut}>Logout</button>,
+          twitch: <button onClick={twitchLogOut}>Logout</button>,
           noSocial: <button onClick={e => props.changeUser({ token: null, name: '', social_type: '' })}>LogoutSample</button>
         }[props.user.social_type]
       }

@@ -331,6 +331,72 @@ router.get('/loginKakao', (req, res) => {
   }
 });
 
+router.get('/loginTwitch', (req, res) => {
+  const {
+    id, email, name, type, social_type
+  } = req.query;
+
+  const payload = {
+    sub: id
+  };
+
+  const token = jwt.sign(payload, config.jwtSecret);
+
+
+  if (type === '1') {
+    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
+      if (!result) {
+        Advertiser.create({
+          ADV_NAME: name,
+          ADV_EMAIL: email,
+          ADV_REG_ID: id
+        }).then((result) => {
+          res.json({
+            code: 200,
+            userName: result.dataValues.ADV_NAME,
+            social_type
+          });
+        });
+      } else {
+        res.json({
+          code: 200,
+          userToken: token,
+          userName: result.dataValues.ADV_NAME,
+          social_type
+        });
+      }
+    }).error((err) => {
+      res.send('error has occured');
+    });
+  } else {
+    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
+      if (!result) {
+        Influenser.create({
+          INF_NAME: name,
+          INF_EMAIL: email,
+          INF_REG_ID: id
+        }).then((result) => {
+          res.json({
+            code: 200,
+            userToken: token,
+            userName: result.dataValues.INF_NAME,
+            social_type
+          });
+        });
+      } else {
+        res.json({
+          code: 200,
+          userToken: token,
+          userName: result.dataValues.INF_NAME,
+          social_type
+        });
+      }
+    }).error((err) => {
+      res.send('error has occured');
+    });
+  }
+});
+
 router.post('/signup', (req, res) => {
   const data = req.body;
   const { type } = data;

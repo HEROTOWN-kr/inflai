@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +22,8 @@ import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
 // import NaverLogin from "react-naver-login";
+
+
 
 
 const useStyles = makeStyles(theme => ({
@@ -56,6 +58,68 @@ export default function CustomNavbar(props) {
   const classes = useStyles();
 
   const [openMenu, setOpenMenu] = React.useState(false);
+
+  const { hash } = document.location;
+
+  function getTwitchInfo(hash) {
+    const decodedURL = decodeURIComponent(hash);
+    const urlObj = parseParms(decodedURL.slice(1));
+    // console.log(urlObj);
+    const twitchToken = urlObj.access_token;
+    const header = `Bearer ${twitchToken}`;
+
+    axios.get('https://api.twitch.tv/helix/users', {
+      headers: { Authorization: header }
+    }).then((res) => {
+      // console.log(res);
+      if (res.data) {
+        axios.get('/api/TB_ADVERTISER/loginTwitch', {
+          params: {
+            id: res.data.data[0].id,
+            email: res.data.data[0].email,
+            name: res.data.data[0].display_name,
+            type: '2',
+            social_type: 'twitch'
+          }
+        }).then((res) => {
+          console.log(res);
+          props.changeUser({
+            social_type: res.data.social_type,
+            type: '2',
+            token: res.data.userToken,
+            name: res.data.userName,
+          });
+        });
+      }
+    });
+
+    /* axios.get('/api/testRoute/twiterTest3', {
+      params: urlObj
+    }).then((res) => {
+      console.log(res);
+    }); */
+  }
+
+  useEffect(() => {
+    if (hash) {
+      getTwitchInfo(hash);
+    }
+  }, []);
+
+  function parseParms(str) {
+    const pieces = str.split('&'); const data = {}; let i; let
+      parts;
+    // process each query pair
+    for (i = 0; i < pieces.length; i++) {
+      parts = pieces[i].split('=');
+      if (parts.length < 2) {
+        parts.push('');
+      }
+      data[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+    }
+    return data;
+  }
+
 
   const menuLinks = [
     {
@@ -164,14 +228,14 @@ export default function CustomNavbar(props) {
               <LogInComponent {...props} />
               <SignUpComponent {...props} />
 
-              {/*<Button onClick={twitchLogin}>TwitchLogin</Button>
-              <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
+              {/* <Button onClick={twitchLogin}>TwitchLogin</Button> */}
+              {/* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
                 Sign In
-              </a>
+              </a> */}
 
               <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email">
                 SignInLocal
-              </a>*/}
+              </a>
 
 
             </Grid>

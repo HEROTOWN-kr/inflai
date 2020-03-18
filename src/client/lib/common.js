@@ -13,6 +13,10 @@ class Common {
     return localStorage.getItem('userType') ? localStorage.getItem('userType') : '';
   }
 
+  static getToken() {
+    return localStorage.getItem('token') ? localStorage.getItem('token') : '';
+  }
+
   static saveUserInfo(data) {
     const dataObj = JSON.stringify(data);
     localStorage.setItem('userInfo', dataObj);

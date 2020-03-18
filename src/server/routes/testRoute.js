@@ -179,6 +179,31 @@ router.get('/twiterTest2', (req, res) => {
   });
 });
 
+router.get('/twiterTest3', (req, res) => {
+  const { access_token } = req.query;
+  const header = `Bearer ${access_token}`;
+
+  const apiUrl = 'https://api.twitch.tv/helix/users';
+  const options = {
+    url: apiUrl,
+    headers: { Authorization: header }
+  };
+  request.get(options, (error, requestResponse, responseBody) => {
+    if (!error && requestResponse.statusCode == 200) {
+      // res.json(responseBody);
+      res.json(JSON.parse(responseBody));
+      /* res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
+                  res.end(body); */
+    } else {
+      console.log('error');
+      if (response != null) {
+        res.status(response.statusCode).end();
+        console.log(`error = ${response.statusCode}`);
+      }
+    }
+  });
+});
+
 router.get('/test2', (req, res) => {
   console.log('getting all advertisers');
   Advertiser.findAll().then((result) => {
