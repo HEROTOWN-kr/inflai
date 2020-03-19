@@ -498,8 +498,19 @@ $colorSoftBlue: #7491B4;
     .second-title {
       font-size: 26px;
       color: #898F97;
+      margin: 20px 0 100px 0;
     }
 
+  }
+  .youtube {
+    .youtube-title {
+      font-size: 25px;
+      font-weight: bold;
+    }
+    ul {
+      padding-left: 17px;
+      color: #929490;
+    }
   }
   .userInfo-form {
     margin-top: 40px;
@@ -508,7 +519,7 @@ $colorSoftBlue: #7491B4;
       margin: 15px 0 5px 0;
     }
     input[type=text], input[type=email], select {
-      width: -webkit-fill-available;
+      width: 300px;
       height: 33px;
       border: 1px solid $colorSoftBlue;
       border-radius: 7px;
@@ -517,14 +528,41 @@ $colorSoftBlue: #7491B4;
       &:focus {
         border: 2px solid $colorSoftBlue;
       }
+      &.social-count {
+        width: 105px;
+      }
     }
+    select {
+      width: 225px;
+      margin-right: 4px;
+    }
+
     input[type=checkbox] {
       margin-top: 20px;
     }
     .policy {
       color: #929490;
     }
+    .field-item {
+      margin-bottom: 5px;
+    }
   }
+  .plus-button{
+    border-radius: 12px;
+    margin-left: 10px;
+    min-width: 0;
+    position: relative;
+    bottom: 1px;
+    font-size: 15px;
+  }
+  .minus-button {
+    border-radius: 12px;
+    margin-left: 10px;
+    min-width: 0;
+    font-size: 21px;
+    padding: 0px 17px;
+  }
+
   .submit-button {
     margin-top: 18px;
     border: 2px solid $colorSoftBlue;

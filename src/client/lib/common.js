@@ -21,6 +21,10 @@ class Common {
     const dataObj = JSON.stringify(data);
     localStorage.setItem('userInfo', dataObj);
   }
+
+  static saveUserToken(data) {
+    localStorage.setItem('token', data);
+  }
 }
 
 export default Common;

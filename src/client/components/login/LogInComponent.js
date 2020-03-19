@@ -31,13 +31,13 @@ function LogOutButton(props) {
     e.preventDefault();
     const token = Common.getToken();
     if (token) {
+      const url = `https://id.twitch.tv/oauth2/revoke?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&token=${token}`;
       // POST https://id.twitch.tv/oauth2/revoke?client_id=uo6dggojyb8d6soh92zknwmi5ej1q2&token=0123456789abcdefghijABCDEFGHIJ
-      axios.post('https://id.twitch.tv/oauth2/revoke', {}, {
-        headers: {
+      axios.post(url
+        /*{
           client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
           token: 'hc632de3r22mvr6dze94t17rozb3lw'
-        }
-      }).then((res) => {
+        }*/).then((res) => {
         // console.log(res);
         if (res) {
           console.log(res);

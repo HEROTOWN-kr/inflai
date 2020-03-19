@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
-
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,17 +12,14 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-// import Link from '@material-ui/core/Link';
 import { Link } from 'react-router-dom';
-
 import { Drawer, Hidden } from '@material-ui/core';
 import KakaoLogin from 'react-kakao-login';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
+import Common from '../../lib/common';
 // import NaverLogin from "react-naver-login";
-
-
 
 
 const useStyles = makeStyles(theme => ({
@@ -66,6 +62,7 @@ export default function CustomNavbar(props) {
     const urlObj = parseParms(decodedURL.slice(1));
     // console.log(urlObj);
     const twitchToken = urlObj.access_token;
+    Common.saveUserToken(twitchToken);
     const header = `Bearer ${twitchToken}`;
 
     axios.get('https://api.twitch.tv/helix/users', {
