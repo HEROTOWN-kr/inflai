@@ -464,6 +464,7 @@ $colorSoftBlue: #7491B4;
 }
 
 .advertiser-page {
+  color: $colorSoftBlue;
   .container {
     max-width: 256px;
     margin: 0 auto;
@@ -484,6 +485,7 @@ $colorSoftBlue: #7491B4;
 
     }
   }
+
 }
 
 .influencer-page {
@@ -530,6 +532,11 @@ $colorSoftBlue: #7491B4;
       }
       &.social-count {
         width: 105px;
+        margin: 4px 0;
+      }
+      &.selected-category {
+        width: 200px;
+        margin: 0 10px;
       }
     }
     select {

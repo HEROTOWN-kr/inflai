@@ -230,9 +230,9 @@ export default function CustomNavbar(props) {
                 Sign In
               </a> */}
 
-              <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email">
+              {/*<a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email">
                 SignInLocal
-              </a>
+              </a>*/}
 
 
             </Grid>

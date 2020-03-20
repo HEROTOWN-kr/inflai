@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -22,6 +22,7 @@ import {
 import YouTube from 'react-youtube';
 import { Button } from '@material-ui/core';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
+import AdvertiserForm from './AdvertiserForm';
 
 
 const AdvertiserStyles = {
@@ -82,6 +83,8 @@ function Advertiser() {
       </Grid>
     </div>
   ); */
+
+
   const opts = {
     height: '390',
     // maxWidth: '3000px',
@@ -97,6 +100,7 @@ function Advertiser() {
     'Thorough advice on gow to use Matchmade most efficiently.',
     'Personal, human contact'
   ];
+
 
   const SignupSchema = Yup.object().shape({
     jobType: Yup.string()
@@ -199,7 +203,7 @@ function Advertiser() {
 
 
   return (
-    <Grid container className="influencer-page wraper three">
+    <Grid container className="influencer-page advertiser-page wraper three">
       {/* <Grid item md={9} className="greeting-content2">
         <div style={{margin: '600px 0'}}></div>
       </Grid> */}
@@ -229,7 +233,7 @@ function Advertiser() {
       </Grid>
       <Grid container xs={6}>
         <Grid container xs={6}>
-          <Formik
+          {/* <Formik
             initialValues={{
               jobType: '',
               companyName: '',
@@ -266,7 +270,6 @@ function Advertiser() {
                 </label>
                 <Field name="jobType" as="select" placeholder="select job type">
                   <option value="advertiser">Advertiser</option>
-                  <option value="marketer">Marketer</option>
                   <option value="agency">Agency</option>
                   <option value="" label="Select job type" />
                 </Field>
@@ -305,7 +308,7 @@ function Advertiser() {
                   />
                   <Field
                     component={RadioButton}
-                    name="radioGroup"
+                    name="budget"
                     id="radioOption3"
                     label="1.000.000 ~ 5.000.000"
                   />
@@ -316,37 +319,52 @@ function Advertiser() {
                     label="5.000.000 ~"
                   />
                 </RadioButtonGroup>
+                <label htmlFor="budget" style={{ display: 'block' }}>
+                      몇 명의 인플루언서가 팔요한가요?
+                </label>
                 <Grid container>
-                  <Grid item xs={3}>
-                    인스타그램
+                  <Grid container direction="column" justify="center" xs={3}>
+                    <Grid item>
+                          인스타그램
+                    </Grid>
                   </Grid>
                   <Grid item xs={4}>
                     <Field name="instagram" type="email" className="social-count" />
                   </Grid>
-                  <Grid>
-                        명
+                  <Grid container xs={5} direction="column" justify="center">
+                    <Grid item>
+                            명
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid container>
-                  <Grid item xs={3}>
-                    유튜브
+                  <Grid container direction="column" justify="center" xs={3}>
+                    <Grid item>
+                            유튜브
+                    </Grid>
                   </Grid>
                   <Grid item xs={4}>
                     <Field name="youtube" type="email" className="social-count" />
                   </Grid>
-                  <Grid>
-                        명
+                  <Grid container xs={5} direction="column" justify="center">
+                    <Grid item>
+                            명
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid container>
-                  <Grid item xs={3}>
-                    블로거
+                  <Grid container direction="column" justify="center" xs={3}>
+                    <Grid item>
+                            블로거
+                    </Grid>
                   </Grid>
                   <Grid item xs={4}>
                     <Field name="blog" type="email" className="social-count" />
                   </Grid>
-                  <Grid>
-                        명
+                  <Grid container xs={5} direction="column" justify="center">
+                    <Grid item>
+                            명
+                    </Grid>
                   </Grid>
                 </Grid>
 
@@ -359,12 +377,12 @@ function Advertiser() {
                 <label htmlFor="country" style={{ display: 'block' }}>
                       Country
                 </label>
-                {/* <Field name="country" as="select" placeholder="Favorite Color">
+                 <Field name="country" as="select" placeholder="Favorite Color">
                   <option value="red">Red</option>
                   <option value="green">Green</option>
                   <option value="blue">Blue</option>
                   <option value="" label="Select a country" />
-                </Field> */}
+                </Field>
                 <CountryDropdown
                   name="country"
                   value={values.country}
@@ -389,6 +407,8 @@ function Advertiser() {
                 <label htmlFor="product" style={{ display: 'block' }}>
                       Product
                 </label>
+                <Button variant="outlined" color="primary">선택</Button>
+
                 <Field name="product" type="text" />
                 {errors.product && touched.product ? <div className="error-message">{errors.product}</div> : null}
 
@@ -405,7 +425,8 @@ function Advertiser() {
                 </Grid>
               </Form>
             )}
-          </Formik>
+          </Formik> */}
+          <AdvertiserForm />
         </Grid>
         <Grid container xs={12}>
           <div className="policy">
