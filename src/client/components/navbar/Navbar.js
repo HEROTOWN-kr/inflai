@@ -183,12 +183,10 @@ export default function CustomNavbar(props) {
     axios.get('https://id.twitch.tv/oauth2/authorize', {
       params: {
         client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
-        redirect_uri: 'http://localhost:8080/testRoute/twiterTest',
-        response_type: 'code',
+        redirect_uri: 'http://localhost:3000',
+        response_type: 'token',
         scope: 'user:edit+user:read:email',
       }
-    }).then((res) => {
-      console.log(res);
     });
   }
 
@@ -225,14 +223,14 @@ export default function CustomNavbar(props) {
               <LogInComponent {...props} />
               <SignUpComponent {...props} />
 
-              {/* <Button onClick={twitchLogin}>TwitchLogin</Button> */}
+              <Button onClick={twitchLogin}>TwitchLogin</Button>
               {/* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
                 Sign In
               </a> */}
 
-              {/*<a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email">
+              <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true">
                 SignInLocal
-              </a>*/}
+              </a>
 
 
             </Grid>

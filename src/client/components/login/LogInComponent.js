@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import '../../css/sub.scss';
 
 import { Button, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
@@ -9,61 +10,10 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import FormControl from '@material-ui/core/FormControl';
 
-import { GoogleLogout } from 'react-google-login';
-
-
-import '../../css/sub.scss';
 import SocialNetworks from './SocialNetworks';
 import UserType from './UserType';
+import LogOutButton from './LogOutButton';
 
-
-import Common from '../../lib/common';
-
-function LogOutButton(props) {
-  const kakaoLogOut = (e) => {
-    e.preventDefault();
-    window.Kakao.Auth.logout((res) => {
-      props.changeUser({ token: null, name: '', social_type: '' });
-    });
-  };
-
-  const twitchLogOut = (e) => {
-    e.preventDefault();
-    const token = Common.getToken();
-    if (token) {
-      const url = `https://id.twitch.tv/oauth2/revoke?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&token=${token}`;
-      // POST https://id.twitch.tv/oauth2/revoke?client_id=uo6dggojyb8d6soh92zknwmi5ej1q2&token=0123456789abcdefghijABCDEFGHIJ
-      axios.post(url
-        /*{
-          client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
-          token: 'hc632de3r22mvr6dze94t17rozb3lw'
-        }*/).then((res) => {
-        // console.log(res);
-        if (res) {
-          console.log(res);
-        }
-      });
-    }
-  };
-
-  return (
-    <React.Fragment>
-      {
-        {
-          facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">LogOut</Button>,
-          google: <GoogleLogout
-            clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
-            buttonText="Logout"
-            onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
-          />,
-          kakao: <button onClick={kakaoLogOut}>Logout</button>,
-          twitch: <button onClick={twitchLogOut}>Logout</button>,
-          noSocial: <button onClick={e => props.changeUser({ token: null, name: '', social_type: '' })}>LogoutSample</button>
-        }[props.user.social_type]
-      }
-    </React.Fragment>
-  );
-}
 
 function LogInComponent(props) {
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -76,8 +26,8 @@ function LogInComponent(props) {
       <LoginDialog {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />
       {props.user.token
         ? (
-          <LogOutButton {...props} />)
-
+          <LogOutButton {...props} />
+        )
         : <Button onClick={toggleLoginDialog} className="login-button">LogIn</Button>
         }
     </div>
@@ -218,14 +168,3 @@ function LoginDialog({
 
 
 export default LogInComponent;
-
-
-// <KakaoLogin
-//             jsKey="621ae47398f559dd7479aaba4b841c4b"
-//             onSuccess={result => responseKakao(result)}
-//             onFailure={result => console.log(result)}
-//             /*render={props => (
-//                 <div onClick={props.onClick}>KAKAO LOGIN</div>
-//             )}*/
-//   // getProfile="true"
-//   />

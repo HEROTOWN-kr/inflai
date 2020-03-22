@@ -83,28 +83,6 @@ function SocialNetworks({
         } */
   };
 
-  const responseKakao = (response) => {
-    if (response) {
-      axios.get('/api/TB_ADVERTISER/loginKakao', {
-        params: {
-          id: response.profile.id,
-          email: response.profile.kakao_account.email,
-          name: response.profile.properties.nickname,
-          type: userType,
-          social_type: response.graphDomain
-        }
-      }).then((res) => {
-        changeUser({
-          social_type: res.data.social_type,
-          type: userType,
-          token: res.data.userToken,
-          name: res.data.userName,
-        });
-        closeDialog();
-      });
-    }
-  };
-
   const kakaoLoginForm = () => {
     window.Kakao.Auth.loginForm({
       success(authObj) {
