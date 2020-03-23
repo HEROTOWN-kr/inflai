@@ -270,11 +270,14 @@ router.get('/loginKakao', (req, res) => {
     id, email, name, type, social_type
   } = req.query;
 
-  const payload = {
-    sub: id
-  };
+  function createToken(id) {
+    const payload = {
+      sub: id
+    };
 
-  const token = jwt.sign(payload, config.jwtSecret);
+    const token = jwt.sign(payload, config.jwtSecret);
+    return token;
+  }
 
 
   if (type === '1') {
@@ -287,6 +290,7 @@ router.get('/loginKakao', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
+            userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
             social_type
           });
@@ -294,7 +298,7 @@ router.get('/loginKakao', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
           social_type
         });
@@ -312,7 +316,7 @@ router.get('/loginKakao', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: token,
+            userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
             social_type
           });
@@ -320,7 +324,7 @@ router.get('/loginKakao', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
           social_type
         });

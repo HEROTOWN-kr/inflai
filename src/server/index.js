@@ -46,6 +46,8 @@ app.use('/attach', express.static('/home/inflai/upload/attach/'));
 
 app.use('/auth', require('./routes/auth'));
 app.use('/TB_ADVERTISER', require('./routes/TB_ADVERTISER'));
+app.use('/TB_INFLUENCER', require('./routes/TB_INFLUENCER'));
+app.use('/TB_AD', require('./routes/TB_AD'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 

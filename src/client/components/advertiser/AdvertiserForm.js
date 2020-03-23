@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import * as Yup from 'yup';
 import classNames from 'classnames';
 import {
-  Field, FieldArray, Form, Formik
+  Field, FieldArray, Form, Formik, getIn, FieldProps, ErrorMessage
 } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
@@ -14,10 +14,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 import MUIDataTable from 'mui-datatables';
+import axios from 'axios';
+import Common from '../../lib/common';
 
 function AdvertiserForm() {
   const [categoryDialog, setCategoryDialog] = useState(false);
-  const [categoryList, setCategoryList] = useState(['']);
 
   const getMuiTheme = () => createMuiTheme({
     overrides: {
@@ -54,6 +55,7 @@ function AdvertiserForm() {
   ];
 
   const SignupSchema = Yup.object().shape({
+    category: Yup.array().of(Yup.string().required('category type is required')),
     jobType: Yup.string()
       .required('Job type is required'),
     companyName: Yup.string()
@@ -71,8 +73,6 @@ function AdvertiserForm() {
       .required('Region is required'),
     phone: Yup.string()
       .required('Phone is required'),
-    product: Yup.string()
-      .required('Product is required')
   });
 
   function categoryToggle() {
@@ -164,15 +164,25 @@ function AdvertiserForm() {
           email: '',
           country: '',
           region: '',
-          blogType: '',
           phone: '',
-          product: '',
           agreement: false
         }}
         validationSchema={SignupSchema}
         onSubmit={(values) => {
           // same shape as initial values
-          console.log(values);
+          const apiObj = { ...values, token: Common.getUserInfo().token };
+
+          axios.post('/api/TB_AD/saveAd', apiObj)
+            .then((res) => {
+              if (res.data.code === 200) {
+                console.log(res);
+              } else if (res.data.code === 401) {
+                console.log(res);
+              } else {
+                console.log(res);
+              }
+            })
+            .catch(error => (error));
         }}
       >
         {({
@@ -217,25 +227,25 @@ function AdvertiserForm() {
               <Field
                 component={RadioButton}
                 name="budget"
-                id="radioOption1"
+                id="1"
                 label="~ 500.000"
               />
               <Field
                 component={RadioButton}
                 name="budget"
-                id="radioOption2"
+                id="2"
                 label="500.000 ~ 1.000.000"
               />
               <Field
                 component={RadioButton}
                 name="budget"
-                id="radioOption3"
+                id="3"
                 label="1.000.000 ~ 5.000.000"
               />
               <Field
                 component={RadioButton}
                 name="budget"
-                id="radioOption4"
+                id="4"
                 label="5.000.000 ~"
               />
             </RadioButtonGroup>
@@ -249,7 +259,7 @@ function AdvertiserForm() {
                 </Grid>
               </Grid>
               <Grid item xs={4}>
-                <Field name="instagram" type="email" className="social-count" />
+                <Field name="instagram" type="number" className="social-count" />
               </Grid>
               <Grid container xs={5} direction="column" justify="center">
                 <Grid item>
@@ -264,7 +274,7 @@ function AdvertiserForm() {
                 </Grid>
               </Grid>
               <Grid item xs={4}>
-                <Field name="youtube" type="email" className="social-count" />
+                <Field name="youtube" type="number" className="social-count" />
               </Grid>
               <Grid container xs={5} direction="column" justify="center">
                 <Grid item>
@@ -279,7 +289,7 @@ function AdvertiserForm() {
                 </Grid>
               </Grid>
               <Grid item xs={4}>
-                <Field name="blog" type="email" className="social-count" />
+                <Field name="blog" type="number" className="social-count" />
               </Grid>
               <Grid container xs={5} direction="column" justify="center">
                 <Grid item>
@@ -324,8 +334,8 @@ function AdvertiserForm() {
             <Field name="phone" type="text" />
             {errors.phone && touched.phone ? <div className="error-message">{errors.phone}</div> : null}
 
-            <label htmlFor="product" style={{ display: 'block' }}>
-                          Product
+            <label htmlFor="category" style={{ display: 'block' }}>
+                          Category
             </label>
 
             <FieldArray
@@ -355,28 +365,36 @@ function AdvertiserForm() {
                     </DialogActions>
                   </Dialog>
                   {
-                              values.category.map((item, index) => (
-                                <div key={index} className="field-item">
-                                  <Button variant="outlined" color="primary" onClick={() => { values.categoryIndex = index; categoryToggle(); }}>선택</Button>
-                                  <Field name={`category.${index}`} type="text" className="selected-category" />
-                                  { values.category.length > 1
-                                    ? (
-                                      <Button variant="outlined" color="primary" onClick={() => arrayHelpers.remove(index)} className="minus-button">
-                                                  -
-                                      </Button>
+                      values.category.map((item, index) => (
+                        <div key={index} className="field-item">
+                          <Grid container={12}>
+                            <div className="place">{`${index + 1} 순위`}</div>
+                            <Grid container xs={6} justify="center">
+                              <div className="category-name">{values.category[index] ? values.category[index] : '카테고리를 선택'}</div>
+                            </Grid>
+                            <Button variant="outlined" color="primary" onClick={() => { values.categoryIndex = index; categoryToggle(); }}>선택</Button>
+                            { values.category.length > 1
+                              ? (
+                                <Button variant="outlined" color="primary" onClick={() => arrayHelpers.remove(index)} className="minus-button">
+                                      -
+                                </Button>
 
-                                    ) : null
-                                      }
-                                  { values.category.length < 3 && index === 0
-                                    ? (
-                                      <Button variant="outlined" color="primary" onClick={() => arrayHelpers.push('')} className="plus-button">
-                                                  +
-                                      </Button>
-                                    ) : null
-                                      }
-                                </div>
-                              ))
-                          }
+                              ) : null
+                            }
+                            { values.category.length < 3 && index === 0
+                              ? (
+                                <Button variant="outlined" color="primary" onClick={() => arrayHelpers.push('')} className="plus-button">
+                                      +
+                                </Button>
+                              ) : null
+                            }
+                          </Grid>
+                          <Grid style={{color: 'red'}}>
+                            <ErrorMessage name={`category.${index}`} />
+                          </Grid>
+                        </div>
+                      ))
+                  }
                 </div>
               )}
             />
@@ -395,6 +413,7 @@ function AdvertiserForm() {
             </Grid>
           </Form>
         )}
+
       </Formik>
 
     </React.Fragment>

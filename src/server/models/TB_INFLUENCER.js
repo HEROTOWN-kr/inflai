@@ -1,5 +1,4 @@
 /* jshint indent: 2 */
-const bcrypt = require('bcryptjs');
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('TB_INFLUENCER', {
@@ -27,7 +26,24 @@ module.exports = function(sequelize, DataTypes) {
     },
     INF_REG_ID: {
       type: DataTypes.STRING(200),
+      allowNull: false
+    },
+    INF_CHANNEL: {
+      type: DataTypes.STRING(45),
       allowNull: true
+    },
+    INF_COUNTRY: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    INF_PROD: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    INF_MESSAGE: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+      defaultValue: '0'
     },
     INF_DT: {
       type: 'TIMESTAMP',
@@ -35,17 +51,6 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
-    tableName: 'TB_INFLUENCER',
-    instanceMethods: {
-      generateHash(password) {
-        return bcrypt.hash(password, bcrypt.genSaltSync(8));
-      },
-      validPassword(password, hash, callback) {
-        return bcrypt.compare(password, hash, (err, res) => {
-          if (err) callback(err, null);
-          else callback(null, res);
-        });
-      }
-    }
+    tableName: 'TB_INFLUENCER'
   });
 };

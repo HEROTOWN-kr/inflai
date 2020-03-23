@@ -153,6 +153,34 @@ $colorSoftBlue: #7491B4;
   }
 }
 
+.new-login-dialog {
+  .MuiDialog-paper {
+    padding: 34px;
+    .title {
+      text-align: center;
+      h2 {
+        font-size: 36px;
+        line-height: 1.11;
+        color: #444041;
+      }
+    }
+    .error-message {
+      position: relative;
+
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.6;
+      color: #d0021b;
+    }
+    .MuiDialogContent-root {
+      padding: 4px;
+      .MuiFormControl-root {
+        width: 300px;
+      }
+    }
+  }
+}
+
 .greeting-content2 {
   background: #093c5e;
 
@@ -485,7 +513,16 @@ $colorSoftBlue: #7491B4;
 
     }
   }
-
+  .field-item {
+    .category-name {
+      padding-top: 7px;
+      color: #2793e6;
+    }
+    .category-error {
+      padding-left: 88px;
+      color: red;
+    }
+  }
 }
 
 .influencer-page {
@@ -520,7 +557,7 @@ $colorSoftBlue: #7491B4;
       color: #7491B4;
       margin: 15px 0 5px 0;
     }
-    input[type=text], input[type=email], select {
+    input[type=text], input[type=email], input[type=number], select {
       width: 300px;
       height: 33px;
       border: 1px solid $colorSoftBlue;
@@ -552,6 +589,12 @@ $colorSoftBlue: #7491B4;
     }
     .field-item {
       margin-bottom: 5px;
+      .place {
+        padding: 0 7px;
+        padding-top: 7px;
+        border: 1px solid;
+        border-radius: 6px;
+      }
     }
   }
   .plus-button{

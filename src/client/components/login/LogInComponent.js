@@ -10,9 +10,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
 import FormControl from '@material-ui/core/FormControl';
 
+import * as Yup from 'yup';
+import {
+  Field, FieldArray, Form, Formik
+} from 'formik';
+import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import SocialNetworks from './SocialNetworks';
 import UserType from './UserType';
 import LogOutButton from './LogOutButton';
+import Common from '../../lib/common';
 
 
 function LogInComponent(props) {
@@ -23,7 +29,8 @@ function LogInComponent(props) {
   }
   return (
     <div>
-      <LoginDialog {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />
+       <LoginDialog {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />
+      {/*<NewLogin {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />*/}
       {props.user.token
         ? (
           <LogOutButton {...props} />
@@ -31,6 +38,86 @@ function LogInComponent(props) {
         : <Button onClick={toggleLoginDialog} className="login-button">LogIn</Button>
         }
     </div>
+  );
+}
+
+
+function NewLogin({
+  openDialog,
+  closeDialogButton,
+  userType,
+  changeUserType,
+  userData,
+  handleClick
+}) {
+  const SignupSchema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid email')
+      .required('Email is required'),
+    password: Yup.string()
+      .required('Country is required'),
+  });
+
+
+  return (
+    <Dialog open={openDialog} className="new-login-dialog">
+      <DialogTitle className="title">로그인</DialogTitle>
+      <DialogContent className="content">
+        <div className="error-message">에러 메세지입니다</div>
+        <Formik
+          initialValues={{
+            email: '',
+            password: ''
+          }}
+          validationSchema={SignupSchema}
+          onSubmit={(values) => {
+            // same shape as initial values
+            console.log(values);
+          }}
+        >
+          {({
+            values, errors, touched, handleChange, handleBlur
+          }) => (
+            <Form className="userInfo-form">
+              <Grid container xs={12}>
+                <TextField
+                  label="이메일"
+                  name="email"
+                  className="text-field"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={(errors.email && touched.email) && errors.email}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid container xs={12}>
+                <TextField
+                  label="비밀번호"
+                  name="password"
+                  className="text-field"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={(errors.password && touched.password) && errors.password}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+            </Form>
+          )}
+        </Formik>
+      </DialogContent>
+      <DialogActions className="actions">
+        <Button onClick={closeDialogButton} color="primary">
+            Cancel
+        </Button>
+        <Button onClick={handleClick} color="primary">
+            Log In
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

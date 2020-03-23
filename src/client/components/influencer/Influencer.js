@@ -2,14 +2,16 @@ import React from 'react';
 import YouTube from 'react-youtube';
 import Grid from '@material-ui/core/Grid';
 import {
-  Formik, Form, Field, FieldArray, getIn
+  Formik, Form, Field, FieldArray, getIn, FastField
 } from 'formik';
 import * as Yup from 'yup';
 import { CountryDropdown, RegionDropdown } from 'react-country-region-selector';
 import { Button } from '@material-ui/core';
 
+import axios from 'axios';
 import Plus from '../../img/plus.svg';
 import Minus from '../../img/minus.svg';
+import Common from '../../lib/common';
 
 
 function Influencer() {
@@ -102,7 +104,6 @@ function Influencer() {
               email: '',
               country: '',
               region: '',
-              blogType: '',
               phone: '',
               product: '',
               agreement: false
@@ -110,7 +111,20 @@ function Influencer() {
             validationSchema={SignupSchema}
             onSubmit={(values) => {
               // same shape as initial values
-              console.log(values);
+              // console.log(values);
+              const apiObj = { ...values, token: Common.getUserInfo().token };
+
+              axios.post('/api/TB_INFLUENCER/updateInfo', apiObj)
+                .then((res) => {
+                  if (res.data.code === 200) {
+                    console.log(res);
+                  } else if (res.data.code === 401) {
+                    console.log(res);
+                  } else {
+                    console.log(res);
+                  }
+                })
+                .catch(error => (error));
             }}
           >
             {({
@@ -125,43 +139,32 @@ function Influencer() {
                             Channel
                       </label>
                       {
-                             values.channel.map((item, index) => (
-                               <div key={index} className="field-item">
-                                 <Field name={`channel.${index}`} type="text" />
-                                 {/* <ErrorMessage name={`channel.${index}`} /> */}
-                                 { values.channel.length > 1
-                                   ? (
-                                 /* <button
-                                       type="button"
-                                       onClick={() => arrayHelpers.remove(index)}
-                                     >
-                                           -
-                                     </button> */
-                                     <Button variant="outlined" color="primary" onClick={() => arrayHelpers.remove(index)} className="minus-button">
-                                             -
-                                     </Button>
+                         values.channel.map((item, index) => (
+                           <div key={index} className="field-item">
+                             <Grid container>
+                               <Field name={`channel.${index}`} type="text" />
+                               { values.channel.length > 1
+                                 ? (
+                                   <Button variant="outlined" color="primary" onClick={() => arrayHelpers.remove(index)} className="minus-button">
+                                               -
+                                   </Button>
 
-                                   ) : null
-                                 }
-                                 { values.channel.length < 3 && index === 0
-                                   ? (
-                                 /* <button
-                                       type="button"
-                                       onClick={() => arrayHelpers.push('')}
-                                     >
-                                        +
-                                     </button> */
-                                     <Button variant="outlined" color="primary" onClick={() => arrayHelpers.push('')} className="plus-button">
-                                        +
-                                     </Button>
-                                   ) : null
+                                 ) : null
                                    }
-                                 {/* {errors.channel && touched.channel ? (
-                                   <div className="error-message">{errors.channel}</div>
-                                 ) : null} */}
-                               </div>
-                             ))
-                          }
+                               { values.channel.length < 3 && index === 0
+                                 ? (
+                                   <Button variant="outlined" color="primary" onClick={() => arrayHelpers.push('')} className="plus-button">
+                                               +
+                                   </Button>
+                                 ) : null
+                                   }
+                             </Grid>
+                             <Grid container style={{ color: 'red', textAlign: 'center' }}>
+                               <ErrorMessage name={`channel.${index}`} />
+                             </Grid>
+                           </div>
+                         ))
+                      }
                     </div>
                   )}
                 />
