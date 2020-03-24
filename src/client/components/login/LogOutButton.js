@@ -18,11 +18,7 @@ function LogOutButton(props) {
     if (token) {
       const url = `https://id.twitch.tv/oauth2/revoke?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&token=${token}`;
       // POST https://id.twitch.tv/oauth2/revoke?client_id=uo6dggojyb8d6soh92zknwmi5ej1q2&token=0123456789abcdefghijABCDEFGHIJ
-      axios.post(url
-        /* {
-                  client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
-                  token: 'hc632de3r22mvr6dze94t17rozb3lw'
-                } */).then((res) => {
+      axios.post(url).then((res) => {
         // console.log(res);
         if (res) {
           console.log(res);
@@ -36,15 +32,18 @@ function LogOutButton(props) {
     <React.Fragment>
       {
                 {
-                  facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">LogOut</Button>,
+                  facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">로그아웃</Button>,
                   google: <GoogleLogout
                     clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
                     buttonText="Logout"
                     onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
+                    render={renderProps => (
+                      <Button className="login-button" onClick={renderProps.onClick} disabled={renderProps.disabled}>로그아웃</Button>
+                    )}
                   />,
-                  kakao: <button onClick={kakaoLogOut}>Logout</button>,
-                  twitch: <button onClick={twitchLogOut}>Logout</button>,
-                  noSocial: <button onClick={e => props.changeUser({ token: null, name: '', social_type: '' })}>LogoutSample</button>
+                  kakao: <Button className="login-button" onClick={kakaoLogOut}>로그아웃</Button>,
+                  twitch: <Button className="login-button" onClick={twitchLogOut}>로그아웃</Button>,
+                  noSocial: <Button className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '' })}>로그아웃</Button>
                 }[props.user.social_type]
             }
     </React.Fragment>

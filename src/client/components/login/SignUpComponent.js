@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, TextField } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Button, Divider, TextField } from '@material-ui/core';
 import axios from 'axios';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -7,8 +7,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import DialogActions from '@material-ui/core/DialogActions';
+
+import CloseIcon from '@material-ui/icons/Close';
+import { Form, Formik } from 'formik';
+import * as Yup from 'yup';
 import UserType from './UserType';
 import SocialNetworks from './SocialNetworks';
+
 
 function SignUpComponent(props) {
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -19,7 +24,7 @@ function SignUpComponent(props) {
   return (
     <div>
       <SignUpDialog {...props} openDialog={openDialog} closeDialog={toggleLoginDialog} />
-      <Button onClick={toggleLoginDialog} className="login-button">SignUp</Button>
+      <Button onClick={toggleLoginDialog} className="login-button">회원가입</Button>
     </div>
   );
 }
@@ -30,70 +35,21 @@ function SignUpDialog({
   user,
   changeUser
 }) {
-  const [userType, setUserType] = React.useState('');
-  const [userData, setUserData] = React.useState({
-    email: '',
-    password: '',
-    passwordConfirm: '',
-    name: ''
-  });
-  const [errors, setErrors] = React.useState({});
+  const [userType, setUserType] = useState('');
+  const [mainError, setMainError] = useState({});
 
-  const changeUserType = (event) => {
-    setUserType(event.target.value);
-  };
-
-  function handleChange(event) {
-    const { name } = event.target;
-    const { value } = event.target;
-    setUserData({ ...userData, [name]: value });
+  function closeDialogButton() {
+    setMainError({});
+    closeDialog();
   }
 
-  function validateCheck(data) {
-    const payload = {
-      errors: {},
-      success: false
-    };
-
-    if (data.password !== data.passwordConfirm) {
-      payload.errors.pwconfirm = '비밀번호 확인이 일치하지 않습니다.';
-    }
-
-    if (!data.passwordConfirm) {
-      payload.errors.pwconfirm = '비밀번호를 확인하십시오';
-    }
-
-    if (!data.password) {
-      payload.errors.password = '비밀번호를 입력해 주세요';
-    } else if (data.password.length < 8) {
-      payload.errors.password = '비밀번호는 8자 이상이어야합니다';
-    }
-
-    if (!data.email) {
-      payload.errors.email = '이메일을 입력해 주세요';
-    }
-
-    if (!userType) {
-      payload.errors.type = '회원 직무를 선택해 주세요';
-    }
-    if (!data.name) {
-      payload.errors.name = '이름을 입력해 주세요';
-    }
-
-    payload.success = Object.entries(payload.errors).length === 0 && payload.errors.constructor === Object;
-
-    return payload;
-  }
-
-  function signUp() {
-    const data = { ...userData, type: userType };
-
-    axios.post('/api/TB_ADVERTISER/signup', data)
+  function signUp(values) {
+    axios.post('/api/TB_ADVERTISER/signup', values)
       .then((res) => {
         if (res.data.code === 200) {
-          console.log(res);
+          closeDialog();
         } else if (res.data.code === 401) {
-          setErrors({ message: res.data.message });
+          setMainError({ message: res.data.message });
         } else {
           console.log(res);
         }
@@ -101,68 +57,123 @@ function SignUpDialog({
       .catch(error => (error));
   }
 
-  function handleClick() {
-    const payload = validateCheck(userData);
-    if (payload.success) {
-      setErrors({});
-      signUp();
-    } else {
-      const errorsObj = payload.errors;
-      setErrors(errorsObj);
-    }
-  }
 
-  function closeDialogButton() {
-    setErrors({});
-    closeDialog();
-  }
+  const SignupSchema = Yup.object().shape({
+    type: Yup.string()
+      .required('직군을 입력해주세요'),
+    email: Yup.string()
+      .email('잘못된 이메일 형식 입니다.')
+      .required('이메일을 입력해주세요'),
+    password: Yup.string()
+      .required('비밀번호를 입력해주세요'),
+    passwordConfirm: Yup.string()
+      .oneOf([Yup.ref('password'), null], '비밀번호가 일치해야합니다')
+      .required('비밀번호 확인해주세요'),
+    name: Yup.string()
+      .required('이름을 입력해주세요'),
+  });
 
   return (
-    <Dialog open={openDialog} className="login-dialog">
-      <DialogTitle>Sign Up</DialogTitle>
-      <DialogContent className="signUpContent">
-        <Grid container justify="center">
-          <UserType userType={userType} changeUserType={changeUserType} />
-        </Grid>
-        <Grid container justify="center">
-          <div className="error-message mb-10">{errors.type}</div>
-        </Grid>
-        <Grid container justify="center">
-          <Grid item xs={6}>
-            <FormControl className="signUpFormElement">
-              <TextField id="component-email" label="Email" name="email" value={userData.email} onChange={handleChange} error={errors.email} helperText={errors.email ? errors.email : ' '} />
-            </FormControl>
+    <Dialog open={openDialog} className="new-login-dialog">
+      <button onClick={closeDialogButton} type="button" aria-label="Close" className="modal-close">
+        <span className="modal-close-x">
+          <CloseIcon />
+        </span>
+      </button>
+      <DialogTitle className="title">회원가입</DialogTitle>
+      <DialogContent className="content">
+        <div className="error-message">{mainError.message ? mainError.message : null}</div>
+        <Formik
+          initialValues={{
+            type: '',
+            email: '',
+            password: '',
+            passwordConfirm: '',
+            name: ''
+          }}
+          validationSchema={SignupSchema}
+          onSubmit={(values) => {
+            signUp(values);
+          }}
+        >
+          {({
+            values, errors, touched, handleChange, handleBlur, setFieldValue
+          }) => (
+            <Form className="userInfo-form">
 
-            <FormControl className="signUpFormElement">
-              <TextField id="component-password" label="Password" name="password" value={userData.password} onChange={handleChange} error={errors.password} helperText={errors.password ? errors.password : ' '} />
-            </FormControl>
-
-            <FormControl className="signUpFormElement">
-              <TextField id="component-passwordConfirm" label="Confirm Password" name="passwordConfirm" value={userData.passwordConfirm} onChange={handleChange} error={errors.pwconfirm} helperText={errors.pwconfirm ? errors.pwconfirm : ' '} />
-            </FormControl>
-
-            <FormControl className="signUpFormElement">
-              <TextField id="component-name" label="Name" name="name" value={userData.name} onChange={handleChange} error={errors.name} helperText={errors.name ? errors.name : ' '} />
-            </FormControl>
-
-            <div className="error-message">{errors.message}</div>
-          </Grid>
-
-          <Grid item xs={6} className="social-networks">
-            <SocialNetworks userType={userType} changeUser={changeUser} closeDialog={closeDialog} />
-          </Grid>
-
-        </Grid>
-        <div className="error-message">{null}</div>
+              <Grid container justify="space-between" xs={12}>
+                <Grid item xs={5}>
+                  <Button variant="outlined" color="primary" className={`job-type-button ${values.type === '1' ? 'checked' : ''}`} onClick={() => { setFieldValue('type', '1'); setUserType('1'); }}>관고주</Button>
+                </Grid>
+                <Grid item xs={5}>
+                  <Button variant="outlined" color="primary" className={`job-type-button ${values.type === '2' ? 'checked' : ''}`} onClick={() => { setFieldValue('type', '2'); setUserType('1'); }}>인플루언서</Button>
+                </Grid>
+              </Grid>
+              {errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}
+              <Divider variant="middle" />
+              <Grid container xs={12}>
+                <TextField
+                  placeholder="이메일"
+                  name="email"
+                  className="text-field"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={errors.email && touched.email ? <span className="error-message">{errors.email}</span> : null}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid container xs={12}>
+                <TextField
+                  placeholder="비밀번호"
+                  type="password"
+                  name="password"
+                  className="text-field"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={errors.password && touched.password ? <span className="error-message">{errors.password}</span> : null}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid container xs={12}>
+                <TextField
+                  placeholder="비밀번호 확인"
+                  type="password"
+                  name="passwordConfirm"
+                  className="text-field"
+                  value={values.passwordConfirm}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={errors.passwordConfirm && touched.passwordConfirm ? <span className="error-message">{errors.passwordConfirm}</span> : null}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid container xs={12}>
+                <TextField
+                  placeholder="이름"
+                  name="name"
+                  className="text-field"
+                  value={values.name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  helperText={errors.name && touched.name ? <span className="error-message">{errors.name}</span> : null}
+                  margin="normal"
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid container xs={12}>
+                <Button type="submit" variant="contained" color="secondary" className="login-button">
+                      회원가입
+                </Button>
+              </Grid>
+            </Form>
+          )}
+        </Formik>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={closeDialogButton} color="primary">
-            Cancel
-        </Button>
-        <Button onClick={handleClick} color="primary">
-            SignUp
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 }

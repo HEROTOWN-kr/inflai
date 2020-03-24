@@ -55,24 +55,24 @@ function AdvertiserForm() {
   ];
 
   const SignupSchema = Yup.object().shape({
-    category: Yup.array().of(Yup.string().required('category type is required')),
+    category: Yup.array().of(Yup.string().required('카테고리 유형을 선택해주세요')),
     jobType: Yup.string()
-      .required('Job type is required'),
+      .required('직종이 입력해주세요'),
     companyName: Yup.string()
-      .min(2, 'Too Short!')
-      .max(50, 'Too Long!')
-      .required('Company name is required'),
+      .min(2, '너무 짧습니다!')
+      .max(50, '너무 김니다')
+      .required('회사 명을 입력해주세요'),
     budget: Yup.string()
-      .required('Influencer Marketing Budjet is required'),
+      .required('마케팅 예산 입력해주세요'),
     email: Yup.string()
-      .email('Invalid email')
-      .required('Email is required'),
+      .email('잘못된 이메일 형식 입니다')
+      .required('이메일을 입력해주세요'),
     country: Yup.string()
-      .required('Country is required'),
+      .required('국가를 선택해주세요'),
     region: Yup.string()
-      .required('Region is required'),
+      .required('지역을 선택해주세요'),
     phone: Yup.string()
-      .required('Phone is required'),
+      .required('전화번호를 입력해주세요'),
   });
 
   function categoryToggle() {
@@ -353,7 +353,8 @@ function AdvertiserForm() {
                           options={{
                             ...options,
                             onCellClick(colData, cellMeta) {
-                              values.category[values.categoryIndex] = colData;
+                              // values.category[values.categoryIndex] = colData;
+                              setFieldValue(`category[${values.categoryIndex}]`, colData);
                               categoryToggle();
                             }
                           }}

@@ -7,8 +7,9 @@ import axios from 'axios';
 import SocialButton from './SocialButton';
 import NaverIcon from '../../img/naver-icon.png';
 import KakaoIcon from '../../img/kakao-logo.png';
-import GoogleIcon from '../../img/google-logo.png';
+import GoogleIcon from '../../img/google-logo2.png';
 import FacebookIcon from '../../img/facebook-logo.png';
+import TwitchIcon from '../../img/twitch-logo-white.png';
 
 
 function SocialNetworks({
@@ -121,61 +122,19 @@ function SocialNetworks({
 
   return (
     <React.Fragment>
-      {/*<Grid container justify="center">
+      <Grid container xs={12}>
         <GoogleLogin
           clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID
           buttonText="LOGIN WITH GOOGLE"
           onSuccess={responseGoogle}
           onFailure={responseGoogle}
           render={renderProps => (
-            <div onClick={renderProps.onClick} disabled={renderProps.disabled}>This is my custom Google button</div>
-          )}
-        />
-      </Grid>*/}
-
-      {/* <Grid container justify="center">
-         <FacebookLogin
-              appId="139193384125564" // APP ID NOT CREATED YET
-              fields="name,email,picture"
-              callback={responseFacebook}
-              // cssClass="facebook-button"
-            />
-        <FacebookLogin
-          appId="139193384125564"
-          autoLoad
-          fields="name,email,picture"
-          callback={responseFacebook}
-          render={renderProps => (
-            <div className="social-login-button facebook" onClick={renderProps.onClick} />
-          )}
-        />
-
-      </Grid> */}
-
-      {/* <Grid container justify="center">
-        <NaverLogin
-          clientId="4rBF5bJ4y2jKn0gHoSCf"
-                // callbackUrl="http://127.0.0.1:3000/login"
-          callbackUrl="http://127.0.0.1:3000/login"
-          render={props => <div className="social-login-button naver" onClick={props.onClick} />}
-          onSuccess={result => responseNaver(result)}
-          onFailure={result => responseNaver(result)}
-        />
-      </Grid> */}
-
-      <Grid container justify="center">
-        <GoogleLogin
-          clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID
-          buttonText="LOGIN WITH GOOGLE"
-          onSuccess={responseGoogle}
-          onFailure={responseGoogle}
-          render={renderProps => (
-            <SocialButton clicked={renderProps.onClick} icon={GoogleIcon} text="구글 로그인" bgColor="#4285F4" textColor="#ffffff" />
+            <SocialButton clicked={renderProps.onClick} icon={GoogleIcon} text="구글 로그인" bgColor="#f5f5f5" textColor="#3f51b5" />
           )}
         />
       </Grid>
 
-      <Grid container justify="center">
+      <Grid container xs={12}>
         <FacebookLogin
           appId="139193384125564"
           autoLoad
@@ -188,7 +147,7 @@ function SocialNetworks({
 
       </Grid>
 
-      <Grid container justify="center">
+      <Grid container xs={12}>
         <NaverLogin
           clientId="4rBF5bJ4y2jKn0gHoSCf"
             // callbackUrl="http://127.0.0.1:3000/login"
@@ -199,13 +158,23 @@ function SocialNetworks({
         />
       </Grid>
 
-      <Grid container justify="center">
+      <Grid container xs={12}>
         <SocialButton clicked={kakaoLoginForm} icon={KakaoIcon} text="카카오 로그인" bgColor="#F7E317" textColor="#3C1E1E" />
       </Grid>
 
-      {/* <Grid container justify="center">
-        <div onClick={kakaoLoginForm} className="social-login-button kakao" />
-      </Grid> */}
+
+      <Grid container xs={12}>
+        <SocialButton
+          clicked={() => console.log('click')}
+          icon={TwitchIcon}
+          text="트위치 로그인"
+          bgColor="#6034B1"
+          textColor="#FFFFFF"
+          // link="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true"
+          link="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://www.inflai.com&response_type=token&scope=user:edit+user:read:email&force_verify=true"
+        />
+      </Grid>
+
     </React.Fragment>
   );
 }

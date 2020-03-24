@@ -2,19 +2,13 @@ import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import MenuIcon from '@material-ui/icons/Menu';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Drawer, Hidden } from '@material-ui/core';
-import KakaoLogin from 'react-kakao-login';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
@@ -50,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function CustomNavbar(props) {
+function CustomNavbar(props) {
   const classes = useStyles();
 
   const [openMenu, setOpenMenu] = React.useState(false);
@@ -86,6 +80,7 @@ export default function CustomNavbar(props) {
             token: res.data.userToken,
             name: res.data.userName,
           });
+          props.history.push('/');
         });
       }
     });
@@ -167,19 +162,6 @@ export default function CustomNavbar(props) {
   );
 
   function twitchLogin() {
-    /* fetch('https://id.twitch.tv/oauth2/authorize',
-      {
-        headers: {
-          client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
-          redirect_uri: 'http://localhost:8080/testRoute/twiterTest',
-          response_type: 'code',
-          scope: 'user:edit+user:read:email',
-        }
-      })
-      .then(resp => console.log(resp)); */
-    /* .then((resp) => { console.log(resp); })
-      .catch((err) => { console.log(err); }); */
-
     axios.get('https://id.twitch.tv/oauth2/authorize', {
       params: {
         client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
@@ -221,16 +203,17 @@ export default function CustomNavbar(props) {
                 </Link>
               ))}
               <LogInComponent {...props} />
-              <SignUpComponent {...props} />
 
-              <Button onClick={twitchLogin}>TwitchLogin</Button>
+              {props.user.token ? null : <SignUpComponent {...props} />}
+
+              {/* <Button onClick={twitchLogin}>TwitchLogin</Button> */}
               {/* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
                 Sign In
               </a> */}
 
-              <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true">
+              {/* <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true">
                 SignInLocal
-              </a>
+              </a> */}
 
 
             </Grid>
@@ -261,3 +244,5 @@ export default function CustomNavbar(props) {
     </div>
   );
 }
+
+export default withRouter(CustomNavbar);

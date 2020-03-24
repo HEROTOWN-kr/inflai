@@ -15,16 +15,37 @@ function SocialButton(props) {
   };
 
   return (
-    <div onClick={props.clicked}>
-      <Grid container style={buttonStyle.mainContainer} className="main-container">
-        <Grid container xs={3} className="button-icon">
-          <img src={props.icon} />
-        </Grid>
-        <Grid container xs={9} justify="center" alignItems="center" style={buttonStyle.buttonText} className="button-text">
-          {props.text}
-        </Grid>
-      </Grid>
-    </div>
+    <React.Fragment>
+      {props.link
+        ? (
+          <a href={props.link} style={{ width: '100%', textDecoration: 'none' }}>
+            <div onClick={props.clicked} >
+              <Grid container style={buttonStyle.mainContainer} className="main-container">
+                <Grid container xs={3} justify="center" className="button-icon">
+                  <img src={props.icon} />
+                </Grid>
+                <Grid container xs={9} justify="center" alignItems="center" style={buttonStyle.buttonText} className="button-text">
+                  {props.text}
+                </Grid>
+              </Grid>
+            </div>
+          </a>
+        )
+        : (
+          <div onClick={props.clicked} style={{ width: '100%' }}>
+            <Grid container style={buttonStyle.mainContainer} className="main-container">
+              <Grid container xs={3} justify="center" className="button-icon">
+                <img src={props.icon} />
+              </Grid>
+              <Grid container xs={9} justify="center" alignItems="center" style={buttonStyle.buttonText} className="button-text">
+                {props.text}
+              </Grid>
+
+            </Grid>
+          </div>
+        )
+      }
+    </React.Fragment>
   );
 }
 

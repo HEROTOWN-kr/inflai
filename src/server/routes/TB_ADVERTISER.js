@@ -422,7 +422,7 @@ router.post('/signup', (req, res) => {
           if (user) {
             res.json({
               code: 401,
-              message: 'This email is already taken.'
+              message: '이 이메일은 이미 사용중입니다.'
             });
           } else {
             Advertiser.create(userData).then((result) => {
@@ -465,7 +465,7 @@ router.post('/signup', (req, res) => {
           if (user) {
             res.json({
               code: 401,
-              message: 'This email is already taken.'
+              message: '이 이메일은 이미 사용중입니다.'
             });
           } else {
             Influenser.create(userData).then((result) => {

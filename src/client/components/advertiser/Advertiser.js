@@ -104,24 +104,24 @@ function Advertiser() {
 
   const SignupSchema = Yup.object().shape({
     jobType: Yup.string()
-      .required('Job type is required'),
+      .required('직종이 필요합니다'),
     companyName: Yup.string()
-      .min(2, 'Too Short!')
+      .min(2, '너무 짧습니다!')
       .max(50, 'Too Long!')
-      .required('Company name is required'),
+      .required('회사 명은 필수입니다'),
     budget: Yup.string()
-      .required('Influencer Marketing Budjet is required'),
+      .required('마케팅 예산이 필요합니다'),
     email: Yup.string()
       .email('Invalid email')
-      .required('Email is required'),
+      .required('이메일이 필요합니다'),
     country: Yup.string()
-      .required('Country is required'),
+      .required('국가는 필수입니다'),
     region: Yup.string()
-      .required('Region is required'),
+      .required('지역이 필요합니다'),
     phone: Yup.string()
-      .required('Phone is required'),
+      .required('전화가 필요합니다'),
     product: Yup.string()
-      .required('Product is required')
+      .required('제품이 필요합니다')
   });
 
   function youTubeOnReady(event) {
@@ -233,199 +233,6 @@ function Advertiser() {
       </Grid>
       <Grid container xs={6}>
         <Grid container xs={6}>
-          {/* <Formik
-            initialValues={{
-              jobType: '',
-              companyName: '',
-              budget: '',
-              instagram: '',
-              youtube: '',
-              blog: '',
-              email: '',
-              country: '',
-              region: '',
-              blogType: '',
-              phone: '',
-              product: '',
-              agreement: false
-            }}
-            validationSchema={SignupSchema}
-            onSubmit={(values) => {
-              // same shape as initial values
-              console.log(values);
-            }}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              setFieldValue,
-              setFieldTouched,
-            }) => (
-              <Form className="userInfo-form">
-                <label htmlFor="country" style={{ display: 'block' }}>
-                  Job type
-                </label>
-                <Field name="jobType" as="select" placeholder="select job type">
-                  <option value="advertiser">Advertiser</option>
-                  <option value="agency">Agency</option>
-                  <option value="" label="Select job type" />
-                </Field>
-                {errors.jobType && touched.jobType ? <div className="error-message">{errors.jobType}</div> : null}
-
-
-                <label htmlFor="companyName" style={{ display: 'block' }}>
-                      Company Name*
-                </label>
-                <Field name="companyName" type="text" id="companyName" />
-                {errors.companyName && touched.companyName ? (
-                  <div className="error-message">{errors.companyName}</div>
-                ) : null}
-
-                <label htmlFor="budget" style={{ display: 'block' }}>
-                      Budget
-                </label>
-                <RadioButtonGroup
-                  id="budget"
-                  label="Budget"
-                  value={values.budget}
-                  error={errors.budget}
-                  touched={touched.budget}
-                >
-                  <Field
-                    component={RadioButton}
-                    name="budget"
-                    id="radioOption1"
-                    label="~ 500.000"
-                  />
-                  <Field
-                    component={RadioButton}
-                    name="budget"
-                    id="radioOption2"
-                    label="500.000 ~ 1.000.000"
-                  />
-                  <Field
-                    component={RadioButton}
-                    name="budget"
-                    id="radioOption3"
-                    label="1.000.000 ~ 5.000.000"
-                  />
-                  <Field
-                    component={RadioButton}
-                    name="budget"
-                    id="radioOption4"
-                    label="5.000.000 ~"
-                  />
-                </RadioButtonGroup>
-                <label htmlFor="budget" style={{ display: 'block' }}>
-                      몇 명의 인플루언서가 팔요한가요?
-                </label>
-                <Grid container>
-                  <Grid container direction="column" justify="center" xs={3}>
-                    <Grid item>
-                          인스타그램
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Field name="instagram" type="email" className="social-count" />
-                  </Grid>
-                  <Grid container xs={5} direction="column" justify="center">
-                    <Grid item>
-                            명
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid container direction="column" justify="center" xs={3}>
-                    <Grid item>
-                            유튜브
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Field name="youtube" type="email" className="social-count" />
-                  </Grid>
-                  <Grid container xs={5} direction="column" justify="center">
-                    <Grid item>
-                            명
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid container>
-                  <Grid container direction="column" justify="center" xs={3}>
-                    <Grid item>
-                            블로거
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Field name="blog" type="email" className="social-count" />
-                  </Grid>
-                  <Grid container xs={5} direction="column" justify="center">
-                    <Grid item>
-                            명
-                    </Grid>
-                  </Grid>
-                </Grid>
-
-                <label htmlFor="email" style={{ display: 'block' }}>
-                      Email
-                </label>
-                <Field name="email" type="email" />
-                {errors.email && touched.email ? <div className="error-message">{errors.email}</div> : null}
-
-                <label htmlFor="country" style={{ display: 'block' }}>
-                      Country
-                </label>
-                 <Field name="country" as="select" placeholder="Favorite Color">
-                  <option value="red">Red</option>
-                  <option value="green">Green</option>
-                  <option value="blue">Blue</option>
-                  <option value="" label="Select a country" />
-                </Field>
-                <CountryDropdown
-                  name="country"
-                  value={values.country}
-                  onChange={(_, e) => handleChange(e)}
-                  onBlur={handleBlur}
-                />
-                <RegionDropdown
-                  name="region"
-                  country={values.country}
-                  value={values.region}
-                  onChange={(_, e) => handleChange(e)}
-                  onBlur={handleBlur}
-                />
-                {errors.country && touched.country ? <div className="error-message">{errors.country}</div> : null}
-
-                <label htmlFor="phone" style={{ display: 'block' }}>
-                      Phone
-                </label>
-                <Field name="phone" type="text" />
-                {errors.phone && touched.phone ? <div className="error-message">{errors.phone}</div> : null}
-
-                <label htmlFor="product" style={{ display: 'block' }}>
-                      Product
-                </label>
-                <Button variant="outlined" color="primary">선택</Button>
-
-                <Field name="product" type="text" />
-                {errors.product && touched.product ? <div className="error-message">{errors.product}</div> : null}
-
-                <div>
-                  <label className="agreement-label">
-                    <Field type="checkbox" name="agreement" />
-                        I agree to receive communication from Matchmade
-                  </label>
-                </div>
-
-
-                <Grid container xs={12}>
-                  <button className="submit-button" type="submit">Submit</button>
-                </Grid>
-              </Form>
-            )}
-          </Formik> */}
           <AdvertiserForm />
         </Grid>
         <Grid container xs={12}>
