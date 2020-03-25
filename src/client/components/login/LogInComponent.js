@@ -57,6 +57,7 @@ function LoginDialog({
             type: values.type,
             token: res.data.userToken,
             name: res.data.userName,
+            regState: res.data.regState
           });
           closeDialog();
         } else if (res.data.code === 401) {

@@ -8,7 +8,7 @@ function LogOutButton(props) {
   const kakaoLogOut = (e) => {
     e.preventDefault();
     window.Kakao.Auth.logout((res) => {
-      props.changeUser({ token: null, name: '', social_type: '' });
+      props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
     });
   };
 
@@ -25,25 +25,25 @@ function LogOutButton(props) {
         }
       });
     }
-    props.changeUser({ token: null, name: '', social_type: '' });
+    props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
   };
 
   return (
     <React.Fragment>
       {
                 {
-                  facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '' }); }} className="login-button">로그아웃</Button>,
+                  facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }} className="login-button">로그아웃</Button>,
                   google: <GoogleLogout
                     clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
                     buttonText="Logout"
-                    onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '' }); }}
+                    onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }}
                     render={renderProps => (
                       <Button className="login-button" onClick={renderProps.onClick} disabled={renderProps.disabled}>로그아웃</Button>
                     )}
                   />,
                   kakao: <Button className="login-button" onClick={kakaoLogOut}>로그아웃</Button>,
                   twitch: <Button className="login-button" onClick={twitchLogOut}>로그아웃</Button>,
-                  noSocial: <Button className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '' })}>로그아웃</Button>
+                  noSocial: <Button className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '', type: '', regState: '' })}>로그아웃</Button>
                 }[props.user.social_type]
             }
     </React.Fragment>

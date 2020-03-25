@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const bcrypt = require('bcryptjs');
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('TB_INFLUENCER', {
@@ -51,6 +52,18 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
-    tableName: 'TB_INFLUENCER'
+    tableName: 'TB_INFLUENCER',
+    instanceMethods: {
+      generateHash(password) {
+        return bcrypt.hash(password, bcrypt.genSaltSync(8));
+      },
+      validPassword(password, hash, callback) {
+        return bcrypt.compare(password, hash, (err, res) => {
+          if (err) callback(err, null);
+          if (err) callback(err, null);
+          else callback(null, res);
+        });
+      }
+    }
   });
 };

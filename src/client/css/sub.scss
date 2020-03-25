@@ -3,6 +3,7 @@ $colorBlue: #093c5e;
 $aqua: #23c9cf;
 $white: #ffffff;
 $colorSoftBlue: #7491B4;
+$colorBlack: #000;
 
 .error-message {
   color: red;
@@ -61,6 +62,7 @@ $colorSoftBlue: #7491B4;
   }
   .name-holder {
     color: $colorBg;
+    line-height: 34px;
   }
 }
 
@@ -575,7 +577,7 @@ $colorSoftBlue: #7491B4;
 }
 
 .advertiser-page {
-  color: $colorSoftBlue;
+  color: $colorBlack;
   .container {
     max-width: 256px;
     margin: 0 auto;
@@ -680,6 +682,48 @@ $colorSoftBlue: #7491B4;
       }
     }
   }
+
+  .userInfo-form-new {
+    width: 100%;
+    padding: 70px;
+    border: solid 1px #dfe2e8;
+    .MuiInputBase-input {
+      height: 6px;
+    }
+    .MuiSelect-outlined.MuiSelect-outlined {
+      line-height: 10px;
+    }
+    .MuiFormControl-root {
+      width: 100%;
+      &.MuiFormControl-marginNormal {
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+      &.select-field {
+        margin-top: 10px;
+        margin-bottom: 17px;
+      }
+    }
+    label {
+      color: #3f4653;
+      font-size: 15px;
+    }
+    .agreement {
+      margin-top: 20px;
+      font-size: 12px;
+      line-height: 1.67;
+      color: $colorBlack;
+      text-align: center;
+      span {
+        color: #fa4616;
+        &:hover {
+          color: $colorBlack;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
   .plus-button{
     border-radius: 12px;
     margin-left: 10px;
@@ -698,13 +742,17 @@ $colorSoftBlue: #7491B4;
 
   .submit-button {
     margin-top: 18px;
-    border: 2px solid $colorSoftBlue;
-    padding: 10px 35px;
-    border-radius: 30px;
-    font-size: 16px;
+    border: 2px solid #0d0c0c;
+    padding: 10px 48px;
+    border-radius: 4px;
+    font-size: 15px;
     font-weight: bold;
-    color: #7491B4;
+    color: #ffffff;
+    background: #0d0c0c;
     outline: 0;
+    &:hover {
+      cursor: pointer;
+    }
   }
   .policy {
     margin-top: 15px;
@@ -715,6 +763,75 @@ $colorSoftBlue: #7491B4;
       &:hover {
         cursor: pointer;
       }
+    }
+  }
+}
+
+.register-detail {
+  padding: 70px;
+  border: solid 1px #dfe2e8;
+  .main-title {
+    margin-bottom: 12px;
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 1.33;
+    text-align: center;
+    color: #3f4653;
+  }
+  .title {
+    font-size: 15px;
+    line-height: 1.33;
+    text-align: center;
+    color: #3f4653;
+    margin-bottom: 60px;
+  }
+  .MuiInputBase-input {
+    height: 6px;
+  }
+  .MuiSelect-outlined.MuiSelect-outlined {
+    line-height: 10px;
+  }
+  .MuiFormControl-root {
+    width: 100%;
+    &.MuiFormControl-marginNormal {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    &.select-field {
+      margin-top: 10px;
+      margin-bottom: 17px;
+    }
+  }
+  label {
+    color: #3f4653;
+    font-size: 15px;
+  }
+  .agreement {
+    margin-top: 20px;
+    font-size: 12px;
+    line-height: 1.67;
+    color: $colorBlack;
+    text-align: center;
+    span {
+      color: #fa4616;
+      &:hover {
+        color: $colorBlack;
+        cursor: pointer;
+      }
+    }
+  }
+  .submit-button {
+    margin-top: 18px;
+    border: 2px solid #0d0c0c;
+    padding: 10px 48px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffffff;
+    background: #0d0c0c;
+    outline: 0;
+    &:hover {
+      cursor: pointer;
     }
   }
 }

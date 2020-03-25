@@ -12,6 +12,13 @@ const saltRounds = 10;
 
 const router = express.Router();
 
+function createToken(id) {
+  const payload = {
+    sub: id
+  };
+  return jwt.sign(payload, config.jwtSecret);
+}
+
 router.get('/test', (req, res) => {
   res.json({
     code: 200,
@@ -90,15 +97,19 @@ router.get('/loginGoogle', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: token,
-            userName: result.dataValues.ADV_NAME
+            userToken: createToken(result.dataValues.ADV_ID),
+            userName: result.dataValues.ADV_NAME,
+            regState: result.dataValues.ADV_FULL_REG,
+            social_type
           });
         });
       } else {
         res.json({
           code: 200,
-          userToken: token,
-          userName: result.dataValues.ADV_NAME
+          userToken: createToken(result.dataValues.ADV_ID),
+          userName: result.dataValues.ADV_NAME,
+          regState: result.dataValues.ADV_FULL_REG,
+          social_type
         });
       }
     }).error((err) => {
@@ -114,7 +125,7 @@ router.get('/loginGoogle', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: token,
+            userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
             social_type
           });
@@ -122,7 +133,7 @@ router.get('/loginGoogle', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
           social_type
         });
@@ -155,6 +166,7 @@ router.get('/loginFacebook', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
+            userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
             social_type
           });
@@ -162,7 +174,7 @@ router.get('/loginFacebook', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
           social_type
         });
@@ -180,7 +192,7 @@ router.get('/loginFacebook', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: token,
+            userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
             social_type
           });
@@ -188,7 +200,7 @@ router.get('/loginFacebook', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
           social_type
         });
@@ -221,6 +233,7 @@ router.get('/loginNaver', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
+            userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
             social_type
           });
@@ -228,7 +241,7 @@ router.get('/loginNaver', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
           social_type
         });
@@ -246,7 +259,7 @@ router.get('/loginNaver', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: token,
+            userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
             social_type
           });
@@ -254,7 +267,7 @@ router.get('/loginNaver', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
           social_type
         });
@@ -357,6 +370,7 @@ router.get('/loginTwitch', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
+            userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
             social_type
           });
@@ -364,7 +378,7 @@ router.get('/loginTwitch', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
           social_type
         });
@@ -382,7 +396,7 @@ router.get('/loginTwitch', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: token,
+            userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
             social_type
           });
@@ -390,7 +404,7 @@ router.get('/loginTwitch', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: token,
+          userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
           social_type
         });
@@ -426,16 +440,9 @@ router.post('/signup', (req, res) => {
             });
           } else {
             Advertiser.create(userData).then((result) => {
-              const insertedID = result.dataValues.ADV_ID;
-              const payload = {
-                sub: insertedID
-              };
-
-              const token = jwt.sign(payload, config.jwtSecret);
-
               res.json({
                 code: 200,
-                userToken: token,
+                userToken: createToken(result.dataValues.ADV_ID),
                 userName: data.name,
                 social_type: 'not-social'
               });
@@ -469,16 +476,9 @@ router.post('/signup', (req, res) => {
             });
           } else {
             Influenser.create(userData).then((result) => {
-              const insertedID = result.dataValues.INF_ID;
-              const payload = {
-                sub: insertedID
-              };
-
-              const token = jwt.sign(payload, config.jwtSecret);
-
               res.json({
                 code: 200,
-                userToken: token,
+                userToken: createToken(result.dataValues.INF_ID),
                 userName: data.name,
                 social_type: 'not-social'
               });
@@ -494,6 +494,32 @@ router.post('/signup', (req, res) => {
       }
     });
   }
+});
+
+router.post('/update', (req, res) => {
+  const data = req.body;
+  const userId = common.getIdFromToken(data.token).sub;
+
+  const post = {
+    ADV_CLASS: data.classification,
+    ADV_REG_NUM: data.registerNumber,
+    ADV_TYPE: data.jobType,
+    ADV_NAME: data.name,
+    ADV_TEL: data.phone,
+    ADV_COM_NAME: data.companyName,
+    ADV_COM_URL: data.companyUrl,
+    ADV_SUB_AIM: data.subscribeAim,
+    ADV_FULL_REG: 'Y'
+  };
+
+  Advertiser.update(post, {
+    where: { ADV_ID: userId }
+  }).then((result) => {
+    /* console.log(message.get({
+          plain: true
+        })); */
+    res.send(result);
+  });
 });
 
 router.get('/:id', (req, res) => {

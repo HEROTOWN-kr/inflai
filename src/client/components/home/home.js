@@ -154,6 +154,8 @@ const FontSettings = {
 };
 
 function Home(props) {
+
+
   const settings = {
     infinite: true,
     speed: 500,

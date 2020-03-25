@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {  withRouter } from 'react-router-dom';
 import NaverLogin from 'react-naver-login';
 import Main from './main/Main';
 import CustomNavBar from './navbar/Navbar';
@@ -10,6 +11,12 @@ import axios from 'axios';
 
 function App(props) {
   const [user, setUser] = React.useState(Common.getUserInfo());
+
+  useEffect(() => {
+    if (user.regState && user.regState === 'N') {
+      props.history.push('/regDetail');
+    }
+  }, [user]);
 
   function changeUser(data) {
     const newUser = { ...user, ...data };
@@ -51,7 +58,7 @@ function App(props) {
         // onSuccess={result => console.log(result)}
         onFailure={result => responseNaver(result)}
       />*/}
-      <Main />
+      <Main user={user} />
       <Footer />
       {/* <CustomNavBar user={user} changeUser={changeUser} />
       <Main />
@@ -60,4 +67,4 @@ function App(props) {
   );
 }
 
-export default App;
+export default withRouter(App);

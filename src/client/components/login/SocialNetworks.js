@@ -32,6 +32,7 @@ function SocialNetworks({
           type: userType,
           token: res.data.userToken,
           name: res.data.userName,
+          regState: res.data.regState
         });
         closeDialog();
       });

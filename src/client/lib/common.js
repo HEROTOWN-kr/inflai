@@ -5,7 +5,8 @@ class Common {
       : {
         token: '',
         name: '',
-        social_type: ''
+        social_type: '',
+        regState: ''
       });
   }
 

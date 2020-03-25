@@ -115,10 +115,6 @@ function CustomNavbar(props) {
 
   const menuLinks = [
     {
-      text: '홈',
-      link: '/'
-    },
-    {
       text: '광고주',
       link: '/Advertiser'
     },
@@ -126,14 +122,14 @@ function CustomNavbar(props) {
       text: '인플루언서',
       link: '/Influencer'
     },
-    {
+    /* {
       text: '서비스1',
       link: '/Service1'
     },
     {
       text: '서비스2',
       link: '/Service2'
-    },
+    }, */
   ];
 
   const toggleDrawer = open => (event) => {
@@ -192,41 +188,29 @@ function CustomNavbar(props) {
             </Grid>
           </Grid>
           <Hidden mdDown>
-            <Grid container xs={4} justify="space-between">
+            <Grid container xs={4} justify="flex-start" spacing={2}>
               {menuLinks.map(link => (
-                <Link
-                  className="link"
-                  key={link.text}
-                  to={link.link}
-                >
-                  {link.text}
-                </Link>
+                <Grid item key={link.text}>
+                  <Link
+                    className="link"
+                    to={link.link}
+                  >
+                    {link.text}
+                  </Link>
+                </Grid>
               ))}
-              <LogInComponent {...props} />
-
-              {props.user.token ? null : <SignUpComponent {...props} />}
-
-              {/* <Button onClick={twitchLogin}>TwitchLogin</Button> */}
-              {/* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
-                Sign In
-              </a> */}
-
-              {/* <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true">
-                SignInLocal
-              </a> */}
-
-
             </Grid>
-            <Grid container xs={4} justify="flex-end">
-              <Grid item xs={6} className="name-holder">{props.user.name ? props.user.name : null}</Grid>
-            </Grid>
-            <Grid container xs={2} justify="center">
-              <Link
-                className="link"
-                to="/Contact"
-              >
-                CONTACT US
-              </Link>
+            <Grid container xs={2} justify="flex-end" />
+            <Grid container xs={4} justify="flex-end" spacing={3}>
+              <Grid item className="name-holder">
+                {props.user.name ? props.user.name : null}
+              </Grid>
+              <Grid item>
+                <LogInComponent {...props} />
+              </Grid>
+              <Grid item>
+                {props.user.token ? null : <SignUpComponent {...props} />}
+              </Grid>
             </Grid>
           </Hidden>
           <Hidden mdUp>
@@ -246,3 +230,11 @@ function CustomNavbar(props) {
 }
 
 export default withRouter(CustomNavbar);
+{ /* <Button onClick={twitchLogin}>TwitchLogin</Button> */ }
+{ /* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
+                Sign In
+              </a> */ }
+
+{ /* <a href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true">
+                SignInLocal
+              </a> */ }

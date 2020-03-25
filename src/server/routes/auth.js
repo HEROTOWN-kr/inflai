@@ -230,6 +230,7 @@ router.post('/login', (req, res, next) => {
       message: 'You have successfully logged in!',
       userToken: token,
       userName: userData.name,
+      regState: userData.regState,
       social_type: 'noSocial'
     });
   })(req, res, next);
