@@ -285,7 +285,6 @@ $colorBlack: #000;
 
 }
 
-
 .home {
   .greeting {
     .greeting-image {
@@ -833,6 +832,179 @@ $colorBlack: #000;
     &:hover {
       cursor: pointer;
     }
+  }
+}
+
+.product {
+  .title {
+    text-align: center;
+    .main {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.33;
+      color: #3f4653;
+    }
+    .secondary {
+      display: inline-block;
+      min-width: 70px;
+      padding: 5px 10px;
+      border: 5px solid #ddd;
+      border-radius: 19px;
+      font-size: 14px;
+      line-height: 1.29;
+      color: #444041;
+      margin-top: 10px;
+    }
+  }
+  .tip {
+    position: relative;
+    padding: 32px 32px 32px 260px;
+    background: #f9f9f9;
+    .tip-main {
+      margin-bottom: 12px;
+      font-size: 18px;
+      color: #232323;
+      span {
+        color: #fa4616;
+      }
+    }
+    .tip-secondary {
+      font-size: 15px;
+      color: #666;
+    }
+  }
+  .step {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+  }
+  .step-title {
+    font-size: 18px;
+    color: #222;
+    span.grey {
+      margin-left: 4px;
+      font-size: 15px;
+      color: #999;
+    }
+  }
+
+  .step-one {
+    .MuiFormControlLabel-root {
+      margin: 0;
+    }
+    .card {
+      box-sizing: border-box;
+      position: relative;
+      //margin: 10px;
+      padding: 35px 18px;
+      border-radius: 4px;
+      border: 1px solid #d0d0d0;
+      height: 340px;
+      text-align: center;
+      cursor: pointer;
+      -webkit-transition: opacity .15s;
+      -o-transition: opacity .15s;
+      transition: opacity .15s;
+      .icon {
+        display: inline-block;
+        width: 70px;
+        height: 70px;
+      }
+      .main-title {
+        margin-bottom: 6px;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1;
+        color: #232323;
+      }
+      .secondary-title {
+        display: inline-block;
+        padding: 6px;
+        border-radius: 3px;
+        background: #f7f7f7;
+        font-size: 12px;
+        line-height: 1;
+        letter-spacing: -0.43px;
+        color: #555;
+      }
+      .third-title {
+        margin-bottom: 20px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #666;
+      }
+    }
+  }
+  .step-two, .step-three, .step-four {
+    .counter {
+      font-size: 15px;
+      width: 100%;
+      .counter-textHolder {
+        width: 630px;
+        .level {
+          width: 86px;
+          font-size: 20px;
+          font-weight: 500;
+          padding-top: 5px;
+        }
+        .count {
+          width: 110px;
+        }
+        .aim {
+          font-size: 12px;
+          color: #fa4616;
+        }
+      }
+      .checkbox-label {
+        color: #757575;
+        box-sizing: border-box;
+        border: 1px solid #c3c3c3;
+        border-radius: 4px;
+        display: inline-block;
+        width: 100%;
+        padding: 18px;
+        position: relative;
+        cursor: pointer;
+        input[type=checkbox] {
+          display: none;
+          &:checked + svg {
+            fill: red;
+          }
+        }
+        span {
+          position: relative;
+          bottom: 4px;
+          left: 10px;
+        }
+        svg {
+          position: relative;
+          top: 2px;
+          left: 5px;
+        }
+      }
+    }
+    .counter-result {
+      margin-top: 40px;
+      text-align: right;
+      .result-text {
+        margin-right: 30px;
+        font-size: 20px;
+        line-height: 1.5;
+      }
+      .inf-number {
+        font-size: 32px;
+        font-weight: 500;
+        color: #fa4616;
+      }
+    }
+    .MuiInputBase-input {
+      padding: 23px 0;
+      text-align: right;
+    }
+    .checkbox-alias {
+
+    }
+
   }
 }
 

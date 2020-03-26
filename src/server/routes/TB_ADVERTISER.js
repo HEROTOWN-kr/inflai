@@ -26,6 +26,20 @@ router.get('/test', (req, res) => {
   });
 });
 
+router.get('/', (req, res) => {
+  const { token } = req.query;
+  const userId = common.getIdFromToken(token).sub;
+
+  Advertiser.findOne({ where: { ADV_ID: userId } }).then((result) => {
+    res.json({
+      code: 200,
+      data: result.dataValues,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/naverTest', (req, res) => {
   const token = 'AAAAO7ObqHQmS2x-G4UYKZ4SDKDZnRVG_0xJLLZZ0FWqEraRQZLW4-jAv1qVlFzA_6WhL6Ilagtv5y3EVJmiTzuhhL4';
   const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
@@ -74,7 +88,6 @@ router.get('/kakaoTest', (req, res) => {
     }
   });
 });
-
 
 router.get('/test2', (req, res) => {
   console.log('getting all advertisers');
@@ -168,6 +181,7 @@ router.get('/loginFacebook', (req, res) => {
             code: 200,
             userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
+            regState: result.dataValues.ADV_FULL_REG,
             social_type
           });
         });
@@ -176,6 +190,7 @@ router.get('/loginFacebook', (req, res) => {
           code: 200,
           userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
+          regState: result.dataValues.ADV_FULL_REG,
           social_type
         });
       }
@@ -194,6 +209,7 @@ router.get('/loginFacebook', (req, res) => {
             code: 200,
             userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
+            regState: result.dataValues.ADV_FULL_REG,
             social_type
           });
         });
@@ -202,6 +218,7 @@ router.get('/loginFacebook', (req, res) => {
           code: 200,
           userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
+          regState: result.dataValues.ADV_FULL_REG,
           social_type
         });
       }
@@ -515,10 +532,12 @@ router.post('/update', (req, res) => {
   Advertiser.update(post, {
     where: { ADV_ID: userId }
   }).then((result) => {
-    /* console.log(message.get({
-          plain: true
-        })); */
-    res.send(result);
+    if (result) {
+      res.json({
+        code: 200,
+        userName: data.name,
+      });
+    }
   });
 });
 

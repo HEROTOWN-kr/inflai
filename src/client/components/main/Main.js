@@ -5,9 +5,12 @@ import Influencer from '../influencer/Influencer';
 import Advertiser from '../advertiser/Advertiser';
 import Contact from '../contact/Contact';
 import AdvertiserDetail from '../advertiser/AdvertiserDetail';
+import Product from '../advertiser/Product';
+
 
 function Main({
-  user
+  user,
+  changeUser
 }) {
   return (
     <Switch>
@@ -15,7 +18,15 @@ function Main({
       <Route path="/Advertiser" component={Advertiser} />
       <Route path="/Influencer" component={Influencer} />
       <Route path="/Contact" component={Contact} />
-      <Route path="/regDetail" component={AdvertiserDetail} />
+      {/* <Route path="/regDetail" component={AdvertiserDetail} /> */}
+      <Route
+        path="/regDetail"
+        render={props => <AdvertiserDetail {...props} user={user} changeUser={changeUser} />}
+      />
+      <Route
+        path="/Product"
+        render={props => <Product {...props} user={user} changeUser={changeUser} />}
+      />
     </Switch>
   );
 }

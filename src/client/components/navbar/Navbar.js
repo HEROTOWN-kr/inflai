@@ -122,11 +122,11 @@ function CustomNavbar(props) {
       text: '인플루언서',
       link: '/Influencer'
     },
-    /* {
-      text: '서비스1',
-      link: '/Service1'
-    },
     {
+      text: '인플루언서 믹스',
+      link: '/Product'
+    },
+    /* {
       text: '서비스2',
       link: '/Service2'
     }, */

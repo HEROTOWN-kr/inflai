@@ -15,18 +15,26 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Common from '../../lib/common';
 
-function AdvertiserDetail(props) {
+function AdvertiserDetail({
+  user,
+  history,
+  changeUser
+}) {
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    if (userId) {
+    if (user.token) {
       axios.get('/api/TB_ADVERTISER/', {
         params: {
-          token: props.user
+          token: user.token
         }
       })
         .then((res) => {
-          setUserName(res.data.data.MEM_NAME);
+          setUserData({
+            ...userData,
+            email: res.data.data.ADV_EMAIL,
+            name: res.data.data.ADV_NAME
+          });
         });
     }
   }, []);
@@ -84,7 +92,7 @@ function AdvertiserDetail(props) {
           </Select>
           <FormHelperText>
             {meta.touched && meta.error ? (
-              <div className="error-message">{meta.error}</div>
+              <span className="error-message">{meta.error}</span>
             ) : null}
           </FormHelperText>
         </FormControl>
@@ -113,6 +121,7 @@ function AdvertiserDetail(props) {
         </label>
         <TextField
           name={props.name}
+          disabled={props.name === 'email'}
           className="text-field"
           value={meta.value}
           onChange={event => helpers.setValue(event.target.value)}
@@ -132,17 +141,18 @@ function AdvertiserDetail(props) {
     <React.Fragment>
       <Formik
         initialValues={{
-          email: '',
+          email: userData.email,
           classification: '',
           registerNumber: '',
           jobType: '',
-          name: '',
+          name: userData.name,
           phone: '',
           companyName: '',
           companyUrl: '',
           subscribeAim: '',
           agreement: false
         }}
+        enableReinitialize
         validationSchema={SignupSchema}
         onSubmit={(values) => {
           // same shape as initial values
@@ -152,7 +162,8 @@ function AdvertiserDetail(props) {
           axios.post('/api/TB_ADVERTISER/update', apiObj)
             .then((res) => {
               if (res.data.code === 200) {
-                console.log(res);
+                changeUser({ ...user, name: res.data.userName });
+                history.push('/');
               } else if (res.data.code === 401) {
                 console.log(res);
               } else {
