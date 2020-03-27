@@ -124,7 +124,7 @@ function CustomNavbar(props) {
     },
     {
       text: '인플루언서 믹스',
-      link: '/Product'
+      link: '/Product/request'
     },
     /* {
       text: '서비스2',
