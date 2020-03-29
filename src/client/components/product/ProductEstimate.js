@@ -21,7 +21,7 @@ function ProductEstimate(props) {
 
   return (
     <div className="estimate">
-      <div className="title wraper vertical3">
+      <div className="title">
         <div className="main">캠페인 예상 견적</div>
       </div>
       <div className="tip">
@@ -49,7 +49,7 @@ function ProductEstimate(props) {
         </Grid>
         <Grid container justify="center">
           <Grid item md={3} className="submit-button">
-            <Button type="submit">캠페인 요청서 작성</Button>
+            <Button type="submit" onClick={() => props.history.push(`${props.match.path}/write`)}>캠페인 요청서 작성</Button>
           </Grid>
         </Grid>
       </Grid>

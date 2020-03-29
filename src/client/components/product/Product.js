@@ -24,29 +24,32 @@ import * as Yup from 'yup';
 import { Route, Switch } from 'react-router-dom';
 import AdvertiserDetail from '../advertiser/AdvertiserDetail';
 import ProductRequest from './ProductRequest';
-import ProductEstimate from "./ProductEstimate";
+import ProductEstimate from './ProductEstimate';
+import ProductWrite from './ProductWrite';
 
 
 function Product(props) {
-
   return (
     <React.Fragment>
-      <div className="product wraper vertical2">
+      <div className="product wraper vertical3">
         <Grid container justify="center">
           <Grid item md={12} lg={10} xl={7}>
             <Route
-                path={`${props.match.path}/request`}
-                render={renderProps => <ProductRequest {...props} />}
+              path={`${props.match.path}/request`}
+              render={renderProps => <ProductRequest {...props} />}
             />
             <Route
-                path={`${props.match.path}/estimate`}
-                render={renderProps => <ProductEstimate {...props} />}
+              path={`${props.match.path}/estimate`}
+              render={renderProps => <ProductEstimate {...props} />}
+            />
+            <Route
+              path={`${props.match.path}/write`}
+              render={renderProps => <ProductWrite {...props} />}
             />
           </Grid>
         </Grid>
       </div>
-      <Switch>
-      </Switch>
+      <Switch />
     </React.Fragment>
   );
 }

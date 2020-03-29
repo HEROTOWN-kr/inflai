@@ -874,6 +874,9 @@ $colorBlack: #000;
     }
   }
   .estimate {
+    .title {
+      margin-bottom: 40px;
+    }
     .tip {
       padding: 32px 0;
       text-align: center;
@@ -894,6 +897,20 @@ $colorBlack: #000;
     }
     .submit-button {
       padding: 70px 0;
+    }
+  }
+  .write {
+    .title {
+      margin-bottom: 60px;
+    }
+    .step-holder {
+      //padding: 20px;
+      font-size: 20px;
+      font-weight: 500;
+      color: #d0d0d0;
+      -webkit-transition: color .4s;
+      -o-transition: color .4s;
+      transition: color .4s;
     }
   }
   .step {
