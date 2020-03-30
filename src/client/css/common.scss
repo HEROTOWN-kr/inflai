@@ -39,6 +39,9 @@ html, body {
   &.vertical2 {
     padding-top: 50px;
     padding-bottom: 50px;
+    &.only-top {
+      padding-bottom: 0;
+    }
   }
   &.vertical3 {
     padding-top: 60px;

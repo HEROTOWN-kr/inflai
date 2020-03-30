@@ -912,6 +912,58 @@ $colorBlack: #000;
       -o-transition: color .4s;
       transition: color .4s;
     }
+    .category-cards {
+      .category-item {
+        input[type=checkbox] {
+          display: none;
+          &:checked + .category-name {
+            border: 2px solid #fa4616;
+          }
+        }
+        .category-name {
+          box-sizing: border-box;
+          font-size: 15px;
+          font-weight: 400;
+          color: #222;
+          padding: 15px;
+          height: 76px;
+          border: 1px solid #d0d0d0;
+          .count {
+            text-align: right;
+            color: #fa4616;
+            font-weight: 500;
+          }
+          &.age {
+            padding: 26px 30px;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+    .calendar {
+      .date {
+        padding: 15px;
+        border: 1px solid #d0d0d0;
+        margin-top: 20px;
+      }
+    }
+    .next-button {
+      .left-side {
+        background: #232323;
+      }
+      .right-side {
+        color: #ffffff;
+        padding: 50px;
+        background: #fa4616;
+        font-size: 32px;
+        font-weight: 500;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
   }
   .step {
     font-size: 20px;
