@@ -25,7 +25,7 @@ import { Route, Switch } from 'react-router-dom';
 import AdvertiserDetail from '../advertiser/AdvertiserDetail';
 import ProductRequest from './ProductRequest';
 import ProductEstimate from './ProductEstimate';
-import ProductWrite from './ProductWrite';
+import ProductWrite from './write/ProductWrite';
 
 
 function Product(props) {

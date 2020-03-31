@@ -71,8 +71,8 @@ function ProductRequest(props) {
   ];
 
 
-  const StyledRadio = ({ value }) => (
-    <div className="card">
+  const StyledRadio = ({ value, selected }) => (
+    <div className={`card ${value === selected ? 'red' : null}`}>
       <Grid container justify="center" spacing={1}>
         <Grid item md={12}>
           <div className="icon">
@@ -211,7 +211,7 @@ function ProductRequest(props) {
                           <Grid container spacing={3}>
                             {['1', '2', '3', '4', '5', '6'].map(item => (
                               <Grid item md={4}>
-                                <FormControlLabel key={item} value="1" control={<StyledRadio value={item} />} />
+                                <FormControlLabel key={item} value="1" control={<StyledRadio value={item} selected={values.type} />} />
                               </Grid>
                             ))}
                           </Grid>
@@ -306,7 +306,7 @@ function ProductRequest(props) {
                       </div>
                     </Grid>
                     <Grid item md={12} className="counter">
-                      <label className="checkbox-label" htmlFor="r1">
+                      <label className={`checkbox-label ${values.reuse === true ? 'red' : null}`} htmlFor="r1">
                         <Grid container justify="space-between">
                           <Grid item md={3}>
                             <input type="checkbox" name="reuse" value={values.reuse} id="r1" onClick={handleChange} />

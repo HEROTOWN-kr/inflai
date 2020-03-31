@@ -7,6 +7,7 @@ $colorBlack: #000;
 
 .error-message {
   color: red;
+  font-size: 0.75rem;
   &.mb-10 {
     margin-bottom: 10px;
     font-size: 14px;
@@ -939,16 +940,53 @@ $colorBlack: #000;
           &:hover {
             cursor: pointer;
           }
+          &.image {
+            text-align: center;
+            padding-top: 28px;
+          }
         }
       }
     }
+    textarea {
+      //width: 100%;
+      //height: 80px;
+      padding: 23px 30px;
+      width: -webkit-fill-available;
+      resize: vertical;
+    }
     .calendar {
       .date {
-        padding: 15px;
+        padding: 25px;
         border: 1px solid #d0d0d0;
         margin-top: 20px;
       }
+      .MuiFormControl-marginNormal {
+        margin: 0;
+      }
+      .MuiInputBase-input {
+        padding: 0;
+      }
+      .MuiInput-underline{
+        &:before {
+          display: none;
+        }
+      }
+      .calendar-item-3 {
+        padding-top: 2px;
+      }
     }
+    .detail {
+      .price-holder {
+        .counter {
+          background-color: #d9d9d9;
+          cursor: no-drop;
+          input[type=text] {
+            text-align: right;
+          }
+        }
+      }
+    }
+
     .next-button {
       .left-side {
         background: #232323;
@@ -1027,6 +1065,9 @@ $colorBlack: #000;
         line-height: 1.5;
         color: #666;
       }
+      &.red {
+        border: 2px solid #fa4616;
+      }
     }
   }
   .step-two, .step-three, .step-four {
@@ -1074,6 +1115,9 @@ $colorBlack: #000;
           position: relative;
           top: 2px;
           left: 5px;
+        }
+        &.red {
+          border: 2px solid #fa4616;
         }
       }
     }

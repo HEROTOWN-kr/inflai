@@ -46,6 +46,9 @@ html, body {
   &.vertical3 {
     padding-top: 60px;
     padding-bottom: 60px;
+    &.only-top {
+      padding-bottom: 0;
+    }
   }
   &.four {
     margin: 0 150px;
