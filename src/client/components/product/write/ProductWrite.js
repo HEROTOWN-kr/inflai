@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'date-fns';
 import 'moment';
 import {
@@ -18,26 +18,20 @@ import RequiredInfo from './RequiredInfo';
 import DetailInfo from './DetailInfo';
 import PostGuide from './PostGuide';
 
-function ProductWrite() {
+function ProductWrite({
+  history,
+  match
+}) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [productData, setProductData] = useState({});
 
   function nextStep() {
     setCurrentStep(currentStep + 1);
   }
 
-  const category = {
-    content: [
-      { val: 1, text: '상관없음' },
-      { val: 2, text: '이미지' },
-      { val: 3, text: '동영상' }
-    ],
-    videoType: [
-      { val: 1, text: '셀카와 함께 ∙ 제품을 부각시키는 촬영' },
-      { val: 2, text: '전신샷과 함께 ∙ 제품을 부각시키는 촬영' },
-      { val: 3, text: '제품 위주로 촬영' },
-      { val: 4, text: '직접입력' }
-    ]
-  };
+  function saveProductData(data) {
+    setProductData({ ...productData, ...data });
+  }
 
   return (
     <div className="write">
@@ -45,15 +39,15 @@ function ProductWrite() {
         <div className="main">캠페인 요청서 작성</div>
       </div>
       <Grid container className="step-holder" spacing={5}>
-        <Grid item md={4}>필수정보 입력</Grid>
-        <Grid item md={4}>상세정보 입력</Grid>
-        <Grid item md={4}>포스팅가이드 입력</Grid>
+        <Grid item md={4} className={currentStep === 1 ? 'red' : null}>필수정보 입력</Grid>
+        <Grid item md={4} className={currentStep === 2 ? 'red' : null}>상세정보 입력</Grid>
+        <Grid item md={4} className={currentStep === 3 ? 'red' : null}>포스팅가이드 입력</Grid>
       </Grid>
       {
         {
-          1: <RequiredInfo nextStep={nextStep} />,
-          2: <DetailInfo nextStep={nextStep} />,
-          3: <PostGuide nextStep={nextStep} />
+          1: <RequiredInfo nextStep={nextStep} saveProductData={saveProductData} />,
+          2: <DetailInfo nextStep={nextStep} saveProductData={saveProductData} />,
+          3: <PostGuide match={match} history={history} saveProductData={saveProductData} productData={productData} />
         }[currentStep]
       }
     </div>

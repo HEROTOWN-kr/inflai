@@ -6,7 +6,8 @@ import {
 import * as Yup from 'yup';
 
 function DetailInfo({
-  nextStep
+  nextStep,
+  saveProductData
 }) {
   const mySchema = Yup.object().shape({
     presidentName: Yup.string()
@@ -33,7 +34,7 @@ function DetailInfo({
       enableReinitialize
       validationSchema={mySchema}
       onSubmit={(values) => {
-        console.log(values);
+        saveProductData(values);
         nextStep();
         // props.history.push(`${props.match.path}/estimate`);
       }}

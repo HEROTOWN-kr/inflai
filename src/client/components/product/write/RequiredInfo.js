@@ -8,7 +8,8 @@ import React from 'react';
 import * as Yup from 'yup';
 
 function RequiredInfo({
-  nextStep
+  nextStep,
+  saveProductData
 }) {
   const category = [
     {
@@ -73,7 +74,7 @@ function RequiredInfo({
     }
   ];
   const ageCategory = [
-    '상관없음', '10대', '20대', '30대', '40대', '50대', '60대 이상'
+    '10대', '20대', '30대', '40대', '50대', '60대 이상'
   ];
 
   const mySchema = Yup.object().shape({
@@ -108,7 +109,7 @@ function RequiredInfo({
     const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
     const yyyy = today.getFullYear();
 
-    return `${yyyy}-${mm}-${dd}`;
+    return `${yyyy}/${mm}/${dd}`;
   }
 
   return (
@@ -125,7 +126,7 @@ function RequiredInfo({
       enableReinitialize
       validationSchema={mySchema}
       onSubmit={(values) => {
-        console.log(values);
+        saveProductData(values);
         nextStep();
         // props.history.push(`${props.match.path}/estimate`);
       }}
@@ -235,7 +236,7 @@ function RequiredInfo({
                     <div className="date collect">
                       <Grid container>
                         <Grid item md={6}>최대 7일까지 설정 가능</Grid>
-                        <Grid item md={3} className="calendar-item-3">{getCurrentDate()}</Grid>
+                        <Grid item md={3} className="calendar-item-3 current-date">{getCurrentDate()}</Grid>
                         <Grid item md={3} className="calendar-item-3">
                           <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
@@ -320,7 +321,7 @@ function RequiredInfo({
                           <Grid container className="category-cards" spacing={3}>
                             <Grid item md={3}>
                               <label htmlFor="radio1" className="category-item">
-                                <div className="category-name">
+                                <div className={`category-name ${values.sex === '0' ? 'red' : null}`}>
                                   <Radio value="0" id="radio1" />
                                   <span>상광없음</span>
                                 </div>
@@ -328,7 +329,7 @@ function RequiredInfo({
                             </Grid>
                             <Grid item md={3}>
                               <label htmlFor="radio2" className="category-item">
-                                <div className="category-name">
+                                <div className={`category-name ${values.sex === '1' ? 'red' : null}`}>
                                   <Radio value="1" id="radio2" />
                                   <span>여성</span>
                                 </div>
@@ -336,7 +337,7 @@ function RequiredInfo({
                             </Grid>
                             <Grid item md={3}>
                               <label htmlFor="radio3" className="category-item">
-                                <div className="category-name">
+                                <div className={`category-name ${values.sex === '2' ? 'red' : null}`}>
                                   <Radio value="2" id="radio3" />
                                   <span>남성</span>
                                 </div>
@@ -363,6 +364,30 @@ function RequiredInfo({
                           name="age"
                           render={arrayHelpers => (
                             <Grid container className="category-cards" spacing={3}>
+                              <Grid item md={3}>
+                                <label htmlFor="상관없음" className="category-item">
+                                  <input
+                                    type="checkbox"
+                                    name="age"
+                                    value="상관없음"
+                                    id="상관없음"
+                                    checked={values.age.length === 6}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setFieldValue('age', []);
+                                        setFieldValue('age', ageCategory);
+                                        console.log(values.age);
+                                      } else {
+                                        setFieldValue('age', []);
+                                        console.log(values.age);
+                                      }
+                                    }}
+                                  />
+                                  <div className="category-name age">
+                                    상관없음
+                                  </div>
+                                </label>
+                              </Grid>
                               {ageCategory.map(item => (
                                 <Grid item md={3} key={item}>
                                   <label htmlFor={item} className="category-item">
@@ -371,6 +396,7 @@ function RequiredInfo({
                                       name="age"
                                       value={item}
                                       id={item}
+                                      checked={values.age.indexOf(item) !== -1}
                                       onChange={(e) => {
                                         if (e.target.checked) {
                                           arrayHelpers.push(item);

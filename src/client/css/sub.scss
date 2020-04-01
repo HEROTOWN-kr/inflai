@@ -912,6 +912,9 @@ $colorBlack: #000;
       -webkit-transition: color .4s;
       -o-transition: color .4s;
       transition: color .4s;
+      .red {
+        color: #fa4616;
+      }
     }
     .category-cards {
       .category-item {
@@ -944,6 +947,9 @@ $colorBlack: #000;
             text-align: center;
             padding-top: 28px;
           }
+          &.red {
+            border: 2px solid #fa4616;
+          }
         }
       }
     }
@@ -973,6 +979,9 @@ $colorBlack: #000;
       }
       .calendar-item-3 {
         padding-top: 2px;
+        &.current-date {
+          letter-spacing: 0.4px;
+        }
       }
     }
     .detail {

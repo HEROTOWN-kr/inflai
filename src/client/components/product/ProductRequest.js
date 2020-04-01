@@ -181,7 +181,7 @@ function ProductRequest(props) {
         enableReinitialize
         validationSchema={mySchema}
         onSubmit={(values) => {
-          console.log(values);
+          props.saveProductInfo(values);
           props.history.push(`${props.match.path}/estimate`);
         }}
       >

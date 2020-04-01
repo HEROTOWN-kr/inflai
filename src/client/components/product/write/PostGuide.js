@@ -1,23 +1,68 @@
-import React from 'react';
+import React, { useEffect, useRef, useLayoutEffect } from 'react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import {
   FormControl, FormControlLabel, FormHelperText, Grid, Radio, RadioGroup, Divider, TextareaAutosize, TextField
 } from '@material-ui/core';
+import axios from 'axios';
+import Common from '../../../lib/common';
 
 function PostGuide({
-  nextStep
+  history,
+  saveProductData,
+  productData,
+  match
 }) {
+  const firstUpdate = useRef(true);
+  useEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+
+    const apiObj = { ...productData, id: match.params.id };
+
+    axios.post('/api/TB_AD/updateAd', apiObj)
+      .then((res) => {
+        if (res.data.code === 200) {
+          // history.push('/');
+          console.log(res);
+        } else if (res.data.code === 401) {
+          console.log(res);
+        } else {
+          console.log(res);
+        }
+      })
+      .catch(error => (error));
+  }, [productData]);
+
+  /*useEffect(() => {
+    console.log('render');
+    const apiObj = { ...productData, id: match.params.id };
+
+    axios.post('/api/TB_AD/updateAd', apiObj)
+      .then((res) => {
+        if (res.data.code === 200) {
+          // history.push('/');
+          console.log(res);
+        } else if (res.data.code === 401) {
+          console.log(res);
+        } else {
+          console.log(res);
+        }
+      })
+      .catch(error => (error));
+  }, [productData]);*/
+
   const mySchema = Yup.object().shape({
-    presidentName: Yup.string()
-      .required('캠페인 제목을 입력하세요'),
-    photo: Yup.array()
-      .of(Yup.string().required('제품 카테고리를 선택하세요'))
-      .min(1, '캠페인 대표 이미지를 올려주세요'),
-    about: Yup.string()
-      .required('캠페인 제목을 업력하세요'),
-    sponsoredItem: Yup.string()
-      .required('협찬품목을 입력하세요'),
+    content: Yup.string()
+      .required('콘텐츠 유형을 선택하세요'),
+    videoType: Yup.string()
+      .required('원하시는 촬영방법을 선택하세요'),
+    publicText: Yup.string()
+      .required('필수 작성 내용과 예시를 넣어주세요'),
+    tags: Yup.string()
+      .required('필수 해시태그를 2개 입력하세요'),
   });
 
   const category = {
@@ -47,9 +92,7 @@ function PostGuide({
       enableReinitialize
       validationSchema={mySchema}
       onSubmit={(values) => {
-        console.log(values);
-        nextStep();
-        // props.history.push(`${props.match.path}/estimate`);
+        saveProductData(values);
       }}
     >
       {({
@@ -89,6 +132,11 @@ function PostGuide({
                       </Grid>
                     </RadioGroup>
                   </Grid>
+                  <Grid item md={12}>
+                    {errors.content && touched.content ? (
+                      <div className="error-message">{errors.content}</div>
+                    ) : null}
+                  </Grid>
                 </Grid>
                 <Grid container spacing={2} className="wraper vertical2 only-top">
                   <Grid item md={12}>
@@ -109,6 +157,11 @@ function PostGuide({
                         ))}
                       </Grid>
                     </RadioGroup>
+                  </Grid>
+                  <Grid item md={12}>
+                    {errors.videoType && touched.videoType ? (
+                      <div className="error-message">{errors.videoType}</div>
+                    ) : null}
                   </Grid>
                 </Grid>
                 <div style={{ marginBottom: '50px' }} />
@@ -133,6 +186,11 @@ function PostGuide({
                       onBlur={handleBlur}
                       placeholder="4줄 이하로 간단하게 입력하세요"
                     />
+                  </Grid>
+                  <Grid item md={12}>
+                    {errors.publicText && touched.publicText ? (
+                      <div className="error-message">{errors.publicText}</div>
+                    ) : null}
                   </Grid>
                 </Grid>
                 <Grid container spacing={2} className="wraper vertical2 only-top">
@@ -210,11 +268,6 @@ function PostGuide({
                                 - 여러장 올리실 수 있으며 파일크기는 최대 10MB까지 가능해요
                     </div>
                   </Grid>
-                  <Grid item md={12}>
-                    {errors.photo && touched.photo ? (
-                      <div className="error-message">{errors.photo}</div>
-                    ) : null}
-                  </Grid>
                 </Grid>
                 <Grid container spacing={2} className="wraper vertical3 only-top">
                   <Grid item md={12}>
@@ -229,9 +282,6 @@ function PostGuide({
                       onBlur={handleBlur}
                       fullWidth
                       variant="outlined"
-                      helperText={errors.productLink && touched.productLink ? (
-                        <span className="error-message">{errors.productLink}</span>
-                      ) : null}
                     />
                   </Grid>
                 </Grid>

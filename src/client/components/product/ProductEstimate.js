@@ -1,13 +1,15 @@
 import React from 'react';
 import { Grid, Divider, Button } from '@material-ui/core';
+import axios from 'axios';
 import CheckWarning from './CheckWarning';
+import Common from '../../lib/common';
 
 
 function ProductEstimate(props) {
   function MyItem({
     mykey,
     value,
-    color
+    color,
   }) {
     return (
       <Grid item md={12} className={`price-description ${color === 'red' ? 'red' : null}`}>
@@ -17,6 +19,24 @@ function ProductEstimate(props) {
         </Grid>
       </Grid>
     );
+  }
+
+  function saveProduct() {
+    const apiObj = { ...props.productInfo, token: Common.getUserInfo().token };
+
+    axios.post('/api/TB_AD/createAd', apiObj)
+      .then((res) => {
+        if (res.data.code === 200) {
+          // props.history.push(`${props.match.path}/write/${res.data.id}`);
+          props.history.push(`${props.match.path}/write/${res.data.id}`);
+          console.log(res);
+        } else if (res.data.code === 401) {
+          console.log(res);
+        } else {
+          console.log(res);
+        }
+      })
+      .catch(error => (error));
   }
 
   return (
@@ -49,7 +69,7 @@ function ProductEstimate(props) {
         </Grid>
         <Grid container justify="center">
           <Grid item md={3} className="submit-button">
-            <Button type="submit" onClick={() => props.history.push(`${props.match.path}/write`)}>캠페인 요청서 작성</Button>
+            <Button type="submit" onClick={saveProduct}>캠페인 요청서 작성</Button>
           </Grid>
         </Grid>
       </Grid>
