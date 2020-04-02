@@ -12,17 +12,17 @@ const models = require('./models');
 
 // Sync Database
 models.sequelize.sync().then(() => {
-    console.log('connected to database');
+  console.log('connected to database');
 }).catch((err) => {
-    console.log(err);
+  console.log(err);
 });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
-    extended: false
+  extended: false
 }));
 app.use(multipart({
-    uploadDir: config.tmp
+  uploadDir: config.tmp
 }));
 app.use(cors());
 
@@ -48,6 +48,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/TB_ADVERTISER', require('./routes/TB_ADVERTISER'));
 app.use('/TB_INFLUENCER', require('./routes/TB_INFLUENCER'));
 app.use('/TB_AD', require('./routes/TB_AD'));
+app.use('/TB_PHOTO_AD', require('./routes/TB_PHOTO_AD'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 

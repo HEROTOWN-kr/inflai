@@ -64,7 +64,31 @@ $colorBlack: #000;
   .name-holder {
     color: $colorBg;
     line-height: 34px;
+    opacity: 0.8;
+    &:hover {
+      cursor: pointer;
+      opacity: 1;
+    }
   }
+
+}
+
+.user-popmenu {
+  padding: 30px 0;
+  a {
+    text-decoration: none;
+    color: black;
+    .pop-item {
+      padding: 15px 60px;
+      text-align: center;
+      font-size: 14px;
+      &:hover {
+        cursor: pointer;
+        background: #9ecfca;
+      }
+    }
+  }
+
 }
 
 
@@ -914,6 +938,7 @@ $colorBlack: #000;
       transition: color .4s;
       .red {
         color: #fa4616;
+        border-bottom: 2px solid #fa4616;
       }
     }
     .category-cards {
@@ -993,6 +1018,27 @@ $colorBlack: #000;
             text-align: right;
           }
         }
+      }
+      .image-holder {
+        div {
+          position: relative;
+          img {
+            width: 100%;
+            max-height: 200px;
+          }
+          span {
+            width: 26px;
+            height: 26px;
+            position: absolute;
+            display: inline-block;
+            top: 5px;
+            right: 6px;
+            background-image: url("../img/photo_del.png");
+            text-indent: -10000px;
+            cursor: pointer;
+          }
+        }
+
       }
     }
 
@@ -1244,6 +1290,31 @@ $colorBlack: #000;
         color: #666;
       }
     }
+  }
+}
+
+.campaign {
+  .campaign-step {
+    border: 1px solid $colorBlack;
+    border-radius: 4px;
+    .link-container {
+      text-align: center;
+      padding: 15px 0;
+      .link {
+        box-sizing: border-box;
+        color: $colorBlack;
+        text-decoration: none;
+      }
+      &:hover, &:hover * {
+        background: $colorBlack;
+        color: $colorBg;
+      }
+    }
+  }
+  .campaign-card {
+    border: 1px solid #D7D7D7;
+    border-radius: 3px;
+    padding: 14px;
   }
 }
 

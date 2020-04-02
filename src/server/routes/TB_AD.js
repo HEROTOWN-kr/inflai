@@ -37,9 +37,10 @@ router.post('/updateAd', (req, res) => {
   const data = req.body;
   const { id } = data;
 
-  //data.typeCategory, data.age, data.channel, data.photo are arrays
-  //try to stringify them
-  //need search_start datetime data
+  // data.typeCategory, data.age, data.channel, data.photo are arrays
+  // try to stringify them
+  // need search_start datetime data
+
 
   const post = {
     AD_PROD_NAME: data.name,
@@ -54,6 +55,11 @@ router.post('/updateAd', (req, res) => {
     AD_PUBL_TEXT: data.publicText,
     AD_TAGS: data.tags
   };
+
+  if (data.typeCategory) post.AD_CTG = JSON.stringify(data.typeCategory);
+  if (data.age) post.AD_AGE = JSON.stringify(data.age);
+  if (data.channel) post.AD_CHANNEL = JSON.stringify(data.channel);
+  if (data.photo) post.AD_PHOTO = JSON.stringify(data.photo);
 
 
   Advertise.update(post, {

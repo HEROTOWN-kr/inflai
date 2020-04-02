@@ -26,7 +26,15 @@ function ProductWrite({
   const [productData, setProductData] = useState({});
 
   function nextStep() {
-    setCurrentStep(currentStep + 1);
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    setTimeout(() => {
+      setCurrentStep(currentStep + 1);
+    }, 400);
+
+
   }
 
   function saveProductData(data) {

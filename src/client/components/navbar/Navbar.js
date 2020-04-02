@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
+/* import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@material-ui/core/Grid'; */
 import MenuIcon from '@material-ui/icons/Menu';
-import List from '@material-ui/core/List';
+/* import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { Link, withRouter } from 'react-router-dom';
-import { Drawer, Hidden } from '@material-ui/core';
+import ListItemText from '@material-ui/core/ListItemText'; */
+import {
+  makeStyles, AppBar, Grid, List, ListItem, ListItemText, Drawer, Hidden, Popover, Divider
+} from '@material-ui/core';
+
+import { Link, withRouter, browserHistory } from 'react-router-dom';
+// import { Drawer, Hidden } from '@material-ui/core';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
@@ -48,6 +52,41 @@ function CustomNavbar(props) {
   const classes = useStyles();
 
   const [openMenu, setOpenMenu] = React.useState(false);
+  const [userMenu, setUserMenu] = React.useState(null);
+
+  function openUserMenu(event) {
+    setUserMenu(event.currentTarget);
+  }
+
+  const handleClose = () => {
+    setUserMenu(null);
+  };
+
+  props.history.listen((location) => {
+    handleClose();
+  });
+
+  const open = Boolean(userMenu);
+  const id = open ? 'simple-popover' : undefined;
+
+  const userMenuCat = [
+    {
+      text: '계정정보',
+      link: ''
+    },
+    {
+      text: '마이 캠페인',
+      link: '/Campaign/ongoing'
+    },
+    {
+      text: '자주하는질문',
+      link: ''
+    },
+    {
+      text: '문의하기',
+      link: ''
+    },
+  ];
 
   const { hash } = document.location;
 
@@ -84,12 +123,6 @@ function CustomNavbar(props) {
         });
       }
     });
-
-    /* axios.get('/api/testRoute/twiterTest3', {
-      params: urlObj
-    }).then((res) => {
-      console.log(res);
-    }); */
   }
 
   useEffect(() => {
@@ -202,9 +235,38 @@ function CustomNavbar(props) {
             </Grid>
             <Grid container xs={2} justify="flex-end" />
             <Grid container xs={4} justify="flex-end" spacing={3}>
-              <Grid item className="name-holder">
+              <Grid item className="name-holder" onClick={openUserMenu}>
                 {props.user.name ? props.user.name : null}
               </Grid>
+              <Popover
+                id={id}
+                open={open}
+                anchorEl={userMenu}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              >
+                <div className="user-popmenu">
+                  <Divider />
+                  {userMenuCat.map(item => (
+                    <div>
+                      <Link
+                        to={item.link}
+                      >
+                        <div className="pop-item">{item.text}</div>
+                      </Link>
+                      <Divider />
+                    </div>
+                  ))}
+                </div>
+              </Popover>
+
               <Grid item>
                 <LogInComponent {...props} />
               </Grid>

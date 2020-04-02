@@ -25,8 +25,23 @@ function PostGuide({
     axios.post('/api/TB_AD/updateAd', apiObj)
       .then((res) => {
         if (res.data.code === 200) {
+          if (productData.photo.length > 0) {
+            const uploaders = productData.photo.map((file) => {
+              const formData = new FormData();
+              formData.append('file', file.file);
+              formData.append('id', apiObj.id);
+              return axios.post('/api/TB_PHOTO_AD/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+              }).then((response) => {
+                const { data } = response;
+                console.log(data);
+              });
+            });
+            axios.all(uploaders).then(() => {
+              console.log('succes');
+            });
+          }
           // history.push('/');
-          console.log(res);
         } else if (res.data.code === 401) {
           console.log(res);
         } else {
@@ -35,24 +50,6 @@ function PostGuide({
       })
       .catch(error => (error));
   }, [productData]);
-
-  /*useEffect(() => {
-    console.log('render');
-    const apiObj = { ...productData, id: match.params.id };
-
-    axios.post('/api/TB_AD/updateAd', apiObj)
-      .then((res) => {
-        if (res.data.code === 200) {
-          // history.push('/');
-          console.log(res);
-        } else if (res.data.code === 401) {
-          console.log(res);
-        } else {
-          console.log(res);
-        }
-      })
-      .catch(error => (error));
-  }, [productData]);*/
 
   const mySchema = Yup.object().shape({
     content: Yup.string()
@@ -120,8 +117,8 @@ function PostGuide({
                     <RadioGroup row aria-label="gender" name="gender1" value={values.content} onChange={event => setFieldValue('content', event.target.value)}>
                       <Grid container className="category-cards" spacing={3}>
                         {category.content.map(item => (
-                          <Grid item md={4}>
-                            <label htmlFor={item.text} className="category-item">
+                          <Grid item key={item.text} md={4}>
+                            <label htmlFor={item.te} className="category-item">
                               <div className="category-name">
                                 <Radio value={item.val} id={item.text} />
                                 <span>{item.text}</span>

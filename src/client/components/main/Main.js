@@ -6,6 +6,7 @@ import Advertiser from '../advertiser/Advertiser';
 import Contact from '../contact/Contact';
 import AdvertiserDetail from '../advertiser/AdvertiserDetail';
 import Product from '../product/Product';
+import Campaign from '../campaign/Campaign';
 
 
 function Main({
@@ -25,6 +26,10 @@ function Main({
       <Route
         path="/Product"
         render={props => <Product {...props} user={user} changeUser={changeUser} />}
+      />
+      <Route
+        path="/Campaign"
+        render={props => <Campaign {...props} user={user} />}
       />
     </Switch>
   );

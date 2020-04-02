@@ -77,7 +77,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(200),
       allowNull: true
     },
-    TB_CHANNEL: {
+    AD_CHANNEL: {
       type: DataTypes.STRING(200),
       allowNull: true
     },

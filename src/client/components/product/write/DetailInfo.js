@@ -1,9 +1,11 @@
 import React from 'react';
 import { FieldArray, Form, Formik } from 'formik';
 import {
+  Button,
   Divider, Grid, InputAdornment, Radio, RadioGroup, TextareaAutosize, TextField
 } from '@material-ui/core';
 import * as Yup from 'yup';
+import Common from '../../../lib/common';
 
 function DetailInfo({
   nextStep,
@@ -21,11 +23,26 @@ function DetailInfo({
       .required('협찬품목을 입력하세요'),
   });
 
+  function addPicture(event, photo, setFieldValue) {
+    const newPics = [];
+    const pictures = event.target.files;
+
+    Object.keys(pictures).map((key, i) => {
+      const picUrl = URL.createObjectURL(pictures[key]);
+      newPics.push({ file: pictures[key], picUrl });
+    });
+
+    setFieldValue('photo', photo.concat(newPics));
+
+    // input same pictures multiple times
+    event.target.value = '';
+  }
+
   return (
     <Formik
       initialValues={{
         presidentName: '',
-        photo: ['1'],
+        photo: [],
         about: '',
         price: '1000',
         sponsoredItem: '',
@@ -77,14 +94,24 @@ function DetailInfo({
                 </Grid>
                 <Grid container spacing={2} style={{ margin: '60px 0' }}>
                   <Grid item md={12}>
-                    <div className="step-title">캠페인 대표 이미지를 올려주세요</div>
+                    <div className="step-title">
+                        캠페인 대표 이미지를 올려주세요
+                    </div>
                   </Grid>
                   <Grid item md={12}>
                     <Grid container className="category-cards">
                       <Grid item md={3}>
-                        <label htmlFor="" className="category-item">
+                        <label htmlFor="picAdd" className="category-item">
                           <div className="category-name image">
                             이미지 등록
+                            <input
+                              id="picAdd"
+                              type="file"
+                              style={{ display: 'none' }}
+                              multiple
+                              accept="image/*"
+                              onChange={(event => addPicture(event, values.photo, setFieldValue))}
+                            />
                           </div>
                         </label>
                       </Grid>
@@ -96,6 +123,27 @@ function DetailInfo({
                       <br />
                       - 여러장 올리실 수 있으며 파일크기는 최대 10MB까지 가능해요
                     </div>
+                  </Grid>
+                  <Grid item md={12}>
+                    <FieldArray
+                      name="photo"
+                      render={arrayHelpers => (
+                        <Grid container spacing={2}>
+                          {values.photo.map((file, index) => (
+                            <Grid item key={file.picUrl} md={3} className="image-holder">
+                              <div>
+                                <img
+                                  className=""
+                                  alt="img"
+                                  src={file.picUrl}
+                                />
+                                <span onClick={() => arrayHelpers.remove(index)}>button</span>
+                              </div>
+                            </Grid>
+                          ))}
+                        </Grid>
+                      )}
+                    />
                   </Grid>
                   <Grid item md={12}>
                     {errors.photo && touched.photo ? (
