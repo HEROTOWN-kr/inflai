@@ -36,34 +36,32 @@ function Campaign(props) {
               <Grid item md={5}>
                 <Grid container className="campaign-step">
                   {menuLinks.map(link => (
-                      <Grid item md={4} key={link.text} className="link-container">
-                        <Link
-                          id={link.text}
-                          className="link"
-                          to={props.match.path + link.link}
-                        >
-                          {link.text}
-                        </Link>
-                      </Grid>
+                    <Grid item md={4} key={link.text} className="link-container">
+                      <Link
+                        id={link.text}
+                        className="link"
+                        to={props.match.path + link.link}
+                      >
+                        {link.text}
+                      </Link>
+                    </Grid>
                   ))}
                 </Grid>
               </Grid>
-              <Grid item md={12}>
-                <Switch>
-                  <Route
-                    path={`${props.match.path}/ongoing`}
-                    render={props => <OnGoing {...props} />}
-                  />
-                  <Route
-                    path={`${props.match.path}/complete`}
-                    render={props => <Complete {...props} />}
-                  />
-                  <Route
-                    path={`${props.match.path}/combine`}
-                    render={props => <Combined {...props} />}
-                  />
-                </Switch>
-              </Grid>
+              <Switch>
+                <Route
+                  path={`${props.match.path}/ongoing`}
+                  render={props => <OnGoing {...props} />}
+                />
+                <Route
+                  path={`${props.match.path}/complete`}
+                  render={props => <Complete {...props} />}
+                />
+                <Route
+                  path={`${props.match.path}/combine`}
+                  render={props => <Combined {...props} />}
+                />
+              </Switch>
             </Grid>
           </Grid>
         </Grid>

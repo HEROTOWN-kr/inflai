@@ -4,6 +4,7 @@ $aqua: #23c9cf;
 $white: #ffffff;
 $colorSoftBlue: #7491B4;
 $colorBlack: #000;
+$colorRed: #fa4616;
 
 .error-message {
   color: red;
@@ -504,7 +505,7 @@ $colorBlack: #000;
     }
   }
   .register-link {
-    margin: 25px 0;
+    margin: 150px 0;
     .title-holder {
       margin-bottom: 136px;
       .main-title {
@@ -739,7 +740,7 @@ $colorBlack: #000;
       color: $colorBlack;
       text-align: center;
       span {
-        color: #fa4616;
+        color: $colorRed;
         &:hover {
           color: $colorBlack;
           cursor: pointer;
@@ -837,7 +838,7 @@ $colorBlack: #000;
     color: $colorBlack;
     text-align: center;
     span {
-      color: #fa4616;
+      color: $colorRed;
       &:hover {
         color: $colorBlack;
         cursor: pointer;
@@ -890,7 +891,7 @@ $colorBlack: #000;
       font-size: 18px;
       color: #232323;
       span {
-        color: #fa4616;
+        color: $colorRed;
       }
     }
     .tip-secondary {
@@ -909,7 +910,7 @@ $colorBlack: #000;
     .price-description {
       font-size: 18px;
       &.red {
-        color: #fa4616;
+        color: $colorRed;
         .value {
           font-size: 30px;
           font-weight: 700;
@@ -937,8 +938,8 @@ $colorBlack: #000;
       -o-transition: color .4s;
       transition: color .4s;
       .red {
-        color: #fa4616;
-        border-bottom: 2px solid #fa4616;
+        color: $colorRed;
+        border-bottom: 2px solid $colorRed;
       }
     }
     .category-cards {
@@ -946,7 +947,7 @@ $colorBlack: #000;
         input[type=checkbox] {
           display: none;
           &:checked + .category-name {
-            border: 2px solid #fa4616;
+            border: 2px solid $colorRed;
           }
         }
         .category-name {
@@ -959,7 +960,7 @@ $colorBlack: #000;
           border: 1px solid #d0d0d0;
           .count {
             text-align: right;
-            color: #fa4616;
+            color: $colorRed;
             font-weight: 500;
           }
           &.age {
@@ -973,7 +974,7 @@ $colorBlack: #000;
             padding-top: 28px;
           }
           &.red {
-            border: 2px solid #fa4616;
+            border: 2px solid $colorRed;
           }
         }
       }
@@ -1049,7 +1050,7 @@ $colorBlack: #000;
       .right-side {
         color: #ffffff;
         padding: 50px;
-        background: #fa4616;
+        background: $colorRed;
         font-size: 32px;
         font-weight: 500;
         &:hover {
@@ -1094,7 +1095,7 @@ $colorBlack: #000;
          svg {
           width: 70px;
           height: 70px;
-          fill: #fa4616;
+          fill: $colorRed;
          }
       }
       .main-title {
@@ -1121,7 +1122,7 @@ $colorBlack: #000;
         color: #666;
       }
       &.red {
-        border: 2px solid #fa4616;
+        border: 2px solid $colorRed;
       }
     }
   }
@@ -1142,7 +1143,7 @@ $colorBlack: #000;
         }
         .aim {
           font-size: 12px;
-          color: #fa4616;
+          color: $colorRed;
         }
       }
       .checkbox-label {
@@ -1172,7 +1173,7 @@ $colorBlack: #000;
           left: 5px;
         }
         &.red {
-          border: 2px solid #fa4616;
+          border: 2px solid $colorRed;
         }
       }
     }
@@ -1187,7 +1188,7 @@ $colorBlack: #000;
       .inf-number {
         font-size: 32px;
         font-weight: 500;
-        color: #fa4616;
+        color: $colorRed;
       }
     }
     .MuiInputBase-input {
@@ -1314,7 +1315,40 @@ $colorBlack: #000;
   .campaign-card {
     border: 1px solid #D7D7D7;
     border-radius: 3px;
-    padding: 14px;
+    padding: 25px;
+    .influencer-count {
+      width: 45px;
+      background-color: $colorRed;
+      font-size: 12px;
+      color: $colorBg;
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin: 0;
+    }
+    .product-price {
+      font-weight: bold;
+      font-size: 19px;
+      span {
+        font-weight: 400;
+        color: #afafaf;
+        font-size: 14px;
+      }
+    }
+    .product-name {
+      padding: 15px 8px;
+    }
+    .right-side {
+      text-align: right;
+      color: #D7D7D7;
+      .product-delete {
+        svg {
+          &:hover {
+            color: $colorBlack;
+            cursor: pointer;
+          }
+        }
+      }
+    }
   }
 }
 

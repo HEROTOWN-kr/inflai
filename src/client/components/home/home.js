@@ -230,6 +230,47 @@ function Home(props) {
   return (
     <div className="home">
        <Greeting />
+      <div className="register-link">
+        <div className="title-holder">
+          <Grid container justify="center">
+            <div className="main-title">서비스 둘러보기</div>
+          </Grid>
+          <Grid container justify="center">
+            <div className="second-title">INFLAi로 최적의 효과를 누려보세요</div>
+          </Grid>
+          <Grid container justify="center">
+            <img src={Arrow} className="arrow-image" />
+          </Grid>
+        </div>
+        <Grid container className="link-field">
+          <Grid xs={12} md={6} className="advertiser">
+            <div className="y-wrap">
+              <Grid container justify="center">
+                <img src={Advertiser} />
+              </Grid>
+              <Grid container justify="center">
+                <div className="job-type">광고주</div>
+              </Grid>
+              <Grid container justify="center" alignContent="flex-end">
+                <Button variant="outlined" className="func-button">Request demo</Button>
+              </Grid>
+            </div>
+          </Grid>
+          <Grid xs={12} md={6} className="influencer">
+            <div className="y-wrap">
+              <Grid container justify="center">
+                <img src={Influencer} />
+              </Grid>
+              <Grid container justify="center">
+                <div className="job-type">인플루언서</div>
+              </Grid>
+              <Grid container justify="center">
+                <Button variant="outlined" className="func-button">Sign Up</Button>
+              </Grid>
+            </div>
+          </Grid>
+        </Grid>
+      </div>
       <div className="wraper one">
         <Grid className="about" container alignItems="center">
           <Grid container xs={12} md={8} className="image">
@@ -647,47 +688,6 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
             </Grid>
           </Grid>
         </div>
-      </div>
-      <div className="register-link">
-        <div className="title-holder">
-          <Grid container justify="center">
-            <div className="main-title">서비스 둘러보기</div>
-          </Grid>
-          <Grid container justify="center">
-            <div className="second-title">INFLAi로 최적의 효과를 누려보세요</div>
-          </Grid>
-          <Grid container justify="center">
-            <img src={Arrow} className="arrow-image" />
-          </Grid>
-        </div>
-        <Grid container className="link-field">
-          <Grid xs={12} md={6} className="advertiser">
-            <div className="y-wrap">
-              <Grid container justify="center">
-                <img src={Advertiser} />
-              </Grid>
-              <Grid container justify="center">
-                <div className="job-type">광고주</div>
-              </Grid>
-              <Grid container justify="center" alignContent="flex-end">
-                <Button variant="outlined" className="func-button">Request demo</Button>
-              </Grid>
-            </div>
-          </Grid>
-          <Grid xs={12} md={6} className="influencer">
-            <div className="y-wrap">
-              <Grid container justify="center">
-                <img src={Influencer} />
-              </Grid>
-              <Grid container justify="center">
-                <div className="job-type">인플루언서</div>
-              </Grid>
-              <Grid container justify="center">
-                <Button variant="outlined" className="func-button">Sign Up</Button>
-              </Grid>
-            </div>
-          </Grid>
-        </Grid>
       </div>
       <div className="influencer-list">
         <div className="main-title">

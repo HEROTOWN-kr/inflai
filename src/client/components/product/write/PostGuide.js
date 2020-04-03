@@ -38,10 +38,11 @@ function PostGuide({
               });
             });
             axios.all(uploaders).then(() => {
-              console.log('succes');
+              history.push('/');
             });
+          } else {
+            history.push('/');
           }
-          // history.push('/');
         } else if (res.data.code === 401) {
           console.log(res);
         } else {

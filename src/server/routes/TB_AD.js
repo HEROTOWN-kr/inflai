@@ -4,6 +4,7 @@ const request = require('request');
 
 const config = require('../config');
 const Advertise = require('../models').TB_AD;
+const Photo = require('../models').TB_PHOTO_AD;
 const common = require('../config/common');
 
 const router = express.Router();
@@ -71,6 +72,39 @@ router.post('/updateAd', (req, res) => {
         userName: data.name,
       });
     }
+  });
+});
+
+router.get('/', (req, res) => {
+  const { token } = req.query;
+  const userId = common.getIdFromToken(token).sub;
+
+  Advertise.findAll({ where: { ADV_ID: userId } }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
+router.post('/delete', (req, res) => {
+  const data = req.body;
+  const { id } = data;
+
+  Photo.destroy({
+    where: { AD_ID: id }
+  }).then((result) => {
+    Advertise.destroy({
+      where: { AD_ID: id }
+    }).then((result2) => {
+      if (result2) {
+        res.json({
+          code: 200,
+        });
+      }
+    });
   });
 });
 

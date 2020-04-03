@@ -24,8 +24,8 @@ router.post('/upload', (req, res, next) => {
     AD_ID: id
   };
 
- /* post.PRF_FILE_NM = file.name;
-  post.PRF_FILE_MT = mime.contentType(file.name);*/
+  /* post.PRF_FILE_NM = file.name;
+  post.PRF_FILE_MT = mime.contentType(file.name); */
 
 
   async.waterfall([
@@ -35,6 +35,7 @@ router.post('/upload', (req, res, next) => {
       });
     },
     function (newFileNm, done) { //
+      console.log('test');
       const DRAWING_URL = `${'/attach' + '/portfolio/'}${id}/${newFileNm}`;
       post.PHO_FILE = DRAWING_URL;
 
