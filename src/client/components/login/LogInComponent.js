@@ -86,7 +86,7 @@ function LoginDialog({
 
 
   return (
-    <Dialog open={openDialog} className="new-login-dialog">
+    <Dialog open={openDialog} className="new-login-dialog" disableScrollLock>
       <button onClick={closeDialogButton} type="button" aria-label="Close" className="modal-close">
         <span className="modal-close-x">
           <CloseIcon />

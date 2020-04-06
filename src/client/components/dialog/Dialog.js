@@ -17,6 +17,7 @@ function SimpleDialog({
       // onClose={}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      disableScrollLock
     >
       <DialogTitle id="alert-dialog-title">삭제</DialogTitle>
       <DialogContent>

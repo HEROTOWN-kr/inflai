@@ -70,9 +70,54 @@ function ProductRequest(props) {
     }
   ];
 
+  const campaignType = [
+    {
+      value: '1',
+      name: '상품 리뷰',
+      title: '무료 협찬 제품 배송형',
+      desc: '크리에이터에게 무료 협찬 제품을 배송 제공하여 사용 후기 컨텐츠 제작',
+      icon: ''
+    },
+    {
+      value: '2',
+      name: '방문 리뷰',
+      title: '오프라인 매장 / 행사 방문형',
+      desc: '크리에이터가 직접 매장 또는 행사장에 방문하여 방문 후기 컨텐츠 제작',
+      icon: ''
+    },
+    {
+      value: '3',
+      name: '서비스 리뷰',
+      title: '온라인 서비스 이용형',
+      desc: '크리에이터가 온라인 서비스를 이용하고 서비스 체험 후기 컨텐츠 제작',
+      icon: ''
+    },
+    {
+      value: '4',
+      name: '리그램',
+      title: '포스팅 리그램형',
+      desc: '원하는 이미지나 영상 가이드를 그대로 업로드, 리그램 컨텐츠 제작',
+      icon: ''
+    },
+    {
+      value: '5',
+      name: '이벤트 바이럴',
+      title: '이벤트 / 행사 홍보형',
+      desc: '이벤트 부스팅을 위한 홍보/참여 후기 컨텐츠 제작',
+      icon: ''
+    },
+    {
+      value: '6',
+      name: '대행 문의',
+      title: '컨설팅 / 디지털 마케팅',
+      desc: '브릭씨 전문 마케터에게 대행 / 컨설팅 문의하기',
+      icon: ''
+    },
+  ];
 
-  const StyledRadio = ({ value, selected }) => (
-    <div className={`card ${value === selected ? 'red' : null}`}>
+
+  const StyledRadio = ({ item, selected }) => (
+    <div className={`card ${item.value === selected ? 'red' : null}`}>
       <Grid container justify="center" spacing={1}>
         <Grid item md={12}>
           <div className="icon">
@@ -81,20 +126,18 @@ function ProductRequest(props) {
           </div>
         </Grid>
         <Grid item md={12}>
-          <div className="main-title">상품 리뷰</div>
+          <div className="main-title">{item.name}</div>
         </Grid>
         <Grid item md={12}>
-          <div className="secondary-title">무료 협찬 제품 배송형</div>
+          <div className="secondary-title">{item.title}</div>
         </Grid>
         <Grid item md={12}>
           <div className="third-title">
-                        크리에이터에게 무료 협찬 제붐을
-            <br />
-                        배송 제공하여 사용 후기 컨텐츠 제작
+                        {item.desc}
           </div>
         </Grid>
         <Grid item md={12}>
-          <Radio value={value} />
+          <Radio value={item.value} />
         </Grid>
       </Grid>
     </div>
@@ -209,15 +252,21 @@ function ProductRequest(props) {
                       <FormControl>
                         <RadioGroup row aria-label="gender" name="gender1" value={values.type} onChange={event => setFieldValue('type', event.target.value)}>
                           <Grid container spacing={3}>
-                            {['1', '2', '3', '4', '5', '6'].map(item => (
-                              <Grid item md={4}>
-                                <FormControlLabel key={item} value="1" control={<StyledRadio value={item} selected={values.type} />} />
+                            {campaignType.map(item => (
+                              <Grid item md={4} key={item}>
+                                <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.type} />} />
                               </Grid>
                             ))}
                           </Grid>
                         </RadioGroup>
                         <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
                       </FormControl>
+                    </Grid>
+                    <Grid item md={12}>
+                      <Grid container spacing={3}>
+                        <Grid item md={6}>card</Grid>
+                        <Grid item md={6}>card</Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>

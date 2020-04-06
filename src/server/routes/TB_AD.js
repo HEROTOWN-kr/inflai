@@ -1,8 +1,4 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const request = require('request');
-
-const config = require('../config');
 const Advertise = require('../models').TB_AD;
 const Photo = require('../models').TB_PHOTO_AD;
 const common = require('../config/common');
@@ -54,7 +50,8 @@ router.post('/updateAd', (req, res) => {
     AD_CONT_TYPE: data.content,
     AD_VIDEO_TYPE: data.videoType,
     AD_PUBL_TEXT: data.publicText,
-    AD_TAGS: data.tags
+    AD_TAGS: data.tags,
+    AD_UID: `merchant_${id}`
   };
 
   if (data.typeCategory) post.AD_CTG = JSON.stringify(data.typeCategory);
@@ -79,7 +76,10 @@ router.get('/', (req, res) => {
   const { token } = req.query;
   const userId = common.getIdFromToken(token).sub;
 
-  Advertise.findAll({ where: { ADV_ID: userId } }).then((result) => {
+  Advertise.findAll({
+    where: { ADV_ID: userId },
+    order: [['AD_ID', 'DESC']]
+  }).then((result) => {
     res.json({
       code: 200,
       data: result,

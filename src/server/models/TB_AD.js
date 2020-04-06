@@ -123,8 +123,17 @@ module.exports = function(sequelize, DataTypes) {
     },
     AD_MESSAGE: {
       type: DataTypes.STRING(45),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '0'
+    },
+    AD_UID: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    AD_PAID: {
+      type: DataTypes.STRING(1),
+      allowNull: false,
+      defaultValue: 'N'
     },
     AD_DT: {
       type: 'TIMESTAMP',

@@ -5,8 +5,10 @@ import Influencer from '../influencer/Influencer';
 import Advertiser from '../advertiser/Advertiser';
 import Contact from '../contact/Contact';
 import AdvertiserDetail from '../advertiser/AdvertiserDetail';
-import Product from '../product/Product';
+import ProductMix from '../product/ProductMix';
 import Campaign from '../campaign/Campaign';
+import ProductCreate from '../product/ProductCreate';
+import Product from '../product/Product';
 
 
 function Main({
@@ -25,8 +27,13 @@ function Main({
       />
       <Route
         path="/Product"
+        // render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
         render={props => <Product {...props} user={user} changeUser={changeUser} />}
       />
+      {/*<Route
+        path="/Product/mix/request"
+        render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
+      />*/}
       <Route
         path="/Campaign"
         render={props => <Campaign {...props} user={user} />}

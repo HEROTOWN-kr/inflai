@@ -1,17 +1,22 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
+import axios from 'axios';
 
-function Payment() {
+function Payment({
+  item_data,
+  getCampaign
+}) {
   const userCode = 'imp16565297';
 
   const data = {
     pg: 'kcp',
     pay_method: 'card',
-    merchant_uid: `merchant_${new Date().getTime()}`,
-    name: 'myproject',
-    amount: '100',
+    merchant_uid: item_data.AD_UID,
+    // merchant_uid: `merchant_${new Date().getTime()}`,
+    name: item_data.AD_PROD_NAME,
+    amount: item_data.AD_PROD_PRICE,
     currency: 'KRW',
-    buyer_name: '홍길동',
+    buyer_name: item_data.AD_COMP_NAME,
     buyer_tel: '01012341234',
     buyer_email: 'example@example.com',
     escrow: undefined,
@@ -22,7 +27,24 @@ function Payment() {
   function callback(response) {
     /* const query = queryString.stringify(response);
     history.push(`/payment/result?${query}`); */
-    console.log(response);
+
+    if (response.success) {
+      const obj = {
+        payment_res: response,
+        id: item_data.AD_ID
+      };
+      axios.post('/api/TB_PAYMENT/', obj)
+        .then((res) => {
+          if (res.data.code === 200) {
+            getCampaign();
+          } else if (res.data.code === 401) {
+            console.log(res);
+          } else {
+            console.log(res);
+          }
+        })
+        .catch(error => (error));
+    }
   }
 
   function paymentStart() {

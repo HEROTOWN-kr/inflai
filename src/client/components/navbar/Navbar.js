@@ -157,7 +157,7 @@ function CustomNavbar(props) {
     },
     {
       text: '인플루언서 믹스',
-      link: '/Product/request'
+      link: '/Product'
     },
     /* {
       text: '서비스2',
@@ -169,7 +169,6 @@ function CustomNavbar(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-
     setOpenMenu(open);
   };
 

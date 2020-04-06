@@ -49,6 +49,7 @@ app.use('/TB_ADVERTISER', require('./routes/TB_ADVERTISER'));
 app.use('/TB_INFLUENCER', require('./routes/TB_INFLUENCER'));
 app.use('/TB_AD', require('./routes/TB_AD'));
 app.use('/TB_PHOTO_AD', require('./routes/TB_PHOTO_AD'));
+app.use('/TB_PAYMENT', require('./routes/TB_PAYMENT'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 

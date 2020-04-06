@@ -5,6 +5,7 @@ $white: #ffffff;
 $colorSoftBlue: #7491B4;
 $colorBlack: #000;
 $colorRed: #fa4616;
+$colorGrey: #dfe2e8;
 
 .error-message {
   color: red;
@@ -862,6 +863,46 @@ $colorRed: #fa4616;
 }
 
 .product {
+  .select-reg-type {
+    text-align: center;
+    font-weight: 700;
+    padding: 70px 50px;
+    border: 1px solid $colorGrey;
+    border-radius: 30px;
+    .title {
+      .main-title {
+        font-size: 24px;
+        &.second {
+          font-size: 45px;
+        }
+        &.third {
+          font-size: 16px;
+          color: #555;
+          padding-bottom: 60px;
+        }
+      }
+    }
+    .cards {
+      .content {
+        box-sizing: border-box;
+        padding: 30px;
+        transition: background-color 0.7s ease, color 0.5s ease;
+        .content-title {
+          font-size: 28px;
+        }
+        .content-description {
+          font-size: 14px;
+        }
+        &:hover {
+          cursor: pointer;
+          background-color: $colorRed;
+          color: $colorBg;
+        }
+      }
+    }
+  }
+
+
   .title {
     text-align: center;
     .main {

@@ -6,7 +6,7 @@ import Advertiser from '../advertiser/Advertiser';
 import Influencer from '../influencer/Influencer';
 import Contact from '../contact/Contact';
 import AdvertiserDetail from '../advertiser/AdvertiserDetail';
-import Product from '../product/Product';
+import ProductMix from '../product/ProductMix';
 import OnGoing from './status/OnGoing';
 import Complete from './status/Complete';
 import Combined from './status/Combined';

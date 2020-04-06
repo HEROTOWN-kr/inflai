@@ -47,7 +47,7 @@ function Influencer() {
     phone: Yup.string()
       .required('Phone is required'),
     product: Yup.string()
-      .required('Product is required')
+      .required('ProductMix is required')
   });
 
   function youTubeOnReady(event) {

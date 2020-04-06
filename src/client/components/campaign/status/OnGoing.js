@@ -80,7 +80,9 @@ function OnGoing() {
                   <DeleteIcon onClick={() => { setItemId(item.AD_ID); toggleDialog(); }} />
                 </Grid>
                 <Grid item md={12} className="product-payment">
-                  <Payment />
+                  {
+                    item.AD_PAID === 'Y' ? <p>결제 완료</p> : <Payment item_data={item} getCampaign={getCampaign} />
+                  }
                 </Grid>
                 <Grid item md={12} className="product-date">
                     요청일:
