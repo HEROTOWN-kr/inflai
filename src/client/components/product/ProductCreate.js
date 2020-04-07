@@ -22,7 +22,7 @@ function ProductCreate(props) {
               <Grid container spacing={4}>
                 <Grid item md={6}>
                   <Paper elevation={3}>
-                    <div className="content" onClick={() => props.history.push(`${props.match.path}mix/request`)}>
+                    <div className="content" onClick={() => props.goTo('mix/request')}>
                       <Grid container spacing={4}>
                         <Grid item md={12} className="content-title">다이렉트 마케팅</Grid>
                         <Grid item md={12} className="content-description">
@@ -36,7 +36,7 @@ function ProductCreate(props) {
                 </Grid>
                 <Grid item md={6}>
                   <Paper elevation={3}>
-                    <div className="content">
+                    <div className="content" onClick={() => props.goTo('agency')}>
                       <Grid container spacing={4}>
                         <Grid item md={12} className="content-title">마케팅 대행 요청</Grid>
                         <Grid item md={12} className="content-description">

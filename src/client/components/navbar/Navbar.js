@@ -149,16 +149,17 @@ function CustomNavbar(props) {
   const menuLinks = [
     {
       text: '광고주',
-      link: '/Advertiser'
+      // link: '/Advertiser'
+      link: '/Product'
     },
     {
       text: '인플루언서',
       link: '/Influencer'
     },
-    {
+    /*{
       text: '인플루언서 믹스',
       link: '/Product'
-    },
+    },*/
     /* {
       text: '서비스2',
       link: '/Service2'

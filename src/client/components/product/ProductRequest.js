@@ -3,7 +3,6 @@ import {
   Field, Form, Formik, FormikProps, getIn, FieldProps, ErrorMessage, useField
 } from 'formik';
 
-import Grid from '@material-ui/core/Grid';
 import {
   Radio,
   FormControlLabel,
@@ -15,7 +14,7 @@ import {
   FormHelperText,
   InputAdornment,
   TextField,
-  Button
+  Button, Paper, Grid
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import WarningIcon from '@material-ui/icons/AssignmentTurnedInRounded';
@@ -117,11 +116,11 @@ function ProductRequest(props) {
 
 
   const StyledRadio = ({ item, selected }) => (
-    <div className={`card ${item.value === selected ? 'red' : null}`}>
+    /* <div className={`card ${item.value === selected ? 'red' : null}`}>
       <Grid container justify="center" spacing={1}>
         <Grid item md={12}>
           <div className="icon">
-            {/* <img src={} alt="" /> */}
+            {/!* <img src={} alt="" /> *!/}
             <WarningIconOut />
           </div>
         </Grid>
@@ -140,7 +139,21 @@ function ProductRequest(props) {
           <Radio value={item.value} />
         </Grid>
       </Grid>
-    </div>
+    </div> */
+
+    <Paper className={`card-new ${item.value === selected ? 'red' : null}`}>
+      <Grid container>
+        <Grid item md={2} className="icon">
+          <WarningIconOut />
+        </Grid>
+        <Grid item md={10} className="card-text">
+          <div className="main-title">{item.name}</div>
+          <div className="secondary-title">{item.title}</div>
+          <div className="description">{item.desc}</div>
+        </Grid>
+        <Radio value={item.value} />
+      </Grid>
+    </Paper>
   );
 
   function sumCount(values) {
@@ -253,7 +266,7 @@ function ProductRequest(props) {
                         <RadioGroup row aria-label="gender" name="gender1" value={values.type} onChange={event => setFieldValue('type', event.target.value)}>
                           <Grid container spacing={3}>
                             {campaignType.map(item => (
-                              <Grid item md={4} key={item}>
+                              <Grid item md={6} key={item.name}>
                                 <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.type} />} />
                               </Grid>
                             ))}
@@ -262,12 +275,25 @@ function ProductRequest(props) {
                         <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
                       </FormControl>
                     </Grid>
-                    <Grid item md={12}>
+                    {/*<Grid item md={12}>
                       <Grid container spacing={3}>
-                        <Grid item md={6}>card</Grid>
+                        <Grid item md={6}>
+                          <Paper className="card-new">
+                            <Grid container>
+                              <Grid item md={2} className="icon">
+                                <WarningIconOut />
+                              </Grid>
+                              <Grid item md={10} className="card-text">
+                                <div className="main-title">상품 리뷰</div>
+                                <div className="secondary-title">무료 협찬 제품 배송형</div>
+                                <div className="description">크리에이터에게 무료 협찬 제품을 배송 제공하여 사용 후기 컨텐츠 제작</div>
+                              </Grid>
+                            </Grid>
+                          </Paper>
+                        </Grid>
                         <Grid item md={6}>card</Grid>
                       </Grid>
-                    </Grid>
+                    </Grid>*/}
                   </Grid>
                 </Grid>
               </Grid>

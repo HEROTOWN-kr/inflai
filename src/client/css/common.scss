@@ -1,6 +1,7 @@
 $colorBg: #fefefe;
 $colorBlue: #093c5e;
 $colorAqua: #23c9cf;
+$colorGrey: #dfe2e8;
 
 html, body {
   margin: 0;
@@ -90,6 +91,41 @@ html, body {
         }
       }
     }
+  }
+}
+
+
+.form {
+  padding: 50px;
+  border: 1px solid $colorGrey;
+  .MuiCheckbox-root {
+    padding: 4px;
+  }
+  .MuiOutlinedInput-input {
+    padding: 11px 14px;
+  }
+  .MuiFormControlLabel-label {
+    &.MuiTypography-body1 {
+      font-size: 14px;
+    }
+  }
+
+  .label-holder {
+    margin-bottom: 10px;
+    line-height: 1;
+    text-align: left;
+    label {
+      font-size: 15px;
+      line-height: 1.33;
+      color: #3f4653;
+    }
+  }
+  textarea {
+    //width: 100%;
+    //height: 80px;
+    padding: 23px 30px;
+    width: -webkit-fill-available;
+    resize: vertical;
   }
 }
 

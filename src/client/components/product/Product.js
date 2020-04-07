@@ -6,6 +6,7 @@ import ProductEstimate from './ProductEstimate';
 import ProductWrite from './write/ProductWrite';
 import ProductCreate from './ProductCreate';
 import ProductMix from './ProductMix';
+import ProductAgency from './ProductAgency';
 
 
 function Product(props) {
@@ -13,6 +14,10 @@ function Product(props) {
 
   function saveProductInfo(data) {
     setProductInfo({ ...productInfo, ...data });
+  }
+
+  function goTo(url) {
+    props.history.push(`${props.match.path}/${url}`);
   }
 
   return (
@@ -23,13 +28,13 @@ function Product(props) {
           render={renderProps => <ProductMix {...renderProps} saveProductInfo={saveProductInfo} />}
         />
         <Route
-          path={`${props.match.path}/`}
-          render={renderProps => <ProductCreate {...renderProps} productInfo={productInfo} />}
+          path={`${props.match.path}/agency`}
+          render={renderProps => <ProductAgency {...renderProps} />}
         />
-        {/* <Route
-              path={`${props.match.path}/write/:id`}
-              render={renderProps => <ProductWrite {...renderProps} />}
-            /> */}
+        <Route
+          path={`${props.match.path}/`}
+          render={renderProps => <ProductCreate {...renderProps} productInfo={productInfo} goTo={goTo} />}
+        />
       </Switch>
     </React.Fragment>
   );
