@@ -221,9 +221,7 @@ INFLAI의
             </div>
           </Form>
         )}
-
       </Formik>
-
     </React.Fragment>
   );
 }

@@ -1,29 +1,20 @@
 import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
-/* import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Grid from '@material-ui/core/Grid'; */
 import MenuIcon from '@material-ui/icons/Menu';
-/* import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText'; */
 import {
   makeStyles, AppBar, Grid, List, ListItem, ListItemText, Drawer, Hidden, Popover, Divider
 } from '@material-ui/core';
-
 import { Link, withRouter, browserHistory } from 'react-router-dom';
-// import { Drawer, Hidden } from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
 import Common from '../../lib/common';
-// import NaverLogin from "react-naver-login";
 
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -34,12 +25,10 @@ const useStyles = makeStyles(theme => ({
   appBar: {
     bottom: 'auto',
     top: 0,
-
   },
   bar: {
     background: 'unset'
   },
-
   list: {
     width: 250,
   },
@@ -156,10 +145,10 @@ function CustomNavbar(props) {
       text: '인플루언서',
       link: '/Influencer'
     },
-    /*{
+    /* {
       text: '인플루언서 믹스',
       link: '/Product'
-    },*/
+    }, */
     /* {
       text: '서비스2',
       link: '/Service2'
@@ -235,9 +224,20 @@ function CustomNavbar(props) {
             </Grid>
             <Grid container xs={2} justify="flex-end" />
             <Grid container xs={4} justify="flex-end" spacing={3}>
-              <Grid item className="name-holder" onClick={openUserMenu}>
+              {/*<Grid item className="name-holder" onClick={openUserMenu}>
                 {props.user.name ? props.user.name : null}
-              </Grid>
+                <ExpandMoreIcon />
+              </Grid>*/}
+              {
+                props.user.name
+                  ? (
+                    <Grid item className="name-holder" onClick={openUserMenu}>
+                      {props.user.name}
+                      <ExpandMoreIcon />
+                    </Grid>
+                  )
+                  : null
+              }
               <Popover
                 id={id}
                 open={open}
@@ -264,6 +264,7 @@ function CustomNavbar(props) {
                       <Divider />
                     </div>
                   ))}
+                  {/*<LogInComponent {...props} />*/}
                 </div>
               </Popover>
 

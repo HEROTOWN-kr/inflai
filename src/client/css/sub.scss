@@ -67,12 +67,16 @@ $colorGrey: #dfe2e8;
     color: $colorBg;
     line-height: 34px;
     opacity: 0.8;
+    svg {
+      position: relative;
+      top: 7px;
+      left: 4px;
+    }
     &:hover {
       cursor: pointer;
       opacity: 1;
     }
   }
-
 }
 
 .user-popmenu {
@@ -656,6 +660,19 @@ $colorGrey: #dfe2e8;
     ul {
       padding-left: 17px;
       color: #929490;
+    }
+  }
+  .add {
+    svg {
+      font-size: 53px;
+      position: relative;
+      top: 12px;
+      right: 8px;
+      color: #afafaf;
+      &:hover {
+        color: $colorRed;
+        cursor: pointer;
+      }
     }
   }
   .userInfo-form {

@@ -55,7 +55,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     ADV_FULL_REG: {
       type: DataTypes.STRING(1),
-      allowNull: false
+      allowNull: false,
+      defaultValue: 'N'
     },
     ADV_DT: {
       type: 'TIMESTAMP',

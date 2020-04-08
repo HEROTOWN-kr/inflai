@@ -106,7 +106,7 @@ function SocialNetworks({
                 type: userType,
                 token: response.data.userToken,
                 name: response.data.userName,
-                regState: res.data.regState
+                regState: response.data.regState
               });
               closeDialog();
             });

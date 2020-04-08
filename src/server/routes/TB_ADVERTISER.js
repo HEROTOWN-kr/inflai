@@ -209,7 +209,6 @@ router.get('/loginFacebook', (req, res) => {
             code: 200,
             userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
-            regState: result.dataValues.ADV_FULL_REG,
             social_type
           });
         });
@@ -218,7 +217,6 @@ router.get('/loginFacebook', (req, res) => {
           code: 200,
           userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
-          regState: result.dataValues.ADV_FULL_REG,
           social_type
         });
       }
@@ -322,6 +320,7 @@ router.get('/loginKakao', (req, res) => {
             code: 200,
             userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
+            regState: result.dataValues.ADV_FULL_REG,
             social_type
           });
         });
@@ -330,6 +329,7 @@ router.get('/loginKakao', (req, res) => {
           code: 200,
           userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
+          regState: result.dataValues.ADV_FULL_REG,
           social_type
         });
       }
@@ -389,6 +389,7 @@ router.get('/loginTwitch', (req, res) => {
             code: 200,
             userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
+            regState: result.dataValues.ADV_FULL_REG,
             social_type
           });
         });
@@ -397,6 +398,7 @@ router.get('/loginTwitch', (req, res) => {
           code: 200,
           userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
+          regState: result.dataValues.ADV_FULL_REG,
           social_type
         });
       }

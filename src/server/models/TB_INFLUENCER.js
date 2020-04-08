@@ -37,6 +37,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: true
     },
+    INF_CITY: {
+      type: DataTypes.STRING(2),
+      allowNull: true
+    },
+    INF_AREA: {
+      type: DataTypes.STRING(2),
+      allowNull: true
+    },
     INF_PROD: {
       type: DataTypes.STRING(45),
       allowNull: true

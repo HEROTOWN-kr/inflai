@@ -19,7 +19,11 @@ function Main({
     <Switch>
       <Route exact path="/" component={Home} />
       <Route path="/Advertiser" component={Advertiser} />
-      <Route path="/Influencer" component={Influencer} />
+      <Route
+        path="/Influencer"
+            // render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
+        render={props => <Influencer {...props} user={user} changeUser={changeUser} />}
+      />
       <Route path="/Contact" component={Contact} />
       <Route
         path="/regDetail"
@@ -30,10 +34,10 @@ function Main({
         // render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
         render={props => <Product {...props} user={user} changeUser={changeUser} />}
       />
-      {/*<Route
+      {/* <Route
         path="/Product/mix/request"
         render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
-      />*/}
+      /> */}
       <Route
         path="/Campaign"
         render={props => <Campaign {...props} user={user} />}
