@@ -94,7 +94,6 @@ $colorGrey: #dfe2e8;
       }
     }
   }
-
 }
 
 .login-dialog {
@@ -858,6 +857,9 @@ $colorGrey: #dfe2e8;
         cursor: pointer;
       }
     }
+  }
+  .registerNumber {
+    box-shadow: none;
   }
   .submit-button {
     margin-top: 18px;

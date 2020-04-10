@@ -112,13 +112,31 @@ function RequiredInfo({
     return `${yyyy}/${mm}/${dd}`;
   }
 
+  function getMaxDate() {
+    const today = new Date();
+    const dd = String(today.getDate() + 7).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const yyyy = today.getFullYear();
+
+    return `${yyyy}/${mm}/${dd}`;
+  }
+
+  function getMinDate() {
+    const today = new Date();
+    const dd = String(today.getDate() + 1).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+    const yyyy = today.getFullYear();
+
+    return `${yyyy}/${mm}/${dd}`;
+  }
+
   return (
     <Formik
       initialValues={{
         name: '',
         typeCategory: [],
-        searchDate: '2019-10-24T22:00:00.000Z',
-        finishDate: '2019-10-24T22:00:00.000Z',
+        searchDate: getMinDate(),
+        finishDate: new Date(),
         sex: '',
         age: [],
         channel: [],
@@ -241,6 +259,8 @@ function RequiredInfo({
                           <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                               autoOk
+                              minDate={getMinDate()}
+                              maxDate={getMaxDate()}
                               name="searchDate"
                               disableToolbar
                               variant="inline"
@@ -275,6 +295,7 @@ function RequiredInfo({
                           <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
                               autoOk
+                              disablePast
                               name="finishDate"
                               disableToolbar
                               variant="inline"

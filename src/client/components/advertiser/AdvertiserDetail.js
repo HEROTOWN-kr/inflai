@@ -108,7 +108,8 @@ function AdvertiserDetail({
       ? {
         endAdornment: (
           <InputAdornment position="end">
-            <AccountCircle />
+            {/*<AccountCircle />*/}
+            <Button variant="contained" color="primary" className="registerNumber">인증</Button>
           </InputAdornment>
         ),
       } : {};
