@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 const bcrypt = require('bcryptjs');
 
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('TB_ADVERTISER', {
+module.exports = function (sequelize, DataTypes) {
+  const advertiser = sequelize.define('TB_ADVERTISER', {
     ADV_ID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -75,6 +75,15 @@ module.exports = function(sequelize, DataTypes) {
           else callback(null, res);
         });
       }
-    }
+    },
+    /* associate: (models) => {
+      this.hasMany(models.TB_AD);
+    } */
   });
+
+  advertiser.associate = function (models) {
+    advertiser.hasMany(models.TB_AD, { foreignKey: 'ADV_ID', sourceKey: 'ADV_ID' });
+  };
+
+  return advertiser;
 };

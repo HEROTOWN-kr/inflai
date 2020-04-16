@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('TB_AD', {
+module.exports = function (sequelize, DataTypes) {
+  const Ad = sequelize.define('TB_AD', {
     AD_ID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -141,6 +141,15 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
-    tableName: 'TB_AD'
+    tableName: 'TB_AD',
+    /* associate: (models) => {
+      this.hasMany(models.TB_ADVERTISER);
+    } */
   });
+
+  Ad.associate = function (models) {
+    Ad.belongsTo(models.TB_ADVERTISER, { foreignKey: 'ADV_ID', targetKey: 'ADV_ID' });
+  };
+
+  return Ad;
 };

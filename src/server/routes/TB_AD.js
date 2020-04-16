@@ -1,7 +1,9 @@
 const express = require('express');
 const Advertise = require('../models').TB_AD;
+const Advertiser = require('../models').TB_ADVERTISER;
 const Photo = require('../models').TB_PHOTO_AD;
 const common = require('../config/common');
+const Sequelize = require('sequelize');
 
 const router = express.Router();
 
@@ -79,6 +81,28 @@ router.get('/', (req, res) => {
   Advertise.findAll({
     where: { ADV_ID: userId },
     order: [['AD_ID', 'DESC']]
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
+router.get('/getAll', (req, res) => {
+  Advertise.findAll({
+    order: [['AD_ID', 'DESC']],
+    attributes: [
+      [Sequelize.literal('AD_INF_MICRO + AD_INF_NANO'), 'INF_SUM'],
+    ],
+    include: [
+      {
+        model: Advertiser,
+        attributes: ['ADV_COM_NAME']
+      }
+    ]
   }).then((result) => {
     res.json({
       code: 200,

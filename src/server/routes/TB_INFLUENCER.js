@@ -22,6 +22,20 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/getInfluencers', (req, res) => {
+  Influencer.findAll({
+    attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL', 'INF_DT'],
+    order: [['INF_ID', 'DESC']]
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.post('/updateInfo', (req, res) => {
   const data = req.body;
   const userId = common.getIdFromToken(data.token).sub;

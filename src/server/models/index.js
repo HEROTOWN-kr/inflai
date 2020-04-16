@@ -1,28 +1,27 @@
-var fs = require("fs");
-var path = require("path");
-var Sequelize = require("sequelize");
-var sequelize = new Sequelize('mysql://inflai:herotown2020!@127.0.0.1:3306/inflai', {
-    define: {
-        timestamps: false // true by default. false because bydefault sequelize adds createdAt, modifiedAt columns with timestamps.if you want those columns make ths true.
-    },
-    query: {
-        // plain: true
-        // raw:true
-    }
-});
-var db = {};
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
 
-fs.readdirSync(__dirname).filter(function(file) {
-    return (file.indexOf(".") !== 0) && (file !== "index.js");
-}).forEach(function(file) {
-    var model = sequelize.import(path.join(__dirname, file));
-    db[model.name] = model;
+const sequelize = new Sequelize('mysql://inflai:herotown2020!@127.0.0.1:3306/inflai', {
+  define: {
+    timestamps: false // true by default. false because bydefault sequelize adds createdAt, modifiedAt columns with timestamps.if you want those columns make ths true.
+  },
+  query: {
+    // plain: true
+    // raw:true
+  }
+});
+const db = {};
+
+fs.readdirSync(__dirname).filter(file => (file.indexOf('.') !== 0) && (file !== 'index.js')).forEach((file) => {
+  const model = sequelize.import(path.join(__dirname, file));
+  db[model.name] = model;
 });
 
-Object.keys(db).forEach(function(modelName) {
-    if ("associate" in db[modelName]) {
-        db[modelName].associate(db);
-    }
+Object.keys(db).forEach((modelName) => {
+  if ('associate' in db[modelName]) {
+    db[modelName].associate(db);
+  }
 });
 
 db.sequelize = sequelize;

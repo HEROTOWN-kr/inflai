@@ -40,6 +40,20 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/getAdvertisers', (req, res) => {
+  Advertiser.findAll({
+    attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME', 'ADV_TYPE', 'ADV_DT'],
+    order: [['ADV_ID', 'DESC']]
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/naverTest', (req, res) => {
   const token = 'AAAAO7ObqHQmS2x-G4UYKZ4SDKDZnRVG_0xJLLZZ0FWqEraRQZLW4-jAv1qVlFzA_6WhL6Ilagtv5y3EVJmiTzuhhL4';
   const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
