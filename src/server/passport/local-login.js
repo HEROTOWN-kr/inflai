@@ -4,6 +4,7 @@ const PassportLocalStrategy = require('passport-local').Strategy;
 const config = require('../config');
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influenser = require('../models').TB_INFLUENCER;
+const Admin = require('../models').TB_ADMIN;
 
 
 /**
@@ -59,38 +60,39 @@ module.exports = new PassportLocalStrategy({
       });
     }).catch(err => done(err));
   }
-
-  return Influenser.findOne({
-    where: { INF_EMAIL: userData.email }
-  }).then((user) => {
-    if (!user) {
-      const error = new Error('Incorrect email or password');
-      error.name = 'IncorrectCredentialsError';
-
-      return done(error);
-    }
-
-    return Influenser.options.instanceMethods.validPassword(userData.password, user.dataValues.INF_PASS, (passwordErr, isMatch) => {
-      if (passwordErr) { return done(passwordErr); }
-
-      if (!isMatch) {
+  if (type === '2') {
+    return Influenser.findOne({
+      where: { INF_EMAIL: userData.email }
+    }).then((user) => {
+      if (!user) {
         const error = new Error('Incorrect email or password');
         error.name = 'IncorrectCredentialsError';
 
         return done(error);
       }
 
-      const payload = {
-        sub: user.dataValues.INF_ID
-      };
+      return Influenser.options.instanceMethods.validPassword(userData.password, user.dataValues.INF_PASS, (passwordErr, isMatch) => {
+        if (passwordErr) { return done(passwordErr); }
 
-      // create a token string
-      const token = jwt.sign(payload, config.jwtSecret);
-      const data = {
-        name: user.dataValues.INF_NAME
-      };
+        if (!isMatch) {
+          const error = new Error('Incorrect email or password');
+          error.name = 'IncorrectCredentialsError';
 
-      return done(null, token, data);
-    });
-  }).catch(err => done(err));
+          return done(error);
+        }
+
+        const payload = {
+          sub: user.dataValues.INF_ID
+        };
+
+        // create a token string
+        const token = jwt.sign(payload, config.jwtSecret);
+        const data = {
+          name: user.dataValues.INF_NAME
+        };
+
+        return done(null, token, data);
+      });
+    }).catch(err => done(err));
+  }
 });
