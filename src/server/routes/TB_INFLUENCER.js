@@ -63,4 +63,46 @@ router.post('/updateInfo', (req, res) => {
   });
 });
 
+router.get('/getLongLivedToken', (req, res) => {
+  const { token, facebookToken, facebookUserId, instagramBusinessId } = req.query;
+  const userId = common.getIdFromToken(token).sub;
+  // const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
+
+  const apiUrl = 'https://graph.facebook.com/v6.0/oauth/access_token?'
+      + 'grant_type=fb_exchange_token&'
+      + 'client_id=139193384125564&'
+      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'
+      + `fb_exchange_token=${facebookToken}`;
+  const options = {
+    url: apiUrl,
+  };
+
+  request.get(options, (error, response, body) => {
+    if (!error && response.statusCode == 200) {
+      const longToken = (JSON.parse(body)).access_token;
+
+      const apiUrl2 = `https://graph.facebook.com/v6.0/${facebookUserId}/accounts?`
+          + `access_token=${longToken}`;
+
+      request(apiUrl2, {}, (error2, response2, body2) => {
+        if (!error && response.statusCode == 200) {
+          // todo: find page long token api option for special fb page
+
+          Influencer.update({ INF_TOKEN: longToken, INF_INST_ID: instagramBusinessId }, {
+            where: { INF_ID: userId }
+          }).then((result) => {
+            res.json(longToken);
+          });
+        }
+      });
+    } else {
+      console.log('error');
+      if (response != null) {
+        res.status(response.statusCode).end();
+        console.log(`error = ${response.statusCode}`);
+      }
+    }
+  });
+});
+
 module.exports = router;

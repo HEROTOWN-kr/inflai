@@ -15,9 +15,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox';
-import Common from '../../lib/common';
-import NameArray from '../../lib/nameArray';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import NameArray from '../../lib/nameArray';
+import Common from '../../lib/common';
 
 import Minus from '../../img/minus.svg';
 import Plus from '../../img/plus.svg';
@@ -27,6 +31,7 @@ function Influencer({
   user
 }) {
   const [userData, setUserData] = useState({});
+  const [fbPages, setFbPages] = useState([]);
 
   useEffect(() => {
     if (user.token) {
@@ -136,6 +141,126 @@ function Influencer({
     );
   }
 
+  function instagramLongToken() {
+    // console.log(window.FB);
+
+    window.FB.api(
+      '17841401425431236',
+      {
+        access_token: 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB',
+        // access_token: 'EAABZBmHw3RHwBAEMBmfZAgMZAUSVSeqEUNbSWwOMG5ZCEmZBHPEeMwl6kyHndjZC6bvPMwpQR93fYr96Oj7hslHuzgAp9G2cZA6e7JzQV3YXyctv2R6vAMZCexR9Kp2BhZCjdKjZCdZBRci4T1x4LTVtZAQPPUogiSGSJTtRykZAwPB5cuAZDZD',
+        fields: 'ig_id, followers_count, follows_count, media_count, username, media'
+          // 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB'
+      },
+      (response) => {
+        console.log(response);
+      }
+    );
+
+
+    /* window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        console.log(response);
+        const { accessToken, userID } = response.authResponse;
+        const { token } = Common.getUserInfo();
+
+
+        axios.get('/api/TB_INFLUENCER/getLongLivedToken', {
+          params: {
+            facebookToken: accessToken,
+            facebookUserId: userID,
+            token
+          }
+        })
+          .then((res) => {
+            console.log(res);
+          });
+      } else {
+        console.log('not connected');
+      }
+    }); */
+  }
+
+  function instagramGetData() {
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        const { accessToken, userID } = response.authResponse;
+        window.FB.api('/me/accounts', (res) => {
+          const pages = res.data;
+          setFbPages([...pages]);
+        });
+      } else {
+        console.log('not connected');
+      }
+    });
+
+
+    // check accounts
+    /* window.FB.api('/me/accounts', (response) => {
+        console.log(response);
+      }); */
+
+    // check insta business account
+    /* window.FB.api(
+        '107978017554043',
+        {
+          access_token: 'EAABZBmHw3RHwBAFOi9MQZAkWomjwjOAqHUyEUDaPU0MFXPDFxM5dZCoCi35Fr5VYTKEBZA7G7LZCHZBF1p7IsUAQPpmDMZApt2FM5mZAqbhZCqrP1uEjUmvIQNCqGUKLxOq609SFhHTQyMUCaXPaOuLUYW2EbaGEVDxRZB8kCOmZBLe6eHNfMbfanqWw39zl5MliWevOxZCejgNmoQZDZD',
+          fields: 'instagram_business_account'
+        },
+        (response) => {
+          console.log(response);
+        }
+      ); */
+
+    // get instagram data
+    /* window.FB.api(
+        '17841401425431236',
+        {
+          access_token: 'EAABZBmHw3RHwBAFOi9MQZAkWomjwjOAqHUyEUDaPU0MFXPDFxM5dZCoCi35Fr5VYTKEBZA7G7LZCHZBF1p7IsUAQPpmDMZApt2FM5mZAqbhZCqrP1uEjUmvIQNCqGUKLxOq609SFhHTQyMUCaXPaOuLUYW2EbaGEVDxRZB8kCOmZBLe6eHNfMbfanqWw39zl5MliWevOxZCejgNmoQZDZD',
+          fields: 'ig_id, followers_count, follows_count, media_count, username, media'
+        },
+        (response) => {
+          console.log(response);
+        }
+      ); */
+  }
+
+  function instagramGetId(pageId) {
+    const { token } = Common.getUserInfo();
+
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        const { accessToken, userID } = response.authResponse;
+
+        window.FB.api(
+          pageId,
+          {
+            access_token: accessToken,
+            fields: 'instagram_business_account'
+          },
+          (response) => {
+            const instagramBusinessId = response.instagram_business_account.id;
+            // console.log(response.instagram_business_account.id);
+
+            axios.get('/api/TB_INFLUENCER/getLongLivedToken', {
+              params: {
+                facebookToken: accessToken,
+                facebookUserId: userID,
+                instagramBusinessId,
+                token
+              }
+            })
+              .then((res) => {
+                console.log(res);
+              });
+          }
+        );
+      } else {
+        console.log('not connected');
+      }
+    });
+  }
+
   const ErrorMessage = ({ name }) => (
     <Field
       name={name}
@@ -151,6 +276,7 @@ function Influencer({
 
   return (
     <Grid container className="influencer-page wraper three">
+
       <Grid item xs={12} className="first-title">
           Request demo
       </Grid>
@@ -193,7 +319,9 @@ function Influencer({
                 region: '',
                 phone: '',
                 product: '',
-                agreement: false
+                agreement: false,
+                fbPageId: '',
+                instId: ''
               }}
               enableReinitialize
               validationSchema={SignupSchema}
@@ -321,6 +449,61 @@ function Influencer({
                           </Grid>
                           <Grid item md={12}>
                             <MyTextField name="product" label="제품, 서비스" />
+                          </Grid>
+                          <Grid item md={12}>
+                            <Divider />
+                          </Grid>
+                          <Grid item md={3}>
+                            <Button
+                              variant="contained"
+                              color="secondary"
+                              onClick={instagramLongToken}
+                            >
+                                long token
+                            </Button>
+                          </Grid>
+                          <Grid item md={3}>
+                            <Button
+                              variant="contained"
+                              color="secondary"
+                              onClick={instagramGetData}
+                            >
+                                    get data
+                            </Button>
+                          </Grid>
+                          <Grid item md={3}>
+                            { fbPages.length
+                              ? (
+                                <FormControl variant="outlined" className="select-field" fullWidth>
+                                  <Select
+                                    id="페이지"
+                                    name="fbPageId"
+                                    value={values.fbPageId}
+                                    onChange={(event => setFieldValue('fbPageId', event.target.value))}
+                                  >
+                                    {fbPages.map((item, index) => (
+                                      <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
+                                    ))}
+                                  </Select>
+                                  <FormHelperText />
+                                </FormControl>
+                              ) : null
+                              }
+                          </Grid>
+                          <Grid item md={3}>
+                            {
+                              values.fbPageId
+                                ? (
+                                  <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => instagramGetId(values.fbPageId)}
+                                  >
+                                      get Id
+                                  </Button>
+                                )
+                                : null
+                              }
                           </Grid>
                         </Grid>
                       </Form>

@@ -116,7 +116,7 @@ function LoginDialog({
                   <Button variant="outlined" color="primary" className={`job-type-button ${values.type === '1' ? 'checked' : ''}`} onClick={() => { setFieldValue('type', '1'); setUserType('1'); }}>관고주</Button>
                 </Grid>
                 <Grid item xs={5}>
-                  <Button variant="outlined" color="primary" className={`job-type-button ${values.type === '2' ? 'checked' : ''}`} onClick={() => { setFieldValue('type', '2'); setUserType('1'); }}>인플루언서</Button>
+                  <Button variant="outlined" color="primary" className={`job-type-button ${values.type === '2' ? 'checked' : ''}`} onClick={() => { setFieldValue('type', '2'); setUserType('2'); }}>인플루언서</Button>
                 </Grid>
               </Grid>
               {errors.type && touched.type ? <div className="error-message">{errors.type}</div> : null}

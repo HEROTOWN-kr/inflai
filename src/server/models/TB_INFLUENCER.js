@@ -54,6 +54,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: '0'
     },
+    INF_INST_ID: {
+      type: DataTypes.STRING(300),
+      allowNull: true
+    },
+    INF_TOKEN: {
+      type: DataTypes.STRING(300),
+      allowNull: true
+    },
     INF_DT: {
       type: 'TIMESTAMP',
       allowNull: false,
