@@ -9,6 +9,7 @@ import ProductMix from '../product/ProductMix';
 import Campaign from '../campaign/Campaign';
 import ProductCreate from '../product/ProductCreate';
 import Product from '../product/Product';
+import Join from "../join/Join";
 
 
 function Main({
@@ -41,6 +42,10 @@ function Main({
       <Route
         path="/Campaign"
         render={props => <Campaign {...props} user={user} />}
+      />
+      <Route
+        path="/Join"
+        render={props => <Join {...props} />}
       />
     </Switch>
   );

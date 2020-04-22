@@ -1490,6 +1490,62 @@ $colorGrey: #dfe2e8;
   }
 }
 
+.join {
+  .join-type, .join-sns {
+    .title {
+      text-align: center;
+      font-size: 40px;
+    }
+    .MuiFormControlLabel-root {
+      margin: 0;
+    }
+    .card {
+      transition: border-color 0.5s ease, color 0.5s ease, background-color 0.7s ease;
+      box-sizing: border-box;
+      border: 10px solid $colorBg;
+      background-color: #fbbaba;
+      border-radius: 44px;
+      &.blue {
+        background-color: $colorBlue;
+      }
+      img {
+        width: 400px;
+        height: 400px;
+        margin-top: 40px;
+      }
+      p {
+        text-align: center;
+        font-size: 40px;
+        color: $colorBg;
+      }
+    }
+  }
+
+  .join-type {
+    .card {
+      &:hover, &.selected {
+        cursor: pointer;
+        border-color: #7aec7e;
+      }
+    }
+  }
+
+  .join-sns {
+    .card {
+      background-color: #efefef;
+      svg {
+        width: 200px;
+        height: 200px;
+        fill: $colorBg;
+      }
+      &:hover, &.selected {
+        cursor: pointer;
+        background-color: $colorRed;
+      }
+    }
+  }
+}
+
 .footer {
   padding: 43px 0;
   background: $colorBlue;

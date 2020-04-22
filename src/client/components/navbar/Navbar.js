@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import axios from 'axios';
 import MenuIcon from '@material-ui/icons/Menu';
 import {
-  makeStyles, AppBar, Grid, List, ListItem, ListItemText, Drawer, Hidden, Popover, Divider
+  makeStyles, AppBar, Grid, List, ListItem, ListItemText, Drawer, Hidden, Popover, Divider, Button
 } from '@material-ui/core';
 import { Link, withRouter, browserHistory } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -190,8 +190,10 @@ function CustomNavbar(props) {
     });
   }
 
-  function test(e) {
-    // e.preventDefault();
+  function facebookLogin() {
+    window.FB.login((response) => {
+      console.log(response);
+    }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
   }
 
 
@@ -221,13 +223,23 @@ function CustomNavbar(props) {
                   </Link>
                 </Grid>
               ))}
+              <Button onClick={facebookLogin}>FacebookLogin</Button>
+              {/* <Button onClick={() => props.history.push('Join/Type')}>SignUp</Button> */}
+              <Grid item>
+                <Link
+                  className="link"
+                  to="/Join/Type"
+                >
+                  SignUp
+                </Link>
+              </Grid>
             </Grid>
             <Grid container xs={2} justify="flex-end" />
             <Grid container xs={4} justify="flex-end" spacing={3}>
-              {/*<Grid item className="name-holder" onClick={openUserMenu}>
+              {/* <Grid item className="name-holder" onClick={openUserMenu}>
                 {props.user.name ? props.user.name : null}
                 <ExpandMoreIcon />
-              </Grid>*/}
+              </Grid> */}
               {
                 props.user.name
                   ? (
@@ -264,7 +276,6 @@ function CustomNavbar(props) {
                       <Divider />
                     </div>
                   ))}
-                  {/*<LogInComponent {...props} />*/}
                 </div>
               </Popover>
 

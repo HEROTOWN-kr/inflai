@@ -64,7 +64,9 @@ router.post('/updateInfo', (req, res) => {
 });
 
 router.get('/getLongLivedToken', (req, res) => {
-  const { token, facebookToken, facebookUserId, instagramBusinessId } = req.query;
+  const {
+    token, facebookToken, facebookUserId, instagramBusinessId
+  } = req.query;
   const userId = common.getIdFromToken(token).sub;
   // const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
 

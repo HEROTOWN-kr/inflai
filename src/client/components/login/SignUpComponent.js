@@ -44,7 +44,8 @@ function SignUpDialog({
   }
 
   function signUp(values) {
-    axios.post('/api/TB_ADVERTISER/signup', values)
+    axios.post('/api/TB_ADVERTISER/signup' +
+        '', values)
       .then((res) => {
         if (res.data.code === 200) {
           closeDialog();
