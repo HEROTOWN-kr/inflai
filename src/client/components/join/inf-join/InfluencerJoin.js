@@ -4,11 +4,14 @@ import UserType from '../UserType';
 import AdvertiserJoin from '../adv-join/AdvertiserJoin';
 import Influencer from '../../influencer/Influencer';
 import InfluencerSns from './InfluencerSns';
+import InstagramUser from './InstagramUser';
 
 function InfluencerJoin(props) {
   const [userData, setUserData] = useState({
     jobType: '',
-    snsType: ''
+    snsType: '',
+    igAccounts: [],
+    detailInfo: {}
   });
 
   function changeUserData(data) {
@@ -25,18 +28,18 @@ function InfluencerJoin(props) {
       <Switch>
         <Route
           path={`${props.match.path}/sns`}
-          render={props => <InfluencerSns {...props} goTo={goTo} changeUserData={changeUserData} />}
+          render={props => <InfluencerSns {...props} goTo={goTo} userData={userData} changeUserData={changeUserData} />}
         />
         <Route
           path={`${props.match.path}/instagram`}
-          render={props => <InfluencerJoin {...props} />}
+          render={props => <InstagramUser {...props} userData={userData} changeUserData={changeUserData} />}
         />
         <Route
           path={`${props.match.path}/youtube`}
           render={props => <AdvertiserJoin {...props} />}
         />
         <Route
-          path={`${props.match.path}/naver`}
+          path={`${props.match.path}/blog`}
           render={props => <AdvertiserJoin {...props} />}
         />
       </Switch>

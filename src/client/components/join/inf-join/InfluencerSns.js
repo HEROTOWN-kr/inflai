@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import {
   Box, Button, FormControl, FormControlLabel, FormHelperText, Grid, Radio, RadioGroup, SvgIcon, Icon
@@ -7,11 +7,19 @@ import { Formik } from 'formik';
 import YouTubeIcon from '@material-ui/icons/YouTube';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import AssessmentIcon from '@material-ui/icons/Assessment';
+import axios from 'axios';
 import NaverIcon from '../../../img/icons/naver.png';
 import Influencer from '../../../img/influencer.png';
 import Advertiser from '../../../img/advertiser.png';
 
-function InfluencerSns() {
+function InfluencerSns({
+  userData,
+  changeUserData,
+  goTo
+}) {
+  // const [igId, setIgId] = useState([]);
+  const myArray = [];
+
   const types = [
     {
       text: 'Youtube',
@@ -21,17 +29,19 @@ function InfluencerSns() {
     {
       text: 'Instagram',
       value: '2',
-      icon: InstagramIcon
+      icon: InstagramIcon,
+      addClass: 'instagram'
     },
     {
       text: 'Blog',
       value: '3',
-      icon: AssessmentIcon
+      icon: AssessmentIcon,
+      addClass: 'blog'
     }
   ];
 
   const mySchema = Yup.object().shape({
-    type: Yup.string()
+    snsType: Yup.string()
       .required('직군을 선택주세요'),
   });
 
@@ -54,6 +64,96 @@ function InfluencerSns() {
     );
   }
 
+  function facebookLogin() {
+    window.FB.login((loginRes) => {
+      if (loginRes.status === 'connected') {
+        const { accessToken, userID } = loginRes.authResponse;
+
+        window.FB.api('/me/accounts', (accountRes) => {
+          const pages = accountRes.data;
+          if (pages.length > 0) {
+            pages.map(item => (
+              window.FB.api(
+                item.id,
+                {
+                  access_token: accessToken,
+                  fields: 'instagram_business_account'
+                },
+                (pageRes) => {
+                  if (pageRes.instagram_business_account) {
+                    myArray.push(pageRes.instagram_business_account.id);
+                  }
+                }
+              )
+            ));
+
+            const timer = setTimeout(() => {
+              changeUserData({ igAccounts: myArray });
+              goTo('/instagram');
+            }, 500);
+
+
+            return () => clearTimeout(timer);
+          }
+        });
+      } else {
+        console.log('not connected');
+      }
+    }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
+  }
+
+  async function facebookLogin2() {
+    window.FB.login((loginRes) => {
+      if (loginRes.status === 'connected') {
+        const { accessToken, userID } = loginRes.authResponse;
+
+        window.FB.api('/me/accounts', (accountRes) => {
+          const pages = accountRes.data;
+          if (pages.length > 0) {
+            pages.forEach(async (item) => {
+              window.FB.api(
+                item.id,
+                {
+                  access_token: accessToken,
+                  fields: 'instagram_business_account'
+                },
+                (pageRes) => {
+                  if (pageRes.instagram_business_account) {
+                    myArray.push('2');
+                  }
+                }
+              );
+            });
+
+            console.log(myArray);
+
+            // changeUserData({ igAccounts: ['1', '2'] });
+            // changeUserData({ jobType: 'changed' });
+          }
+        });
+      } else {
+        console.log('not connected');
+      }
+    }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
+  }
+
+
+  function goNext(snsType) {
+    let url;
+    switch (snsType) {
+      case '1':
+        url = '/youtube';
+        break;
+      case '2':
+        url = '/instagram';
+        facebookLogin();
+        break;
+      case '3':
+        url = '/blog';
+        break;
+    }
+  }
+
   return (
     <div className="join-sns">
       <Grid container justify="center">
@@ -61,13 +161,13 @@ function InfluencerSns() {
           <Box py={4}>
             <Formik
               initialValues={{
-                type: '',
+                snsType: '',
               }}
               enableReinitialize
               validationSchema={mySchema}
               onSubmit={(values) => {
-                // changeUserData({ type: values.type });
-                // goTo(values.type === '1' ? '/Advertiser' : '/Influencer/sns');
+                changeUserData({ snsType: values.snsType });
+                goNext(values.snsType);
               }}
             >
               {({
@@ -82,19 +182,18 @@ function InfluencerSns() {
               }) => (
                 <Grid container spacing={5} justify="center">
                   <Grid item md={12} className="title">블로그 유형을 선택주세요</Grid>
-
                   <Grid item md={12}>
                     <FormControl>
-                      <RadioGroup row aria-label="type" name="type" value={values.type} onChange={event => setFieldValue('type', event.target.value)}>
+                      <RadioGroup row aria-label="type" name="snsType" value={values.snsType} onChange={event => setFieldValue('snsType', event.target.value)}>
                         <Grid container spacing={5}>
                           {types.map(item => (
                             <Grid item md={4} key={item.value}>
-                              <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.type} />} />
+                              <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.snsType} />} />
                             </Grid>
                           ))}
                         </Grid>
                       </RadioGroup>
-                      <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
+                      <FormHelperText id="my-helper-text">{errors.snsType && touched.snsType ? <span className="error-message">{errors.snsType}</span> : null}</FormHelperText>
                     </FormControl>
                   </Grid>
                   <Grid item md={3}>

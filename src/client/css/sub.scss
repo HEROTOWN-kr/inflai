@@ -803,6 +803,23 @@ $colorGrey: #dfe2e8;
       }
     }
   }
+  .card {
+    transition: border-color 0.5s ease, color 0.5s ease;
+    border: 2px solid #dcd8d8;
+    border-radius: 20px;
+    color: #dcd8d8;
+    img {
+      transition: opacity 0.5s ease;
+      opacity: 0.3;
+    }
+    &:hover, &.selected {
+      border-color: $colorRed;
+      color: $colorBlack;
+      img {
+        opacity: 1;
+      }
+    }
+  }
 }
 
 .register-detail {
@@ -1541,6 +1558,16 @@ $colorGrey: #dfe2e8;
       &:hover, &.selected {
         cursor: pointer;
         background-color: $colorRed;
+      }
+      &.instagram {
+        &:hover, &.selected {
+          background-color: #E1306C;
+        }
+      }
+      &.blog {
+        &:hover, &.selected {
+          background-color: #01CD38;
+        }
       }
     }
   }
