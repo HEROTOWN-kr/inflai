@@ -11,8 +11,10 @@ import axios from 'axios';
 import NaverIcon from '../../../img/icons/naver.png';
 import Influencer from '../../../img/influencer.png';
 import Advertiser from '../../../img/advertiser.png';
+import Common from '../../../lib/common';
 
 function InfluencerSns({
+  changeUser,
   userData,
   changeUserData,
   goTo
@@ -69,7 +71,27 @@ function InfluencerSns({
       if (loginRes.status === 'connected') {
         const { accessToken, userID } = loginRes.authResponse;
 
-        window.FB.api('/me/accounts', (accountRes) => {
+        axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
+          .then((res) => {
+            if (res.data.code === 200) {
+              changeUser({
+                social_type: res.data.social_type,
+                type: '1',
+                token: res.data.userToken,
+                name: res.data.userName,
+                regState: res.data.regState
+              });
+              goTo(`/instagram/${res.data.userId}`);
+              // props.history.push(`${props.match.path}/instagram/${res.data.userId}`);
+            } else if (res.data.code === 401) {
+              console.log(res);
+            } else {
+              console.log(res);
+            }
+          })
+          .catch(error => (error));
+
+        /* window.FB.api('/me/accounts', (accountRes) => {
           const pages = accountRes.data;
           if (pages.length > 0) {
             pages.map(item => (
@@ -89,13 +111,14 @@ function InfluencerSns({
 
             const timer = setTimeout(() => {
               changeUserData({ igAccounts: myArray });
+              Common.saveIgAccounts(myArray);
               goTo('/instagram');
             }, 500);
 
 
             return () => clearTimeout(timer);
           }
-        });
+        }); */
       } else {
         console.log('not connected');
       }
@@ -181,7 +204,7 @@ function InfluencerSns({
                 submitForm
               }) => (
                 <Grid container spacing={5} justify="center">
-                  <Grid item md={12} className="title">블로그 유형을 선택주세요</Grid>
+                  <Grid item md={12} className="title">블로그 유형을 선택해주세요</Grid>
                   <Grid item md={12}>
                     <FormControl>
                       <RadioGroup row aria-label="type" name="snsType" value={values.snsType} onChange={event => setFieldValue('snsType', event.target.value)}>

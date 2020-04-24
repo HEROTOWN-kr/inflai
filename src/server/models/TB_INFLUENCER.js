@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     INF_NAME: {
       type: DataTypes.STRING(45),
-      allowNull: false
+      allowNull: true
     },
     INF_TEL: {
       type: DataTypes.STRING(45),
@@ -23,11 +23,11 @@ module.exports = function(sequelize, DataTypes) {
     },
     INF_EMAIL: {
       type: DataTypes.STRING(45),
-      allowNull: false
+      allowNull: true
     },
     INF_REG_ID: {
       type: DataTypes.STRING(200),
-      allowNull: false
+      allowNull: true
     },
     INF_CHANNEL: {
       type: DataTypes.STRING(45),

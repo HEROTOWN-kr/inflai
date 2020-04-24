@@ -18,6 +18,10 @@ class Common {
     return localStorage.getItem('token') ? localStorage.getItem('token') : '';
   }
 
+  static getIgAccounts() {
+    return localStorage.getItem('igAccounts') ? JSON.parse(localStorage.getItem('igAccounts')) : [];
+  }
+
   static saveUserInfo(data) {
     const dataObj = JSON.stringify(data);
     localStorage.setItem('userInfo', dataObj);
@@ -25,6 +29,10 @@ class Common {
 
   static saveUserToken(data) {
     localStorage.setItem('token', data);
+  }
+
+  static saveIgAccounts(data) {
+    localStorage.setItem('igAccounts', JSON.stringify(data));
   }
 }
 

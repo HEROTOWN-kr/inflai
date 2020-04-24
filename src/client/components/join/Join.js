@@ -4,8 +4,8 @@ import Campaign from '../campaign/Campaign';
 import Product from '../product/Product';
 import UserType from './UserType';
 import Common from '../../lib/common';
-import InfluencerJoin from "./inf-join/InfluencerJoin";
-import AdvertiserJoin from "./adv-join/AdvertiserJoin";
+import InfluencerJoin from './inf-join/InfluencerJoin';
+import AdvertiserJoin from './adv-join/AdvertiserJoin';
 
 
 function Join(props) {
@@ -28,15 +28,15 @@ function Join(props) {
       <Switch>
         <Route
           path={`${props.match.path}/Type`}
-          render={props => <UserType {...props} goTo={goTo} changeUserData={changeUserData} />}
+          render={renderProps => <UserType {...renderProps} goTo={goTo} changeUserData={changeUserData} />}
         />
         <Route
           path={`${props.match.path}/Influencer`}
-          render={props => <InfluencerJoin {...props} />}
+          render={renderProps => <InfluencerJoin {...renderProps} changeUser={props.changeUser} />}
         />
         <Route
           path={`${props.match.path}/Advertiser`}
-          render={props => <AdvertiserJoin {...props} />}
+          render={renderProps => <AdvertiserJoin {...renderProps} />}
         />
       </Switch>
     </div>

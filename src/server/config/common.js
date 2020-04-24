@@ -7,4 +7,12 @@ function getIdFromToken(token) {
   return id;
 }
 
+function createToken(id) {
+  const payload = {
+    sub: id
+  };
+  return jwt.sign(payload, config.jwtSecret);
+}
+
 exports.getIdFromToken = getIdFromToken;
+exports.createToken = createToken;

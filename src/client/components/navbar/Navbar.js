@@ -61,7 +61,7 @@ function CustomNavbar(props) {
   const userMenuCat = [
     {
       text: '계정정보',
-      link: ''
+      link: '/Info'
     },
     {
       text: '마이 캠페인',
@@ -190,13 +190,6 @@ function CustomNavbar(props) {
     });
   }
 
-  function facebookLogin() {
-    window.FB.login((response) => {
-      console.log(response);
-    }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
-  }
-
-
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
@@ -223,14 +216,12 @@ function CustomNavbar(props) {
                   </Link>
                 </Grid>
               ))}
-              <Button onClick={facebookLogin}>FacebookLogin</Button>
-              {/* <Button onClick={() => props.history.push('Join/Type')}>SignUp</Button> */}
               <Grid item>
                 <Link
                   className="link"
                   to="/Join/Type"
                 >
-                  SignUp
+                  회원가입
                 </Link>
               </Grid>
             </Grid>
@@ -240,6 +231,8 @@ function CustomNavbar(props) {
                 {props.user.name ? props.user.name : null}
                 <ExpandMoreIcon />
               </Grid> */}
+
+
               {
                 props.user.name
                   ? (

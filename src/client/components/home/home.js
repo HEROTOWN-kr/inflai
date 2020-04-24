@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { boxSizing, height, spacing } from '@material-ui/system';
 import '../../css/sub.scss';
@@ -7,6 +7,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { Button, Hidden } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Slider from 'react-slick';
+import axios from 'axios';
 import TitleImage from '../../img/home-title.png';
 import AboutImage from '../../img/home-about.png';
 import RatingImage from '../../img/rating.png';
@@ -154,7 +155,9 @@ const FontSettings = {
 };
 
 function Home(props) {
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const settings = {
     infinite: true,
@@ -170,14 +173,14 @@ function Home(props) {
         breakpoint: 500,
         settings: { slidesToShow: 1, slidesToScroll: 1, infinite: false }
       },
-      /*{
+      /* {
         breakpoint: 768,
         settings: { slidesToShow: 2, slidesToScroll: 2, infinite: false }
       },
       {
         breakpoint: 1024,
         settings: { slidesToShow: 3, slidesToScroll: 3, infinite: false }
-      }*/
+      } */
     ]
     // centerMode: true
   };
@@ -229,7 +232,7 @@ function Home(props) {
 
   return (
     <div className="home">
-       <Greeting />
+      <Greeting />
       <div className="register-link">
         <div className="title-holder">
           <Grid container justify="center">
@@ -407,9 +410,9 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
       <div className="rating">
         <div className="wraper four">
           <Grid container justify="center" alignItems="center">
-            {/*<Grid container justify="center">
+            {/* <Grid container justify="center">
               <img src={RatingImage} />
-            </Grid>*/}
+            </Grid> */}
             <div className="rating-image">
               <img src={RatingImage} />
             </div>
@@ -430,7 +433,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
       <hr align="center" width="90%" color="#454545" />
       <div className="service">
         <div className="main-text">INFLAi</div>
-       {/* <Grid container>
+        {/* <Grid container>
           <Grid container xs={12} md={5} style={{ height: '102px' }}>
             <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
             <Grid container xs={12} md={10} lg={8} xl={6} justify="center" className="category-name">
@@ -559,7 +562,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
             </Grid>
             <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
           </Grid>
-        </Grid>*/}
+        </Grid> */}
         <div className="wraper five">
           <Grid container justify="space-between">
             <Grid item md={5} lg={4}>
@@ -572,7 +575,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                     보는 카테고리
                   </div>
                 </Grid>
-                <Grid></Grid>
+                <Grid />
                 <Grid container xs={12} md={12} style={{ height: '318px' }}>
                   <Grid container justify="space-between">
                     <div style={{
@@ -603,19 +606,19 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                     />
                   </Grid>
                   <Grid container alignContent="flex-end" justify="space-between">
-                      <div style={{
-                        height: '80px', width: '80px', backgroundImage: `url(${categorySeven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                      }}
-                      />
-                      <div style={{
-                        height: '80px', width: '80px', backgroundImage: `url(${categoryEight})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                      }}
-                      />
-                      <div style={{
-                        height: '80px', width: '80px', backgroundImage: `url(${categoryNine})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                      }}
-                      />
-                    </Grid>
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categorySeven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryEight})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                    <div style={{
+                      height: '80px', width: '80px', backgroundImage: `url(${categoryNine})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
+                    }}
+                    />
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -627,7 +630,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                     우리 플랫폼의 인플루언서들
                   </div>
                 </Grid>
-                <Grid></Grid>
+                <Grid />
                 <Grid container xs={12} md={12} style={{ height: '318px' }}>
                   <Grid container justify="space-between">
                     <div style={{
@@ -696,7 +699,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
 INFLAi Influencers
           </Grid>
         </div>
-        {/*<Grid container justify="center">
+        {/* <Grid container justify="center">
           <Grid item sm={2} lg={7}>
             <div className="carousel-zone">
               <Slider {...settings}>
@@ -731,7 +734,7 @@ INFLAi Influencers
               </Slider>
             </div>
           </Grid>
-        </Grid>*/}
+        </Grid> */}
 
         <div className="container">
           <SimpleSlider settings={settings} influencers={influencers} />

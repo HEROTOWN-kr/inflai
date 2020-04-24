@@ -22,40 +22,23 @@ import Common from '../../../lib/common';
 
 function InstagramUser({
   userData,
-  changeUserData
+  changeUserData,
+  match,
+  history
 }) {
-  const [fbPages, setFbPages] = useState([]);
-  const [igData, setIgData] = useState([
-    { id: '1', picture: 'https://scontent-ssn1-1.xx.fbcdn.net/v/t51.2885-15/10268830_1413710172239476_417695121_a.jpg?_nc_cat=100&_nc_sid=86c713&_nc_eui2=AeEenkc9hRXDsONeiLnC6S7HnbIOy0F_CVKdsg7LQX8JUnQaLmQ6Dk0967wX7pZu6tFFlnumvW3AMqiT5yCoChuD&_nc_ohc=dcWdY6-WKZ0AX_sjKCk&_nc_ht=scontent-ssn1-1.xx&oh=e83324ccb0c4f904c711e937cc61fa15&oe=5EC507C5', username: 'andrian_tsoy' },
-    { id: '2', picture: 'https://scontent-ssn1-1.xx.fbcdn.net/v/t51.2885-15/10268830_1413710172239476_417695121_a.jpg?_nc_cat=100&_nc_sid=86c713&_nc_eui2=AeEenkc9hRXDsONeiLnC6S7HnbIOy0F_CVKdsg7LQX8JUnQaLmQ6Dk0967wX7pZu6tFFlnumvW3AMqiT5yCoChuD&_nc_ohc=dcWdY6-WKZ0AX_sjKCk&_nc_ht=scontent-ssn1-1.xx&oh=e83324ccb0c4f904c711e937cc61fa15&oe=5EC507C5', username: 'andrian_tsoy' },
-    { id: '3', picture: 'https://scontent-ssn1-1.xx.fbcdn.net/v/t51.2885-15/10268830_1413710172239476_417695121_a.jpg?_nc_cat=100&_nc_sid=86c713&_nc_eui2=AeEenkc9hRXDsONeiLnC6S7HnbIOy0F_CVKdsg7LQX8JUnQaLmQ6Dk0967wX7pZu6tFFlnumvW3AMqiT5yCoChuD&_nc_ohc=dcWdY6-WKZ0AX_sjKCk&_nc_ht=scontent-ssn1-1.xx&oh=e83324ccb0c4f904c711e937cc61fa15&oe=5EC507C5', username: 'andrian_tsoy' },
-  ]);
+  const [userInfo, setUserInfo] = useState({});
+  const [igData, setIgData] = useState([]);
 
-  /* useEffect(() => {
-    const igArray = userData.igAccounts;
-    if (igArray && igArray.length > 0) {
-      igArray.map((item) => {
-        window.FB.getLoginStatus((loginRes) => {
-          if (loginRes.status === 'connected') {
-            const { accessToken, userID } = loginRes.authResponse;
-            window.FB.api(
-              item,
-              {
-                access_token: accessToken,
-                fields: 'username, profile_picture_url'
-              },
-              (getDataRes) => {
-                console.log(getDataRes);
-                setIgData([...igData, { id: getDataRes.id, picture: getDataRes.profile_picture_url, username: getDataRes.username }]);
-              }
-            );
-          } else {
-            console.log('not connected');
-          }
-        });
-      });
-    }
-  }, [userData]); */
+  useEffect(() => {
+    axios.get('/api/TB_INFLUENCER/getInstaAccounts', {
+      params: {
+        id: match.params.id,
+      }
+    }).then((res) => {
+      setIgData(res.data.data);
+      setUserInfo(res.data.info);
+    });
+  }, []);
 
   const SignupSchema = Yup.object().shape({
     nickName: Yup.string()
@@ -130,139 +113,6 @@ function InstagramUser({
     );
   }
 
-  function instagramLongToken() {
-    // console.log(window.FB);
-
-    window.FB.api(
-      '17841401425431236',
-      {
-        access_token: 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB',
-        // access_token: 'EAABZBmHw3RHwBAEMBmfZAgMZAUSVSeqEUNbSWwOMG5ZCEmZBHPEeMwl6kyHndjZC6bvPMwpQR93fYr96Oj7hslHuzgAp9G2cZA6e7JzQV3YXyctv2R6vAMZCexR9Kp2BhZCjdKjZCdZBRci4T1x4LTVtZAQPPUogiSGSJTtRykZAwPB5cuAZDZD',
-        fields: 'ig_id, followers_count, follows_count, media_count, username, media'
-        // 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB'
-      },
-      (response) => {
-        console.log(response);
-      }
-    );
-
-
-    /* window.FB.getLoginStatus((response) => {
-          if (response.status === 'connected') {
-            console.log(response);
-            const { accessToken, userID } = response.authResponse;
-            const { token } = Common.getUserInfo();
-
-
-            axios.get('/api/TB_INFLUENCER/getLongLivedToken', {
-              params: {
-                facebookToken: accessToken,
-                facebookUserId: userID,
-                token
-              }
-            })
-              .then((res) => {
-                console.log(res);
-              });
-          } else {
-            console.log('not connected');
-          }
-        }); */
-  }
-
-  function instagramGetData() {
-    window.FB.getLoginStatus((response) => {
-      if (response.status === 'connected') {
-        const { accessToken, userID } = response.authResponse;
-        window.FB.api('/me/accounts', (res) => {
-          const pages = res.data;
-          setFbPages([...pages]);
-        });
-      } else {
-        console.log('not connected');
-      }
-    });
-
-
-    // check accounts
-    /* window.FB.api('/me/accounts', (response) => {
-            console.log(response);
-          }); */
-
-    // check insta business account
-    /* window.FB.api(
-            '107978017554043',
-            {
-              access_token: 'EAABZBmHw3RHwBAFOi9MQZAkWomjwjOAqHUyEUDaPU0MFXPDFxM5dZCoCi35Fr5VYTKEBZA7G7LZCHZBF1p7IsUAQPpmDMZApt2FM5mZAqbhZCqrP1uEjUmvIQNCqGUKLxOq609SFhHTQyMUCaXPaOuLUYW2EbaGEVDxRZB8kCOmZBLe6eHNfMbfanqWw39zl5MliWevOxZCejgNmoQZDZD',
-              fields: 'instagram_business_account'
-            },
-            (response) => {
-              console.log(response);
-            }
-          ); */
-
-    // get instagram data
-    /* window.FB.api(
-            '17841401425431236',
-            {
-              access_token: 'EAABZBmHw3RHwBAFOi9MQZAkWomjwjOAqHUyEUDaPU0MFXPDFxM5dZCoCi35Fr5VYTKEBZA7G7LZCHZBF1p7IsUAQPpmDMZApt2FM5mZAqbhZCqrP1uEjUmvIQNCqGUKLxOq609SFhHTQyMUCaXPaOuLUYW2EbaGEVDxRZB8kCOmZBLe6eHNfMbfanqWw39zl5MliWevOxZCejgNmoQZDZD',
-              fields: 'ig_id, followers_count, follows_count, media_count, username, media'
-            },
-            (response) => {
-              console.log(response);
-            }
-          ); */
-  }
-
-  function instagramGetId(pageId) {
-    const { token } = Common.getUserInfo();
-
-    window.FB.getLoginStatus((response) => {
-      if (response.status === 'connected') {
-        const { accessToken, userID } = response.authResponse;
-
-        window.FB.api(
-          pageId,
-          {
-            access_token: accessToken,
-            fields: 'instagram_business_account'
-          },
-          (response) => {
-            const instagramBusinessId = response.instagram_business_account.id;
-            // console.log(response.instagram_business_account.id);
-
-            axios.get('/api/TB_INFLUENCER/getLongLivedToken', {
-              params: {
-                facebookToken: accessToken,
-                facebookUserId: userID,
-                instagramBusinessId,
-                token
-              }
-            })
-              .then((res) => {
-                console.log(res);
-              });
-          }
-        );
-      } else {
-        console.log('not connected');
-      }
-    });
-  }
-
-  const ErrorMessage = ({ name }) => (
-    <Field
-      name={name}
-      type="text"
-    >
-      {({ field, form, meta }) => {
-        const error = getIn(form.errors, name);
-        const touch = getIn(form.touched, name);
-        return touch && error ? error : null;
-      }}
-    </Field>
-  );
-
   function StyledRadio({
     item,
     selected
@@ -270,7 +120,9 @@ function InstagramUser({
     return (
       <Grid container className={`card ${item.id === selected ? 'selected' : null}`} justify="center">
         <Grid item>
-          <Box component="img" src={item.picture} pt={3} />
+          <Box pt={3}>
+            <img src={item.picture} alt="avatar" />
+          </Box>
         </Grid>
         <Grid item>
           <p>{item.username}</p>
@@ -281,7 +133,7 @@ function InstagramUser({
   }
 
   return (
-    <Grid container className="influencer-page wraper three">
+    <Grid container className="influencer-page wraper vertical2">
 
       <Grid item xs={12} className="second-title">
               상세 정보 입력
@@ -292,34 +144,25 @@ function InstagramUser({
           <Grid item md={5}>
             <Formik
               initialValues={{
-                channel: [
-                  {
-                    type: '',
-                    link: ''
-                  }
-                ],
                 instaAccount: '',
-                nickName: userData.name,
-                email: userData.email,
+                nickName: userInfo.name,
+                email: userInfo.email,
                 country: 0,
                 region: '',
                 phone: '',
-                product: '',
-                agreement: false,
-                fbPageId: '',
-                instId: ''
+                product: ''
               }}
               enableReinitialize
               validationSchema={SignupSchema}
               onSubmit={(values) => {
                 // same shape as initial values
                 // console.log(values);
-                const apiObj = { ...values, token: Common.getUserInfo().token };
+                const apiObj = { ...values, id: match.params.id };
 
-                axios.post('/api/TB_INFLUENCER/updateInfo', apiObj)
+                axios.post('/api/TB_INFLUENCER/instaUpdate', apiObj)
                   .then((res) => {
                     if (res.data.code === 200) {
-                      console.log(res);
+                      history.push('/');
                     } else if (res.data.code === 401) {
                       console.log(res);
                     } else {

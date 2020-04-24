@@ -647,9 +647,9 @@ $colorGrey: #dfe2e8;
   }
   .second-title {
     text-align: center;
-    font-size: 26px;
+    font-size: 45px;
     color: #898F97;
-    margin: 20px 0 100px 0;
+    margin: 20px 0 50px 0;
   }
   .youtube {
     .youtube-title {
@@ -809,6 +809,9 @@ $colorGrey: #dfe2e8;
     border-radius: 20px;
     color: #dcd8d8;
     img {
+      width: 150px;
+      height: 150px;
+      border-radius: 100%;
       transition: opacity 0.5s ease;
       opacity: 0.3;
     }

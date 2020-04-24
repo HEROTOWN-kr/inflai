@@ -9,7 +9,8 @@ import ProductMix from '../product/ProductMix';
 import Campaign from '../campaign/Campaign';
 import ProductCreate from '../product/ProductCreate';
 import Product from '../product/Product';
-import Join from "../join/Join";
+import Join from '../join/Join';
+import Info from '../info/Info';
 
 
 function Main({
@@ -22,7 +23,6 @@ function Main({
       <Route path="/Advertiser" component={Advertiser} />
       <Route
         path="/Influencer"
-            // render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
         render={props => <Influencer {...props} user={user} changeUser={changeUser} />}
       />
       <Route path="/Contact" component={Contact} />
@@ -32,20 +32,19 @@ function Main({
       />
       <Route
         path="/Product"
-        // render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
         render={props => <Product {...props} user={user} changeUser={changeUser} />}
       />
-      {/* <Route
-        path="/Product/mix/request"
-        render={props => <ProductMix {...props} user={user} changeUser={changeUser} />}
-      /> */}
       <Route
         path="/Campaign"
         render={props => <Campaign {...props} user={user} />}
       />
       <Route
         path="/Join"
-        render={props => <Join {...props} />}
+        render={props => <Join {...props} changeUser={changeUser} />}
+      />
+      <Route
+        path="/Info"
+        render={props => <Info {...props} />}
       />
     </Switch>
   );
