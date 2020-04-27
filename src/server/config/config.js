@@ -18,6 +18,11 @@
   // 푸시 메시지 운영환경 구성
   config.fcm_api_key = 'AAAAYCBYaZA:APA91bGIOYerhJ6xVTIOa-7xOrJQsVOHNyM12m1m0T-aUef9R0GZYafADItf5ETzxKlqeIngL9GLMLcCK3Nhn4YS2pkl4Eug01A64pbzik7TDaf0uZYaVyFAJiIWNnZ0q8iyUHeuNpT5';
 
+  // access keys
+  config.fb_client_id = '663450957780119';
+  config.fb_client_secret = '598b25dd21a5480ad10012b4f9d51bb0';
+
+
   // Exports ----------------------------------------------
   module.exports = config;
 }((this || 0).self || global));

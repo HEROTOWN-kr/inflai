@@ -4,7 +4,7 @@ const request = require('request');
 // const Promise = require('bluebird');
 const async = require('async');
 
-const config = require('../config');
+const config = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
 
@@ -60,7 +60,7 @@ router.get('/getInstaAccounts', (req, res) => {
               email: result.dataValues.INF_EMAIL
             }
           });
-        }, 900);
+        }, 1500);
       }
     });
 
@@ -173,8 +173,10 @@ router.get('/getLongLivedToken', (req, res) => {
 
   const apiUrl = 'https://graph.facebook.com/v6.0/oauth/access_token?'
       + 'grant_type=fb_exchange_token&'
-      + 'client_id=139193384125564&'
-      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret
+      // + 'client_id=139193384125564&'
+      // + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret
+      + `client_id=${config.fb_client_id}&`
+      + `client_secret=${config.fb_client_secret}&`  //using fbsecret
       + `fb_exchange_token=${facebookToken}`;
   const options = {
     url: apiUrl,
@@ -215,8 +217,10 @@ router.post('/instaSignUp', (req, res) => {
 
   const longTokenUrl = 'https://graph.facebook.com/v6.0/oauth/access_token?'
       + 'grant_type=fb_exchange_token&'
-      + 'client_id=139193384125564&'
-      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret
+      /*+ 'client_id=139193384125564&'
+      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret*/
+      + `client_id=${config.fb_client_id}&`
+      + `client_secret=${config.fb_client_secret}&`  //using fbsecret
       + `fb_exchange_token=${facebookToken}`;
 
   const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=email%2Cname&'
