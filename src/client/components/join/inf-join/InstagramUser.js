@@ -35,6 +35,7 @@ function InstagramUser({
         id: match.params.id,
       }
     }).then((res) => {
+      console.log(res.data);
       setIgData(res.data.data);
       setUserInfo(res.data.info);
     });
