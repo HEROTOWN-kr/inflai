@@ -43,8 +43,8 @@ function InfluencerSns({
   ];
 
   const mySchema = Yup.object().shape({
-    snsType: Yup.string()
-      .required('직군을 선택주세요'),
+   /* snsType: Yup.string()
+      .required('직군을 선택주세요'),*/
   });
 
   function StyledRadio({
@@ -177,6 +177,11 @@ function InfluencerSns({
     }
   }
 
+  function selectSns(value, setFieldValue, submitForm) {
+    setFieldValue('snsType', value);
+    submitForm();
+  }
+
   return (
     <div className="join-sns">
       <Grid container justify="center">
@@ -207,7 +212,7 @@ function InfluencerSns({
                   <Grid item md={12} className="title">블로그 유형을 선택해주세요</Grid>
                   <Grid item md={12}>
                     <FormControl>
-                      <RadioGroup row aria-label="type" name="snsType" value={values.snsType} onChange={event => setFieldValue('snsType', event.target.value)}>
+                      <RadioGroup row aria-label="type" name="snsType" value={values.snsType} onChange={event => selectSns(event.target.value, setFieldValue, submitForm)}>
                         <Grid container spacing={5}>
                           {types.map(item => (
                             <Grid item md={4} key={item.value}>
@@ -218,11 +223,6 @@ function InfluencerSns({
                       </RadioGroup>
                       <FormHelperText id="my-helper-text">{errors.snsType && touched.snsType ? <span className="error-message">{errors.snsType}</span> : null}</FormHelperText>
                     </FormControl>
-                  </Grid>
-                  <Grid item md={3}>
-                    <Button variant="contained" color="primary" fullWidth onClick={submitForm}>
-                                            다음
-                    </Button>
                   </Grid>
                 </Grid>
               )}

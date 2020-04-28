@@ -26,8 +26,8 @@ function UserType({
   ];
 
   const mySchema = Yup.object().shape({
-    type: Yup.string()
-      .required('직군을 선택주세요'),
+    /*type: Yup.string()
+      .required('직군을 선택주세요'),*/
   });
 
   function StyledRadio({
@@ -45,6 +45,11 @@ function UserType({
         <Radio value={item.value} style={{ display: 'none' }} />
       </Grid>
     );
+  }
+
+  function selectType(value, setFieldValue, submitForm) {
+    setFieldValue('type', value);
+    submitForm();
   }
 
   return (
@@ -78,7 +83,7 @@ function UserType({
 
                   <Grid item md={12}>
                     <FormControl>
-                      <RadioGroup row aria-label="type" name="type" value={values.type} onChange={event => setFieldValue('type', event.target.value)}>
+                      <RadioGroup row aria-label="type" name="type" value={values.type} onChange={event => selectType(event.target.value, setFieldValue, submitForm)}>
                         <Grid container spacing={5}>
                           {types.map(item => (
                             <Grid item md={6} key={item.value}>
@@ -87,13 +92,7 @@ function UserType({
                           ))}
                         </Grid>
                       </RadioGroup>
-                      <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
                     </FormControl>
-                  </Grid>
-                  <Grid item md={3}>
-                    <Button variant="contained" color="primary" fullWidth onClick={submitForm}>
-                        다음
-                    </Button>
                   </Grid>
                 </Grid>
               )}
