@@ -62,6 +62,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    INF_REF_TOKEN: {
+      type: DataTypes.STRING(300),
+      allowNull: true
+    },
+    INF_BLOG_TYPE: {
+      type: DataTypes.STRING(1),
+      allowNull: true
+    },
     INF_DT: {
       type: 'TIMESTAMP',
       allowNull: false,

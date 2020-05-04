@@ -1,9 +1,10 @@
 const express = require('express');
+const Sequelize = require('sequelize');
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Photo = require('../models').TB_PHOTO_AD;
 const common = require('../config/common');
-const Sequelize = require('sequelize');
+
 
 const router = express.Router();
 

@@ -1,15 +1,21 @@
 import React, { useCallback, useEffect } from 'react';
+import {
+  Redirect, Link, withRouter, browserHistory
+} from 'react-router-dom';
 import axios from 'axios';
 import MenuIcon from '@material-ui/icons/Menu';
 import {
   makeStyles, AppBar, Grid, List, ListItem, ListItemText, Drawer, Hidden, Popover, Divider, Button
 } from '@material-ui/core';
-import { Link, withRouter, browserHistory } from 'react-router-dom';
+
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import GoogleLogin from 'react-google-login';
 import Logo from '../../img/logo.png';
 import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
 import Common from '../../lib/common';
+import SocialButton from '../login/SocialButton';
+import GoogleIcon from '../../img/google-logo2.png';
 
 
 const useStyles = makeStyles(theme => ({
@@ -42,6 +48,17 @@ function CustomNavbar(props) {
 
   const [openMenu, setOpenMenu] = React.useState(false);
   const [userMenu, setUserMenu] = React.useState(null);
+
+  const googleLink = 'https://accounts.google.com'
+      + '/o/oauth2/v2/auth?'
+      + 'scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube.readonly '
+      + 'https://www.googleapis.com/auth/userinfo.profile '
+      + 'https://www.googleapis.com/auth/userinfo.email&'
+      // + 'profile email&'
+      + 'access_type=offline&redirect_uri=http://localhost:8080/TB_ADVERTISER/Googletest1&'
+      + 'response_type=code&'
+      + 'client_id=997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com';
+
 
   function openUserMenu(event) {
     setUserMenu(event.currentTarget);
@@ -190,6 +207,26 @@ function CustomNavbar(props) {
     });
   }
 
+  function signGoogle() {
+    axios.get('/api/TB_ADVERTISER/Googletest3', {
+    }).then((res) => {
+      window.location.href = '/thankyou';
+      // <Redirect to="/thankyou" />;
+    });
+  }
+
+  const responseGoogle = (response) => {
+    console.log(response);
+    axios.get('/api/TB_ADVERTISER/Googletest1', {
+      params: {
+        code: response.code
+      }
+    })
+      .then((res) => {
+        console.log(res);
+      });
+  };
+
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
@@ -231,7 +268,22 @@ function CustomNavbar(props) {
                 {props.user.name ? props.user.name : null}
                 <ExpandMoreIcon />
               </Grid> */}
+              {/* <a
+                href={googleLink}
+              >
+                Sign Google
+              </a> */}
+              <GoogleLogin
+                clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
+                scope="profile email https://www.googleapis.com/auth/youtube.readonly"
+                responseType="code"
+                accessType="offline"
+                prompt="consent"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+              />
 
+              {/* <Button variant="contained" color="secondary" onClick={signGoogle}>Sign Google</Button> */}
 
               {
                 props.user.name

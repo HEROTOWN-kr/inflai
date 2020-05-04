@@ -68,8 +68,10 @@ function InfluencerSns({
 
   function facebookLogin() {
     window.FB.login((loginRes) => {
+      console.log(loginRes);
       if (loginRes.status === 'connected') {
         const { accessToken, userID } = loginRes.authResponse;
+
 
         axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
           .then((res) => {

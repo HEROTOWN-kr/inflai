@@ -2,8 +2,10 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 const bcrypt = require('bcryptjs');
+const { google } = require('googleapis');
 
 const config = require('../config');
+const configKey = require('../config/config');
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influenser = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
@@ -11,6 +13,48 @@ const common = require('../config/common');
 const saltRounds = 10;
 
 const router = express.Router();
+
+function getOauthClient() {
+  const oauth2Client = new google.auth.OAuth2(
+    configKey.google_client_id,
+    configKey.google_client_secret,
+    configKey.google_client_redirect_url
+  );
+  return oauth2Client;
+}
+
+router.get('/test2', (req, res) => {
+  /* res.json({
+    code: 200,
+    message: 'success'
+  }); */
+
+  const token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjI4Yjc0MWU4ZGU5ODRhNDcxNTlmMTllNmQ3NzgzZTlkNGZhODEwZGIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiOTk3Mjc0NDIyNzI1LWdiNDBvNXR2NTc5Y3NyMDljaDdxOGFuNjN0Zm1qZ2ZvLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiOTk3Mjc0NDIyNzI1LWdiNDBvNXR2NTc5Y3NyMDljaDdxOGFuNjN0Zm1qZ2ZvLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA5NTA0MzM5NzIxNDY4NjkyMzc2IiwiZW1haWwiOiJhbmRyaWFudHNveUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6IkN3M0tNTEN5OXByZFVaRFQxUUhIbEEiLCJuYW1lIjoi0JDQvdC00YDQuNCw0L0g0KbQvtC5IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdpX3J0MThrY1p4VkRmS05GSWFSU1dUcVdBMDk2SHIyamFNbzhJZ2d3PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6ItCQ0L3QtNGA0LjQsNC9IiwiZmFtaWx5X25hbWUiOiLQptC-0LkiLCJsb2NhbGUiOiJydSIsImlhdCI6MTU4ODA1OTIzMSwiZXhwIjoxNTg4MDYyODMxLCJqdGkiOiJiYjI4NDcxOGUzYTllYTkzZGI2ZmE0MjJkYmRmNDBiZTA0NGY0MzkzIn0.vwKxJ7V-RW4fK8M9oZqNlcyDZASZEl00cRNbXroVW-yt1JlApa56N80HmUZ5CVt5Y-dxdnmBh32J42_CGTs_BwXx827G6cdfAGm9sqx4gmjw7da2GZcl-NBDxEUuGkC_FuVbfxYCrRLAJB7mcCLxvlRY6LeMRu8pX8jhT2QnhOOFxauFlKGpmy2U4BULPyNZtPZ76F7v-YkYhQWijjW8MjsX_0KzH6AMRqF4lF-ZoC1nLXLs4AFTJYm9lIjRzYM6-PNXNIQZo6ofLJexKuhxdtle2feryoT-LvkjozwsRJmjq0lXJu75G6hN3KPozQyWArUzqWMgPUivlQEfOVbvhQ';
+  const apiKey = 'AIzaSyArMk2Jue1FRfkT29_vVZ4qhLBvQpbJaOQ';
+
+  const myUrl = `https://www.googleapis.com/youtube/v3/subscriptions?part=id&mySubscribers=true&key=${apiKey}`;
+
+  const options = {
+    method: 'GET',
+    url: myUrl,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json'
+    },
+    gzip: true
+  };
+
+
+  request(options, (error, requestResponse, responseBody) => {
+    if (!error && requestResponse.statusCode == 200) {
+      console.log(requestResponse);
+    } else if (requestResponse != null) {
+      console.log(`error = ${requestResponse.statusCode}`);
+      console.log(`error = ${error}`);
+      console.log(options);
+    }
+  });
+});
 
 router.get('/test', (req, res) => {
   /* res.json({
@@ -43,6 +87,158 @@ router.get('/test', (req, res) => {
       console.log(options);
     }
   });
+});
+
+router.get('/Googletest3', (req, res) => {
+  const oauth2Client = getOauthClient();
+
+  const scopes = [
+    'https://www.googleapis.com/auth/youtube.readonly'
+  ];
+
+  const url = oauth2Client.generateAuthUrl({
+    // 'online' (default) or 'offline' (gets refresh_token)
+    access_type: 'offline',
+    // If you only need one scope you can pass it as a string
+    scope: scopes
+  });
+
+  /* res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Request-Method', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+  res.setHeader('Access-Control-Allow-Headers', '*'); */
+
+  /* res.writeHead(301, {
+    Location: url,
+    'Access-Control-Allow-Origin': 'http://localhost:3000',
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+  });
+  res.end(); */
+
+  res.redirect(url);
+});
+
+router.get('/Googletest1', (req, res) => {
+  const data = req.query;
+  const { code } = data;
+
+  const oauth2Client = getOauthClient();
+
+  oauth2Client.getToken(code, (err, tokens) => {
+    console.log('tokens : ', tokens);
+    // Now tokens contains an access_token and an optional refresh_token. Save them.
+    if (!err) {
+      oauth2Client.setCredentials(tokens);
+
+      const youtube = google.youtube('v3');
+      const oauth2 = google.oauth2('v2');
+
+      /* Influenser.create({
+        INF_REF_TOKEN: tokens.refresh_token,
+      }).then((result) => {
+        res.json({
+          code: 200,
+          userToken: common.createToken(result.dataValues.INF_ID),
+          userName: result.dataValues.INF_NAME,
+        });
+      }); */
+      /* service.channels.list({
+        auth: oauth2Client,
+        part: 'id',
+        mySubscribers: true
+      }, (err, response) => {
+        if (err) {
+          console.log(`The API returned an error: ${err}`);
+          return;
+        }
+        const channels = response.data.items;
+        if (channels.length == 0) {
+          console.log('No channel found.');
+        } else {
+          /!*console.log('This channel\'s ID is %s. Its title is \'%s\', and '
+              + 'it has %s views.',
+          channels[0].id,
+          channels[0].snippet.title,
+          channels[0].statistics.viewCount);*!/
+        }
+      }); */
+
+      /* youtube.subscriptions.list({
+        auth: oauth2Client,
+        part: 'id',
+        mySubscribers: true
+      }, (err, response) => {
+        if (err) {
+          console.log(`The API returned an error: ${err}`);
+          return;
+        }
+        const channels = response.data.items;
+        if (channels.length == 0) {
+          console.log('No channel found.');
+        } else {
+
+        }
+      }); */
+
+      oauth2.userinfo.get(
+        {
+          auth: oauth2Client,
+          alt: 'json',
+        }, (err, response) => {
+          if (err) {
+            console.log(`The API returned an error: ${err}`);
+          } else {
+            Influenser.create({
+              INF_NAME: response.data.name,
+              INF_EMAIL: response.data.email,
+              INF_REG_ID: response.data.id,
+              INF_REF_TOKEN: tokens.refresh_token,
+            }).then((result) => {
+              // res.redirect('http://localhost:3000');
+
+              request.post('https://oauth2.googleapis.com/token',
+                {
+                  form: {
+                    client_id: configKey.google_client_id,
+                    client_secret: configKey.google_client_secret,
+                    refresh_token: tokens.refresh_token,
+                    grant_type: 'refresh_token'
+                  }
+                },
+                (error, requestResponse, responseBody) => {
+                  if (!error && requestResponse.statusCode == 200) {
+                    console.log(requestResponse);
+                  } else if (requestResponse != null) {
+                    console.log(`error = ${requestResponse.statusCode}`);
+                    console.log(`error = ${error}`);
+                  }
+                });
+            });
+          }
+        }
+      );
+
+      // session["tokens"] = tokens;
+    } else {
+      // res.redirect('http://localhost:3000');
+    }
+  });
+
+
+  // const { tokens } = oauth2Client.getToken(code);
+
+  /* oauth2Client.setCredentials(tokens);
+
+
+  oauth2Client.on('tokens', (token) => {
+    if (token.refresh_token) {
+      // store the refresh_token in my database!
+      console.log(token.refresh_token);
+    }
+    console.log(token.access_token);
+  }); */
+
+  // res.redirect('http://localhost:3000');
 });
 
 router.get('/', (req, res) => {
