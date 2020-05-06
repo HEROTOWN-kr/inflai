@@ -208,6 +208,10 @@ router.get('/Googletest1', (req, res) => {
                 (error, requestResponse, responseBody) => {
                   if (!error && requestResponse.statusCode == 200) {
                     console.log(requestResponse);
+                    res.json({
+                      code: 200,
+                      data: JSON.parse(responseBody)
+                    });
                   } else if (requestResponse != null) {
                     console.log(`error = ${requestResponse.statusCode}`);
                     console.log(`error = ${error}`);

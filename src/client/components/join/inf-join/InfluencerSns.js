@@ -8,6 +8,7 @@ import YouTubeIcon from '@material-ui/icons/YouTube';
 import InstagramIcon from '@material-ui/icons/Instagram';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import axios from 'axios';
+import GoogleLogin from 'react-google-login';
 import NaverIcon from '../../../img/icons/naver.png';
 import Influencer from '../../../img/influencer.png';
 import Advertiser from '../../../img/advertiser.png';
@@ -19,8 +20,7 @@ function InfluencerSns({
   changeUserData,
   goTo
 }) {
-  // const [igId, setIgId] = useState([]);
-  const myArray = [];
+  const inputRef = React.useRef(null);
 
   const types = [
     {
@@ -32,7 +32,7 @@ function InfluencerSns({
       text: 'Instagram',
       value: '2',
       icon: InstagramIcon,
-      addClass: 'instagram'
+      addClass: 'instagram',
     },
     {
       text: 'Blog',
@@ -41,30 +41,6 @@ function InfluencerSns({
       addClass: 'blog'
     }
   ];
-
-  const mySchema = Yup.object().shape({
-   /* snsType: Yup.string()
-      .required('직군을 선택주세요'),*/
-  });
-
-  function StyledRadio({
-    item,
-    selected
-  }) {
-    return (
-      <Grid container className={`card ${item.addClass ? item.addClass : null} ${item.value === selected ? 'selected' : null}`} justify="center">
-        <Grid item>
-          <Box>
-            <SvgIcon component={item.icon} htmlColor="#ffffff" />
-          </Box>
-        </Grid>
-        <Grid item md={12}>
-          <p>{item.text}</p>
-        </Grid>
-        <Radio value={item.value} style={{ display: 'none' }} />
-      </Grid>
-    );
-  }
 
   function facebookLogin() {
     window.FB.login((loginRes) => {
@@ -92,76 +68,11 @@ function InfluencerSns({
             }
           })
           .catch(error => (error));
-
-        /* window.FB.api('/me/accounts', (accountRes) => {
-          const pages = accountRes.data;
-          if (pages.length > 0) {
-            pages.map(item => (
-              window.FB.api(
-                item.id,
-                {
-                  access_token: accessToken,
-                  fields: 'instagram_business_account'
-                },
-                (pageRes) => {
-                  if (pageRes.instagram_business_account) {
-                    myArray.push(pageRes.instagram_business_account.id);
-                  }
-                }
-              )
-            ));
-
-            const timer = setTimeout(() => {
-              changeUserData({ igAccounts: myArray });
-              Common.saveIgAccounts(myArray);
-              goTo('/instagram');
-            }, 500);
-
-
-            return () => clearTimeout(timer);
-          }
-        }); */
       } else {
         console.log('not connected');
       }
     }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
   }
-
-  async function facebookLogin2() {
-    window.FB.login((loginRes) => {
-      if (loginRes.status === 'connected') {
-        const { accessToken, userID } = loginRes.authResponse;
-
-        window.FB.api('/me/accounts', (accountRes) => {
-          const pages = accountRes.data;
-          if (pages.length > 0) {
-            pages.forEach(async (item) => {
-              window.FB.api(
-                item.id,
-                {
-                  access_token: accessToken,
-                  fields: 'instagram_business_account'
-                },
-                (pageRes) => {
-                  if (pageRes.instagram_business_account) {
-                    myArray.push('2');
-                  }
-                }
-              );
-            });
-
-            console.log(myArray);
-
-            // changeUserData({ igAccounts: ['1', '2'] });
-            // changeUserData({ jobType: 'changed' });
-          }
-        });
-      } else {
-        console.log('not connected');
-      }
-    }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
-  }
-
 
   function goNext(snsType) {
     let url;
@@ -179,10 +90,48 @@ function InfluencerSns({
     }
   }
 
-  function selectSns(value, setFieldValue, submitForm) {
-    setFieldValue('snsType', value);
-    submitForm();
+  function clickSns(sns) {
+    switch (sns) {
+      case 'Instagram': {
+        facebookLogin();
+        break;
+      }
+      case 'Youtube': {
+        inputRef.current.click();
+        break;
+      }
+    }
   }
+
+  function StyledRadio({
+    item,
+    selected
+  }) {
+    return (
+      <Grid container className={`card ${item.addClass ? item.addClass : null}`} justify="center" onClick={() => clickSns(item.text)}>
+        <Grid item>
+          <Box>
+            <SvgIcon component={item.icon} htmlColor="#ffffff" />
+          </Box>
+        </Grid>
+        <Grid item md={12}>
+          <p>{item.text}</p>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  const responseGoogle = (response) => {
+    console.log(response);
+    axios.get('/api/TB_ADVERTISER/Googletest1', {
+      params: {
+        code: response.code
+      }
+    })
+      .then((res) => {
+        console.log(res);
+      });
+  };
 
   return (
     <div className="join-sns">
@@ -194,7 +143,6 @@ function InfluencerSns({
                 snsType: '',
               }}
               enableReinitialize
-              validationSchema={mySchema}
               onSubmit={(values) => {
                 changeUserData({ snsType: values.snsType });
                 goNext(values.snsType);
@@ -211,20 +159,27 @@ function InfluencerSns({
                 submitForm
               }) => (
                 <Grid container spacing={5} justify="center">
+                  <GoogleLogin
+                    clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
+                    scope="profile email https://www.googleapis.com/auth/youtube.readonly"
+                    responseType="code"
+                    accessType="offline"
+                    prompt="consent"
+                    render={renderProps => (
+                      <button ref={inputRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{display: 'none'}}>This is my custom Google button</button>
+                    )}
+                    onSuccess={responseGoogle}
+                    onFailure={responseGoogle}
+                  />
                   <Grid item md={12} className="title">블로그 유형을 선택해주세요</Grid>
                   <Grid item md={12}>
-                    <FormControl>
-                      <RadioGroup row aria-label="type" name="snsType" value={values.snsType} onChange={event => selectSns(event.target.value, setFieldValue, submitForm)}>
-                        <Grid container spacing={5}>
-                          {types.map(item => (
-                            <Grid item md={4} key={item.value}>
-                              <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.snsType} />} />
-                            </Grid>
-                          ))}
+                    <Grid container spacing={5}>
+                      {types.map(item => (
+                        <Grid item md={4} key={item.value}>
+                          <StyledRadio item={item} />
                         </Grid>
-                      </RadioGroup>
-                      <FormHelperText id="my-helper-text">{errors.snsType && touched.snsType ? <span className="error-message">{errors.snsType}</span> : null}</FormHelperText>
-                    </FormControl>
+                      ))}
+                    </Grid>
                   </Grid>
                 </Grid>
               )}

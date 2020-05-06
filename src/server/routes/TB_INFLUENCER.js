@@ -112,6 +112,7 @@ router.get('/getInfluencers', (req, res) => {
 router.get('/getInstaInfo', (req, res) => {
   const { token } = req.query;
   const userId = common.getIdFromToken(token).sub;
+  let resObj = {};
 
   Influencer.findOne({ where: { INF_ID: userId } }).then((result) => {
     const { INF_INST_ID, INF_TOKEN } = result.dataValues;
@@ -120,16 +121,25 @@ router.get('/getInstaInfo', (req, res) => {
       + 'followers_count%2C'
       + 'follows_count%2C'
       + 'media_count%2C'
-      + 'media%2C'
       + 'username%2C'
       + 'profile_picture_url%2C'
       + 'name&'
       + `access_token=${INF_TOKEN}`;
 
+    const instaMediaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}/media?`
+        + 'fields='
+        + 'thumbnail_url%2C'
+        + 'media_url&'
+        + `access_token=${INF_TOKEN}`;
+
     request.get(instaDataUrl, (error, response, body) => {
-      res.json({
-        code: 200,
-        data: JSON.parse(body),
+      resObj = { ...resObj, ...(JSON.parse(body)) };
+      request.get(instaMediaDataUrl, (error2, response2, body2) => {
+        resObj = { ...resObj, media: JSON.parse(body2).data };
+        res.json({
+          code: 200,
+          data: resObj,
+        });
       });
     });
   }).error((err) => {
@@ -176,7 +186,7 @@ router.get('/getLongLivedToken', (req, res) => {
       // + 'client_id=139193384125564&'
       // + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret
       + `client_id=${config.fb_client_id}&`
-      + `client_secret=${config.fb_client_secret}&`  //using fbsecret
+      + `client_secret=${config.fb_client_secret}&` // using fbsecret
       + `fb_exchange_token=${facebookToken}`;
   const options = {
     url: apiUrl,
@@ -217,10 +227,10 @@ router.post('/instaSignUp', (req, res) => {
 
   const longTokenUrl = 'https://graph.facebook.com/v6.0/oauth/access_token?'
       + 'grant_type=fb_exchange_token&'
-      /*+ 'client_id=139193384125564&'
-      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret*/
+      /* + 'client_id=139193384125564&'
+      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret */
       + `client_id=${config.fb_client_id}&`
-      + `client_secret=${config.fb_client_secret}&`  //using fbsecret
+      + `client_secret=${config.fb_client_secret}&` // using fbsecret
       + `fb_exchange_token=${facebookToken}`;
 
   const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=email%2Cname&'

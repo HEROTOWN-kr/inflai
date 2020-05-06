@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import {
   Box,
-  Button, Divider, FormControlLabel, Radio, RadioGroup, TextField
+  Button, CircularProgress, Divider, FormControlLabel, Radio, RadioGroup, TextField
 } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -179,69 +179,81 @@ function InstagramUser({
                 <Grid container>
                   <Grid item md={12}>
                     <div className="form">
-                      <Form>
-                        <Grid container spacing={5}>
-                          <Grid item md={12}>
-                            <Grid container spacing={2}>
-                              <Grid item md={6}>
-                                <MyTextField name="nickName" label="닉네임" />
-                              </Grid>
-                              <Grid item md={6}>
-                                <MyTextField name="email" label="이메일" />
-                              </Grid>
-                              <Grid item md={6}>
-                                <MyTextField name="phone" label="전화번호" />
-                              </Grid>
-                            </Grid>
-                          </Grid>
-                          <Grid item md={12}>
-                            <Divider />
-                          </Grid>
-                          <Grid item md={12}>
-                            <Grid container spacing={2}>
-                              <Grid item md={6}>
-                                <MySelect name="country" type="select" label="시/도" countryIndex={values.country} />
-                              </Grid>
-                              <Grid item md={6}>
-                                {
-                                                                  values.country
-                                                                    ? <MySelect name="region" type="select" countryIndex={values.country} label="구/군" />
-                                                                    : null
-                                                              }
-                              </Grid>
-                            </Grid>
-                          </Grid>
-
-                          <Grid item md={12}>
-                            <Divider />
-                          </Grid>
-
-                          <Grid item md={12}>
-                            <div className="label-holder">
-                              <label htmlFor="인스타 계정">인스타 계정</label>
-                            </div>
-                            <FormControl fullWidth>
-                              <RadioGroup row aria-label="instaAccount" name="instaAccount" value={values.instaAccount} onChange={event => setFieldValue('instaAccount', event.target.value)}>
-                                <Grid container spacing={2}>
-                                  {igData.map(item => (
-                                    <Grid item md={4} key={item.id}>
-                                      <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.instaAccount} />} style={{ margin: '0' }} />
+                      {
+                        userInfo.name
+                          ? (
+                            <Form>
+                              <Grid container spacing={5}>
+                                <Grid item md={12}>
+                                  <Grid container spacing={2}>
+                                    <Grid item md={6}>
+                                      <MyTextField name="nickName" label="닉네임" />
                                     </Grid>
-                                  ))}
+                                    <Grid item md={6}>
+                                      <MyTextField name="email" label="이메일" />
+                                    </Grid>
+                                    <Grid item md={6}>
+                                      <MyTextField name="phone" label="전화번호" />
+                                    </Grid>
+                                  </Grid>
                                 </Grid>
-                              </RadioGroup>
-                              <FormHelperText id="my-helper-text">{errors.instaAccount && touched.instaAccount ? <span className="error-message">{errors.instaAccount}</span> : null}</FormHelperText>
-                            </FormControl>
-                          </Grid>
+                                <Grid item md={12}>
+                                  <Divider />
+                                </Grid>
+                                <Grid item md={12}>
+                                  <Grid container spacing={2}>
+                                    <Grid item md={6}>
+                                      <MySelect name="country" type="select" label="시/도" countryIndex={values.country} />
+                                    </Grid>
+                                    <Grid item md={6}>
+                                      {
+                                                        values.country
+                                                          ? <MySelect name="region" type="select" countryIndex={values.country} label="구/군" />
+                                                          : null
+                                                    }
+                                    </Grid>
+                                  </Grid>
+                                </Grid>
 
-                          <Grid item md={12}>
-                            <Divider />
-                          </Grid>
-                          <Grid item md={12}>
-                            <MyTextField name="product" label="제품, 서비스" />
-                          </Grid>
-                        </Grid>
-                      </Form>
+                                <Grid item md={12}>
+                                  <Divider />
+                                </Grid>
+
+                                <Grid item md={12}>
+                                  <div className="label-holder">
+                                    <label htmlFor="인스타 계정">인스타 계정</label>
+                                  </div>
+                                  <FormControl fullWidth>
+                                    <RadioGroup row aria-label="instaAccount" name="instaAccount" value={values.instaAccount} onChange={event => setFieldValue('instaAccount', event.target.value)}>
+                                      <Grid container spacing={2}>
+                                        {igData.map(item => (
+                                          <Grid item md={4} key={item.id}>
+                                            <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.instaAccount} />} style={{ margin: '0' }} />
+                                          </Grid>
+                                        ))}
+                                      </Grid>
+                                    </RadioGroup>
+                                    <FormHelperText id="my-helper-text">{errors.instaAccount && touched.instaAccount ? <span className="error-message">{errors.instaAccount}</span> : null}</FormHelperText>
+                                  </FormControl>
+                                </Grid>
+
+                                <Grid item md={12}>
+                                  <Divider />
+                                </Grid>
+                                <Grid item md={12}>
+                                  <MyTextField name="product" label="제품, 서비스" />
+                                </Grid>
+                              </Grid>
+                            </Form>
+                          )
+                          : (
+                            <Grid container justify="center">
+                              <Grid item>
+                                <CircularProgress />
+                              </Grid>
+                            </Grid>
+                          )
+                        }
                     </div>
                   </Grid>
                   <Grid item md={12}>
