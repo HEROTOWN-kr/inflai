@@ -3,13 +3,24 @@ const jwt = require('jsonwebtoken');
 const request = require('request');
 // const Promise = require('bluebird');
 const async = require('async');
+const { google } = require('googleapis');
 
 const config = require('../config/config');
+const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
 
 
 const router = express.Router();
+
+function getOauthClient() {
+  const oauth2Client = new google.auth.OAuth2(
+    configKey.google_client_id,
+    configKey.google_client_secret,
+    configKey.google_client_redirect_url
+  );
+  return oauth2Client;
+}
 
 router.get('/', (req, res) => {
   const { token, id } = req.query;
@@ -29,40 +40,51 @@ router.get('/getInstaAccounts', (req, res) => {
   const { id } = req.query;
 
   Influencer.findOne({ where: { INF_ID: id } }).then((result) => {
-    const { INF_TOKEN } = result.dataValues;
-    const pagesUrl = `https://graph.facebook.com/v6.0/me/accounts?access_token=${INF_TOKEN}`;
-    const businessAccs = [];
+    const { INF_TOKEN, INF_BLOG_TYPE } = result.dataValues;
+    if (INF_BLOG_TYPE === '1') {
+      const pagesUrl = `https://graph.facebook.com/v6.0/me/accounts?access_token=${INF_TOKEN}`;
+      const businessAccs = [];
 
 
-    request.get(pagesUrl, (err, response, body) => {
-      if (!err && response.statusCode == 200) {
-        const pages = JSON.parse(body).data;
-        pages.map((item) => {
-          const instaAccUrl = `https://graph.facebook.com/v6.0/${item.id}?fields=instagram_business_account&access_token=${INF_TOKEN}`;
-          request.get(instaAccUrl, (err2, response2, body2) => {
-            const account = JSON.parse(body2);
-            if (account.instagram_business_account) {
-              const instaInfoUrl = `https://graph.facebook.com/v6.0/${account.instagram_business_account.id}?fields=profile_picture_url%2Cusername&access_token=${INF_TOKEN}`;
-              request.get(instaInfoUrl, (err3, response3, body3) => {
-                const accountInfo = JSON.parse(body3);
-                businessAccs.push({ id: accountInfo.id, picture: accountInfo.profile_picture_url, username: accountInfo.username });
-              });
-            }
+      request.get(pagesUrl, (err, response, body) => {
+        if (!err && response.statusCode == 200) {
+          const pages = JSON.parse(body).data;
+          pages.map((item) => {
+            const instaAccUrl = `https://graph.facebook.com/v6.0/${item.id}?fields=instagram_business_account&access_token=${INF_TOKEN}`;
+            request.get(instaAccUrl, (err2, response2, body2) => {
+              const account = JSON.parse(body2);
+              if (account.instagram_business_account) {
+                const instaInfoUrl = `https://graph.facebook.com/v6.0/${account.instagram_business_account.id}?fields=profile_picture_url%2Cusername&access_token=${INF_TOKEN}`;
+                request.get(instaInfoUrl, (err3, response3, body3) => {
+                  const accountInfo = JSON.parse(body3);
+                  businessAccs.push({ id: accountInfo.id, picture: accountInfo.profile_picture_url, username: accountInfo.username });
+                });
+              }
+            });
           });
-        });
-        setTimeout(() => {
-          res.json({
-            code: 200,
-            // data: JSON.parse(body).data,
-            data: businessAccs,
-            info: {
-              name: result.dataValues.INF_NAME,
-              email: result.dataValues.INF_EMAIL
-            }
-          });
-        }, 1500);
-      }
-    });
+          setTimeout(() => {
+            res.json({
+              code: 200,
+              // data: JSON.parse(body).data,
+              data: businessAccs,
+              info: {
+                name: result.dataValues.INF_NAME,
+                email: result.dataValues.INF_EMAIL
+              }
+            });
+          }, 1500);
+        }
+      });
+    } else {
+      res.json({
+        code: 200,
+        info: {
+          name: result.dataValues.INF_NAME,
+          email: result.dataValues.INF_EMAIL
+        }
+      });
+    }
+
 
     /* request.get(pagesUrl, (err, response, body) => {
       if (!err && response.statusCode == 200) {
@@ -252,16 +274,18 @@ router.post('/instaSignUp', (req, res) => {
           const userData = JSON.parse(response2.body);
 
           Influencer.findOne({ where: { INF_REG_ID: userData.id } }).then((result) => {
-            post.INF_REG_ID = userData.id;
-            post.INF_NAME = userData.name;
-            post.INF_EMAIL = userData.email;
             if (!result) {
+              post.INF_REG_ID = userData.id;
+              post.INF_NAME = userData.name;
+              post.INF_EMAIL = userData.email;
+              post.INF_BLOG_TYPE = '1';
               Influencer.create(post).then((result2) => {
                 res.json({
                   code: 200,
                   userId: result2.dataValues.INF_ID,
                   userToken: common.createToken(result2.dataValues.INF_ID),
                   userName: result2.dataValues.INF_NAME,
+                  userPhone: result2.dataValues.INF_TEL,
                   social_type: 'facebook'
                 });
               });
@@ -274,6 +298,7 @@ router.post('/instaSignUp', (req, res) => {
                   userId: result.dataValues.INF_ID,
                   userToken: common.createToken(result.dataValues.INF_ID),
                   userName: result.dataValues.INF_NAME,
+                  userPhone: result.dataValues.INF_TEL,
                   social_type: 'facebook'
                 });
               });
@@ -300,17 +325,172 @@ router.post('/instaUpdate', (req, res) => {
     INF_TEL: data.phone,
     INF_CITY: data.country,
     INF_AREA: data.region,
-    INF_PROD: data.product,
-    INF_INST_ID: data.instaAccount
+    INF_PROD: data.product
   };
 
+  if (data.instaAccount) post.INF_INST_ID = data.instaAccount;
+
   Influencer.update(post, {
-    where: { INF_ID: id }
+    where: { INF_ID: id },
+    returning: true,
+    plain: true
   }).then((result) => {
     res.json({
-      code: 200
+      code: 200,
+      data: {
+
+      }
     });
   });
+});
+
+router.get('/youtubeSignUp', (req, res) => {
+  const data = req.query;
+  const { code } = data;
+
+  const oauth2Client = getOauthClient();
+
+  oauth2Client.getToken(code, (err, tokens) => {
+    // Now tokens contains an access_token and an optional refresh_token. Save them.
+    if (!err) {
+      oauth2Client.setCredentials(tokens);
+
+      const youtube = google.youtube('v3');
+      const oauth2 = google.oauth2('v2');
+
+      /* Influenser.create({
+        INF_REF_TOKEN: tokens.refresh_token,
+      }).then((result) => {
+        res.json({
+          code: 200,
+          userToken: common.createToken(result.dataValues.INF_ID),
+          userName: result.dataValues.INF_NAME,
+        });
+      }); */
+      /* service.channels.list({
+        auth: oauth2Client,
+        part: 'id',
+        mySubscribers: true
+      }, (err, response) => {
+        if (err) {
+          console.log(`The API returned an error: ${err}`);
+          return;
+        }
+        const channels = response.data.items;
+        if (channels.length == 0) {
+          console.log('No channel found.');
+        } else {
+          /!*console.log('This channel\'s ID is %s. Its title is \'%s\', and '
+              + 'it has %s views.',
+          channels[0].id,
+          channels[0].snippet.title,
+          channels[0].statistics.viewCount);*!/
+        }
+      }); */
+
+      /* youtube.subscriptions.list({
+        auth: oauth2Client,
+        part: 'id',
+        mySubscribers: true
+      }, (err, response) => {
+        if (err) {
+          console.log(`The API returned an error: ${err}`);
+          return;
+        }
+        const channels = response.data.items;
+        if (channels.length == 0) {
+          console.log('No channel found.');
+        } else {
+
+        }
+      }); */
+
+      oauth2.userinfo.get(
+        {
+          auth: oauth2Client,
+          alt: 'json',
+        }, (err, response) => {
+          if (err) {
+            console.log(`The API returned an error: ${err}`);
+          } else {
+            Influencer.findOne({ where: { INF_REG_ID: response.data.id } }).then((result) => {
+              if (!result) {
+                Influencer.create({
+                  INF_NAME: response.data.name,
+                  INF_EMAIL: response.data.email,
+                  INF_REG_ID: response.data.id,
+                  INF_BLOG_TYPE: '2',
+                  INF_REF_TOKEN: tokens.refresh_token,
+                }).then((result2) => {
+                  res.json({
+                    code: 200,
+                    userId: result2.dataValues.INF_ID,
+                    userToken: common.createToken(result2.dataValues.INF_ID),
+                    userName: result2.dataValues.INF_NAME,
+                    userPhone: result2.dataValues.INF_TEL,
+                    social_type: 'youtube'
+                  });
+                  // refresh token get
+                  /* request.post('https://oauth2.googleapis.com/token',
+                    {
+                      form: {
+                        client_id: configKey.google_client_id,
+                        client_secret: configKey.google_client_secret,
+                        refresh_token: tokens.refresh_token,
+                        grant_type: 'refresh_token'
+                      }
+                    },
+                    (error, requestResponse, responseBody) => {
+                      if (!error && requestResponse.statusCode == 200) {
+                        res.json({
+                          code: 200,
+                          data: JSON.parse(responseBody)
+                        });
+                      } else if (requestResponse != null) {
+                        console.log(`error = ${requestResponse.statusCode}`);
+                        console.log(`error = ${error}`);
+                      }
+                    }); */
+                });
+              } else {
+                Influencer.update({ INF_REF_TOKEN: tokens.refresh_token }, {
+                  where: { INF_ID: response.data.id }
+                }).then((result3) => {
+                  res.json({
+                    code: 200,
+                    userId: result.dataValues.INF_ID,
+                    userToken: common.createToken(result.dataValues.INF_ID),
+                    userName: result.dataValues.INF_NAME,
+                    userPhone: result.dataValues.INF_TEL,
+                    social_type: 'youtube'
+                  });
+                });
+              }
+            });
+          }
+        }
+      );
+
+      // session["tokens"] = tokens;
+    } else {
+      // res.redirect('http://localhost:3000');
+    }
+  });
+
+  // const { tokens } = oauth2Client.getToken(code);
+
+  /* oauth2Client.setCredentials(tokens);
+
+
+  oauth2Client.on('tokens', (token) => {
+    if (token.refresh_token) {
+      // store the refresh_token in my database!
+      console.log(token.refresh_token);
+    }
+    console.log(token.access_token);
+  }); */
+
+  // res.redirect('http://localhost:3000');
 });
 
 module.exports = router;

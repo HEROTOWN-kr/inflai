@@ -273,7 +273,7 @@ function CustomNavbar(props) {
               >
                 Sign Google
               </a> */}
-              <GoogleLogin
+              {/*<GoogleLogin
                 clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
                 scope="profile email https://www.googleapis.com/auth/youtube.readonly"
                 responseType="code"
@@ -281,7 +281,7 @@ function CustomNavbar(props) {
                 prompt="consent"
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}
-              />
+              />*/}
 
               {/* <Button variant="contained" color="secondary" onClick={signGoogle}>Sign Google</Button> */}
 

@@ -20,9 +20,10 @@ import NameArray from '../../../lib/nameArray';
 import Common from '../../../lib/common';
 
 
-function InstagramUser({
+function InfluencerDetail({
   userData,
   changeUserData,
+  changeUser,
   match,
   history
 }) {
@@ -36,8 +37,10 @@ function InstagramUser({
       }
     }).then((res) => {
       console.log(res.data);
-      setIgData(res.data.data);
       setUserInfo(res.data.info);
+      if (res.data.data) {
+        setIgData(res.data.data);
+      }
     });
   }, []);
 
@@ -53,8 +56,8 @@ function InstagramUser({
       .required('구/군 을 선택해주세요'),
     phone: Yup.string()
       .required('전화번호를 입력해주세요'),
-    instaAccount: Yup.string()
-      .required('인스타 계정을 선택해주세요'),
+    /* instaAccount: Yup.string()
+      .required('인스타 계정을 선택해주세요'), */
     product: Yup.string()
       .required('제품, 서비스를 입력해주세요')
   });
@@ -163,6 +166,13 @@ function InstagramUser({
                 axios.post('/api/TB_INFLUENCER/instaUpdate', apiObj)
                   .then((res) => {
                     if (res.data.code === 200) {
+                      /*changeUser({
+                        social_type: res.data.social_type,
+                        type: '1',
+                        token: res.data.userToken,
+                        name: res.data.userName,
+                        regState: res.data.regState
+                      });*/
                       history.push('/');
                     } else if (res.data.code === 401) {
                       console.log(res);
@@ -215,28 +225,34 @@ function InstagramUser({
                                   </Grid>
                                 </Grid>
 
-                                <Grid item md={12}>
-                                  <Divider />
-                                </Grid>
-
-                                <Grid item md={12}>
-                                  <div className="label-holder">
-                                    <label htmlFor="인스타 계정">인스타 계정</label>
-                                  </div>
-                                  <FormControl fullWidth>
-                                    <RadioGroup row aria-label="instaAccount" name="instaAccount" value={values.instaAccount} onChange={event => setFieldValue('instaAccount', event.target.value)}>
-                                      <Grid container spacing={2}>
-                                        {igData.map(item => (
-                                          <Grid item md={4} key={item.id}>
-                                            <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.instaAccount} />} style={{ margin: '0' }} />
-                                          </Grid>
-                                        ))}
-                                      </Grid>
-                                    </RadioGroup>
-                                    <FormHelperText id="my-helper-text">{errors.instaAccount && touched.instaAccount ? <span className="error-message">{errors.instaAccount}</span> : null}</FormHelperText>
-                                  </FormControl>
-                                </Grid>
-
+                                {
+                                      igData
+                                        ? null
+                                        : (
+                                          <React.Fragment>
+                                            <Grid item md={12}>
+                                              <Divider />
+                                            </Grid>
+                                            <Grid item md={12}>
+                                              <div className="label-holder">
+                                                <label htmlFor="인스타 계정">인스타 계정</label>
+                                              </div>
+                                              <FormControl fullWidth>
+                                                <RadioGroup row aria-label="instaAccount" name="instaAccount" value={values.instaAccount} onChange={event => setFieldValue('instaAccount', event.target.value)}>
+                                                  <Grid container spacing={2}>
+                                                    {igData.map(item => (
+                                                      <Grid item md={4} key={item.id}>
+                                                        <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.instaAccount} />} style={{ margin: '0' }} />
+                                                      </Grid>
+                                                    ))}
+                                                  </Grid>
+                                                </RadioGroup>
+                                                <FormHelperText id="my-helper-text">{errors.instaAccount && touched.instaAccount ? <span className="error-message">{errors.instaAccount}</span> : null}</FormHelperText>
+                                              </FormControl>
+                                            </Grid>
+                                          </React.Fragment>
+                                        )
+                                  }
                                 <Grid item md={12}>
                                   <Divider />
                                 </Grid>
@@ -281,4 +297,4 @@ function InstagramUser({
   );
 }
 
-export default InstagramUser;
+export default InfluencerDetail;

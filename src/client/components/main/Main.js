@@ -1,5 +1,6 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
+import { Grid } from '@material-ui/core';
 import Home from '../home/home';
 import Influencer from '../influencer/Influencer';
 import Advertiser from '../advertiser/Advertiser';
@@ -11,6 +12,8 @@ import ProductCreate from '../product/ProductCreate';
 import Product from '../product/Product';
 import Join from '../join/Join';
 import Info from '../info/Info';
+import Privacy from '../footer/Privacy';
+import Service from '../footer/Service';
 
 
 function Main({
@@ -46,8 +49,25 @@ function Main({
         path="/Info"
         render={props => <Info {...props} />}
       />
+      <Route
+        path="/Policy/Service"
+        render={props => <Service {...props} />}
+      />
+      <Route
+        path="/Policy/Privacy"
+        render={props => <Privacy {...props} />}
+      />
     </Switch>
   );
 }
 
 export default Main;
+
+
+/*
+<Grid container>
+    <Grid item md={12}>
+
+    </Grid>
+</Grid>
+*/

@@ -18,7 +18,8 @@ function InfluencerSns({
   changeUser,
   userData,
   changeUserData,
-  goTo
+  goTo,
+  history
 }) {
   const inputRef = React.useRef(null);
 
@@ -42,6 +43,10 @@ function InfluencerSns({
     }
   ];
 
+  function goHome() {
+
+  }
+
   function facebookLogin() {
     window.FB.login((loginRes) => {
       console.log(loginRes);
@@ -52,14 +57,18 @@ function InfluencerSns({
         axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
           .then((res) => {
             if (res.data.code === 200) {
-              changeUser({
-                social_type: res.data.social_type,
-                type: '1',
-                token: res.data.userToken,
-                name: res.data.userName,
-                regState: res.data.regState
-              });
-              goTo(`/instagram/${res.data.userId}`);
+              if (res.data.userPhone) {
+                changeUser({
+                  social_type: res.data.social_type,
+                  type: '1',
+                  token: res.data.userToken,
+                  name: res.data.userName,
+                  regState: res.data.regState
+                });
+                history.push('/');
+              } else {
+                goTo(`/detail/${res.data.userId}`);
+              }
               // props.history.push(`${props.match.path}/instagram/${res.data.userId}`);
             } else if (res.data.code === 401) {
               console.log(res);
@@ -122,15 +131,26 @@ function InfluencerSns({
   }
 
   const responseGoogle = (response) => {
-    console.log(response);
-    axios.get('/api/TB_ADVERTISER/Googletest1', {
+    axios.get('/api/TB_INFLUENCER/youtubeSignUp', {
       params: {
         code: response.code
       }
-    })
-      .then((res) => {
-        console.log(res);
-      });
+    }).then((res) => {
+      if (res.data.userPhone) {
+        changeUser({
+          social_type: res.data.social_type,
+          type: '1',
+          token: res.data.userToken,
+          name: res.data.userName,
+          regState: res.data.regState
+        });
+        history.push('/');
+      } else {
+        goTo(`/detail/${res.data.userId}`);
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
   };
 
   return (
@@ -166,7 +186,7 @@ function InfluencerSns({
                     accessType="offline"
                     prompt="consent"
                     render={renderProps => (
-                      <button ref={inputRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{display: 'none'}}>This is my custom Google button</button>
+                      <button ref={inputRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ display: 'none' }}>This is my custom Google button</button>
                     )}
                     onSuccess={responseGoogle}
                     onFailure={responseGoogle}

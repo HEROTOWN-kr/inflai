@@ -125,7 +125,6 @@ router.get('/Googletest1', (req, res) => {
   const oauth2Client = getOauthClient();
 
   oauth2Client.getToken(code, (err, tokens) => {
-    console.log('tokens : ', tokens);
     // Now tokens contains an access_token and an optional refresh_token. Save them.
     if (!err) {
       oauth2Client.setCredentials(tokens);
@@ -207,7 +206,6 @@ router.get('/Googletest1', (req, res) => {
                 },
                 (error, requestResponse, responseBody) => {
                   if (!error && requestResponse.statusCode == 200) {
-                    console.log(requestResponse);
                     res.json({
                       code: 200,
                       data: JSON.parse(responseBody)

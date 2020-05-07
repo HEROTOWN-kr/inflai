@@ -4,8 +4,9 @@ import UserType from '../UserType';
 import AdvertiserJoin from '../adv-join/AdvertiserJoin';
 import Influencer from '../../influencer/Influencer';
 import InfluencerSns from './InfluencerSns';
-import InstagramUser from './InstagramUser';
+
 import Common from '../../../lib/common';
+import InfluencerDetail from './InfluencerDetail';
 
 function InfluencerJoin(props) {
   const [userData, setUserData] = useState({
@@ -32,8 +33,8 @@ function InfluencerJoin(props) {
           render={renderProps => <InfluencerSns {...renderProps} goTo={goTo} userData={userData} changeUserData={changeUserData} changeUser={props.changeUser} />}
         />
         <Route
-          path={`${props.match.path}/instagram/:id`}
-          render={renderProps => <InstagramUser {...renderProps} userData={userData} changeUserData={changeUserData} />}
+          path={`${props.match.path}/detail/:id`}
+          render={renderProps => <InfluencerDetail {...renderProps} userData={userData} changeUserData={changeUserData} changeUser={props.changeUser} />}
         />
         <Route
           path={`${props.match.path}/youtube`}

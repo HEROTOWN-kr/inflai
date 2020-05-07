@@ -2,6 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 
+import { Link } from 'react-router-dom';
 import Logo from '../../img/logo.png';
 
 function Footer() {
@@ -13,7 +14,22 @@ function Footer() {
             <img src={Logo} />
           </Grid>
           <Grid xs={10}>
-            <div className="rules">이용약관 | 개인정보 처리방침</div>
+            <div className="rules">
+              <Link
+                className="link"
+                to="/Policy/Service"
+              >
+                이용약관
+              </Link>
+              {' | '}
+              <Link
+                className="link"
+                to="/Policy/Privacy"
+              >
+                개인정보 처리방침
+              </Link>
+
+            </div>
             <div className="info">
               <div>대표 : 김무성 | 주소 : 경기도 고양시 일산동구 백마로 195 엠시티 섹션동 4층 4003호</div>
               <div>대표전화 : 1522-7947  | Mail : myfna@naver.com</div>
