@@ -22,6 +22,29 @@ function getOauthClient() {
   return oauth2Client;
 }
 
+function getBlogType(blogType) {
+  let social;
+  switch (blogType) {
+    case '1': {
+      social = 'facebook';
+      break;
+    }
+    case '2': {
+      social = 'google';
+      break;
+    }
+    case '3': {
+      social = 'naver';
+      break;
+    }
+    case '4': {
+      social = 'twitch';
+      break;
+    }
+  }
+  return social;
+}
+
 router.get('/', (req, res) => {
   const { token, id } = req.query;
   const userId = id || common.getIdFromToken(token).sub;
@@ -274,6 +297,7 @@ router.post('/instaSignUp', (req, res) => {
           const userData = JSON.parse(response2.body);
 
           Influencer.findOne({ where: { INF_REG_ID: userData.id } }).then((result) => {
+            const blogType = result.dataValues.INF_BLOG_TYPE;
             if (!result) {
               post.INF_REG_ID = userData.id;
               post.INF_NAME = userData.name;
@@ -286,7 +310,7 @@ router.post('/instaSignUp', (req, res) => {
                   userToken: common.createToken(result2.dataValues.INF_ID),
                   userName: result2.dataValues.INF_NAME,
                   userPhone: result2.dataValues.INF_TEL,
-                  social_type: 'facebook'
+                  social_type: getBlogType(blogType)
                 });
               });
             } else {
@@ -299,7 +323,7 @@ router.post('/instaSignUp', (req, res) => {
                   userToken: common.createToken(result.dataValues.INF_ID),
                   userName: result.dataValues.INF_NAME,
                   userPhone: result.dataValues.INF_TEL,
-                  social_type: 'facebook'
+                  social_type: getBlogType(blogType)
                 });
               });
             }
@@ -332,15 +356,20 @@ router.post('/instaUpdate', (req, res) => {
 
   Influencer.update(post, {
     where: { INF_ID: id },
-    returning: true,
-    plain: true
   }).then((result) => {
-    res.json({
-      code: 200,
-      data: {
-
-      }
-    });
+    if (result) {
+      Influencer.findOne({ where: { INF_ID: id } }).then((result2) => {
+        const blogType = result2.dataValues.INF_BLOG_TYPE;
+        res.json({
+          code: 200,
+          userId: result2.dataValues.INF_ID,
+          userToken: common.createToken(result2.dataValues.INF_ID),
+          userName: result2.dataValues.INF_NAME,
+          userPhone: result2.dataValues.INF_TEL,
+          social_type: getBlogType(blogType)
+        });
+      });
+    }
   });
 });
 
@@ -428,33 +457,14 @@ router.get('/youtubeSignUp', (req, res) => {
                     userToken: common.createToken(result2.dataValues.INF_ID),
                     userName: result2.dataValues.INF_NAME,
                     userPhone: result2.dataValues.INF_TEL,
-                    social_type: 'youtube'
+                    social_type: getBlogType('2')
                   });
-                  // refresh token get
-                  /* request.post('https://oauth2.googleapis.com/token',
-                    {
-                      form: {
-                        client_id: configKey.google_client_id,
-                        client_secret: configKey.google_client_secret,
-                        refresh_token: tokens.refresh_token,
-                        grant_type: 'refresh_token'
-                      }
-                    },
-                    (error, requestResponse, responseBody) => {
-                      if (!error && requestResponse.statusCode == 200) {
-                        res.json({
-                          code: 200,
-                          data: JSON.parse(responseBody)
-                        });
-                      } else if (requestResponse != null) {
-                        console.log(`error = ${requestResponse.statusCode}`);
-                        console.log(`error = ${error}`);
-                      }
-                    }); */
                 });
               } else {
+                const blogType = result.dataValues.INF_BLOG_TYPE;
+                const user_id = result.dataValues.INF_ID;
                 Influencer.update({ INF_REF_TOKEN: tokens.refresh_token }, {
-                  where: { INF_ID: response.data.id }
+                  where: { INF_ID: user_id }
                 }).then((result3) => {
                   res.json({
                     code: 200,
@@ -462,7 +472,7 @@ router.get('/youtubeSignUp', (req, res) => {
                     userToken: common.createToken(result.dataValues.INF_ID),
                     userName: result.dataValues.INF_NAME,
                     userPhone: result.dataValues.INF_TEL,
-                    social_type: 'youtube'
+                    social_type: getBlogType(blogType)
                   });
                 });
               }
@@ -491,6 +501,95 @@ router.get('/youtubeSignUp', (req, res) => {
   }); */
 
   // res.redirect('http://localhost:3000');
+});
+
+router.get('/getYoutubeInfo', (req, res) => {
+  const { token } = req.query;
+  const userId = common.getIdFromToken(token).sub;
+  const resObj = {};
+  const oauth2Client = getOauthClient();
+  const youtube = google.youtube('v3');
+  const oauth2 = google.oauth2('v2');
+
+  Influencer.findOne({ where: { INF_ID: userId } }).then((result) => {
+    const { INF_REF_TOKEN } = result.dataValues;
+    oauth2Client.setCredentials({
+      refresh_token: INF_REF_TOKEN
+    });
+
+    /* youtube.subscriptions.list({
+      auth: oauth2Client,
+      part: 'id',
+      mySubscribers: true
+    }, (err, response) => {
+      if (err) {
+        console.log(`The API returned an error: ${err}`);
+        res.json({
+          code: 400,
+          data: err
+        });
+      } else {
+        res.json({
+          code: 200,
+          data: response.data
+        });
+      } */
+
+    youtube.channels.list({
+      auth: oauth2Client,
+      part: 'snippet, contentDetails, statistics',
+      // part: 'id',
+      mine: true
+      // mySubscribers: true
+    }, (err, response) => {
+      if (err) {
+        console.log(`The API returned an error: ${err}`);
+        return;
+      }
+      const channels = response.data.items;
+      if (channels.length == 0) {
+        console.log('No channel found.');
+        res.json({
+          code: 200,
+          data: response.data
+        });
+      } else {
+        res.json({
+          code: 200,
+          data: response.data
+        });
+        /* console.log('This channel\'s ID is %s. Its title is \'%s\', and '
+              + 'it has %s views.',
+          channels[0].id,
+          channels[0].snippet.title,
+          channels[0].statistics.viewCount); */
+      }
+    });
+
+    // refresh token get
+    /* request.post('https://oauth2.googleapis.com/token',
+      {
+        form: {
+          client_id: configKey.google_client_id,
+          client_secret: configKey.google_client_secret,
+          refresh_token: INF_REF_TOKEN,
+          grant_type: 'refresh_token'
+        }
+      },
+      (error, requestResponse, responseBody) => {
+        if (!error && requestResponse.statusCode == 200) {
+          res.json({
+            code: 200,
+            data: JSON.parse(responseBody)
+          });
+        } else if (requestResponse != null) {
+          console.log(`error = ${requestResponse.statusCode}`);
+          console.log(`error = ${error}`);
+        }
+      }); */
+  }).error((err) => {
+    res.send('error has occured');
+  });
 });
 
 module.exports = router;

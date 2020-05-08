@@ -150,7 +150,7 @@ function SocialNetworks({
 
       </Grid>
 
-      <Grid container xs={12}>
+      {/*<Grid container xs={12}>
         <NaverLogin
           clientId="4rBF5bJ4y2jKn0gHoSCf"
             // callbackUrl="http://127.0.0.1:3000/login"
@@ -159,7 +159,7 @@ function SocialNetworks({
           onSuccess={result => responseNaver(result)}
           onFailure={result => responseNaver(result)}
         />
-      </Grid>
+      </Grid>*/}
 
       <Grid container xs={12}>
         <SocialButton clicked={kakaoLoginForm} icon={KakaoIcon} text="카카오 로그인" bgColor="#F7E317" textColor="#3C1E1E" />

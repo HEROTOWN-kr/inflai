@@ -56,8 +56,11 @@ function InfluencerDetail({
       .required('구/군 을 선택해주세요'),
     phone: Yup.string()
       .required('전화번호를 입력해주세요'),
-    /* instaAccount: Yup.string()
-      .required('인스타 계정을 선택해주세요'), */
+    instaAccount: Yup.string()
+      .when(['instaList'], {
+        is: instaList => instaList.length,
+        then: Yup.string().required('인스타 계정을 선택해주세요'),
+      }),
     product: Yup.string()
       .required('제품, 서비스를 입력해주세요')
   });
@@ -149,6 +152,7 @@ function InfluencerDetail({
             <Formik
               initialValues={{
                 instaAccount: '',
+                instaList: igData,
                 nickName: userInfo.name,
                 email: userInfo.email,
                 country: 0,
@@ -166,13 +170,12 @@ function InfluencerDetail({
                 axios.post('/api/TB_INFLUENCER/instaUpdate', apiObj)
                   .then((res) => {
                     if (res.data.code === 200) {
-                      /*changeUser({
+                      changeUser({
                         social_type: res.data.social_type,
-                        type: '1',
+                        type: '2',
                         token: res.data.userToken,
-                        name: res.data.userName,
-                        regState: res.data.regState
-                      });*/
+                        name: res.data.userName
+                      });
                       history.push('/');
                     } else if (res.data.code === 401) {
                       console.log(res);
@@ -226,9 +229,8 @@ function InfluencerDetail({
                                 </Grid>
 
                                 {
-                                      igData
-                                        ? null
-                                        : (
+                                      igData.length > 0
+                                        ? (
                                           <React.Fragment>
                                             <Grid item md={12}>
                                               <Divider />
@@ -252,6 +254,7 @@ function InfluencerDetail({
                                             </Grid>
                                           </React.Fragment>
                                         )
+                                        : null
                                   }
                                 <Grid item md={12}>
                                   <Divider />

@@ -60,7 +60,7 @@ function InfluencerSns({
               if (res.data.userPhone) {
                 changeUser({
                   social_type: res.data.social_type,
-                  type: '1',
+                  type: '2',
                   token: res.data.userToken,
                   name: res.data.userName,
                   regState: res.data.regState

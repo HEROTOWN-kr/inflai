@@ -132,53 +132,6 @@ router.get('/Googletest1', (req, res) => {
       const youtube = google.youtube('v3');
       const oauth2 = google.oauth2('v2');
 
-      /* Influenser.create({
-        INF_REF_TOKEN: tokens.refresh_token,
-      }).then((result) => {
-        res.json({
-          code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-        });
-      }); */
-      /* service.channels.list({
-        auth: oauth2Client,
-        part: 'id',
-        mySubscribers: true
-      }, (err, response) => {
-        if (err) {
-          console.log(`The API returned an error: ${err}`);
-          return;
-        }
-        const channels = response.data.items;
-        if (channels.length == 0) {
-          console.log('No channel found.');
-        } else {
-          /!*console.log('This channel\'s ID is %s. Its title is \'%s\', and '
-              + 'it has %s views.',
-          channels[0].id,
-          channels[0].snippet.title,
-          channels[0].statistics.viewCount);*!/
-        }
-      }); */
-
-      /* youtube.subscriptions.list({
-        auth: oauth2Client,
-        part: 'id',
-        mySubscribers: true
-      }, (err, response) => {
-        if (err) {
-          console.log(`The API returned an error: ${err}`);
-          return;
-        }
-        const channels = response.data.items;
-        if (channels.length == 0) {
-          console.log('No channel found.');
-        } else {
-
-        }
-      }); */
-
       oauth2.userinfo.get(
         {
           auth: oauth2Client,

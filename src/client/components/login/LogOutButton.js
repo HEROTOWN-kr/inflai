@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import { Button } from '@material-ui/core';
-import { GoogleLogout } from 'react-google-login';
+import GoogleLogin, { GoogleLogout } from 'react-google-login';
 import Common from '../../lib/common';
 
 function LogOutButton(props) {
@@ -28,19 +28,37 @@ function LogOutButton(props) {
     props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
   };
 
+  const googleLogOut = (e) => {
+    e.preventDefault();
+    window.gapi.load('auth2', function() {
+      /* Ready. Make a call to gapi.auth2.init or some other API */
+      /*window.gapi.auth2.getAuthInstance({
+        client_id: '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com'
+      });*/
+      const auth2 = window.gapi.auth2.getAuthInstance({
+        client_id: '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com'
+      });
+      auth2.disconnect();
+      props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
+    });
+  };
+
   return (
     <React.Fragment>
       {
                 {
                   facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }} className="login-button">로그아웃</Button>,
-                  google: <GoogleLogout
+                 /* google: <GoogleLogout
                     clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
                     buttonText="Logout"
+                    scope="profile email https://www.googleapis.com/auth/youtube.readonly"
+                    accessType="offline"
                     onLogoutSuccess={() => { props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }}
                     render={renderProps => (
                       <Button className="login-button" onClick={renderProps.onClick} disabled={renderProps.disabled}>로그아웃</Button>
                     )}
-                  />,
+                  />,*/
+                  google: <Button className="login-button" onClick={googleLogOut}>로그아웃</Button>,
                   kakao: <Button className="login-button" onClick={kakaoLogOut}>로그아웃</Button>,
                   twitch: <Button className="login-button" onClick={twitchLogOut}>로그아웃</Button>,
                   noSocial: <Button className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '', type: '', regState: '' })}>로그아웃</Button>
