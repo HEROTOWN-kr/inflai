@@ -101,8 +101,7 @@ function SignUpDialog({
             values, errors, touched, handleChange, handleBlur, setFieldValue
           }) => (
             <Form className="userInfo-form">
-
-              <Grid container justify="space-between" xs={12}>
+              <Grid container justify="space-between">
                 <Grid item xs={5}>
                   <Button variant="outlined" color="primary" className={`job-type-button ${values.type === '1' ? 'checked' : ''}`} onClick={() => { setFieldValue('type', '1'); setUserType('1'); }}>관고주</Button>
                 </Grid>
@@ -112,7 +111,7 @@ function SignUpDialog({
               </Grid>
               {errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}
               <Divider variant="middle" />
-              <Grid container xs={12}>
+              <Grid container>
                 <TextField
                   placeholder="이메일"
                   name="email"
@@ -125,7 +124,7 @@ function SignUpDialog({
                   variant="outlined"
                 />
               </Grid>
-              <Grid container xs={12}>
+              <Grid container>
                 <TextField
                   placeholder="비밀번호"
                   type="password"
@@ -139,7 +138,7 @@ function SignUpDialog({
                   variant="outlined"
                 />
               </Grid>
-              <Grid container xs={12}>
+              <Grid container>
                 <TextField
                   placeholder="비밀번호 확인"
                   type="password"
@@ -153,7 +152,7 @@ function SignUpDialog({
                   variant="outlined"
                 />
               </Grid>
-              <Grid container xs={12}>
+              <Grid container>
                 <TextField
                   placeholder="이름"
                   name="name"
@@ -166,7 +165,7 @@ function SignUpDialog({
                   variant="outlined"
                 />
               </Grid>
-              <Grid container xs={12}>
+              <Grid container>
                 <Button type="submit" variant="contained" color="secondary" className="login-button">
                       회원가입
                 </Button>

@@ -29,7 +29,7 @@ module.exports = new PassportLocalStrategy({
       where: { ADV_EMAIL: userData.email }
     }).then((user) => {
       if (!user) {
-        const error = new Error('Incorrect email or password');
+        const error = new Error('이메일이나 비밀번호는 일치하지 않습니다');
         error.name = 'IncorrectCredentialsError';
 
         return done(error);
@@ -39,7 +39,7 @@ module.exports = new PassportLocalStrategy({
         if (passwordErr) { return done(passwordErr); }
 
         if (!isMatch) {
-          const error = new Error('Incorrect email or password');
+          const error = new Error('이메일이나 비밀번호는 일치하지 않습니다');
           error.name = 'IncorrectCredentialsError';
 
           return done(error);

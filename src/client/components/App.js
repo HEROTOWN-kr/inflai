@@ -12,11 +12,11 @@ import axios from 'axios';
 function App(props) {
   const [user, setUser] = React.useState(Common.getUserInfo());
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (user.regState && user.regState === 'N') {
       props.history.push('/regDetail');
     }
-  }, [user]);
+  }, [user]);*/
 
   function changeUser(data) {
     const newUser = { ...user, ...data };

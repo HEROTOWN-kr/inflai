@@ -16,34 +16,48 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Common from '../../lib/common';
 
 function AdvertiserDetail({
-  user,
+  // user,
   history,
+  match,
   changeUser
 }) {
   const [userData, setUserData] = useState({});
+  const [finishSign, setFinishSign] = useState(false);
 
   useEffect(() => {
-    if (user.token) {
-      axios.get('/api/TB_ADVERTISER/', {
-        params: {
-          token: user.token
-        }
-      })
-        .then((res) => {
-          setUserData({
-            ...userData,
-            email: res.data.data.ADV_EMAIL,
-            name: res.data.data.ADV_NAME
-          });
+    axios.get('/api/TB_ADVERTISER/', {
+      params: {
+        // token: user.token
+        id: match.params.id,
+      }
+    }).then((res) => {
+      setUserData({
+        ...userData,
+        email: res.data.data.ADV_EMAIL,
+        name: res.data.data.ADV_NAME
+      });
+    });
+    return () => {
+      /*if (!finishSign) {
+        axios.get('/api/TB_ADVERTISER/delete', {
+          params: {
+            id: match.params.id,
+          }
+        }).then((res) => {
+
         });
-    }
+      }*/
+    };
   }, []);
+
+  history.block(({ pathname }) => {
+    if (!finishSign) return '가입이 마무리하지 않으면 데이터 삭제됩니다. 나가시겠습니까?';
+  });
 
   const categories = {
     classification: [{ value: '1', text: '국내사업자' }, { value: '2', text: '해외사업자' }],
     jobType: [{ value: '1', text: '일반' }, { value: '2', text: '에이전시' }, { value: '3', text: '소상공인' }],
     subscribeAim: [{ value: '1', text: '인터넷 검색' }, { value: '2', text: '기사(보도자료)' }, { value: '3', text: '소셜미디어 광고' }, { value: '4', text: '지인추천' }, { value: '5', text: '이메일' }, { value: '6', text: '직접입력' }]
-
   };
 
   const SignupSchema = Yup.object().shape({
@@ -108,7 +122,7 @@ function AdvertiserDetail({
       ? {
         endAdornment: (
           <InputAdornment position="end">
-            {/*<AccountCircle />*/}
+            {/* <AccountCircle /> */}
             <Button variant="contained" color="primary" className="registerNumber">인증</Button>
           </InputAdornment>
         ),
@@ -158,12 +172,18 @@ function AdvertiserDetail({
         onSubmit={(values) => {
           // same shape as initial values
           // console.log(values);
-          const apiObj = { ...values, token: Common.getUserInfo().token };
+          const apiObj = { ...values, id: match.params.id };
 
           axios.post('/api/TB_ADVERTISER/update', apiObj)
             .then((res) => {
               if (res.data.code === 200) {
-                changeUser({ ...user, name: res.data.userName });
+                changeUser({
+                  social_type: res.data.social_type,
+                  type: '1',
+                  token: res.data.userToken,
+                  name: res.data.userName,
+                });
+                setFinishSign(true);
                 history.push('/');
               } else if (res.data.code === 401) {
                 console.log(res);

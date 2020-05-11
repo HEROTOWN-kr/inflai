@@ -197,8 +197,8 @@ router.get('/Googletest1', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-  const { token } = req.query;
-  const userId = common.getIdFromToken(token).sub;
+  const { token, id } = req.query;
+  const userId = id || common.getIdFromToken(token).sub;
 
   Advertiser.findOne({ where: { ADV_ID: userId } }).then((result) => {
     res.json({
@@ -635,7 +635,8 @@ router.post('/signup', (req, res) => {
             Advertiser.create(userData).then((result) => {
               res.json({
                 code: 200,
-                userToken: common.createToken(result.dataValues.ADV_ID),
+                userId: result.dataValues.ADV_ID,
+                // userToken: common.createToken(result.dataValues.ADV_ID),
                 userName: data.name,
                 social_type: 'not-social'
               });
@@ -691,7 +692,8 @@ router.post('/signup', (req, res) => {
 
 router.post('/update', (req, res) => {
   const data = req.body;
-  const userId = common.getIdFromToken(data.token).sub;
+  const { id, token } = data;
+  const userId = id || common.getIdFromToken(data.token).sub;
 
   const post = {
     ADV_CLASS: data.classification,
@@ -711,7 +713,9 @@ router.post('/update', (req, res) => {
     if (result) {
       res.json({
         code: 200,
+        social_type: 'noSocial',
         userName: data.name,
+        userToken: token || common.createToken(userId),
       });
     }
   });

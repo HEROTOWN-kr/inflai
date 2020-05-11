@@ -131,6 +131,7 @@ function InfluencerSns({
   }
 
   const responseGoogle = (response) => {
+    console.log('response google');
     axios.get('/api/TB_INFLUENCER/youtubeSignUp', {
       params: {
         code: response.code

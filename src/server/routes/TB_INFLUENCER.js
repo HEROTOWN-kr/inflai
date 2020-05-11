@@ -266,6 +266,7 @@ router.get('/getLongLivedToken', (req, res) => {
 });
 
 router.post('/instaSignUp', (req, res) => {
+  console.log('instaSignup');
   const data = req.body;
   const { facebookToken, facebookUserId } = data;
   let longToken;
@@ -376,6 +377,7 @@ router.post('/instaUpdate', (req, res) => {
 router.get('/youtubeSignUp', (req, res) => {
   const data = req.query;
   const { code } = data;
+  console.log(code);
 
   const oauth2Client = getOauthClient();
 
@@ -484,6 +486,7 @@ router.get('/youtubeSignUp', (req, res) => {
       // session["tokens"] = tokens;
     } else {
       // res.redirect('http://localhost:3000');
+      console.log(err);
     }
   });
 

@@ -97,74 +97,32 @@ $colorGrey: #dfe2e8;
 }
 
 .login-dialog {
-  .MuiPaper-rounded {
-    border-radius: 36px;
-  }
-
-  .MuiDialogTitle-root {
-    background: $colorBlue;
-    h2 {
-      color: $colorBg;
-      text-align: center;
-      font-size: 25px;
-      font-weight: bold;
-    }
-  }
-
   .signUpContent {
-    .MuiFormControl-root {
-      //margin-top: 20px;
-      .MuiFormControlLabel-root {
-        margin: 0 20px;
-        .MuiTypography-body1 {
-          font-weight: bold;
+    .signUpForm {
+      border: solid 1px #dfe2e8;
+      .title {
+        text-align: center;
+        h2 {
+
+          font-size: 36px;
+          line-height: 1.11;
+          color: #444041;
         }
       }
-      .MuiFormLabel-root {
-        text-align: center;
-        font-size: 21px;
-        font-weight: bold;
-        margin-bottom: 20px;
-      }
-      .MuiFormGroup-root {
-        //margin-bottom: 26px;
-      }
-    }
-    .social-login-button {
-      width: 222px;
-      height: 49px;
-      background-size: cover;
-      border-radius: 34px;
-      &:hover {
-        cursor: pointer;
-      }
-      &.kakao {
-        background-image: url("../img/kakao-button.png");
-        margin-top: 10px;
-      }
-      &.facebook {
-        width: 263px;
-        height: 49px;
-        background-image: url("../img/facebook-button.png");
-        background-size: cover;
-        border-radius: 34px;
-        margin: 10px 0;
-      }
-
-      &.naver {
-        width: 263px;
-        height: 55px;
-        background-image: url("../img/naver-login.png");
-        margin: 10px 0;
+      .MuiFormControl-root {
+        .MuiOutlinedInput-input {
+          padding: 11px 14px;
+        }
+        &.MuiFormControl-marginNormal {
+          margin: 0;
+        }
       }
     }
   }
   .social-networks {
     .main-container {
       height: 50px;
-      width: 222px;
       border-radius: 5px;
-      margin: 2px 0;
       &:hover {
         cursor: pointer;
         opacity: 0.9;

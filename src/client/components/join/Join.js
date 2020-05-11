@@ -36,7 +36,7 @@ function Join(props) {
         />
         <Route
           path={`${props.match.path}/Advertiser`}
-          render={renderProps => <AdvertiserJoin {...renderProps} />}
+          render={renderProps => <AdvertiserJoin {...renderProps} changeUser={props.changeUser} />}
         />
       </Switch>
     </div>

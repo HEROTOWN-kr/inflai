@@ -65,7 +65,7 @@ function UserType({
               validationSchema={mySchema}
               onSubmit={(values) => {
                 changeUserData({ type: values.type });
-                goTo(values.type === '1' ? '/Advertiser' : '/Influencer/sns');
+                goTo(values.type === '1' ? '/Advertiser/Login' : '/Influencer/sns');
               }}
             >
               {({
