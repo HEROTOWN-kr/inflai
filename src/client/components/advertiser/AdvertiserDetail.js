@@ -17,6 +17,7 @@ import Common from '../../lib/common';
 
 function AdvertiserDetail({
   // user,
+  location,
   history,
   match,
   changeUser
@@ -25,6 +26,7 @@ function AdvertiserDetail({
   const [finishSign, setFinishSign] = useState(false);
 
   useEffect(() => {
+    console.log(location.pathname);
     axios.get('/api/TB_ADVERTISER/', {
       params: {
         // token: user.token
@@ -38,7 +40,7 @@ function AdvertiserDetail({
       });
     });
     return () => {
-      /*if (!finishSign) {
+      if (!finishSign) {
         axios.get('/api/TB_ADVERTISER/delete', {
           params: {
             id: match.params.id,
@@ -46,13 +48,13 @@ function AdvertiserDetail({
         }).then((res) => {
 
         });
-      }*/
+      }
     };
   }, []);
 
-  history.block(({ pathname }) => {
-    if (!finishSign) return '가입이 마무리하지 않으면 데이터 삭제됩니다. 나가시겠습니까?';
-  });
+  /*history.block(({ pathname }) => {
+    if (!finishSign && (pathname.indexOf('/Detail') === -1) && location.pathname.indexOf('/Join/Advertiser/SignUp/Detail/') !== -1) return '가입이 마무리하지 않으시면 모두 데이터는 삭제됩니다. 나가시겠습니까?';
+  });*/
 
   const categories = {
     classification: [{ value: '1', text: '국내사업자' }, { value: '2', text: '해외사업자' }],
@@ -243,9 +245,7 @@ function AdvertiserDetail({
             </Grid>
           </Form>
         )}
-
       </Formik>
-
     </React.Fragment>
   );
 }

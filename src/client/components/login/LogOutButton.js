@@ -47,7 +47,7 @@ function LogOutButton(props) {
     <React.Fragment>
       {
                 {
-                  facebook: <Button onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }} className="login-button">로그아웃</Button>,
+                  facebook: <Button variant="contained" color="secondary" className="login-button" onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }} className="login-button">로그아웃</Button>,
                  /* google: <GoogleLogout
                     clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
                     buttonText="Logout"
@@ -58,10 +58,10 @@ function LogOutButton(props) {
                       <Button className="login-button" onClick={renderProps.onClick} disabled={renderProps.disabled}>로그아웃</Button>
                     )}
                   />,*/
-                  google: <Button className="login-button" onClick={googleLogOut}>로그아웃</Button>,
-                  kakao: <Button className="login-button" onClick={kakaoLogOut}>로그아웃</Button>,
-                  twitch: <Button className="login-button" onClick={twitchLogOut}>로그아웃</Button>,
-                  noSocial: <Button className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '', type: '', regState: '' })}>로그아웃</Button>
+                  google: <Button variant="contained" color="secondary" className="login-button" onClick={googleLogOut}>로그아웃</Button>,
+                  kakao: <Button variant="contained" color="secondary" className="login-button" onClick={kakaoLogOut}>로그아웃</Button>,
+                  twitch: <Button variant="contained" color="secondary" className="login-button" onClick={twitchLogOut}>로그아웃</Button>,
+                  noSocial: <Button variant="contained" color="secondary" className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '', type: '', regState: '' })}>로그아웃</Button>
                 }[props.user.social_type]
             }
     </React.Fragment>

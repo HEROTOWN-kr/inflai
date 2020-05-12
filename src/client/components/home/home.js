@@ -408,11 +408,35 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
         </div>
       </div>
       <div className="rating">
-        <div className="wraper four">
+        <Grid container justify="center">
+          <Grid item md={8}>
+            <Grid container>
+              <Grid item md={12}>
+                <img src={RatingImage} />
+              </Grid>
+              <Grid item md={12}>
+                <div className="title">
+                  서비스 후 상호별점을 통한
+                  {' '}
+                  <br />
+                  <span style={FontSettings.blue}>사후체크 효과</span>
+                </div>
+              </Grid>
+              <Grid item md={12}>
+                <div className="main-text">
+                  광고주는 인플루언서의 마케팅효과에 대해 별점을 표시하게 되고 또한 인플루언서도
+                  <br />
+                  광고주의 별점을 통해 서로 보완하여 지속적인 사후체크 및 효과상승을 유도합니다
+                </div>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+        {/* <div className="wraper four">
           <Grid container justify="center" alignItems="center">
-            {/* <Grid container justify="center">
+             <Grid container justify="center">
               <img src={RatingImage} />
-            </Grid> */}
+            </Grid>
             <div className="rating-image">
               <img src={RatingImage} />
             </div>
@@ -428,7 +452,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               광고주의 별점을 통해 서로 보완하여 지속적인 사후체크 및 효과상승을 유도합니다
             </div>
           </Grid>
-        </div>
+        </div> */}
       </div>
       <hr align="center" width="90%" color="#454545" />
       <div className="service">

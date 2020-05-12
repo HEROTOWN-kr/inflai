@@ -80,7 +80,7 @@ function InfluencerSns({
       } else {
         console.log('not connected');
       }
-    }, { scope: 'public_profile, email, pages_show_list, instagram_manage_insights' });
+    }, { scope: 'public_profile, email, instagram_manage_insights' });
   }
 
   function goNext(snsType) {
@@ -192,7 +192,7 @@ function InfluencerSns({
                     onSuccess={responseGoogle}
                     onFailure={responseGoogle}
                   />
-                  <Grid item md={12} className="title">블로그 유형을 선택해주세요</Grid>
+                  <Grid item md={12} className="title">인플루언서 유형을 선택해주세요</Grid>
                   <Grid item md={12}>
                     <Grid container spacing={5}>
                       {types.map(item => (

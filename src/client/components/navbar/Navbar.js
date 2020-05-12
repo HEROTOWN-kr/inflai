@@ -5,7 +5,19 @@ import {
 import axios from 'axios';
 import MenuIcon from '@material-ui/icons/Menu';
 import {
-  makeStyles, AppBar, Grid, List, ListItem, ListItemText, Drawer, Hidden, Popover, Divider, Button
+  makeStyles,
+  AppBar,
+  Grid,
+  List,
+  ListItem,
+  ListItemText,
+  Drawer,
+  Hidden,
+  Popover,
+  Divider,
+  Button,
+  Popper,
+  ClickAwayListener, Box
 } from '@material-ui/core';
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -16,6 +28,7 @@ import SignUpComponent from '../login/SignUpComponent';
 import Common from '../../lib/common';
 import SocialButton from '../login/SocialButton';
 import GoogleIcon from '../../img/google-logo2.png';
+import LogOutButton from '../login/LogOutButton';
 
 
 const useStyles = makeStyles(theme => ({
@@ -61,7 +74,7 @@ function CustomNavbar(props) {
 
 
   function openUserMenu(event) {
-    setUserMenu(event.currentTarget);
+    setUserMenu(userMenu ? null : event.currentTarget);
   }
 
   const handleClose = () => {
@@ -253,14 +266,6 @@ function CustomNavbar(props) {
                   </Link>
                 </Grid>
               ))}
-              <Grid item>
-                <Link
-                  className="link"
-                  to="/Join/Type"
-                >
-                  회원가입
-                </Link>
-              </Grid>
             </Grid>
             <Grid container xs={2} justify="flex-end" />
             <Grid container xs={4} justify="flex-end" spacing={3}>
@@ -273,7 +278,7 @@ function CustomNavbar(props) {
               >
                 Sign Google
               </a> */}
-              {/*<GoogleLogin
+              {/* <GoogleLogin
                 clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
                 scope="profile email https://www.googleapis.com/auth/youtube.readonly"
                 responseType="code"
@@ -281,21 +286,60 @@ function CustomNavbar(props) {
                 prompt="consent"
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}
-              />*/}
+              /> */}
 
               {/* <Button variant="contained" color="secondary" onClick={signGoogle}>Sign Google</Button> */}
 
+
               {
-                props.user.name
-                  ? (
-                    <Grid item className="name-holder" onClick={openUserMenu}>
-                      {props.user.name}
-                      <ExpandMoreIcon />
-                    </Grid>
-                  )
-                  : null
-              }
-              <Popover
+                  props.user.name
+                    ? (
+                      <React.Fragment>
+                        <Grid item className="name-holder" onClick={openUserMenu}>
+                          {props.user.name}
+                          <ExpandMoreIcon />
+                        </Grid>
+                        <Popper id={id} open={open} anchorEl={userMenu} onClose={handleClose}>
+                          <ClickAwayListener onClickAway={handleClose}>
+                            <div className="user-popmenu">
+                              {userMenuCat.map(item => (
+                                <div>
+                                  <Link
+                                    to={item.link}
+                                  >
+                                    <div className="pop-item">{item.text}</div>
+                                  </Link>
+                                  <Divider />
+                                </div>
+                              ))}
+                              {/* <div className="pop-item">
+                                <LogOutButton {...props} />
+                              </div> */}
+                              {/* <Grid container justify="center" className="logout">
+                                <Grid item>
+                                  <LogOutButton {...props} />
+                                </Grid>
+                              </Grid> */}
+
+                            </div>
+                          </ClickAwayListener>
+                        </Popper>
+                        <LogOutButton {...props} />
+
+                      </React.Fragment>
+                    )
+                    : (
+                      <Link
+                        className="link"
+                        to="/Join/Type"
+                      >
+                        로그인 | 회원가입
+                      </Link>
+                    )
+                }
+
+
+              {/* <Popover
                 id={id}
                 open={open}
                 anchorEl={userMenu}
@@ -322,14 +366,24 @@ function CustomNavbar(props) {
                     </div>
                   ))}
                 </div>
-              </Popover>
+              </Popover> */}
 
-              <Grid item>
+              {/* <Grid item>
+                {props.user.token ? <LogOutButton {...props} /> : (
+                  <Link
+                    className="link"
+                    to="/Join/Type"
+                  >
+                  로그인 | 회원가입
+                  </Link>
+                )}
+              </Grid> */}
+              {/* <Grid item>
                 <LogInComponent {...props} />
               </Grid>
               <Grid item>
                 {props.user.token ? null : <SignUpComponent {...props} />}
-              </Grid>
+              </Grid> */}
             </Grid>
           </Hidden>
           <Hidden mdUp>
