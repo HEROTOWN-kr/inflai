@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import NaverLogin from 'react-naver-login';
 import * as Yup from 'yup';
 import {
   Box, Button, FormControl, FormControlLabel, FormHelperText, Grid, Radio, RadioGroup, SvgIcon, Icon
@@ -21,6 +22,72 @@ function InfluencerSns({
   goTo,
   history
 }) {
+  const { search } = document.location;
+
+  function parseParms(str) {
+    const pieces = str.split('&');
+    const data = {};
+    let i;
+    let parts;
+    // process each query pair
+    for (i = 0; i < pieces.length; i++) {
+      parts = pieces[i].split('=');
+      if (parts.length < 2) {
+        parts.push('');
+      }
+      data[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+    }
+    return data;
+  }
+
+  function getNaverInfo(url) {
+    const decodedURL = decodeURIComponent(url);
+    const urlObj = parseParms(decodedURL.slice(1));
+    console.log(urlObj);
+
+    axios.get('/api/TB_INFLUENCER/naverSignUp', {
+      params: urlObj
+    }).then((res) => {
+      console.log(res);
+    });
+    /* const twitchToken = urlObj.access_token;
+    Common.saveUserToken(twitchToken);
+    const header = `Bearer ${twitchToken}`; */
+
+    /* axios.get('https://api.twitch.tv/helix/users', {
+      headers: { Authorization: header }
+    }).then((res) => {
+      // console.log(res);
+      if (res.data) {
+        axios.get('/api/TB_ADVERTISER/loginTwitch', {
+          params: {
+            id: res.data.data[0].id,
+            email: res.data.data[0].email,
+            name: res.data.data[0].display_name,
+            type: '2',
+            social_type: 'twitch'
+          }
+        }).then((res) => {
+          console.log(res);
+          props.changeUser({
+            social_type: res.data.social_type,
+            type: '2',
+            token: res.data.userToken,
+            name: res.data.userName,
+          });
+          props.history.push('/');
+        });
+      }
+    }); */
+  }
+
+  useEffect(() => {
+    if (search) {
+      getNaverInfo(search);
+    }
+  }, []);
+
+
   const inputRef = React.useRef(null);
 
   const types = [
@@ -43,16 +110,10 @@ function InfluencerSns({
     }
   ];
 
-  function goHome() {
-
-  }
-
   function facebookLogin() {
     window.FB.login((loginRes) => {
-      console.log(loginRes);
       if (loginRes.status === 'connected') {
         const { accessToken, userID } = loginRes.authResponse;
-
 
         axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
           .then((res) => {
@@ -95,6 +156,7 @@ function InfluencerSns({
         break;
       case '3':
         url = '/blog';
+        naverLogin();
         break;
     }
   }
@@ -107,6 +169,10 @@ function InfluencerSns({
       }
       case 'Youtube': {
         inputRef.current.click();
+        break;
+      }
+      case 'Blog': {
+        naverLogin();
         break;
       }
     }
@@ -192,6 +258,17 @@ function InfluencerSns({
                     onSuccess={responseGoogle}
                     onFailure={responseGoogle}
                   />
+                  {/* <NaverLogin
+                    clientId="4rBF5bJ4y2jKn0gHoSCf"
+                    callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
+                    render={props => <div onClick={props.onClick}>Naver Login</div>}
+                    onSuccess={result => console.log(result)}
+                    isPopup="true"
+        // onSuccess={result => console.log(result)}
+                    onFailure={result => console.log(result)}
+                  /> */}
+                  <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a>
+                  {''}
                   <Grid item md={12} className="title">인플루언서 유형을 선택해주세요</Grid>
                   <Grid item md={12}>
                     <Grid container spacing={5}>

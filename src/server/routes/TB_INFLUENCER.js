@@ -595,4 +595,53 @@ router.get('/getYoutubeInfo', (req, res) => {
   });
 });
 
+router.get('/naverSignUp', (req, res) => {
+  const data = req.query;
+  const { code, state } = data;
+  console.log(code, state);
+
+  const url = 'https://nid.naver.com/oauth2.0/token?'
+      + 'grant_type=authorization_code&'
+      + 'client_id=4rBF5bJ4y2jKn0gHoSCf&'
+      + 'client_secret=AOIyRQ5l6Q&'
+      + `code=${code}&`
+      + `state=${state}`;
+
+  request.get(url, (error, response, body) => {
+    const resData = JSON.parse(body);
+    const { access_token, refresh_token } = resData;
+    const header = `Bearer ${access_token}`;
+    const api_url = 'https://openapi.naver.com/v1/nid/me';
+    const options = {
+      url: api_url,
+      headers: { Authorization: header }
+    };
+
+    request.get(options, (error2, response2, body2) => {
+      if (!error && response2.statusCode == 200) {
+        const userData = JSON.parse(body2).response;
+
+        Influencer.create({
+          INF_NAME: userData.name,
+          INF_EMAIL: userData.email,
+          INF_REG_ID: userData.id,
+          INF_BLOG_TYPE: '3',
+          INF_REF_TOKEN: refresh_token,
+        }).then((result2) => {
+          res.json({
+            code: 200,
+            userId: result2.dataValues.INF_ID,
+            userToken: common.createToken(result2.dataValues.INF_ID),
+            userName: result2.dataValues.INF_NAME,
+            userPhone: result2.dataValues.INF_TEL,
+            social_type: getBlogType('3')
+          });
+        });
+      } else {
+        console.log('error');
+      }
+    });
+  });
+});
+
 module.exports = router;

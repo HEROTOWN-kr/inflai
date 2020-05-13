@@ -1,22 +1,23 @@
-import React, {useEffect} from 'react';
-import {  withRouter } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import NaverLogin from 'react-naver-login';
+import axios from 'axios';
 import Main from './main/Main';
 import CustomNavBar from './navbar/Navbar';
 import Footer from './footer/Footer';
 import Common from '../lib/common';
 
-import axios from 'axios';
-
 
 function App(props) {
+
+
   const [user, setUser] = React.useState(Common.getUserInfo());
 
-  /*useEffect(() => {
+  /* useEffect(() => {
     if (user.regState && user.regState === 'N') {
       props.history.push('/regDetail');
     }
-  }, [user]);*/
+  }, [user]); */
 
   function changeUser(data) {
     const newUser = { ...user, ...data };
@@ -49,7 +50,7 @@ function App(props) {
   return (
     <div>
       <CustomNavBar user={user} changeUser={changeUser} />
-      {/*<NaverLogin
+      {/* <NaverLogin
         clientId="4rBF5bJ4y2jKn0gHoSCf"
         callbackUrl="http://127.0.0.1:3000/login"
         render={props => <div onClick={props.onClick}>Naver Login</div>}
@@ -57,7 +58,7 @@ function App(props) {
         isPopup="true"
         // onSuccess={result => console.log(result)}
         onFailure={result => responseNaver(result)}
-      />*/}
+      /> */}
       <Main user={user} changeUser={changeUser} />
       <Footer />
       {/* <CustomNavBar user={user} changeUser={changeUser} />
