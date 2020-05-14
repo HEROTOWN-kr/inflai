@@ -51,6 +51,7 @@ app.use('/TB_AD', require('./routes/TB_AD'));
 app.use('/TB_PHOTO_AD', require('./routes/TB_PHOTO_AD'));
 app.use('/TB_PAYMENT', require('./routes/TB_PAYMENT'));
 app.use('/TB_ADMIN', require('./routes/TB_ADMIN'));
+app.use('/TB_NOTIFICATION', require('./routes/TB_NOTIFICATION'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 

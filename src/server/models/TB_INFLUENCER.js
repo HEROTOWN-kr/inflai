@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 const bcrypt = require('bcryptjs');
 
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('TB_INFLUENCER', {
+module.exports = function (sequelize, DataTypes) {
+  const influencer = sequelize.define('TB_INFLUENCER', {
     INF_ID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -90,4 +90,10 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
+
+  influencer.associate = function (models) {
+    influencer.hasMany(models.TB_NOTIFICATION, { foreignKey: 'INF_ID', sourceKey: 'INF_ID' });
+  };
+
+  return influencer;
 };

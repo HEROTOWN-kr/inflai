@@ -149,6 +149,7 @@ module.exports = function (sequelize, DataTypes) {
 
   Ad.associate = function (models) {
     Ad.belongsTo(models.TB_ADVERTISER, { foreignKey: 'ADV_ID', targetKey: 'ADV_ID' });
+    Ad.hasMany(models.TB_NOTIFICATION, { foreignKey: 'AD_ID', sourceKey: 'AD_ID' });
   };
 
   return Ad;

@@ -63,8 +63,8 @@ function OnGoing() {
           <Grid container justify="space-between" className="campaign-card">
             <Grid item md={3}>
               <Grid container spacing={2}>
-                <Grid item md={12}>
-                  <p className="influencer-count">선발 1명</p>
+                <Grid item>
+                  <p className="influencer-count">{`선발 ${item.INF_SUM}명`}</p>
                 </Grid>
                 <Grid item md={12} className="product-name">{item.AD_PROD_NAME}</Grid>
                 <Grid item md={12} className="product-price">

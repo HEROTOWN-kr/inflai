@@ -14,6 +14,7 @@ import Join from '../join/Join';
 import Info from '../info/Info';
 import Privacy from '../footer/Privacy';
 import Service from '../footer/Service';
+import Notification from "../notification/Notification";
 
 
 function Main({
@@ -48,6 +49,10 @@ function Main({
       <Route
         path="/Info"
         render={props => <Info {...props} />}
+      />
+      <Route
+        path="/Notifications"
+        render={props => <Notification {...props} />}
       />
       <Route
         path="/Policy/Service"

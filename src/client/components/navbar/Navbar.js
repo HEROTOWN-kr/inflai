@@ -98,8 +98,8 @@ function CustomNavbar(props) {
       link: '/Campaign/ongoing'
     },
     {
-      text: '자주하는질문',
-      link: ''
+      text: '알림',
+      link: '/Notifications'
     },
     {
       text: '문의하기',
