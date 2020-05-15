@@ -611,7 +611,8 @@ router.get('/naverSignUp', (req, res) => {
     const resData = JSON.parse(body);
     const { access_token, refresh_token } = resData;
     const header = `Bearer ${access_token}`;
-    const api_url = 'https://openapi.naver.com/v1/nid/me';
+    // const api_url = 'https://openapi.naver.com/v1/nid/me';
+    const api_url = 'https://openapi.naver.com/blog/listCategory';
     const options = {
       url: api_url,
       headers: { Authorization: header }
@@ -620,8 +621,11 @@ router.get('/naverSignUp', (req, res) => {
     request.get(options, (error2, response2, body2) => {
       if (!error && response2.statusCode == 200) {
         const userData = JSON.parse(body2).response;
-
-        Influencer.create({
+        res.json({
+          code: 200,
+          data: userData
+        });
+        /* Influencer.create({
           INF_NAME: userData.name,
           INF_EMAIL: userData.email,
           INF_REG_ID: userData.id,
@@ -636,7 +640,7 @@ router.get('/naverSignUp', (req, res) => {
             userPhone: result2.dataValues.INF_TEL,
             social_type: getBlogType('3')
           });
-        });
+        }); */
       } else {
         console.log('error');
       }

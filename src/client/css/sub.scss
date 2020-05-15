@@ -20,7 +20,7 @@ $colorGrey: #dfe2e8;
   /*position: absolute;
   width: 100%;*/
   .MuiPaper-root {
-    height: 100px;
+    //height: 100px;
   }
   .MuiPaper-elevation4 {
     box-shadow: none;
@@ -94,8 +94,6 @@ $colorGrey: #dfe2e8;
         background: #9ecfca;
       }
     }
-  }
-  .logout {
   }
 }
 
@@ -278,7 +276,7 @@ $colorGrey: #dfe2e8;
 .home {
   .greeting {
     .greeting-image {
-      z-index: 1;
+      z-index: 0;
       position: absolute;
       right: 68px;
       bottom: 0;

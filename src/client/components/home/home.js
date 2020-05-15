@@ -409,12 +409,12 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
       </div>
       <div className="rating">
         <Grid container justify="center">
-          <Grid item md={8}>
-            <Grid container>
-              <Grid item md={12}>
+          <Grid item xs={8}>
+            <Grid container justify="center">
+              <Grid item>
                 <img src={RatingImage} />
               </Grid>
-              <Grid item md={12}>
+              <Grid item xs={12}>
                 <div className="title">
                   서비스 후 상호별점을 통한
                   {' '}
@@ -422,7 +422,7 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
                   <span style={FontSettings.blue}>사후체크 효과</span>
                 </div>
               </Grid>
-              <Grid item md={12}>
+              <Grid item xs={12}>
                 <div className="main-text">
                   광고주는 인플루언서의 마케팅효과에 대해 별점을 표시하게 되고 또한 인플루언서도
                   <br />

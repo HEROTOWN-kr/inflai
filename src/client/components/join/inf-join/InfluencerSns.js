@@ -267,8 +267,7 @@ function InfluencerSns({
         // onSuccess={result => console.log(result)}
                     onFailure={result => console.log(result)}
                   /> */}
-                  <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a>
-                  {''}
+                  {/*<a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a>*/}
                   <Grid item md={12} className="title">인플루언서 유형을 선택해주세요</Grid>
                   <Grid item md={12}>
                     <Grid container spacing={5}>

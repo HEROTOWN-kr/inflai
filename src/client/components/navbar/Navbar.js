@@ -102,8 +102,8 @@ function CustomNavbar(props) {
       link: '/Notifications'
     },
     {
-      text: '문의하기',
-      link: ''
+      text: '마이 캠페인',
+      link: '/Campaign/ongoing'
     },
   ];
 
@@ -220,65 +220,117 @@ function CustomNavbar(props) {
     });
   }
 
-  function signGoogle() {
-    axios.get('/api/TB_ADVERTISER/Googletest3', {
-    }).then((res) => {
-      window.location.href = '/thankyou';
-      // <Redirect to="/thankyou" />;
-    });
-  }
-
-  const responseGoogle = (response) => {
-    console.log(response);
-    axios.get('/api/TB_ADVERTISER/Googletest1', {
-      params: {
-        code: response.code
-      }
-    })
-      .then((res) => {
-        console.log(res);
-      });
-  };
-
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
-        <Grid container className="bar" alignItems="center">
-          <Grid container xs={5} md={2} justify="center" className="nav-logo">
-            <Grid item>
-              <Link
-                className="link"
-                to="/"
-              >
-                <img src={Logo} />
-              </Link>
+        <Grid container alignItems="center" className="bar">
+          <Grid item xs={5} md={2}>
+            <Grid container justify="center">
+              <Grid item>
+                <Box my={2}>
+                  <Link
+                    className="link"
+                    to="/"
+                  >
+                    <img src={Logo} />
+                  </Link>
+                </Box>
+              </Grid>
             </Grid>
           </Grid>
           <Hidden mdDown>
-            <Grid container xs={4} justify="flex-start" spacing={2}>
-              {menuLinks.map(link => (
-                <Grid item key={link.text}>
-                  <Link
-                    className="link"
-                    to={link.link}
-                  >
-                    {link.text}
-                  </Link>
-                </Grid>
-              ))}
+            <Grid item md={4}>
+              <Grid container spacing={2}>
+                {menuLinks.map(link => (
+                  <Grid item key={link.text}>
+                    <Link
+                      className="link"
+                      to={link.link}
+                    >
+                      {link.text}
+                    </Link>
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
-            <Grid container xs={2} justify="flex-end" />
+            <Grid item md={6}>
+              <Box mr={4}>
+                <Grid container justify="flex-end">
+                  {
+                    props.user.name
+                      ? (
+                        <React.Fragment>
+                          <Grid item className="name-holder" onClick={openUserMenu}>
+                            {props.user.name}
+                            <ExpandMoreIcon />
+                          </Grid>
+                          <Popper id={id} open={open} anchorEl={userMenu} onClose={handleClose}>
+                            <ClickAwayListener onClickAway={handleClose}>
+                              <div className="user-popmenu">
+                                {userMenuCat.map(item => (
+                                  <div key={item.text}>
+                                    <Link
+                                      to={item.link}
+                                    >
+                                      <div className="pop-item">{item.text}</div>
+                                    </Link>
+                                    <Divider />
+                                  </div>
+                                ))}
+                                <Grid container justify="center" className="logout">
+                                  <Grid item>
+                                    <Box my={2}>
+                                      {/*<button>press</button>*/}
+                                      <LogOutButton {...props} />
+                                    </Box>
+                                  </Grid>
+                                </Grid>
+                              </div>
+                            </ClickAwayListener>
+                          </Popper>
+                          {/* <LogOutButton {...props} /> */}
+
+                        </React.Fragment>
+                      )
+                      : (
+                        <Link
+                          className="link"
+                          to="/Join/Type"
+                        >
+                              로그인 | 회원가입
+                        </Link>
+                      )
+                  }
+                </Grid>
+              </Box>
+            </Grid>
+          </Hidden>
+          <Hidden mdUp>
+            <Grid item xs={6}>
+              <Grid container justify="flex-end">
+                <Grid item>
+                  <div onClick={toggleDrawer(true)} className="menu-icon">
+                    <MenuIcon />
+                  </div>
+                </Grid>
+              </Grid>
+              <Drawer anchor="right" open={openMenu} onClose={toggleDrawer(false)}>
+                {sideList()}
+              </Drawer>
+            </Grid>
+            <Grid item xs={1} />
+
+          </Hidden>
+        </Grid>
+        {/* <Grid container className="bar" alignItems="center">
+          <Hidden mdDown>
             <Grid container xs={4} justify="flex-end" spacing={3}>
-              {/* <Grid item className="name-holder" onClick={openUserMenu}>
-                {props.user.name ? props.user.name : null}
-                <ExpandMoreIcon />
-              </Grid> */}
-              {/* <a
+               <a
                 href={googleLink}
               >
                 Sign Google
-              </a> */}
-              {/* <GoogleLogin
+              </a>
+               <GoogleLogin
                 clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
                 scope="profile email https://www.googleapis.com/auth/youtube.readonly"
                 responseType="code"
@@ -286,104 +338,8 @@ function CustomNavbar(props) {
                 prompt="consent"
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}
-              /> */}
-
-              {/* <Button variant="contained" color="secondary" onClick={signGoogle}>Sign Google</Button> */}
-
-
-              {
-                  props.user.name
-                    ? (
-                      <React.Fragment>
-                        <Grid item className="name-holder" onClick={openUserMenu}>
-                          {props.user.name}
-                          <ExpandMoreIcon />
-                        </Grid>
-                        <Popper id={id} open={open} anchorEl={userMenu} onClose={handleClose}>
-                          <ClickAwayListener onClickAway={handleClose}>
-                            <div className="user-popmenu">
-                              {userMenuCat.map(item => (
-                                <div>
-                                  <Link
-                                    to={item.link}
-                                  >
-                                    <div className="pop-item">{item.text}</div>
-                                  </Link>
-                                  <Divider />
-                                </div>
-                              ))}
-                              {/* <div className="pop-item">
-                                <LogOutButton {...props} />
-                              </div> */}
-                              {/* <Grid container justify="center" className="logout">
-                                <Grid item>
-                                  <LogOutButton {...props} />
-                                </Grid>
-                              </Grid> */}
-
-                            </div>
-                          </ClickAwayListener>
-                        </Popper>
-                        <LogOutButton {...props} />
-
-                      </React.Fragment>
-                    )
-                    : (
-                      <Link
-                        className="link"
-                        to="/Join/Type"
-                      >
-                        로그인 | 회원가입
-                      </Link>
-                    )
-                }
-
-
-              {/* <Popover
-                id={id}
-                open={open}
-                anchorEl={userMenu}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
-              >
-                <div className="user-popmenu">
-                  <Divider />
-                  {userMenuCat.map(item => (
-                    <div>
-                      <Link
-                        to={item.link}
-                      >
-                        <div className="pop-item">{item.text}</div>
-                      </Link>
-                      <Divider />
-                    </div>
-                  ))}
-                </div>
-              </Popover> */}
-
-              {/* <Grid item>
-                {props.user.token ? <LogOutButton {...props} /> : (
-                  <Link
-                    className="link"
-                    to="/Join/Type"
-                  >
-                  로그인 | 회원가입
-                  </Link>
-                )}
-              </Grid> */}
-              {/* <Grid item>
-                <LogInComponent {...props} />
-              </Grid>
-              <Grid item>
-                {props.user.token ? null : <SignUpComponent {...props} />}
-              </Grid> */}
+              />
+               <Button variant="contained" color="secondary" onClick={signGoogle}>Sign Google</Button>
             </Grid>
           </Hidden>
           <Hidden mdUp>
@@ -396,13 +352,14 @@ function CustomNavbar(props) {
           <Drawer anchor="right" open={openMenu} onClose={toggleDrawer(false)}>
             {sideList()}
           </Drawer>
-        </Grid>
+        </Grid> */}
       </AppBar>
     </div>
   );
 }
 
 export default withRouter(CustomNavbar);
+
 { /* <Button onClick={twitchLogin}>TwitchLogin</Button> */ }
 { /* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
                 Sign In
