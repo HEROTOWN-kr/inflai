@@ -102,8 +102,8 @@ function CustomNavbar(props) {
       link: '/Notifications'
     },
     {
-      text: '마이 캠페인',
-      link: '/Campaign/ongoing'
+      text: '다름',
+      link: '/'
     },
   ];
 
@@ -167,22 +167,21 @@ function CustomNavbar(props) {
 
   const menuLinks = [
     {
-      text: '광고주',
-      // link: '/Advertiser'
-      link: '/Product'
+      text: '인플라이소개',
+      link: '/'
     },
     {
-      text: '인플루언서',
-      link: '/Influencer'
+      text: '성공사례',
+      link: '/'
     },
-    /* {
-      text: '인플루언서 믹스',
-      link: '/Product'
-    }, */
-    /* {
-      text: '서비스2',
-      link: '/Service2'
-    }, */
+    {
+      text: '촬영서비스',
+      link: '/'
+    },
+    {
+      text: '파트너',
+      link: '/'
+    },
   ];
 
   const toggleDrawer = open => (event) => {
@@ -240,7 +239,7 @@ function CustomNavbar(props) {
           </Grid>
           <Hidden mdDown>
             <Grid item md={4}>
-              <Grid container spacing={2}>
+              <Grid container spacing={5}>
                 {menuLinks.map(link => (
                   <Grid item key={link.text}>
                     <Link
@@ -255,7 +254,7 @@ function CustomNavbar(props) {
             </Grid>
             <Grid item md={6}>
               <Box mr={4}>
-                <Grid container justify="flex-end">
+                <Grid container spacing={2} alignItems="center" justify="flex-end">
                   {
                     props.user.name
                       ? (
@@ -264,6 +263,29 @@ function CustomNavbar(props) {
                             {props.user.name}
                             <ExpandMoreIcon />
                           </Grid>
+                          {props.user.type === '1'
+                            ? (
+                              <Grid item>
+                                <Link
+                                  className="link"
+                                  to="/Product"
+                                >
+                                      켐페인 요청
+                                </Link>
+                              </Grid>
+                            )
+                            : (
+                              <Grid item>
+                                <Link
+                                  className="link"
+                                  to="/Influencer"
+                                >
+                                    인플루언서
+                                </Link>
+                              </Grid>
+                            )
+                          }
+
                           <Popper id={id} open={open} anchorEl={userMenu} onClose={handleClose}>
                             <ClickAwayListener onClickAway={handleClose}>
                               <div className="user-popmenu">
@@ -280,7 +302,7 @@ function CustomNavbar(props) {
                                 <Grid container justify="center" className="logout">
                                   <Grid item>
                                     <Box my={2}>
-                                      {/*<button>press</button>*/}
+                                      {/* <button>press</button> */}
                                       <LogOutButton {...props} />
                                     </Box>
                                   </Grid>

@@ -7,7 +7,7 @@ function SimpleSlider(props) {
   return (
     <Slider {...props.settings}>
       {props.influencers.map(person => (
-        <div>
+        <div key={person.url}>
           <div style={{ height: '142px' }} />
           <Paper className="paper">
             <div style={{ position: 'relative' }}>

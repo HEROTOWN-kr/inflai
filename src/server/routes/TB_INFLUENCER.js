@@ -1,4 +1,5 @@
 const express = require('express');
+const Sequelize = require('sequelize');
 const jwt = require('jsonwebtoken');
 const request = require('request');
 // const Promise = require('bluebird');
@@ -142,7 +143,9 @@ router.get('/getInstaAccounts', (req, res) => {
 
 router.get('/getInfluencers', (req, res) => {
   Influencer.findAll({
-    attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL', 'INF_DT'],
+    attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL',
+      [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Instagram\' WHEN \'2\' THEN \'Youtube\' ELSE \'Naver\' END'), 'INF_BLOG_TYPE'],
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('INF_DT'), '%Y-%m-%d'), 'INF_DT']],
     order: [['INF_ID', 'DESC']]
   }).then((result) => {
     res.json({
@@ -645,6 +648,174 @@ router.get('/naverSignUp', (req, res) => {
         console.log('error');
       }
     });
+  });
+});
+
+router.get('/rankInstagram', (req, res) => {
+  const { type } = req.query;
+
+  function createUrl(INF_INST_ID, INF_TOKEN) {
+    const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
+        + 'fields='
+        + 'followers_count%2C'
+        + 'follows_count%2C'
+        + 'media_count%2C'
+        + 'username%2C'
+        + 'profile_picture_url%2C'
+        + 'name&'
+        + `access_token=${INF_TOKEN}`;
+    return instaDataUrl;
+  }
+
+
+  Influencer.findAll({
+    where: { INF_BLOG_TYPE: type },
+    attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
+  }).then((result) => {
+    const testArray = [
+      {
+        id: 1,
+        followers_count: 1000
+      },
+      {
+        id: 2,
+        followers_count: 1566
+      },
+      {
+        id: 3,
+        followers_count: 102
+      },
+      {
+        id: 4,
+        followers_count: 1440
+      },
+      {
+        id: 5,
+        followers_count: 2040
+      },
+      {
+        id: 6,
+        followers_count: 36
+      }
+    ];
+
+    async.map(result, (item, callback) => {
+      const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
+      request.get(url, (error, response, body) => {
+        if (!error && response.statusCode == 200) {
+          const parsedBody = JSON.parse(body);
+          callback(null, parsedBody);
+        } else {
+          callback(error || response.statusCode);
+        }
+      });
+    }, (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        const sortedArray = results.sort((a, b) => {
+          if (a.followers_count < b.followers_count) {
+            return 1;
+          }
+          if (a.followers_count > b.followers_count) {
+            return -1;
+          }
+          return 0;
+        });
+
+        res.json({
+          code: 200,
+          // data: JSON.parse(body).data,
+          data: sortedArray
+        });
+      }
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
+router.get('/rankYoutube', (req, res) => {
+  const { type } = req.query;
+
+  function createUrl(INF_INST_ID, INF_TOKEN) {
+    const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
+        + 'fields='
+        + 'followers_count%2C'
+        + 'follows_count%2C'
+        + 'media_count%2C'
+        + 'username%2C'
+        + 'profile_picture_url%2C'
+        + 'name&'
+        + `access_token=${INF_TOKEN}`;
+    return instaDataUrl;
+  }
+
+
+  Influencer.findAll({
+    where: { INF_BLOG_TYPE: type },
+    attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
+  }).then((result) => {
+    const testArray = [
+      {
+        id: 1,
+        followers_count: 1000
+      },
+      {
+        id: 2,
+        followers_count: 1566
+      },
+      {
+        id: 3,
+        followers_count: 102
+      },
+      {
+        id: 4,
+        followers_count: 1440
+      },
+      {
+        id: 5,
+        followers_count: 2040
+      },
+      {
+        id: 6,
+        followers_count: 36
+      }
+    ];
+
+    async.map(result, (item, callback) => {
+      const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
+      request.get(url, (error, response, body) => {
+        if (!error && response.statusCode == 200) {
+          const parsedBody = JSON.parse(body);
+          callback(null, parsedBody);
+        } else {
+          callback(error || response.statusCode);
+        }
+      });
+    }, (err, results) => {
+      if (err) {
+        console.log(err);
+      } else {
+        const sortedArray = results.sort((a, b) => {
+          if (a.followers_count < b.followers_count) {
+            return 1;
+          }
+          if (a.followers_count > b.followers_count) {
+            return -1;
+          }
+          return 0;
+        });
+
+        res.json({
+          code: 200,
+          // data: JSON.parse(body).data,
+          data: sortedArray
+        });
+      }
+    });
+  }).error((err) => {
+    res.send('error has occured');
   });
 });
 
