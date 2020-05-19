@@ -219,6 +219,16 @@ function CustomNavbar(props) {
     });
   }
 
+  function testFunction() {
+    axios.get('/api/TB_INFLUENCER/rankYoutube', {
+      params: {
+        type: '2'
+      }
+    }).then((res) => {
+      console.log(res);
+    });
+  }
+
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
@@ -250,6 +260,7 @@ function CustomNavbar(props) {
                     </Link>
                   </Grid>
                 ))}
+                <Button variant="contained" color="secondary" onClick={testFunction}>test</Button>
               </Grid>
             </Grid>
             <Grid item md={6}>

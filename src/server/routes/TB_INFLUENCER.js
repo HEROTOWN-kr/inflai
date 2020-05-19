@@ -46,6 +46,80 @@ function getBlogType(blogType) {
   return social;
 }
 
+function InstaRequest(data, cb) {
+  const testArray = [
+    {
+      id: 1,
+      followers_count: 1000
+    },
+    {
+      id: 2,
+      followers_count: 1566
+    },
+    {
+      id: 3,
+      followers_count: 102
+    },
+    {
+      id: 4,
+      followers_count: 1440
+    },
+    {
+      id: 5,
+      followers_count: 2040
+    },
+    {
+      id: 6,
+      followers_count: 36
+    }
+  ];
+
+  function createUrl(INF_INST_ID, INF_TOKEN) {
+    const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
+        + 'fields='
+        + 'followers_count%2C'
+        + 'follows_count%2C'
+        + 'media_count%2C'
+        + 'username%2C'
+        + 'profile_picture_url%2C'
+        + 'name&'
+        + `access_token=${INF_TOKEN}`;
+    return instaDataUrl;
+  }
+
+  async.map(data, (item, callback) => {
+    const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
+    request.get(url, (error, response, body) => {
+      if (!error && response.statusCode == 200) {
+        const parsedBody = JSON.parse(body);
+        callback(null, parsedBody);
+      } else {
+        callback(error || response.statusCode);
+      }
+    });
+  }, (err, results) => {
+    if (err) {
+      cb(err, null);
+    } else {
+      const sortedArray = results.sort((a, b) => {
+        if (a.followers_count < b.followers_count) {
+          return 1;
+        }
+        if (a.followers_count > b.followers_count) {
+          return -1;
+        }
+        return 0;
+      });
+
+      cb(null, sortedArray);
+    }
+  });
+}
+
+function YoutubeRequest(data) {
+
+}
+
 router.get('/', (req, res) => {
   const { token, id } = req.query;
   const userId = id || common.getIdFromToken(token).sub;
@@ -545,7 +619,8 @@ router.get('/getYoutubeInfo', (req, res) => {
       auth: oauth2Client,
       part: 'snippet, contentDetails, statistics',
       // part: 'id',
-      mine: true
+      mine: true,
+      quotaUser: 'secretquotastring',
       // mySubscribers: true
     }, (err, response) => {
       if (err) {
@@ -654,78 +729,19 @@ router.get('/naverSignUp', (req, res) => {
 router.get('/rankInstagram', (req, res) => {
   const { type } = req.query;
 
-  function createUrl(INF_INST_ID, INF_TOKEN) {
-    const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
-        + 'fields='
-        + 'followers_count%2C'
-        + 'follows_count%2C'
-        + 'media_count%2C'
-        + 'username%2C'
-        + 'profile_picture_url%2C'
-        + 'name&'
-        + `access_token=${INF_TOKEN}`;
-    return instaDataUrl;
-  }
-
-
   Influencer.findAll({
     where: { INF_BLOG_TYPE: type },
     attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
   }).then((result) => {
-    const testArray = [
-      {
-        id: 1,
-        followers_count: 1000
-      },
-      {
-        id: 2,
-        followers_count: 1566
-      },
-      {
-        id: 3,
-        followers_count: 102
-      },
-      {
-        id: 4,
-        followers_count: 1440
-      },
-      {
-        id: 5,
-        followers_count: 2040
-      },
-      {
-        id: 6,
-        followers_count: 36
-      }
-    ];
-
-    async.map(result, (item, callback) => {
-      const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
-      request.get(url, (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-          const parsedBody = JSON.parse(body);
-          callback(null, parsedBody);
-        } else {
-          callback(error || response.statusCode);
-        }
-      });
-    }, (err, results) => {
+    InstaRequest(result, (err, sortedArray) => {
       if (err) {
-        console.log(err);
-      } else {
-        const sortedArray = results.sort((a, b) => {
-          if (a.followers_count < b.followers_count) {
-            return 1;
-          }
-          if (a.followers_count > b.followers_count) {
-            return -1;
-          }
-          return 0;
+        res.json({
+          code: 401,
+          message: err
         });
-
+      } else {
         res.json({
           code: 200,
-          // data: JSON.parse(body).data,
           data: sortedArray
         });
       }
@@ -738,59 +754,68 @@ router.get('/rankInstagram', (req, res) => {
 router.get('/rankYoutube', (req, res) => {
   const { type } = req.query;
 
-  function createUrl(INF_INST_ID, INF_TOKEN) {
-    const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
-        + 'fields='
-        + 'followers_count%2C'
-        + 'follows_count%2C'
-        + 'media_count%2C'
-        + 'username%2C'
-        + 'profile_picture_url%2C'
-        + 'name&'
-        + `access_token=${INF_TOKEN}`;
-    return instaDataUrl;
-  }
-
+  const oauth2Client = getOauthClient();
+  const youtube = google.youtube('v3');
 
   Influencer.findAll({
     where: { INF_BLOG_TYPE: type },
-    attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
+    attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_REF_TOKEN', 'INF_DT']
   }).then((result) => {
-    const testArray = [
-      {
-        id: 1,
-        followers_count: 1000
-      },
-      {
-        id: 2,
-        followers_count: 1566
-      },
-      {
-        id: 3,
-        followers_count: 102
-      },
-      {
-        id: 4,
-        followers_count: 1440
-      },
-      {
-        id: 5,
-        followers_count: 2040
-      },
-      {
-        id: 6,
-        followers_count: 36
+    const INF_REF_TOKEN = '1//0emVHKLdASLu0CgYIARAAGA4SNwF-L9IrgarUxb0EpSIT_GNA1qnYPmJPgN_WRhMsyRle8BX06ojsb6qIvlmj8MSbGdSEhbhnlq8';
+    oauth2Client.setCredentials({
+      refresh_token: INF_REF_TOKEN
+    });
+    youtube.channels.list({
+      auth: oauth2Client,
+      part: 'snippet, contentDetails, statistics',
+      // part: 'id',
+      quotaUser: 'secretquotastring',
+      mine: true
+      // mySubscribers: true
+    }, (err, response) => {
+      if (err) {
+        res.json({
+          code: response.statusCode,
+          message: err
+        });
       }
-    ];
+      const channels = response.data.items;
+      if (channels.length == 0) {
+        res.json({
+          code: 200,
+          message: response.data
+        });
+        console.log('No channel found.');
+      } else {
+        res.json({
+          code: 200,
+          message: response.data
+        });
+      }
+    });
 
-    async.map(result, (item, callback) => {
-      const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
-      request.get(url, (error, response, body) => {
-        if (!error && response.statusCode == 200) {
-          const parsedBody = JSON.parse(body);
-          callback(null, parsedBody);
+    /* async.map(result, (item, callback) => {
+      const { INF_REF_TOKEN } = item.dataValues;
+      oauth2Client.setCredentials({
+        refresh_token: INF_REF_TOKEN
+      });
+
+      youtube.channels.list({
+        auth: oauth2Client,
+        part: 'snippet, contentDetails, statistics',
+        // part: 'id',
+        mine: true
+        // mySubscribers: true
+      }, (err, response) => {
+        if (err) {
+          callback(err || response.statusCode);
+        }
+        const channels = response.data.items;
+        if (channels.length == 0) {
+          console.log('No channel found.');
+          callback(null, response.data);
         } else {
-          callback(error || response.statusCode);
+          callback(null, response.data);
         }
       });
     }, (err, results) => {
@@ -813,7 +838,7 @@ router.get('/rankYoutube', (req, res) => {
           data: sortedArray
         });
       }
-    });
+    }); */
   }).error((err) => {
     res.send('error has occured');
   });

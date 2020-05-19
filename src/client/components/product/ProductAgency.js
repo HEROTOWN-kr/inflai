@@ -6,22 +6,54 @@ import {
   Field, Form, Formik, FormikProps, getIn, FieldProps, ErrorMessage, useField, FieldArray
 } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import Common from '../../lib/common';
 
-function ProductAgency() {
+function ProductAgency(props) {
   const category = {
     aim: [
-      '영향력 있는 소수 인플루언서를 통한 인지도 확산',
-      '다수의 리뷰어를 활용한 리뷰 생성',
-      '인플루언서 믹스를 통한 통합 캠페인',
-      '인플루언서를 활용한 판매',
-      '기타 (직접입력)'
+      {
+        value: '1',
+        text: '영향력 있는 소수 인플루언서를 통한 인지도 확산'
+      },
+      {
+        value: '2',
+        text: '다수의 리뷰어를 활용한 리뷰 생성'
+      },
+      {
+        value: '3',
+        text: '인플루언서 믹스를 통한 통합 캠페인'
+      },
+      {
+        value: '4',
+        text: '인플루언서를 활용한 판매'
+      },
+      {
+        value: '5',
+        text: '기타 (직접입력)'
+      },
     ],
     consult: [
-      '유튜브 크리에이터 섭외',
-      '네이버 블로거 섭외',
-      '페이스북 파워 페이지 홍보',
-      '소셜미디어 유료 광고 대행 (인스타그램/페이스북 등)',
-      '통합 디지털 마케팅 대행'
+      {
+        value: '1',
+        text: '유튜브 크리에이터 섭외'
+      },
+      {
+        value: '2',
+        text: '네이버 블로거 섭외'
+      },
+      {
+        value: '3',
+        text: '페이스북 파워 페이지 홍보'
+      },
+      {
+        value: '4',
+        text: '소셜미디어 유료 광고 대행 (인스타그램/페이스북 등)'
+      },
+      {
+        value: '5',
+        text: '통합 디지털 마케팅 대행'
+      }
     ]
   };
 
@@ -48,6 +80,23 @@ function ProductAgency() {
       .required('집행 가능 예산을 입력해주세요.'),
   });
 
+  function saveProduct(values) {
+    const apiObj = { ...values, token: Common.getUserInfo().token };
+
+    axios.post('/api/TB_REQ_AD/', apiObj)
+      .then((res) => {
+        if (res.data.code === 200) {
+          // props.history.push(`${props.match.path}/write/${res.data.id}`);
+          props.history.push('/');
+        } else if (res.data.code === 401) {
+          console.log(res);
+        } else {
+          console.log(res);
+        }
+      })
+      .catch(error => (error));
+  }
+
   return (
     <div className="wraper vertical3">
       <Grid container justify="center">
@@ -62,13 +111,13 @@ function ProductAgency() {
               campaignAim: [],
               anotherAim: '',
               capital: '',
-              consult: [''],
+              consult: [],
               description: ''
             }}
             enableReinitialize
             validationSchema={mySchema}
             onSubmit={(values) => {
-              console.log(values);
+              saveProduct(values);
             }}
           >
             {({
@@ -199,23 +248,23 @@ function ProductAgency() {
                             render={arrayHelpers => (
                               <Grid container>
                                 {category.aim.map(item => (
-                                  <Grid item md={12} key={item}>
+                                  <Grid item md={12} key={item.value}>
                                     <FormControlLabel
                                       control={(
                                         <Checkbox
-                                          checked={values.campaignAim.includes(item)}
+                                          checked={values.campaignAim.includes(item.value)}
                                           onChange={(e) => {
                                             if (e.target.checked) {
-                                              arrayHelpers.push(item);
+                                              arrayHelpers.push(item.value);
                                             } else {
-                                              const idx = values.campaignAim.indexOf(item);
+                                              const idx = values.campaignAim.indexOf(item.value);
                                               arrayHelpers.remove(idx);
                                             }
                                           }}
                                           color="primary"
                                         />
                                             )}
-                                      label={item}
+                                      label={item.text}
                                     />
                                   </Grid>
                                 ))
@@ -303,23 +352,23 @@ function ProductAgency() {
                             render={arrayHelpers => (
                               <Grid container>
                                 {category.consult.map(item => (
-                                  <Grid item md={12} key={item}>
+                                  <Grid item md={12} key={item.value}>
                                     <FormControlLabel
                                       control={(
                                         <Checkbox
-                                          checked={values.consult.includes(item)}
+                                          checked={values.consult.includes(item.value)}
                                           onChange={(e) => {
                                             if (e.target.checked) {
-                                              arrayHelpers.push(item);
+                                              arrayHelpers.push(item.value);
                                             } else {
-                                              const idx = values.consult.indexOf(item);
+                                              const idx = values.consult.indexOf(item.value);
                                               arrayHelpers.remove(idx);
                                             }
                                           }}
                                           color="primary"
                                         />
                                                       )}
-                                      label={item}
+                                      label={item.text}
                                     />
                                   </Grid>
                                 ))
