@@ -8,7 +8,9 @@ function LogOutButton(props) {
   const kakaoLogOut = (e) => {
     e.preventDefault();
     window.Kakao.Auth.logout((res) => {
-      props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
+      props.changeUser({
+        token: null, name: '', social_type: '', type: '', regState: ''
+      });
     });
   };
 
@@ -25,21 +27,31 @@ function LogOutButton(props) {
         }
       });
     }
-    props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
+    props.changeUser({
+      token: null, name: '', social_type: '', type: '', regState: ''
+    });
   };
 
   const googleLogOut = (e) => {
     e.preventDefault();
-    window.gapi.load('auth2', function() {
+    window.gapi.load('auth2', () => {
       /* Ready. Make a call to gapi.auth2.init or some other API */
-      /*window.gapi.auth2.getAuthInstance({
+      /* window.gapi.auth2.getAuthInstance({
         client_id: '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com'
-      });*/
+      }); */
       const auth2 = window.gapi.auth2.getAuthInstance({
         client_id: '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com'
       });
-      auth2.disconnect();
-      props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  });
+      if (auth2) {
+        auth2.disconnect();
+        props.changeUser({
+          token: null, name: '', social_type: '', type: '', regState: ''
+        });
+      } else {
+        props.changeUser({
+          token: null, name: '', social_type: '', type: '', regState: ''
+        });
+      }
     });
   };
 
@@ -47,8 +59,20 @@ function LogOutButton(props) {
     <React.Fragment>
       {
                 {
-                  facebook: <Button variant="contained" color="secondary" className="login-button" onClick={(e) => { e.preventDefault(); window.FB.logout(); props.changeUser({ token: null, name: '', social_type: '', type: '', regState: ''  }); }} className="login-button">로그아웃</Button>,
-                 /* google: <GoogleLogout
+                  facebook: <Button
+                    variant="contained"
+                    color="secondary"
+                    className="login-button"
+                    onClick={(e) => {
+                      e.preventDefault(); window.FB.logout(); props.changeUser({
+                        token: null, name: '', social_type: '', type: '', regState: ''
+                      });
+                    }}
+                    className="login-button"
+                  >
+로그아웃
+                            </Button>,
+                  /* google: <GoogleLogout
                     clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com"
                     buttonText="Logout"
                     scope="profile email https://www.googleapis.com/auth/youtube.readonly"
@@ -57,11 +81,20 @@ function LogOutButton(props) {
                     render={renderProps => (
                       <Button className="login-button" onClick={renderProps.onClick} disabled={renderProps.disabled}>로그아웃</Button>
                     )}
-                  />,*/
+                  />, */
                   google: <Button variant="contained" color="secondary" className="login-button" onClick={googleLogOut}>로그아웃</Button>,
                   kakao: <Button variant="contained" color="secondary" className="login-button" onClick={kakaoLogOut}>로그아웃</Button>,
                   twitch: <Button variant="contained" color="secondary" className="login-button" onClick={twitchLogOut}>로그아웃</Button>,
-                  noSocial: <Button variant="contained" color="secondary" className="login-button" onClick={e => props.changeUser({ token: null, name: '', social_type: '', type: '', regState: '' })}>로그아웃</Button>
+                  noSocial: <Button
+                    variant="contained"
+                    color="secondary"
+                    className="login-button"
+                    onClick={e => props.changeUser({
+                      token: null, name: '', social_type: '', type: '', regState: ''
+                    })}
+                  >
+로그아웃
+                            </Button>
                 }[props.user.social_type]
             }
     </React.Fragment>

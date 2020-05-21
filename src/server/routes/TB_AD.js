@@ -96,6 +96,23 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/getAdInfluencers', (req, res) => {
+  const { token, adId } = req.query;
+  const userId = common.getIdFromToken(token).sub;
+
+  Advertise.findOne({
+    where: { AD_ID: adId },
+    attributes: ['AD_ID', 'ADV_ID', 'AD_PROD_NAME', 'AD_INF_NANO', 'AD_INF_MICRO', 'AD_INF_MACRO', 'AD_INF_MEGA', 'AD_INF_CELEB'],
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/getAll', (req, res) => {
   Advertise.findAll({
     order: [['AD_ID', 'DESC']],

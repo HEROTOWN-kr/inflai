@@ -620,7 +620,7 @@ router.get('/getYoutubeInfo', (req, res) => {
       part: 'snippet, contentDetails, statistics',
       // part: 'id',
       mine: true,
-      quotaUser: 'secretquotastring',
+      quotaUser: `secretquotastring${userId}`,
       // mySubscribers: true
     }, (err, response) => {
       if (err) {
@@ -761,72 +761,43 @@ router.get('/rankYoutube', (req, res) => {
     where: { INF_BLOG_TYPE: type },
     attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_REF_TOKEN', 'INF_DT']
   }).then((result) => {
-    const INF_REF_TOKEN = '1//0emVHKLdASLu0CgYIARAAGA4SNwF-L9IrgarUxb0EpSIT_GNA1qnYPmJPgN_WRhMsyRle8BX06ojsb6qIvlmj8MSbGdSEhbhnlq8';
-    oauth2Client.setCredentials({
-      refresh_token: INF_REF_TOKEN
-    });
-    youtube.channels.list({
-      auth: oauth2Client,
-      part: 'snippet, contentDetails, statistics',
-      // part: 'id',
-      quotaUser: 'secretquotastring',
-      mine: true
-      // mySubscribers: true
-    }, (err, response) => {
-      if (err) {
-        res.json({
-          code: response.statusCode,
-          message: err
-        });
-      }
-      const channels = response.data.items;
-      if (channels.length == 0) {
-        res.json({
-          code: 200,
-          message: response.data
-        });
-        console.log('No channel found.');
-      } else {
-        res.json({
-          code: 200,
-          message: response.data
-        });
-      }
-    });
-
-    /* async.map(result, (item, callback) => {
-      const { INF_REF_TOKEN } = item.dataValues;
+    async.map(result, (item, callback) => {
+      const { INF_REF_TOKEN, INF_ID } = item.dataValues;
       oauth2Client.setCredentials({
         refresh_token: INF_REF_TOKEN
       });
 
-      youtube.channels.list({
-        auth: oauth2Client,
-        part: 'snippet, contentDetails, statistics',
-        // part: 'id',
-        mine: true
-        // mySubscribers: true
-      }, (err, response) => {
-        if (err) {
-          callback(err || response.statusCode);
-        }
-        const channels = response.data.items;
-        if (channels.length == 0) {
-          console.log('No channel found.');
-          callback(null, response.data);
-        } else {
-          callback(null, response.data);
-        }
-      });
+      try {
+        youtube.channels.list({
+          auth: oauth2Client,
+          part: 'snippet, statistics',
+          mine: true,
+          fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
+          quotaUser: `secretquotastring${INF_ID}`,
+        }, (err, response) => {
+          if (err) {
+            callback(err || response.statusCode);
+          }
+          const info = response.data.items;
+          if (info.length == 0) {
+            console.log('No channel found.');
+            callback(null, response.data);
+          } else {
+            callback(null, info[0]);
+          }
+        });
+      } catch (e) {
+        console.log(e);
+      }
     }, (err, results) => {
       if (err) {
         console.log(err);
       } else {
         const sortedArray = results.sort((a, b) => {
-          if (a.followers_count < b.followers_count) {
+          if (parseInt(a.statistics.subscriberCount, 10) < parseInt(b.statistics.subscriberCount, 10)) {
             return 1;
           }
-          if (a.followers_count > b.followers_count) {
+          if (parseInt(a.statistics.subscriberCount, 10) > parseInt(b.statistics.subscriberCount, 10)) {
             return -1;
           }
           return 0;
@@ -838,9 +809,48 @@ router.get('/rankYoutube', (req, res) => {
           data: sortedArray
         });
       }
-    }); */
+    });
   }).error((err) => {
     res.send('error has occured');
+  });
+});
+
+router.get('/test', (req, res) => {
+  const oauth2Client = getOauthClient();
+  const youtube = google.youtube('v3');
+
+  const INF_REF_TOKEN = '1//0e6yP7bFZ4ScGCgYIARAAGA4SNwF-L9Ir6I5IUOom6YWt2Dvljz325otOTVO2pzWSEuy4_czsL0X6Z1BA1VOYdNrGXV2H-Ydz5B4';
+
+  oauth2Client.setCredentials({
+    refresh_token: INF_REF_TOKEN
+  });
+  youtube.channels.list({
+    auth: oauth2Client,
+    part: 'snippet, statistics',
+    mine: true,
+    fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
+    quotaUser: 'secretquotastring',
+    // mySubscribers: true
+  }, (err, response) => {
+    if (err) {
+      res.json({
+        code: response.statusCode,
+        message: err
+      });
+    }
+    const channels = response.data.items;
+    if (channels.length == 0) {
+      res.json({
+        code: 200,
+        message: response.data
+      });
+      console.log('No channel found.');
+    } else {
+      res.json({
+        code: 200,
+        message: response.data
+      });
+    }
   });
 });
 

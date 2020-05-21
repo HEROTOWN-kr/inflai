@@ -229,6 +229,13 @@ function CustomNavbar(props) {
     });
   }
 
+
+  function addChannel() {
+    window.Kakao.Channel.addChannel({
+      channelPublicId: '_lxmhexb',
+    });
+  }
+
   return (
     <div className="navbar">
       <AppBar position="static" color="transparent">
@@ -261,6 +268,7 @@ function CustomNavbar(props) {
                   </Grid>
                 ))}
                 <Button variant="contained" color="secondary" onClick={testFunction}>test</Button>
+                <Button variant="contained" color="secondary" onClick={addChannel}>addChanell</Button>
               </Grid>
             </Grid>
             <Grid item md={6}>

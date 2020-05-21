@@ -10,6 +10,7 @@ import ProductMix from '../product/ProductMix';
 import OnGoing from './status/OnGoing';
 import Complete from './status/Complete';
 import Combined from './status/Combined';
+import InfluencerList from './status/InfluencerList';
 
 function Campaign(props) {
   const menuLinks = [
@@ -48,20 +49,26 @@ function Campaign(props) {
                   ))}
                 </Grid>
               </Grid>
-              <Switch>
-                <Route
-                  path={`${props.match.path}/ongoing`}
-                  render={props => <OnGoing {...props} />}
-                />
-                <Route
-                  path={`${props.match.path}/complete`}
-                  render={props => <Complete {...props} />}
-                />
-                <Route
-                  path={`${props.match.path}/combine`}
-                  render={props => <Combined {...props} />}
-                />
-              </Switch>
+              <Grid item md={12}>
+                <Switch>
+                  <Route
+                    path={`${props.match.path}/ongoing`}
+                    render={props => <OnGoing {...props} />}
+                  />
+                  <Route
+                    path={`${props.match.path}/complete`}
+                    render={props => <Complete {...props} />}
+                  />
+                  <Route
+                    path={`${props.match.path}/combine`}
+                    render={props => <Combined {...props} />}
+                  />
+                  <Route
+                    path={`${props.match.path}/influencers/:id`}
+                    render={props => <InfluencerList {...props} />}
+                  />
+                </Switch>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
