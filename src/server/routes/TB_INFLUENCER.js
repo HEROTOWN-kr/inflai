@@ -92,7 +92,7 @@ function InstaRequest(data, cb) {
     request.get(url, (error, response, body) => {
       if (!error && response.statusCode == 200) {
         const parsedBody = JSON.parse(body);
-        callback(null, parsedBody);
+        callback(null, { ...parsedBody, INF_ID: item.dataValues.INF_ID });
       } else {
         callback(error || response.statusCode);
       }

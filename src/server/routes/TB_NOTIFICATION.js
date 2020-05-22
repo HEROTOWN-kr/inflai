@@ -57,4 +57,34 @@ router.post('/changeState', (req, res) => {
   });
 });
 
+router.post('/', (req, res) => {
+  const data = req.body;
+  const { list, adId } = data;
+
+
+  /* const post = {
+    AD_ID: adId
+  } */
+
+  Object.keys(list).forEach((key, index) => {
+    list[key].map((item) => {
+      const post = {
+        AD_ID: adId,
+        INF_ID: item
+      };
+      Notification.create(post).then((result) => {
+        /*res.json({
+          code: 200,
+          id: result.dataValues.AD_ID,
+        });*/
+      });
+    });
+  });
+
+  res.json({
+    code: 200,
+    // id: result.dataValues.AD_ID,
+  });
+});
+
 module.exports = router;
