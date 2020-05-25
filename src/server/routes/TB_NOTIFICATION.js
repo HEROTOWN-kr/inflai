@@ -1,9 +1,13 @@
 const express = require('express');
 const Sequelize = require('sequelize');
+const nodemailer = require('nodemailer');
+const async = require('async');
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Notification = require('../models').TB_NOTIFICATION;
+const Influencer = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
+
 
 const router = express.Router();
 
@@ -61,29 +65,60 @@ router.post('/', (req, res) => {
   const data = req.body;
   const { list, adId } = data;
 
-
-  /* const post = {
-    AD_ID: adId
-  } */
-
-  Object.keys(list).forEach((key, index) => {
-    list[key].map((item) => {
-      const post = {
-        AD_ID: adId,
-        INF_ID: item
-      };
-      Notification.create(post).then((result) => {
-        /*res.json({
-          code: 200,
-          id: result.dataValues.AD_ID,
-        });*/
-      });
-    });
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.naver.com',
+    port: 465,
+    secure: true, // use SSL
+    // secure: false, // use SSL
+    auth: {
+      user: 'andriantsoy@naver.com',
+      pass: 'tshega93'
+    }
   });
 
-  res.json({
-    code: 200,
-    // id: result.dataValues.AD_ID,
+  const mailOptions = {
+    to: '',
+    from: 'andriantsoy@naver.com',
+    subject: '인플라이 테스트 메세지',
+    text: '인플라이 테스트 메세지'
+  };
+
+  async.map(Object.keys(list), (item, callback) => {
+    async.map(list[item], (item2, callback2) => {
+      const post = {
+        AD_ID: adId,
+        INF_ID: item2
+      };
+
+      Notification.create(post).then((result) => {
+        if (result) {
+          Influencer.findOne({
+            where: { INF_ID: item2 },
+            attributes: ['INF_EMAIL']
+          }).then((result2) => {
+            if (result2) {
+              const receiver = result2.dataValues.INF_EMAIL;
+              mailOptions.to = receiver;
+
+              transporter.sendMail(mailOptions, (err) => {
+                if (err) {
+                  callback2(null, 'error');
+                } else {
+                  callback2(null, 'success');
+                }
+              });
+            }
+          });
+        }
+      });
+    }, (err2, results2) => {
+      callback(null, results2);
+    });
+  }, (err, results) => {
+    if (err) {
+      return res.json({ code: 500, message: '에러가 발생하였습니다.', data: err });
+    }
+    return res.json({ code: 200, message: '', data: results });
   });
 });
 

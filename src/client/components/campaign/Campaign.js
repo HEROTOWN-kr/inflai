@@ -32,7 +32,7 @@ function Campaign(props) {
     <React.Fragment>
       <div className="campaign wraper vertical3">
         <Grid container justify="center">
-          <Grid item md={12} lg={10} xl={5}>
+          <Grid item className="main-container">
             <Grid container spacing={2}>
               <Grid item md={5}>
                 <Grid container className="campaign-step">
@@ -49,7 +49,7 @@ function Campaign(props) {
                   ))}
                 </Grid>
               </Grid>
-              <Grid item md={12}>
+              <Grid item xs={12}>
                 <Switch>
                   <Route
                     path={`${props.match.path}/ongoing`}

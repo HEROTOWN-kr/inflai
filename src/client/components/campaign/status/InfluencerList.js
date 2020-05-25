@@ -2,9 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Button, Grid } from '@material-ui/core';
 import Common from '../../../lib/common';
-import SlideImage1 from '../../../img/slider/beauty.png';
-import SlideImage2 from '../../../img/slider/fashion.png';
-import SlideImage3 from '../../../img/slider/food.png';
 
 function InfluencerList({
   history,
@@ -19,46 +16,8 @@ function InfluencerList({
   });
   const [counter, setCounter] = useState({});
   const [influencers, setInfluencers] = useState([]);
+  const [list, setList] = useState([]);
   const [type, setType] = useState('nano');
-
-  /* const influencers = [
-    {
-      id: 1,
-      imgUrl: SlideImage1,
-      name: '홍동일',
-      subscribers: '123'
-    },
-    {
-      id: 2,
-      imgUrl: SlideImage2,
-      name: '최동일',
-      subscribers: '456'
-    },
-    {
-      id: 3,
-      imgUrl: SlideImage3,
-      name: '박은택',
-      subscribers: '789'
-    },
-    {
-      id: 4,
-      imgUrl: SlideImage3,
-      name: '박은택',
-      subscribers: '789'
-    },
-    {
-      id: 5,
-      imgUrl: SlideImage3,
-      name: '박은택',
-      subscribers: '789'
-    },
-    {
-      id: 6,
-      imgUrl: SlideImage3,
-      name: '박은택',
-      subscribers: '789'
-    },
-  ]; */
 
   function getCampaign() {
     const { token } = Common.getUserInfo();
@@ -108,6 +67,19 @@ function InfluencerList({
     setInfluencers(array);
   }
 
+  function loadList(influencerType) {
+    const range = {
+      nano: { a: 100, b: 10000 },
+      micro: { a: 10000, b: 30000 },
+      macro: { a: 30000, b: 50000 },
+      mega: { a: 50000, b: 100000 },
+      celebrity: { a: 100000, b: 99999999 },
+    };
+
+    const filtered = influencers.filter(value => parseInt(value.subscribers, 10) >= range[influencerType].a && parseInt(value.subscribers, 10) < range[influencerType].b);
+    setList(filtered);
+  }
+
   function getInfluencers() {
     const blogType = '1';
 
@@ -126,7 +98,6 @@ function InfluencerList({
           type: blogType
         }
       }).then((res) => {
-        console.log(res);
         createInfluencers(res.data.data);
       });
     }
@@ -136,6 +107,12 @@ function InfluencerList({
     getCampaign();
     getInfluencers();
   }, []);
+
+  useEffect(() => {
+    if (influencers.length > 0) {
+      loadList(type);
+    }
+  }, [influencers]);
 
   function selectInfluencer(influencerType, id) {
     let newArray;
@@ -152,6 +129,7 @@ function InfluencerList({
 
   function changeType(influencerType) {
     setType(influencerType);
+    loadList(influencerType);
   }
 
   function sendRequest() {
@@ -173,7 +151,7 @@ function InfluencerList({
 
   return (
     <Grid container spacing={2} className="influencer-select">
-      <Grid item md={12}>
+      <Grid item xs={12}>
         <Grid container justify="space-between">
           <Grid item>
             <div className={`type ${type === 'nano' ? 'selected' : ''}`} onClick={() => changeType('nano')}>
@@ -202,11 +180,11 @@ function InfluencerList({
           </Grid>
         </Grid>
       </Grid>
-      <Grid item md={12}>
+      <Grid item xs={12}>
         <Grid container spacing={2}>
           {
-            influencers.map(item => (
-              <Grid key={item.INF_ID} item md={4}>
+            list.map(item => (
+              <Grid key={item.INF_ID} item xs={4}>
                 <Box p={2} className={`influencer-card ${selected[type].indexOf(item.INF_ID) !== -1 ? 'selected' : null} ${selected[type].indexOf(item.INF_ID) === -1 && selected[type].length == counter[type] ? 'disabled' : ''}`}>
                   <img src={item.imgUrl} alt="photo" />
                   <div>{item.name}</div>
@@ -222,9 +200,9 @@ function InfluencerList({
           }
         </Grid>
       </Grid>
-      <Grid item md={12}>
+      <Grid item xs={12}>
         <Grid container justify="center">
-          <Grid item md={3}>
+          <Grid item xs={3}>
             <Button fullWidth variant="contained" color="primary" onClick={sendRequest}>저장</Button>
           </Grid>
         </Grid>

@@ -10,6 +10,7 @@ const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
+const testData = require('../config/testData');
 
 
 const router = express.Router();
@@ -47,33 +48,6 @@ function getBlogType(blogType) {
 }
 
 function InstaRequest(data, cb) {
-  const testArray = [
-    {
-      id: 1,
-      followers_count: 1000
-    },
-    {
-      id: 2,
-      followers_count: 1566
-    },
-    {
-      id: 3,
-      followers_count: 102
-    },
-    {
-      id: 4,
-      followers_count: 1440
-    },
-    {
-      id: 5,
-      followers_count: 2040
-    },
-    {
-      id: 6,
-      followers_count: 36
-    }
-  ];
-
   function createUrl(INF_INST_ID, INF_TOKEN) {
     const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
         + 'fields='
@@ -87,7 +61,7 @@ function InstaRequest(data, cb) {
     return instaDataUrl;
   }
 
-  async.map(data, (item, callback) => {
+  /* async.map(data, (item, callback) => {
     const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
     request.get(url, (error, response, body) => {
       if (!error && response.statusCode == 200) {
@@ -113,7 +87,20 @@ function InstaRequest(data, cb) {
 
       cb(null, sortedArray);
     }
+  }); */
+
+
+  const sortedArray = testData.instaAccounts.sort((a, b) => {
+    if (parseInt(a.followers_count, 10) < parseInt(b.followers_count, 10)) {
+      return 1;
+    }
+    if (parseInt(a.followers_count, 10) > parseInt(b.followers_count, 10)) {
+      return -1;
+    }
+    return 0;
   });
+
+  cb(null, sortedArray);
 }
 
 function YoutubeRequest(data) {
