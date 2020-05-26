@@ -40,6 +40,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(6),
       allowNull: true
     },
+    AD_PRICE: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
     AD_PROD_PRICE: {
       type: DataTypes.STRING(10),
       allowNull: true

@@ -36,7 +36,7 @@ import categoryTwentyOne from '../../img/icons/twentyOne.png';
 
 import Arrow from '../../img/arrow.png';
 import Influencer from '../../img/influencer.png';
-import Advertiser from '../../img/advertiser.png';
+import Advertiser from '../../img/advert.png';
 import SlideImage1 from '../../img/slider/beauty.png';
 import SlideImage2 from '../../img/slider/fashion.png';
 import SlideImage3 from '../../img/slider/food.png';

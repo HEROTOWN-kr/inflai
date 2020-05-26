@@ -267,8 +267,8 @@ function CustomNavbar(props) {
                     </Link>
                   </Grid>
                 ))}
-                <Button variant="contained" color="secondary" onClick={testFunction}>test</Button>
-                <Button variant="contained" color="secondary" onClick={addChannel}>addChanell</Button>
+                {/*<Button variant="contained" color="secondary" onClick={testFunction}>test</Button>*/}
+                {/*<Button variant="contained" color="secondary" onClick={addChannel}>addChanell</Button>*/}
               </Grid>
             </Grid>
             <Grid item md={6}>

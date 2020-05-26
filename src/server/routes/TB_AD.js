@@ -16,6 +16,7 @@ router.post('/createAd', (req, res) => {
     ADV_ID: userId,
     AD_TYPE: data.type,
     AD_PROD_PRICE: data.price,
+    AD_PRICE: (data.nanoSum + data.microSum + data.macroSum + data.megaSum + data.celebritySum).toString()
   };
 
   if (data.reuse) post.AD_PROD_REUSE = 'Y';

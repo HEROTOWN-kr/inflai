@@ -497,7 +497,7 @@ $colorGrey: #dfe2e8;
     }
     .advertiser {
       img {
-        padding-top: 47px
+        //padding-top: 47px
       }
     }
   }
@@ -1243,17 +1243,19 @@ $colorGrey: #dfe2e8;
       }
     }
     .counter-result {
-      margin-top: 40px;
       text-align: right;
       .result-text {
         margin-right: 30px;
         font-size: 20px;
         line-height: 1.5;
       }
-      .inf-number {
+      .inf-number, .inf-sum {
         font-size: 32px;
         font-weight: 500;
         color: $colorRed;
+      }
+      .inf-sum {
+        font-size: 20px;
       }
     }
     .MuiInputBase-input {
@@ -1807,7 +1809,7 @@ $colorGrey: #dfe2e8;
       }
       .advertiser {
         img {
-          padding-top: 62px;
+          //padding-top: 62px;
         }
       }
     }
@@ -2136,7 +2138,7 @@ $colorGrey: #dfe2e8;
       }
       .advertiser {
         img {
-          padding-top: 62px;
+          //padding-top: 62px;
         }
       }
     }

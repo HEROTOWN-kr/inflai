@@ -14,13 +14,15 @@ import {
   FormHelperText,
   InputAdornment,
   TextField,
-  Button, Paper, Grid
+  Button, Paper, Grid, Box
 } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import WarningIcon from '@material-ui/icons/AssignmentTurnedInRounded';
 import WarningIconOut from '@material-ui/icons/AssignmentTurnedInOutlined';
 import * as Yup from 'yup';
+import axios from 'axios';
 import CheckWarning from './CheckWarning';
+import Common from '../../lib/common';
 
 
 function ProductRequest(props) {
@@ -41,30 +43,35 @@ function ProductRequest(props) {
       name: 'nano',
       level: '나노',
       count: '1,000~10,000',
+      oneCoast: 10000,
       aim: '포스팅을 많이 생성하여 해시태그 점유율을 높이고 싶을 때! 다수 진행 추천!'
     },
     {
       name: 'micro',
       level: '마이크로',
       count: '10,000~30,000',
+      oneCoast: 20000,
       aim: '영향력이 점점 커저가는 인플루언서! 소수팬으로 프로모션 효과 상승에 효과적!'
     },
     {
       name: 'macro',
       level: '메크로',
       count: '30,000~50,000',
+      oneCoast: 30000,
       aim: '영향력, 전달력 상승기의 인플루언서! 전환율 상승, 프로모션 효과 상승에 최적!'
     },
     {
       name: 'mega',
       level: '메가',
       count: '50,000~100,000',
+      oneCoast: 40000,
       aim: '신제품 컨셉 등 브랜드, 상품 인지도 상승을 위한 높은 전달력이 필요할 때 추천!'
     },
     {
       name: 'celebrity',
       level: '셀럽',
       count: '100,000+',
+      oneCoast: 50000,
       aim: '신제품 컨셉 등 브랜드, 상품 인지도 상승 필수 보장!'
     }
   ];
@@ -169,7 +176,38 @@ function ProductRequest(props) {
     return sum.toString();
   }
 
-  const Counter = ({ data, ...props }) => {
+  function calculatePay(type, typeSum, sum, someVal, callback) {
+    const result = parseInt(someVal, 10) * sum;
+    callback(result);
+
+    return result.toString();
+  }
+
+  function CounterComponent({
+    text,
+    number,
+    end
+  }) {
+    return (
+      <Grid item md={12}>
+        <Grid container justify="space-between" alignItems="center">
+          <Grid item>
+            <span className="result-text">{text}</span>
+          </Grid>
+          <Grid item>
+            <span className="inf-sum">
+              {number}
+              {end}
+            </span>
+          </Grid>
+        </Grid>
+      </Grid>
+    );
+  }
+
+  const Counter = ({
+    data, values, setFieldValue, ...props
+  }) => {
     const [field, meta, helpers] = useField(props);
 
     const counterText = () => (
@@ -186,7 +224,10 @@ function ProductRequest(props) {
       <TextField
         name={props.name}
         value={meta.value}
-        onChange={event => helpers.setValue(event.target.value)}
+        onChange={(event) => {
+          helpers.setValue(event.target.value);
+          setFieldValue(`${data.name}Sum`, parseInt(event.target.value, 10) * data.oneCoast);
+        }}
                 // onBlur={event => field.onBlur(event)}
         id="outlined-start-adornment"
         className="counter"
@@ -230,6 +271,12 @@ function ProductRequest(props) {
           macro: '',
           mega: '',
           celebrity: '',
+          nanoSum: 0,
+          microSum: 0,
+          macroSum: 0,
+          megaSum: 0,
+          celebritySum: 0,
+          servicePrice: 0,
           sumCount: '',
           price: '',
           reuse: false
@@ -238,7 +285,21 @@ function ProductRequest(props) {
         validationSchema={mySchema}
         onSubmit={(values) => {
           props.saveProductInfo(values);
-          props.history.push(`${props.match.path}/estimate`);
+          // props.history.push(`${props.match.path}/estimate`);
+
+          const apiObj = { ...values, token: Common.getUserInfo().token };
+
+          axios.post('/api/TB_AD/createAd', apiObj).then((res) => {
+            if (res.data.code === 200) {
+              // props.history.push(`${props.match.path}/write/${res.data.id}`);
+              props.history.push(`${props.match.path}/write/${res.data.id}`);
+              console.log(res);
+            } else if (res.data.code === 401) {
+              console.log(res);
+            } else {
+              console.log(res);
+            }
+          }).catch(error => (error));
         }}
       >
         {({
@@ -275,7 +336,7 @@ function ProductRequest(props) {
                         <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
                       </FormControl>
                     </Grid>
-                    {/*<Grid item md={12}>
+                    {/* <Grid item md={12}>
                       <Grid container spacing={3}>
                         <Grid item md={6}>
                           <Paper className="card-new">
@@ -293,7 +354,7 @@ function ProductRequest(props) {
                         </Grid>
                         <Grid item md={6}>card</Grid>
                       </Grid>
-                    </Grid>*/}
+                    </Grid> */}
                   </Grid>
                 </Grid>
               </Grid>
@@ -305,7 +366,7 @@ function ProductRequest(props) {
                   <div className="step">STEP 2</div>
                 </Grid>
                 <Grid item md={9}>
-                  <Grid container spacing={3}>
+                  <Grid container spacing={3} justify="flex-end">
                     <Grid item md={12}>
                       <div className="step-title">
                         <span>희망하는 인플루언서 등급별 인원 수를 설정하세요.</span>
@@ -314,11 +375,11 @@ function ProductRequest(props) {
                     </Grid>
                     {counter.map(i => (
                       <Grid key={i.level} item md={12}>
-                        <Counter data={i} name={i.name} />
+                        <Counter data={i} values={values} setFieldValue={setFieldValue} name={i.name} />
                       </Grid>
                     ))}
                     {errors.sumCount && touched.sumCount ? <Grid item md={12} className="error-message">{errors.sumCount}</Grid> : null}
-                    <Grid item md={12}>
+                    <Grid item md={6}>
                       <div className="counter-result">
                         <span className="result-text">총 모집인원</span>
                         <span className="inf-number">
@@ -326,6 +387,21 @@ function ProductRequest(props) {
                            명
                         </span>
                       </div>
+                      <Box pt={4}>
+                        <Grid container spacing={1} className="counter-result">
+                          {/* <CounterComponent text="총 모집인원" end="명" number={sumCount([values.nano, values.micro, values.macro, values.mega, values.celebrity])} /> */}
+                          { values.nanoSum ? <CounterComponent text="총 나노 금액" end="원" number={values.nanoSum} /> : null}
+                          { values.microSum ? <CounterComponent text="총 마이크로 금액" end="원" number={values.microSum} /> : null}
+                          { values.macroSum ? <CounterComponent text="총 메크로 금액" end="원" number={values.macroSum} /> : null}
+                          { values.megaSum ? <CounterComponent text="총 메가 금액" end="원" number={values.megaSum} /> : null}
+                          { values.celebritySum ? <CounterComponent text="총 셀럽 금액" end="원" number={values.celebritySum} /> : null}
+                          {/*<CounterComponent text="서비스 이용료" number="3000" end="원" />*/}
+                          <Grid item md={12}>
+                            <Divider />
+                          </Grid>
+                          <CounterComponent text="총 금액" end="원" number={`${values.nanoSum + values.microSum + values.macroSum + values.megaSum + values.celebritySum || 0}`} />
+                        </Grid>
+                      </Box>
                     </Grid>
                   </Grid>
                 </Grid>
