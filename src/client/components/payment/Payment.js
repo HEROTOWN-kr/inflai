@@ -14,7 +14,7 @@ function Payment({
     merchant_uid: item_data.AD_UID,
     // merchant_uid: `merchant_${new Date().getTime()}`,
     name: item_data.AD_PROD_NAME,
-    amount: item_data.AD_PROD_PRICE,
+    amount: item_data.AD_PRICE,
     currency: 'KRW',
     buyer_name: item_data.AD_COMP_NAME,
     buyer_tel: '01012341234',

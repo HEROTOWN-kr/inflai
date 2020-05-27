@@ -5,7 +5,7 @@ import {
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Influencer from '../../img/influencer.png';
-import Advertiser from '../../img/advertiser.png';
+import Advertiser from '../../img/advert2.png';
 
 function UserType({
   goTo,

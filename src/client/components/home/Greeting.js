@@ -1,16 +1,15 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import '../../css/sub.scss';
-import {Hidden} from '@material-ui/core';
+import { Hidden } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import TitleImage from '../../img/home-title.png';
-import IphoneImage from '../../img/iphone.png'
+import IphoneImage from '../../img/iphone.png';
 
 function Greeting({
 
 }) {
-
   const useStyles = makeStyles(theme => ({
     root: {
       [theme.breakpoints.down('xs')]: {
@@ -59,14 +58,14 @@ function Greeting({
         <Grid item xs={12} md={5} className="greeting-content">
           <div className="wraper">
             <Grid container>
-              <Grid container alignContent="flex-start" className="title">Show me your brand</Grid>
-              <Grid container className="main-title">인플루언서 마케팅</Grid>
+              <Grid container alignContent="flex-start" className="title">INFLAi</Grid>
+              <Grid container className="main-title">똑똑한 인플루언서 마케팅의 시작</Grid>
               <Grid container className="main-text">
-                        여러분의 상품과 서비스를 인플루언서를 통해 일려보세요.
+                보다 저렴하게 보다 직관적으로
                 <br />
-                        유튜버와 인스타그래머, 블로거들이 상세히 알려드릴
+                직접 소통을 통해 확실한 마케팅을
                 <br />
-                        준비를 하고 있습니다.
+                원하는 분들을 위한 서비스
               </Grid>
               <Grid container alignContent="flex-end">
                 <Grid container alignItems="center" justify="center" className="start-button">

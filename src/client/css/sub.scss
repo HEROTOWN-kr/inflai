@@ -35,12 +35,13 @@ $colorGrey: #dfe2e8;
   .menu-icon {
     color: $colorBg
   }
-  .link {
+  .link, .scroll-link {
     font-size: 17px;
     //font-weight: bold;
     color: $colorBg;
     text-decoration: none;
     &:hover {
+      cursor: pointer;
       color: $aqua;
     }
     &.contactUs {
@@ -139,6 +140,31 @@ $colorGrey: #dfe2e8;
     }
     .button-text {
       font-weight: bold;
+    }
+  }
+}
+
+.instagram-dialog {
+  .MuiTypography-h6 {
+    font-weight: 600;
+  }
+  .dialog-text {
+    font-size: 14px;
+  }
+  .facebook-button {
+    background: #1877F2;
+    color: #fefefe;
+    text-transform: none;
+    font-size: 21px;
+    &:hover {
+      background: #2E68F2;
+    }
+  }
+  .close-icon {
+    color: $colorGrey;
+    &:hover {
+      cursor: pointer;
+      color: $colorBlack;
     }
   }
 }
@@ -287,13 +313,13 @@ $colorGrey: #dfe2e8;
       .wraper {
         margin: 240px 0 240px 104px;
         .title {
-          font-size: 30px;
+          font-size: 80px;
           color: $aqua
         }
         .main-title {
-          padding-top: 15px;
+          padding-top: 5px;
           font-weight: bold;
-          font-size: 78px;
+          font-size: 42px;
           color: $aqua;
         }
         .main-text {
@@ -1667,11 +1693,11 @@ $colorGrey: #dfe2e8;
         .wraper {
           margin: 235px 0 164px 94px;
           .title {
-            font-size: 36px;
+            font-size: 76px;
           }
           .main-title {
-            padding-top: 20px;
-            font-size: 60px;
+            padding-top: 15px;
+            font-size: 45px;
           }
           .main-text {
             font-size: 16px;

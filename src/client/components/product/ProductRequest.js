@@ -35,7 +35,7 @@ function ProductRequest(props) {
         then: Yup.string().required('진행하실 인플루언서 수를 입력하세요.'),
       }),
     price: Yup.string()
-      .required('협찬품 가격을 입력하세요')
+      .required('상품 가격을 입력하세요')
   });
 
   const counter = [
@@ -105,7 +105,7 @@ function ProductRequest(props) {
       desc: '원하는 이미지나 영상 가이드를 그대로 업로드, 리그램 컨텐츠 제작',
       icon: ''
     },
-    {
+    /* {
       value: '5',
       name: '이벤트 바이럴',
       title: '이벤트 / 행사 홍보형',
@@ -118,7 +118,7 @@ function ProductRequest(props) {
       title: '컨설팅 / 디지털 마케팅',
       desc: '브릭씨 전문 마케터에게 대행 / 컨설팅 문의하기',
       icon: ''
-    },
+    }, */
   ];
 
 
@@ -176,11 +176,9 @@ function ProductRequest(props) {
     return sum.toString();
   }
 
-  function calculatePay(type, typeSum, sum, someVal, callback) {
-    const result = parseInt(someVal, 10) * sum;
-    callback(result);
-
-    return result.toString();
+  function videoCheck(event, setFieldValue) {
+    setFieldValue('videoCheck', event.target.checked);
+    setFieldValue('videoPrice', event.target.checked ? 50000 : 0);
   }
 
   function CounterComponent({
@@ -226,7 +224,7 @@ function ProductRequest(props) {
         value={meta.value}
         onChange={(event) => {
           helpers.setValue(event.target.value);
-          setFieldValue(`${data.name}Sum`, parseInt(event.target.value, 10) * data.oneCoast);
+          setFieldValue(`${data.name}Sum`, parseInt(event.target.value ? event.target.value : 0, 10) * data.oneCoast);
         }}
                 // onBlur={event => field.onBlur(event)}
         id="outlined-start-adornment"
@@ -277,8 +275,10 @@ function ProductRequest(props) {
           megaSum: 0,
           celebritySum: 0,
           servicePrice: 0,
+          videoPrice: 0,
           sumCount: '',
           price: '',
+          videoCheck: false,
           reuse: false
         }}
         enableReinitialize
@@ -366,6 +366,71 @@ function ProductRequest(props) {
                   <div className="step">STEP 2</div>
                 </Grid>
                 <Grid item md={9}>
+                  <Grid container spacing={3}>
+                    <Grid item md={12}>
+                      <div className="step-title">
+                        <span>상품 가격을 입력하세요</span>
+                      </div>
+                    </Grid>
+
+                    <Grid item md={12}>
+                      <TextField
+                        name="price"
+                        value={values.price}
+                        onChange={handleChange}
+                        id="outlined-start-adornment"
+                        /* helperText={errors.price && errors.price ? (
+                          <span className="error-message">{errors.price}</span>
+                        ) : null} */
+                        className="counter"
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start">인플루언서 1인당 제공되는 상품의 시장가</InputAdornment>,
+                          endAdornment: <InputAdornment position="end">원</InputAdornment>
+                        }}
+                        placeholder="0"
+                        variant="outlined"
+                      />
+                    </Grid>
+                    {errors.sumCount && touched.sumCount ? <Grid item md={12} className="error-message">{errors.sumCount}</Grid> : null}
+                  </Grid>
+                </Grid>
+              </Grid>
+            </div>
+            <Divider />
+            <div className="step-three wraper vertical2">
+              <Grid container>
+                <Grid item md={3}>
+                  <div className="step">STEP 3</div>
+                </Grid>
+                <Grid item md={9}>
+                  <Grid container spacing={3}>
+                    <Grid item md={12}>
+                      <div className="step-title">
+                        <span>제품영상촬영 서비스</span>
+                      </div>
+                    </Grid>
+                    <Grid item md={12} className="counter">
+                      <label className={`checkbox-label ${values.videoCheck === true ? 'red' : null}`} htmlFor="r1">
+                        <Grid container justify="space-between">
+                          <Grid item md={3}>
+                            <input type="checkbox" name="reuse" value={values.videoCheck} id="r1" onClick={event => videoCheck(event, setFieldValue)} />
+                            <CheckIcon />
+                            <span>제품영상촬영 필요</span>
+                          </Grid>
+                        </Grid>
+                      </label>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </div>
+            <Divider />
+            <div className="step-four wraper vertical2">
+              <Grid container>
+                <Grid item md={3}>
+                  <div className="step">STEP 4</div>
+                </Grid>
+                <Grid item md={9}>
                   <Grid container spacing={3} justify="flex-end">
                     <Grid item md={12}>
                       <div className="step-title">
@@ -384,7 +449,7 @@ function ProductRequest(props) {
                         <span className="result-text">총 모집인원</span>
                         <span className="inf-number">
                           {sumCount([values.nano, values.micro, values.macro, values.mega, values.celebrity])}
-                           명
+                          명
                         </span>
                       </div>
                       <Box pt={4}>
@@ -395,11 +460,12 @@ function ProductRequest(props) {
                           { values.macroSum ? <CounterComponent text="총 메크로 금액" end="원" number={values.macroSum} /> : null}
                           { values.megaSum ? <CounterComponent text="총 메가 금액" end="원" number={values.megaSum} /> : null}
                           { values.celebritySum ? <CounterComponent text="총 셀럽 금액" end="원" number={values.celebritySum} /> : null}
-                          {/*<CounterComponent text="서비스 이용료" number="3000" end="원" />*/}
+                          { values.videoPrice ? <CounterComponent text="제품영상촬영 금액" end="원" number={values.videoPrice} /> : null}
+                          {/* <CounterComponent text="서비스 이용료" number="3000" end="원" /> */}
                           <Grid item md={12}>
                             <Divider />
                           </Grid>
-                          <CounterComponent text="총 금액" end="원" number={`${values.nanoSum + values.microSum + values.macroSum + values.megaSum + values.celebritySum || 0}`} />
+                          <CounterComponent text="총 금액" end="원" number={`${values.nanoSum + values.microSum + values.macroSum + values.megaSum + values.celebritySum + values.videoPrice || 0}`} />
                         </Grid>
                       </Box>
                     </Grid>
@@ -408,43 +474,7 @@ function ProductRequest(props) {
               </Grid>
             </div>
             <Divider />
-            <div className="step-three wraper vertical2">
-              <Grid container>
-                <Grid item md={3}>
-                  <div className="step">STEP 3</div>
-                </Grid>
-                <Grid item md={9}>
-                  <Grid container spacing={3}>
-                    <Grid item md={12}>
-                      <div className="step-title">
-                        <span>협찬품 가격을 입력하세요</span>
-                      </div>
-                    </Grid>
-
-                    <Grid item md={12}>
-                      <TextField
-                        name="price"
-                        value={values.price}
-                        onChange={handleChange}
-                        id="outlined-start-adornment"
-                        helperText={errors.price && errors.price ? (
-                          <span className="error-message">{errors.price}</span>
-                        ) : null}
-                        className="counter"
-                        InputProps={{
-                          startAdornment: <InputAdornment position="start">인플루언서 1인당 제공되는 협찬품의 시장가</InputAdornment>,
-                          endAdornment: <InputAdornment position="end">원</InputAdornment>
-                        }}
-                        placeholder="0"
-                        variant="outlined"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </div>
-            <Divider />
-            <div className="step-four wraper vertical2">
+            {/* <div className="step-four wraper vertical2">
               <Grid container>
                 <Grid item md={3}>
                   <div className="step">STEP 4</div>
@@ -471,7 +501,7 @@ function ProductRequest(props) {
                   </Grid>
                 </Grid>
               </Grid>
-            </div>
+            </div> */}
             <div className="submit-button wraper vertical2">
               <Grid container justify="center">
                 <Grid item md={3}>

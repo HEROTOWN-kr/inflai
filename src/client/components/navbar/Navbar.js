@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import {
   Redirect, Link, withRouter, browserHistory
 } from 'react-router-dom';
+import * as Scroll from 'react-scroll';
 import axios from 'axios';
 import MenuIcon from '@material-ui/icons/Menu';
 import {
@@ -30,6 +31,9 @@ import SocialButton from '../login/SocialButton';
 import GoogleIcon from '../../img/google-logo2.png';
 import LogOutButton from '../login/LogOutButton';
 
+const ScrollLink = Scroll.Link;
+const ElementLink = Scroll.Element;
+const Scroller = Scroll.scroller;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -167,10 +171,6 @@ function CustomNavbar(props) {
 
   const menuLinks = [
     {
-      text: '인플라이소개',
-      link: '/'
-    },
-    {
       text: '성공사례',
       link: '/'
     },
@@ -219,6 +219,18 @@ function CustomNavbar(props) {
     });
   }
 
+  function scrollTo() {
+    props.history.push('/');
+    setTimeout(() => {
+      Scroller.scrollTo('target', {
+        duration: 800,
+        delay: 0,
+        smooth: 'easeInOutQuart',
+        ignoreCancelEvents: true
+      });
+    }, 1);
+  }
+
   function testFunction() {
     axios.get('/api/TB_INFLUENCER/rankYoutube', {
       params: {
@@ -257,6 +269,9 @@ function CustomNavbar(props) {
           <Hidden mdDown>
             <Grid item md={4}>
               <Grid container spacing={5}>
+                <Grid item>
+                  <a className="scroll-link" onClick={scrollTo}>인플라이소개</a>
+                </Grid>
                 {menuLinks.map(link => (
                   <Grid item key={link.text}>
                     <Link
@@ -267,8 +282,8 @@ function CustomNavbar(props) {
                     </Link>
                   </Grid>
                 ))}
-                {/*<Button variant="contained" color="secondary" onClick={testFunction}>test</Button>*/}
-                {/*<Button variant="contained" color="secondary" onClick={addChannel}>addChanell</Button>*/}
+                {/* <Button variant="contained" color="secondary" onClick={testFunction}>test</Button> */}
+                {/* <Button variant="contained" color="secondary" onClick={addChannel}>addChanell</Button> */}
               </Grid>
             </Grid>
             <Grid item md={6}>
@@ -289,7 +304,7 @@ function CustomNavbar(props) {
                                   className="link"
                                   to="/Product"
                                 >
-                                      켐페인 요청
+                                      마케팅 요청
                                 </Link>
                               </Grid>
                             )

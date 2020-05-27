@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { boxSizing, height, spacing } from '@material-ui/system';
+import * as Scroll from 'react-scroll';
 import '../../css/sub.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -49,6 +50,8 @@ import Greeting from './Greeting';
 import SimpleSlider from './SimpleSlider';
 
 // import NaverLogin from 'react-naver-login';
+
+const ElementLink = Scroll.Element;
 
 const $colorBg = '#fefefe'; const $colorBlue = '#093c5e'; const $aqua = '#23c9cf'; const
   $white = '#ffffff';
@@ -273,6 +276,7 @@ function Home(props) {
             </div>
           </Grid>
         </Grid>
+        <ElementLink name="target" />
       </div>
       <div className="wraper one">
         <Grid className="about" container alignItems="center">
@@ -416,17 +420,16 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
               </Grid>
               <Grid item xs={12}>
                 <div className="title">
-                  서비스 후 상호별점을 통한
-                  {' '}
+                  마케팅이 끝나고
                   <br />
-                  <span style={FontSettings.blue}>사후체크 효과</span>
+                  <span style={FontSettings.blue}>인플루언서 활동 만족도 체크</span>
                 </div>
               </Grid>
               <Grid item xs={12}>
                 <div className="main-text">
-                  광고주는 인플루언서의 마케팅효과에 대해 별점을 표시하게 되고 또한 인플루언서도
+                  별점만족도조사를 통하여 지속적인 사후체크
                   <br />
-                  광고주의 별점을 통해 서로 보완하여 지속적인 사후체크 및 효과상승을 유도합니다
+                  및 마케팅효과 상승을 유도합니다
                 </div>
               </Grid>
             </Grid>

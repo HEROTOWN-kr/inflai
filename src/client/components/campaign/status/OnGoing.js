@@ -70,7 +70,7 @@ function OnGoing(props) {
                   </Grid>
                   <Grid item md={12} className="product-name">{item.AD_PROD_NAME}</Grid>
                   <Grid item md={12} className="product-price">
-                    {item.AD_PROD_PRICE}
+                    {item.AD_PRICE}
                       원
                     <span>(VAT 별도)</span>
                   </Grid>

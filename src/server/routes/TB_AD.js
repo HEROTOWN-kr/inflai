@@ -16,7 +16,7 @@ router.post('/createAd', (req, res) => {
     ADV_ID: userId,
     AD_TYPE: data.type,
     AD_PROD_PRICE: data.price,
-    AD_PRICE: (data.nanoSum + data.microSum + data.macroSum + data.megaSum + data.celebritySum).toString()
+    AD_PRICE: (data.nanoSum + data.microSum + data.macroSum + data.megaSum + data.celebritySum + data.videoPrice).toString()
   };
 
   if (data.reuse) post.AD_PROD_REUSE = 'Y';
@@ -83,7 +83,7 @@ router.get('/', (req, res) => {
   Advertise.findAll({
     where: { ADV_ID: userId },
     order: [['AD_ID', 'DESC']],
-    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_PAID', 'AD_SRCH_END',
+    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PRICE', 'AD_PROD_PRICE', 'AD_PAID', 'AD_SRCH_END',
       [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
       // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
     ],
