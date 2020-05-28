@@ -178,7 +178,7 @@ function ProductRequest(props) {
 
   function videoCheck(event, setFieldValue) {
     setFieldValue('videoCheck', event.target.checked);
-    setFieldValue('videoPrice', event.target.checked ? 50000 : 0);
+    setFieldValue('videoPrice', event.target.checked ? 500000 : 0);
   }
 
   function CounterComponent({

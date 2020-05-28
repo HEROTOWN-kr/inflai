@@ -5,7 +5,7 @@ import * as Scroll from 'react-scroll';
 import '../../css/sub.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { Button, Hidden } from '@material-ui/core';
+import { Box, Button, Hidden } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Slider from 'react-slick';
 import axios from 'axios';
@@ -36,6 +36,7 @@ import categoryTwenty from '../../img/icons/twenty.png';
 import categoryTwentyOne from '../../img/icons/twentyOne.png';
 
 import Arrow from '../../img/arrow.png';
+import Laptop from '../../img/Laptop3.png';
 import Influencer from '../../img/influencer.png';
 import Advertiser from '../../img/advert.png';
 import SlideImage1 from '../../img/slider/beauty.png';
@@ -157,9 +158,52 @@ const FontSettings = {
 
 };
 
+const CategoryIcons = {
+  firstRow: [categoryOne, categoryTwo, categoryThree],
+  secondRow: [categoryFour, categoryFive, categorySix],
+  thirdRow: [categorySeven, categoryEight, categoryNine],
+};
+
+const InfluenserIcons = {
+  firstRow: [categoryTen, categoryEleven, categoryTwelve, categoryThirteen],
+  secondRow: [categoryFourteen, categoryFifteen, categorySixteen, categorySeventeen],
+  thirdRow: [categoryEighteen, categoryNineteen, categoryTwenty, categoryTwentyOne],
+};
+
+const Profits = {
+  leftCategory: [
+    {
+      name: '효율성',
+      desc: '한번에 광고하려는 브랜드에 맞게 인플루언서를 찾아 추천하고 관리합니다.'
+    },
+    {
+      name: '직접 소통',
+      desc: '대행사를 통하지 않고 직접 소통하여 빠른처리 및 정확한 지침을 알려줍니다.'
+    },
+    {
+      name: '저렴한 매칭비용',
+      desc: '우리는 저렴한 매칭비용으로 보다 효과적인 광고효율을 제공합니다.'
+    },
+  ],
+  rightCategory: [
+    {
+      name: '편한 관리',
+      desc: '쉬운 광고관리자 모드를 통해 여러분의 캠페인을 관리하세요.'
+    },
+    {
+      name: '이벤트',
+      desc: '광고주를 위한 풍부한 이벤트를 놓치지 마세요. 교육부터 마일리지 프로모션까지!'
+    },
+    {
+      name: '광고주맞춤형 서비스',
+      desc: '맞춤형패키지로 광고비를 절약하세요. 가장 효율적인 마케팅서비스.'
+    },
+  ],
+};
+
 function Home(props) {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // window.scrollTo(0, 0);
   }, []);
 
   const settings = {
@@ -276,449 +320,198 @@ function Home(props) {
             </div>
           </Grid>
         </Grid>
-        <ElementLink name="target" />
       </div>
-      <div className="wraper one">
-        <Grid className="about" container alignItems="center">
-          <Grid container xs={12} md={8} className="image">
-            <img src={AboutImage} />
-          </Grid>
-          <Grid container xs={12} md={4} className="text">
-            <Grid container alignContent="baseline" className="title">
-INFL
-              <span style={FontSettings.aqua}>Ai</span>
-?
-            </Grid>
-            <Hidden smDown>
-              <Grid container className="main-text">
-                아직도 팔로워나
-                <br />
-                좋아요 숫자에 연연하시나요?
-                <br />
-                구매전환율이 높은
-                <br />
-                인플루언서를 매칭해드립니다.
+      <ElementLink name="target" />
+      <Box py={32} className="about">
+        <Grid container justify="center">
+          <Grid item className="about-container">
+            <Grid container justify="space-between" alignItems="center">
+              <Grid item md={8} className="about-image">
+                <img src={AboutImage} />
               </Grid>
-            </Hidden>
-            <Hidden smUp>
-              <Grid container className="main-text">
-                아직도 팔로워나 좋아요 숫자에 연연하시나요? 구매전환율이 높은 인플루언서를 매칭해드립니다.
+              <Grid item md={3}>
+                <Grid container className="text" spacing={3}>
+                  <Grid item xs={12} className="title">
+                    INFL
+                    <span style={FontSettings.aqua}>Ai</span>
+                  </Grid>
+                  <Hidden smDown>
+                    <Grid item xs={12} className="main-text">
+                      아직도 팔로워나
+                      <br />
+                      좋아요 숫자에 연연하시나요?
+                      <br />
+                      구매전환율이 높은
+                      <br />
+                      인플루언서를 매칭해드립니다.
+                    </Grid>
+                  </Hidden>
+                  <Hidden smUp>
+                    <Grid item xs={12} className="main-text">
+                      아직도 팔로워나 좋아요 숫자에 연연하시나요? 구매전환율이 높은 인플루언서를 매칭해드립니다.
+                    </Grid>
+                  </Hidden>
+                  <Grid item xs={12} className="text-footer">
+                    AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
+                    <br />
+                    INFLAI 의 우수성을 증명해줍니다.
+                  </Grid>
+                </Grid>
               </Grid>
-            </Hidden>
-
-            <Grid container alignContent="flex-end" className="text-footer">
-AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
-              <br />
-              INFLAI 의 우수성을 증명해줍니다.
             </Grid>
           </Grid>
         </Grid>
-      </div>
-      <div className="profit" style={FontSettings.white}>
-        <div className="wraper two">
-          <Grid container style={{ height: 'inherit' }} alignItems="center">
-            <div className="content">
-              <Grid container justify="center">
-                <Grid container xs={12} md={3} justify="space-between">
-                  <Button variant="outlined" className="func-button" onClick={() => console.log(props)}>광고주</Button>
-                  <Button variant="outlined" className="func-button">인플루언서</Button>
-                </Grid>
-              </Grid>
-              <div className="title">
-데이터 기반 정보마케팅
-                <span style={FontSettings.white}>을 통한 ROI 상승</span>
-              </div>
-              <div className="main-text">
-                우리의 알고리즘은 당신의 제품을 가장 우수하고 가장 관련성이 높은 인플루언서와 매칭시켜,
-                <br />
-                결과적으로 최종 소비자에게 좋은 영향을 주게됩니다.
-                <br />
-                인플루언서들에게 우리는 그들의 팔로워들이 좋아할 서비스나 제품을 제공합니다.
-              </div>
-              <Grid container className="detail">
-                <Grid container xs={12} md={3} style={FontSettings.textRight}>
-                  <Grid container alignContent="flex-start">
-                    <div className="profit-name">
-                      효율성
-                      <img src={Dot} />
-                    </div>
-                    <div className="profit-desc">
-                      한번에 광고하려는 브랜드에 맞게
-                      인플루언서를 찾아 추천하고 관리합니다.
-                    </div>
-                  </Grid>
-                  <Grid container alignContent="center">
-                    <div className="profit-name">
-                      효율성
-                      <img src={Dot} />
-                    </div>
-                    <div className="profit-desc">
-                      한번에 광고하려는 브랜드에 맞게
-                      인플루언서를 찾아 추천하고 관리합니다.
-                    </div>
-                  </Grid>
-                  <Grid container alignContent="flex-end">
-                    <div className="profit-name">
-                      효율성
-                      <img src={Dot} />
-                    </div>
-                    <div className="profit-desc">
-                      한번에 광고하려는 브랜드에 맞게
-                      인플루언서를 찾아 추천하고 관리합니다.
-                    </div>
-                  </Grid>
-                </Grid>
-                <Grid container xs={12} md={6} className="laptop" justify="center" alignItems="flex-end">
-                  <Grid container xs={10} className="laptop-image" />
-                </Grid>
-                <Grid container xs={12} md={3} style={FontSettings.textLeft}>
-                  <Grid container alignContent="flex-start">
-                    <div className="profit-name">
-                      편한 관리
-                      <img src={Dot} className="left" />
-                    </div>
-                    <div className="profit-desc">
-                      쉬운 광고관리자 모드를 통해
-                      여러분의 캠페인을 관리하세요.
-                    </div>
-                  </Grid>
-                  <Grid container alignContent="center">
-                    <div className="profit-name">
-                      이벤트
-                      <img src={Dot} className="left" />
-                    </div>
-                    <div className="profit-desc">
-                      광고주를 위한 풍부한 이벤트를 놓치지 마세요.
-                      교육부터 마일리지 프로모션까지!
-                    </div>
-                  </Grid>
-                  <Grid container alignContent="flex-end">
-                    <div className="profit-name">
-                      광고주맞춤형 서비스
-                      <img src={Dot} className="left" />
-                    </div>
-                    <div className="profit-desc">
-                      맞춤형패키지로 광고비를 절약하세요.
-                      가장 효율적인 마케팅서비스.
-                    </div>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <Grid container alignContent="flex-end" justify="center">
-                <Button variant="outlined" className="func-button">Read More</Button>
-              </Grid>
-            </div>
-          </Grid>
-        </div>
-      </div>
-      <div className="rating">
+      </Box>
+      <Box py={28} className="profit">
         <Grid container justify="center">
-          <Grid item xs={8}>
-            <Grid container justify="center">
-              <Grid item>
-                <img src={RatingImage} />
-              </Grid>
+          <Grid item className="profit-container">
+            <Grid container spacing={6}>
               <Grid item xs={12}>
                 <div className="title">
-                  마케팅이 끝나고
-                  <br />
-                  <span style={FontSettings.blue}>인플루언서 활동 만족도 체크</span>
+                  데이터 기반 정보마케팅
+                  <span>을 통한 ROI 상승</span>
                 </div>
               </Grid>
               <Grid item xs={12}>
                 <div className="main-text">
-                  별점만족도조사를 통하여 지속적인 사후체크
+                  우리의 알고리즘은 당신의 제품을 가장 우수하고 가장 관련성이 높은 인플루언서와 매칭시켜,
                   <br />
-                  및 마케팅효과 상승을 유도합니다
+                  결과적으로 최종 소비자에게 좋은 영향을 주게됩니다.
+                  <br />
+                  인플루언서들에게 우리는 그들의 팔로워들이 좋아할 서비스나 제품을 제공합니다.
                 </div>
+              </Grid>
+              <Grid item xs={12} className="detail">
+                <Box py={6}>
+                  <Grid container justify="space-between">
+                    <Grid item xs={3}>
+                      <Grid container spacing={4} style={FontSettings.textRight}>
+                        {Profits.leftCategory.map(item => (
+                          <Grid key={item.name} item xs={12}>
+                            <div className="profit-name">
+                              {item.name}
+                              <img src={Dot} />
+                            </div>
+                            <div className="profit-desc">
+                              {item.desc}
+                            </div>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={5} className="laptop">
+                      <Grid container alignItems="center" style={{ height: '100%' }}>
+                        <img src={Laptop} alt="" />
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Grid container spacing={4}>
+                        {Profits.rightCategory.map(item => (
+                          <Grid key={item.name} item xs={12}>
+                            <div className="profit-name">
+                              {item.name}
+                              <img className="left" src={Dot} />
+                            </div>
+                            <div className="profit-desc">
+                              {item.desc}
+                            </div>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Grid container justify="center">
+                  <Grid item>
+                    <Button variant="outlined" className="func-button">Read More</Button>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
         </Grid>
-        {/* <div className="wraper four">
-          <Grid container justify="center" alignItems="center">
-             <Grid container justify="center">
+      </Box>
+      <Box py={30} className="rating">
+        <Grid container justify="center">
+          <Grid container spacing={3} item className="rating-container">
+            <Grid item xs={12}>
               <img src={RatingImage} />
             </Grid>
-            <div className="rating-image">
-              <img src={RatingImage} />
-            </div>
-            <div className="title">
-              서비스 후 상호별점을 통한
-              {' '}
-              <br />
-              <span style={FontSettings.blue}>사후체크 효과</span>
-            </div>
-            <div className="main-text">
-              광고주는 인플루언서의 마케팅효과에 대해 별점을 표시하게 되고 또한 인플루언서도
-              <br />
-              광고주의 별점을 통해 서로 보완하여 지속적인 사후체크 및 효과상승을 유도합니다
-            </div>
-          </Grid>
-        </div> */}
-      </div>
-      <hr align="center" width="90%" color="#454545" />
-      <div className="service">
-        <div className="main-text">INFLAi</div>
-        {/* <Grid container>
-          <Grid container xs={12} md={5} style={{ height: '102px' }}>
-            <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
-            <Grid container xs={12} md={10} lg={8} xl={6} justify="center" className="category-name">
-              <div>
-                <img src={Rectangle} />
-                  인플루언서로 최적의 효과를
+            <Grid item xs={12}>
+              <div className="title">
+                마케팅이 끝나고
                 <br />
-                  보는 카테고리
+                <span style={FontSettings.blue}>인플루언서 활동 만족도 체크</span>
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <div className="main-text">
+                별점만족도조사를 통하여 지속적인 사후체크 및 마케팅효과 상승을 유도합니다
               </div>
             </Grid>
           </Grid>
-          <Grid container md={2} />
-          <Grid container md={5} style={{ height: '102px' }}>
-            <Grid container xs={12} md={10} lg={8} xl={6} justify="center" className="category-name">
-              <div>
-                <img src={Rectangle} />
-                  우리 플랫폼의 인플루언서들
-              </div>
-            </Grid>
-            <Grid only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
-          </Grid>
-          <Grid container xs={12} md={5} style={{ height: '318px' }}>
-            <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
-            <Grid container xs={12} md={10} lg={8} xl={6}>
-              <Grid container justify="space-between">
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryOne})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryTwo})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryThree})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-              </Grid>
-              <Grid container alignContent="center" justify="space-between">
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryFour})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryFive})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categorySix})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-              </Grid>
-              <Grid container alignContent="flex-end" justify="space-between">
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categorySeven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryEight})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryNine})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-          <Grid md={2} />
-          <Grid container xs={12} md={5} style={{ height: '318px' }}>
-            <Grid container xs={12} md={10} lg={8} xl={6}>
-              <Grid container justify="space-between">
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryTen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryEleven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryTwelve})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryThirteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-              </Grid>
-              <Grid container alignContent="center" justify="space-between">
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryFourteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryFifteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categorySixteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categorySeventeen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-              </Grid>
-              <Grid container alignContent="flex-end" justify="space-between">
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryEighteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryNineteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryTwenty})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-                <div style={{
-                  height: '80px', width: '80px', backgroundImage: `url(${categoryTwentyOne})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                }}
-                />
-              </Grid>
-            </Grid>
-            <Grid container only={['md', 'lg', 'xl']} md={2} lg={4} xl={6} />
-          </Grid>
-        </Grid> */}
-        <div className="wraper five">
-          <Grid container justify="space-between">
-            <Grid item md={5} lg={4}>
-              <Grid container justify="center">
-                <Grid item lg={12}>
-                  <div className="category-name">
-                    <img src={Rectangle} />
-                    인플루언서로 최적의 효과를
-                    <br />
-                    보는 카테고리
-                  </div>
-                </Grid>
-                <Grid />
-                <Grid container xs={12} md={12} style={{ height: '318px' }}>
-                  <Grid container justify="space-between">
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryOne})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwo})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryThree})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
+        </Grid>
+      </Box>
+      <hr align="center" width="90%" color="#454545" />
+      <Box py={16} className="service">
+        <Grid container justify="center">
+          <Grid item className="service-container">
+            <div className="main-text">INFLAi</div>
+            <Grid container justify="space-between">
+              <Grid item sm={10} md={5}>
+                <Grid container spacing={4}>
+                  <Grid item xs={12}>
+                    <div className="category-name">
+                      <img src={Rectangle} />
+                      인플루언서로 최적의 효과를
+                      <br />
+                      보는 카테고리
+                    </div>
                   </Grid>
-                  <Grid container alignContent="center" justify="space-between">
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryFour})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryFive})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categorySix})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                  </Grid>
-                  <Grid container alignContent="flex-end" justify="space-between">
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categorySeven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryEight})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryNine})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                  </Grid>
+                  {
+                    Object.keys(CategoryIcons).map(Row => (
+                      <Grid key={Row} item xs={12}>
+                        <Grid container justify="space-between">
+                          {CategoryIcons[Row].map(i => (
+                            <Grid key={i} item className="category-image">
+                              <img src={i} alt="image" />
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Grid>
+                    ))
+                  }
                 </Grid>
               </Grid>
-            </Grid>
-            <Grid item md={5} lg={4}>
-              <Grid container justify="center">
-                <Grid item lg={12}>
-                  <div className="category-name left">
-                    <img src={Rectangle} />
-                    우리 플랫폼의 인플루언서들
-                  </div>
-                </Grid>
-                <Grid />
-                <Grid container xs={12} md={12} style={{ height: '318px' }}>
-                  <Grid container justify="space-between">
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryTen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryEleven})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwelve})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryThirteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
+              <Grid item sm={10} md={5}>
+                <Grid container spacing={4}>
+                  <Grid item xs={12}>
+                    <div className="category-name">
+                      <img src={Rectangle} />
+                      우리 플랫폼의 인플루언서들
+                    </div>
                   </Grid>
-                  <Grid container alignContent="center" justify="space-between">
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryFourteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryFifteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categorySixteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categorySeventeen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                  </Grid>
-                  <Grid container alignContent="flex-end" justify="space-between">
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryEighteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryNineteen})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwenty})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                    <div style={{
-                      height: '80px', width: '80px', backgroundImage: `url(${categoryTwentyOne})`, backgroundSize: 'contain', backgroundRepeat: 'no-repeat'
-                    }}
-                    />
-                  </Grid>
+                  {
+                    Object.keys(InfluenserIcons).map(Row => (
+                      <Grid key={Row} item xs={12}>
+                        <Grid container justify="space-between">
+                          {InfluenserIcons[Row].map(i => (
+                            <Grid key={i} item className="category-image">
+                              <img src={i} alt="image" style={{ height: '65px', width: '80px' }} />
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </Grid>
+                    ))
+                  }
                 </Grid>
               </Grid>
             </Grid>
           </Grid>
-        </div>
-      </div>
+        </Grid>
+      </Box>
       <div className="influencer-list">
         <div className="main-title">
           <Grid container justify="center">
@@ -726,43 +519,6 @@ AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
 INFLAi Influencers
           </Grid>
         </div>
-        {/* <Grid container justify="center">
-          <Grid item sm={2} lg={7}>
-            <div className="carousel-zone">
-              <Slider {...settings}>
-                {influencers.map(person => (
-                  <div>
-                    <div style={{ height: '142px' }} />
-                    <Paper className="paper">
-                      <div style={{ position: 'relative' }}>
-                        <div className="paper-content">
-                          <Grid container justify="center">
-                            <Grid container justify="center">
-                              <img src={person.url} className="avatar" />
-                            </Grid>
-                            <Grid container justify="center">
-                              <div className="social-name">{person.name}</div>
-                            </Grid>
-                            <Grid container justify="center">
-                              <div className="social-type">{person.type}</div>
-                            </Grid>
-                            <Grid container justify="center">
-                              <img src={person.socialImage} className="social-image" />
-                            </Grid>
-                            <Grid container justify="center">
-                              <div className="social-tags">{person.tags}</div>
-                            </Grid>
-                          </Grid>
-                        </div>
-                      </div>
-                    </Paper>
-                  </div>
-                ))}
-              </Slider>
-            </div>
-          </Grid>
-        </Grid> */}
-
         <div className="container">
           <SimpleSlider settings={settings} influencers={influencers} />
         </div>
