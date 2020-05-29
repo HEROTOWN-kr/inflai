@@ -362,7 +362,6 @@ router.post('/instaSignUp', (req, res) => {
           const userData = JSON.parse(response2.body);
 
           Influencer.findOne({ where: { INF_REG_ID: userData.id } }).then((result) => {
-            const blogType = result.dataValues.INF_BLOG_TYPE;
             if (!result) {
               post.INF_REG_ID = userData.id;
               post.INF_NAME = userData.name;
@@ -375,12 +374,13 @@ router.post('/instaSignUp', (req, res) => {
                   userToken: common.createToken(result2.dataValues.INF_ID),
                   userName: result2.dataValues.INF_NAME,
                   userPhone: result2.dataValues.INF_TEL,
-                  social_type: getBlogType(blogType)
+                  social_type: getBlogType(result2.dataValues.INF_BLOG_TYPE)
                 });
               });
             } else {
+              const blogType = result.dataValues.INF_BLOG_TYPE;
               Influencer.update(post, {
-                where: { INF_ID: userData.id }
+                where: { INF_REG_ID: userData.id }
               }).then((result3) => {
                 res.json({
                   code: 200,

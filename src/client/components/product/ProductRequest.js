@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Field, Form, Formik, FormikProps, getIn, FieldProps, ErrorMessage, useField
 } from 'formik';
@@ -26,6 +26,32 @@ import Common from '../../lib/common';
 
 
 function ProductRequest(props) {
+  const [prices, setPrices] = useState({
+    nano: '',
+    micro: '',
+    macro: '',
+    mega: '',
+    celebrity: '',
+  });
+
+  function getPrices() {
+    axios.get('/api/TB_PRICE/').then((res) => {
+      console.log(res.data.data);
+      const { data } = res.data;
+      setPrices({
+        nano: data[0].PRC_NANO,
+        micro: data[0].PRC_MICRO,
+        macro: data[0].PRC_MACRO,
+        mega: data[0].PRC_MEGA,
+        celebrity: data[0].PRC_CELEBRITY
+      });
+    });
+  }
+
+  useEffect(() => {
+    getPrices();
+  }, []);
+
   const mySchema = Yup.object().shape({
     type: Yup.string()
       .required('캠페인 유형을 선택해주세요'),
@@ -224,7 +250,7 @@ function ProductRequest(props) {
         value={meta.value}
         onChange={(event) => {
           helpers.setValue(event.target.value);
-          setFieldValue(`${data.name}Sum`, parseInt(event.target.value ? event.target.value : 0, 10) * data.oneCoast);
+          setFieldValue(`${data.name}Sum`, parseInt(event.target.value ? event.target.value : 0, 10) * prices[data.name]);
         }}
                 // onBlur={event => field.onBlur(event)}
         id="outlined-start-adornment"
