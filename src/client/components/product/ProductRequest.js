@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Field, Form, Formik, FormikProps, getIn, FieldProps, ErrorMessage, useField
 } from 'formik';
@@ -34,9 +34,16 @@ function ProductRequest(props) {
     celebrity: '',
   });
 
+  const nanoTouch = useRef(null);
+  const microTouch = useRef(null);
+  const macroTouch = useRef(null);
+  const megaTouch = useRef(null);
+  const celebrityTouch = useRef(null);
+
+
   function getPrices() {
     axios.get('/api/TB_PRICE/').then((res) => {
-      console.log(res.data.data);
+      // console.log(res.data.data);
       const { data } = res.data;
       setPrices({
         nano: data[0].PRC_NANO,
@@ -70,35 +77,40 @@ function ProductRequest(props) {
       level: '나노',
       count: '1,000~10,000',
       oneCoast: 10000,
-      aim: '포스팅을 많이 생성하여 해시태그 점유율을 높이고 싶을 때! 다수 진행 추천!'
+      aim: '포스팅을 많이 생성하여 해시태그 점유율을 높이고 싶을 때! 다수 진행 추천!',
+      ref: nanoTouch
     },
     {
       name: 'micro',
       level: '마이크로',
       count: '10,000~30,000',
       oneCoast: 20000,
-      aim: '영향력이 점점 커저가는 인플루언서! 소수팬으로 프로모션 효과 상승에 효과적!'
+      aim: '영향력이 점점 커저가는 인플루언서! 소수팬으로 프로모션 효과 상승에 효과적!',
+      ref: microTouch
     },
     {
       name: 'macro',
       level: '메크로',
       count: '30,000~50,000',
       oneCoast: 30000,
-      aim: '영향력, 전달력 상승기의 인플루언서! 전환율 상승, 프로모션 효과 상승에 최적!'
+      aim: '영향력, 전달력 상승기의 인플루언서! 전환율 상승, 프로모션 효과 상승에 최적!',
+      ref: macroTouch
     },
     {
       name: 'mega',
       level: '메가',
       count: '50,000~100,000',
       oneCoast: 40000,
-      aim: '신제품 컨셉 등 브랜드, 상품 인지도 상승을 위한 높은 전달력이 필요할 때 추천!'
+      aim: '신제품 컨셉 등 브랜드, 상품 인지도 상승을 위한 높은 전달력이 필요할 때 추천!',
+      ref: megaTouch
     },
     {
       name: 'celebrity',
       level: '셀럽',
       count: '100,000+',
       oneCoast: 50000,
-      aim: '신제품 컨셉 등 브랜드, 상품 인지도 상승 필수 보장!'
+      aim: '신제품 컨셉 등 브랜드, 상품 인지도 상승 필수 보장!',
+      ref: celebrityTouch
     }
   ];
 
@@ -202,6 +214,10 @@ function ProductRequest(props) {
     return sum.toString();
   }
 
+  function focusOnClick(typeToFocus) {
+    typeToFocus.current.focus();
+  }
+
   function videoCheck(event, setFieldValue) {
     setFieldValue('videoCheck', event.target.checked);
     setFieldValue('videoPrice', event.target.checked ? 500000 : 0);
@@ -235,7 +251,7 @@ function ProductRequest(props) {
     const [field, meta, helpers] = useField(props);
 
     const counterText = () => (
-      <span className="counter-textHolder">
+      <span className="counter-textHolder" onClick={() => focusOnClick(data.ref)}>
         <Grid container>
           <Grid item md={2}><span className="level">{data.level}</span></Grid>
           <Grid item md={3}><span className="count">{data.count}</span></Grid>
@@ -246,6 +262,7 @@ function ProductRequest(props) {
 
     return (
       <TextField
+        inputRef={data.ref}
         name={props.name}
         value={meta.value}
         onChange={(event) => {

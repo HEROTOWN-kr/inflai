@@ -35,8 +35,15 @@ function Payment({
       };
       axios.post('/api/TB_PAYMENT/', obj)
         .then((res) => {
+          getCampaign();
           if (res.data.code === 200) {
-            getCampaign();
+            axios.post('/api/TB_NOTIFICATION/sendNotification').then((res2) => {
+              if (res2.data.code === 200) {
+                console.log(res2);
+              } else if (res2.data.code === 401) {
+                console.log(res2);
+              }
+            });
           } else if (res.data.code === 401) {
             console.log(res);
           } else {

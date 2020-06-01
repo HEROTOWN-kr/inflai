@@ -14,7 +14,7 @@ function Footer() {
           <Grid item xs={3} className="footer-logo">
             <img src={Logo} />
           </Grid>
-          <Grid container item xs={9} spacing={4}>
+          <Grid container item xs={9} spacing={3}>
             <Grid item xs={12}>
               <div className="rules">
                 <Link
@@ -36,6 +36,7 @@ function Footer() {
               <div className="info">
                 <div>대표 : 김무성 | 주소 : 경기도 고양시 일산동구 백마로 195 엠시티 섹션동 4층 4003호</div>
                 <div>대표전화 : 1522-7947  | Mail : myfna@naver.com</div>
+                <div>사업자번호 : 695-81-00452</div>
               </div>
             </Grid>
             <Grid item xs={12}>

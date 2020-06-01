@@ -9,10 +9,6 @@ import ProductWrite from './write/ProductWrite';
 function ProductMix(props) {
   const [productInfo, setProductInfo] = useState({});
 
-  useEffect(() => {
-    console.log('render');
-  }, []);
-
   function saveProductInfo(data) {
     setProductInfo({ ...productInfo, ...data });
   }
