@@ -1,6 +1,5 @@
 const express = require('express');
 const Sequelize = require('sequelize');
-const nodemailer = require('nodemailer');
 const async = require('async');
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
@@ -65,23 +64,7 @@ router.post('/', (req, res) => {
   const data = req.body;
   const { list, adId } = data;
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.naver.com',
-    port: 465,
-    secure: true, // use SSL
-    // secure: false, // use SSL
-    auth: {
-      user: 'andriantsoy@naver.com',
-      pass: 'tshega93'
-    }
-  });
-
-  const mailOptions = {
-    to: '',
-    from: 'andriantsoy@naver.com',
-    subject: '인플라이 테스트 메세지',
-    text: '인플라이 테스트 메세지'
-  };
+  const { mailOptions, transporter } = common.mailSendData();
 
   async.map(Object.keys(list), (item, callback) => {
     async.map(list[item], (item2, callback2) => {
@@ -120,6 +103,80 @@ router.post('/', (req, res) => {
     }
     return res.json({ code: 200, message: '', data: results });
   });
+});
+
+router.post('/sendNotification', (req, res) => {
+  const data = req.body;
+  const {
+    AD_INF_NANO, AD_INF_MICRO, AD_INF_MACRO, AD_INF_MEGA, AD_INF_CELEB, AD_ID
+  } = data;
+
+  const { mailOptions, transporter } = common.mailSendData();
+
+  Influencer.findAll({
+    where: { INF_BLOG_TYPE: '1' },
+    attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
+  }).then((result) => {
+    if (result) {
+      common.instaRequest(result, (err, sortedArray) => {
+        if (err) {
+          res.json({
+            code: 401,
+            message: err
+          });
+        } else {
+          async.map(sortedArray, (item, callback) => {
+            const followers = item.followers_count;
+            const post = {
+              AD_ID,
+              INF_ID: item.INF_ID
+            };
+            function createNotification() {
+              Notification.create(post).then((result2) => {
+                if (result2) {
+                  Influencer.findOne({
+                    where: { INF_ID: item.INF_ID },
+                    attributes: ['INF_EMAIL']
+                  }).then((result3) => {
+                    if (result3) {
+                      const receiver = result3.dataValues.INF_EMAIL;
+                      mailOptions.to = receiver;
+                      transporter.sendMail(mailOptions, (err2) => {
+                        if (err2) {
+                          callback(null, 'error', err2);
+                        } else {
+                          callback(null, 'success');
+                        }
+                      });
+                    }
+                  });
+                }
+              });
+            }
+
+            if (followers && followers <= 10000 && AD_INF_NANO) {
+              createNotification();
+            } else if (followers && followers > 10000 && followers <= 30000 && AD_INF_MICRO) {
+              createNotification();
+            } else if (followers && followers > 30000 && followers <= 50000 && AD_INF_MACRO) {
+              createNotification();
+            } else if (followers && followers > 50000 && followers <= 100000 && AD_INF_MEGA) {
+              createNotification();
+            } else if (followers && followers > 100000 && followers <= 99999999 && AD_INF_CELEB) {
+              createNotification();
+            }
+          }, (err2, results2) => {
+            res.json({
+              code: 200,
+              data: results2
+            });
+          });
+        }
+      });
+    }
+    return res.json({ code: 401, message: '', data: '' });
+  });
+  // return res.json({ code: 401, message: '', data: '' });
 });
 
 module.exports = router;

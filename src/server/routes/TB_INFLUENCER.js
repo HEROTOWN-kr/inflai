@@ -9,6 +9,7 @@ const { google } = require('googleapis');
 const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
+const Notification = require('../models').TB_NOTIFICATION;
 const common = require('../config/common');
 const testData = require('../config/testData');
 
@@ -45,62 +46,6 @@ function getBlogType(blogType) {
     }
   }
   return social;
-}
-
-function InstaRequest(data, cb) {
-  function createUrl(INF_INST_ID, INF_TOKEN) {
-    const instaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}?`
-        + 'fields='
-        + 'followers_count%2C'
-        + 'follows_count%2C'
-        + 'media_count%2C'
-        + 'username%2C'
-        + 'profile_picture_url%2C'
-        + 'name&'
-        + `access_token=${INF_TOKEN}`;
-    return instaDataUrl;
-  }
-
-  /* async.map(data, (item, callback) => {
-    const url = createUrl(item.dataValues.INF_INST_ID, item.dataValues.INF_TOKEN);
-    request.get(url, (error, response, body) => {
-      if (!error && response.statusCode == 200) {
-        const parsedBody = JSON.parse(body);
-        callback(null, { ...parsedBody, INF_ID: item.dataValues.INF_ID });
-      } else {
-        callback(error || response.statusCode);
-      }
-    });
-  }, (err, results) => {
-    if (err) {
-      cb(err, null);
-    } else {
-      const sortedArray = results.sort((a, b) => {
-        if (a.followers_count < b.followers_count) {
-          return 1;
-        }
-        if (a.followers_count > b.followers_count) {
-          return -1;
-        }
-        return 0;
-      });
-
-      cb(null, sortedArray);
-    }
-  }); */
-
-
-  const sortedArray = testData.instaAccounts.sort((a, b) => {
-    if (parseInt(a.followers_count, 10) < parseInt(b.followers_count, 10)) {
-      return 1;
-    }
-    if (parseInt(a.followers_count, 10) > parseInt(b.followers_count, 10)) {
-      return -1;
-    }
-    return 0;
-  });
-
-  cb(null, sortedArray);
 }
 
 function YoutubeRequest(data) {
@@ -720,7 +665,38 @@ router.get('/rankInstagram', (req, res) => {
     where: { INF_BLOG_TYPE: type },
     attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
   }).then((result) => {
-    InstaRequest(result, (err, sortedArray) => {
+    common.instaRequest(result, (err, sortedArray) => {
+      if (err) {
+        res.json({
+          code: 401,
+          message: err
+        });
+      } else {
+        res.json({
+          code: 200,
+          data: sortedArray
+        });
+      }
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
+router.get('/getInstagramRequests', (req, res) => {
+  const { type, adId } = req.query;
+
+  Notification.findAll({
+    where: { NOTI_STATE: '1', AD_ID: adId },
+    attributes: ['NOTI_ID'],
+    include: [
+      {
+        model: Influencer,
+        attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
+      },
+    ],
+  }).then((result) => {
+    common.instaRequest(result, (err, sortedArray) => {
       if (err) {
         res.json({
           code: 401,

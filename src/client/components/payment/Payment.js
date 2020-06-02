@@ -16,12 +16,13 @@ function Payment({
     name: item_data.AD_PROD_NAME,
     amount: item_data.AD_PRICE,
     currency: 'KRW',
-    buyer_name: item_data.AD_COMP_NAME,
-    buyer_tel: '01012341234',
-    buyer_email: 'example@example.com',
+    buyer_name: item_data.TB_ADVERTISER.ADV_COM_NAME,
+    buyer_tel: item_data.TB_ADVERTISER.ADV_TEL,
+    buyer_email: item_data.TB_ADVERTISER.ADV_EMAIL,
     escrow: undefined,
     request_id: 'req_1585878201926',
-    tier_code: undefined
+    tier_code: undefined,
+    // data: item_data
   };
 
   function callback(response) {
@@ -37,7 +38,7 @@ function Payment({
         .then((res) => {
           getCampaign();
           if (res.data.code === 200) {
-            axios.post('/api/TB_NOTIFICATION/sendNotification').then((res2) => {
+            axios.post('/api/TB_NOTIFICATION/sendNotification', item_data).then((res2) => {
               if (res2.data.code === 200) {
                 console.log(res2);
               } else if (res2.data.code === 401) {
@@ -55,12 +56,21 @@ function Payment({
   }
 
   function paymentStart() {
+    console.log(data);
     const { IMP } = window;
     IMP.init(userCode);
-    console.log(data);
     IMP.request_pay(data, callback);
   }
 
+  function testButton() {
+    axios.post('/api/TB_NOTIFICATION/sendNotification', item_data).then((res2) => {
+      if (res2.data.code === 200) {
+        console.log(res2);
+      } else if (res2.data.code === 401) {
+        console.log(res2);
+      }
+    });
+  }
 
   return (
     <Button variant="contained" color="secondary" onClick={paymentStart}>결제</Button>

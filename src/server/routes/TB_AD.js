@@ -83,10 +83,16 @@ router.get('/', (req, res) => {
   Advertise.findAll({
     where: { ADV_ID: userId },
     order: [['AD_ID', 'DESC']],
-    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PRICE', 'AD_PROD_PRICE', 'AD_PAID', 'AD_SRCH_END',
+    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PRICE', 'AD_PROD_PRICE', 'AD_PAID', 'AD_SRCH_END', 'AD_UID', 'AD_INF_NANO', 'AD_INF_MICRO', 'AD_INF_MACRO', 'AD_INF_MEGA', 'AD_INF_CELEB',
       [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
       // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
     ],
+    include: [
+      {
+        model: Advertiser,
+        attributes: ['ADV_NAME', 'ADV_COM_NAME', 'ADV_EMAIL', 'ADV_TEL']
+      }
+    ]
   }).then((result) => {
     res.json({
       code: 200,

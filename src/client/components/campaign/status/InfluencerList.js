@@ -69,7 +69,7 @@ function InfluencerList({
 
   function loadList(influencerType) {
     const range = {
-      nano: { a: 100, b: 10000 },
+      nano: { a: 0, b: 10000 },
       micro: { a: 10000, b: 30000 },
       macro: { a: 30000, b: 50000 },
       mega: { a: 50000, b: 100000 },
@@ -84,9 +84,10 @@ function InfluencerList({
     const blogType = '1';
 
     if (blogType === '1') {
-      axios.get('/api/TB_INFLUENCER/rankInstagram', {
+      axios.get('/api/TB_INFLUENCER/getInstagramRequests', {
         params: {
-          type: blogType
+          type: blogType,
+          adId: match.params.id
         }
       }).then((res) => {
         console.log(res);
@@ -186,8 +187,11 @@ function InfluencerList({
             list.map(item => (
               <Grid key={item.INF_ID} item xs={4}>
                 <Box p={2} className={`influencer-card ${selected[type].indexOf(item.INF_ID) !== -1 ? 'selected' : null} ${selected[type].indexOf(item.INF_ID) === -1 && selected[type].length == counter[type] ? 'disabled' : ''}`}>
-                  <img src={item.imgUrl} alt="photo" />
-                  <div>{item.name}</div>
+                  <a href={`https://www.instagram.com/${item.username}/`} target="_blank">
+                    <img src={item.imgUrl} alt="photo" />
+                  </a>
+
+                  <div>{item.name || item.username}</div>
                   <div>{item.subscribers}</div>
                   <Button variant="contained" color="primary" onClick={() => selectInfluencer(type, item.INF_ID)}>
                     {
