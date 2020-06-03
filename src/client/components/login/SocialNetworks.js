@@ -85,7 +85,7 @@ function SocialNetworks({
   };
 
   const kakaoLoginForm = () => {
-    window.Kakao.Auth.loginForm({
+    /* window.Kakao.Auth.loginForm({
       success(authObj) {
         window.Kakao.API.request({
           url: '/v2/user/me',
@@ -117,6 +117,15 @@ function SocialNetworks({
       fail(err) {
         console.log(JSON.stringify(err));
       }
+    }); */
+    window.Kakao.Auth.login({
+      scope: 'friends',
+      success(response) {
+        console.log(response);
+      },
+      fail(error) {
+        console.log(error);
+      },
     });
   };
 

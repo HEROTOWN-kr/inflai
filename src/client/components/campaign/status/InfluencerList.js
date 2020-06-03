@@ -46,23 +46,26 @@ function InfluencerList({
     const array = [];
     const blogType = '1';
 
-    data.map(item => (
-      blogType === '1'
-        ? array.push({
-          id: item.id,
-          name: item.name,
-          username: item.username,
-          subscribers: item.followers_count,
-          imgUrl: item.profile_picture_url,
-          INF_ID: item.INF_ID
-        })
-        : array.push({
-          // id: item.id,
-          name: item.snippet.title,
-          // username: item.username,
-          subscribers: item.statistics.subscribersCount,
-        })
-    ));
+    data.map((item) => {
+      console.log(item);
+      return (
+        blogType === '1'
+          ? array.push({
+            id: item.id,
+            name: item.name,
+            username: item.username,
+            subscribers: item.followers_count,
+            imgUrl: item.profile_picture_url,
+            INF_ID: item.INF_ID
+          })
+          : array.push({
+            // id: item.id,
+            name: item.snippet.title,
+            // username: item.username,
+            subscribers: item.statistics.subscribersCount,
+          })
+      );
+    });
 
     setInfluencers(array);
   }

@@ -55,14 +55,15 @@ function instaRequest(data, cb) {
   }
 
   async.map(data, (item, callback) => {
-    const instagramId = item.dataValues.INF_INST_ID || item.dataValues.TB_INFLUENCER.INF_INST_ID;
-    const instagramToken = item.dataValues.INF_TOKEN || item.dataValues.TB_INFLUENCER.INF_TOKEN;
+    const instagramId = item.INF_INST_ID || item.TB_INFLUENCER.INF_INST_ID;
+    const instagramToken = item.INF_TOKEN || item.TB_INFLUENCER.INF_TOKEN;
+    const influencerId = item.INF_ID || item.TB_INFLUENCER.INF_ID;
 
     const url = createUrl(instagramId, instagramToken);
     request.get(url, (error, response, body) => {
       if (!error && response.statusCode == 200) {
         const parsedBody = JSON.parse(body);
-        callback(null, { ...parsedBody, INF_ID: item.dataValues.INF_ID });
+        callback(null, { ...parsedBody, INF_ID: influencerId });
       } else {
         callback(error || response.statusCode);
       }
