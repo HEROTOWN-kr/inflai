@@ -2,6 +2,8 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
+const Influencer = require('../models').TB_INFLUENCER;
+const Notification = require('../models').TB_NOTIFICATION;
 const Photo = require('../models').TB_PHOTO_AD;
 const common = require('../config/common');
 
@@ -147,11 +149,41 @@ router.get('/detail', (req, res) => {
   const data = req.query;
   const { id } = data;
 
-  Advertise.findOne({ where: { AD_ID: id } }).then((result) => {
-    res.json({
-      code: 200,
-      data: result.dataValues,
-    });
+  Advertise.findOne({
+    where: { AD_ID: id },
+    include: [
+      {
+        model: Notification,
+        required: false,
+        attributes: ['NOTI_ID'],
+        where: { NOTI_STATE: '4' },
+        include: [
+          {
+            model: Influencer,
+            attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
+          }
+        ]
+      }
+    ]
+  }).then((result) => {
+    if (result.TB_NOTIFICATIONs) {
+      const resObj = result;
+      const notis = resObj.TB_NOTIFICATIONs;
+      common.instaRequest(notis, (err, sortedArray) => {
+        resObj.dataValues.TB_INFLUENCER = sortedArray;
+        res.json({
+          code: 200,
+          // data: result.dataValues,
+          data: resObj,
+        });
+      });
+    } else {
+      res.json({
+        code: 200,
+        // data: result.dataValues,
+        data: result,
+      });
+    }
   }).error((err) => {
     res.send('error has occured');
   });

@@ -69,11 +69,16 @@ router.post('/', (req, res) => {
   async.map(Object.keys(list), (item, callback) => {
     async.map(list[item], (item2, callback2) => {
       const post = {
-        AD_ID: adId,
-        INF_ID: item2
+        NOTI_STATE: '4'
       };
 
-      Notification.create(post).then((result) => {
+      Notification.update(post, { where: { AD_ID: adId, INF_ID: item2 } }).then((result) => {
+        callback2(null, result);
+      }).error((err) => {
+        callback2(null, err);
+      });
+
+      /* Notification.create(post).then((result) => {
         if (result) {
           Influencer.findOne({
             where: { INF_ID: item2 },
@@ -93,7 +98,7 @@ router.post('/', (req, res) => {
             }
           });
         }
-      });
+      }); */
     }, (err2, results2) => {
       callback(null, results2);
     });

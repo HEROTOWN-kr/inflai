@@ -25,7 +25,30 @@ function getOauthClient() {
 }
 
 router.get('/test2', (req, res) => {
-  const token = 'eZeENz1BYf5OsfMiEaQJHza7Yo2ycTWLJsxUjAopcJ4AAAFyeFzWLw';
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MS0xMzY1NjY2MTAyNDk0LTA2MWE4ZDgyLTZhZmMtNGU5OS05YThkLTgyNmFmYzVlOTkzZQ=='
+    },
+    form: {
+
+    }
+    // gzip: true
+  };
+
+  request(options, (error, requestResponse, responseBody) => {
+    if (!error && requestResponse.statusCode == 200) {
+      console.log(requestResponse);
+    } else if (requestResponse != null) {
+      console.log(`error = ${requestResponse.statusCode}`);
+      console.log(`error = ${error}`);
+      console.log(options);
+    }
+  });
+
+  /* const token = 'eZeENz1BYf5OsfMiEaQJHza7Yo2ycTWLJsxUjAopcJ4AAAFyeFzWLw';
 
   const myUrl = 'https://kapi.kakao.com/v1/api/talk/friends?secure_resource=false&friend_order=nickname&order=asc';
 
@@ -34,7 +57,7 @@ router.get('/test2', (req, res) => {
     url: myUrl,
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
+      Accept: 'application/json',
     },
     // gzip: true
   };
@@ -48,7 +71,7 @@ router.get('/test2', (req, res) => {
       console.log(`error = ${error}`);
       console.log(options);
     }
-  });
+  }); */
 });
 
 router.get('/test', (req, res) => {
