@@ -58,12 +58,13 @@ function instaRequest(data, cb) {
     const instagramId = item.INF_INST_ID || item.TB_INFLUENCER.INF_INST_ID;
     const instagramToken = item.INF_TOKEN || item.TB_INFLUENCER.INF_TOKEN;
     const influencerId = item.INF_ID || item.TB_INFLUENCER.INF_ID;
+    const influencerState = item.NOTI_STATE || null;
 
     const url = createUrl(instagramId, instagramToken);
     request.get(url, (error, response, body) => {
       if (!error && response.statusCode == 200) {
         const parsedBody = JSON.parse(body);
-        callback(null, { ...parsedBody, INF_ID: influencerId });
+        callback(null, { ...parsedBody, INF_ID: influencerId, NOTI_STATE: influencerState });
       } else {
         callback(error || response.statusCode);
       }

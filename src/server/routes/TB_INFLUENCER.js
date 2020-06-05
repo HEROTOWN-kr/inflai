@@ -688,7 +688,7 @@ router.get('/getInstagramRequests', (req, res) => {
 
   Notification.findAll({
     where: { NOTI_STATE: ['1', '4'], AD_ID: adId },
-    attributes: ['NOTI_ID'],
+    attributes: ['NOTI_ID', 'NOTI_STATE'],
     include: [
       {
         model: Influencer,

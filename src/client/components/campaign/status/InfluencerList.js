@@ -83,6 +83,31 @@ function InfluencerList({
     setList(filtered);
   }
 
+  function filterSelected(influencerList) {
+    const range = {
+      nano: { a: 0, b: 10000 },
+      micro: { a: 10000, b: 30000 },
+      macro: { a: 30000, b: 50000 },
+      mega: { a: 50000, b: 100000 },
+      celebrity: { a: 100000, b: 99999999 },
+    };
+
+    const obj = {};
+
+    const asyncFunc = Object.keys(range).map((key) => {
+      const filtered = influencerList.filter(value => parseInt(value.followers_count, 10) >= range[key].a && parseInt(value.followers_count, 10) < range[key].b && value.NOTI_STATE === '4');
+      const array = [];
+      filtered.map(item => array.push(item.INF_ID));
+      obj[key] = array;
+      return 'ok';
+    });
+
+    Promise.all(asyncFunc).then((res) => {
+      // console.log(res);
+      setSelected({ ...obj });
+    });
+  }
+
   function getInfluencers() {
     const blogType = '1';
 
@@ -94,6 +119,7 @@ function InfluencerList({
         }
       }).then((res) => {
         console.log(res);
+        filterSelected((res.data.data));
         createInfluencers(res.data.data);
       });
     } else {
@@ -129,6 +155,23 @@ function InfluencerList({
     }
 
     setSelected({ ...selected, [influencerType]: newArray });
+  }
+
+  function selectInfluencer2(influencerType, id) {
+    const apiObj = {
+      INF_ID: id,
+      adId: match.params.id
+    };
+
+    axios.post('/api/TB_NOTIFICATION/changeState2', apiObj).then((res) => {
+      if (res.data.code === 200) {
+        getInfluencers();
+      } else if (res.data.code === 401) {
+        console.log(res);
+      } else {
+        console.log(res);
+      }
+    }).catch(error => (error));
   }
 
   function changeType(influencerType) {
@@ -196,7 +239,7 @@ function InfluencerList({
 
                   <div>{item.name || item.username}</div>
                   <div>{item.subscribers}</div>
-                  <Button variant="contained" color="primary" onClick={() => selectInfluencer(type, item.INF_ID)}>
+                  <Button variant="contained" color="primary" onClick={() => selectInfluencer2(type, item.INF_ID)}>
                     {
                       selected[type].indexOf(item.INF_ID) !== -1 ? '선택 해지' : '인플루언서 선택'
                     }
