@@ -62,9 +62,9 @@ router.post('/changeState', (req, res) => {
 
 router.post('/changeState2', (req, res) => {
   const data = req.body;
-  const { adId, INF_ID } = data;
+  const { adId, INF_ID, state } = data;
 
-  Notification.update({ NOTI_STATE: '4' }, {
+  Notification.update({ NOTI_STATE: state }, {
     where: { INF_ID, AD_ID: parseInt(adId, 10) }
   }).then((result) => {
     if (result) {

@@ -47,7 +47,7 @@ function InfluencerList({
     const blogType = '1';
 
     data.map((item) => {
-      console.log(item);
+      // console.log(item);
       return (
         blogType === '1'
           ? array.push({
@@ -160,8 +160,10 @@ function InfluencerList({
   function selectInfluencer2(influencerType, id) {
     const apiObj = {
       INF_ID: id,
-      adId: match.params.id
+      adId: match.params.id,
     };
+
+    apiObj.state = selected[type].indexOf(id) !== -1 ? '1' : '4';
 
     axios.post('/api/TB_NOTIFICATION/changeState2', apiObj).then((res) => {
       if (res.data.code === 200) {
