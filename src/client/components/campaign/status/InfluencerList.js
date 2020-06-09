@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Button, Grid } from '@material-ui/core';
+import {
+  Box, Button, CircularProgress, Grid
+} from '@material-ui/core';
 import Common from '../../../lib/common';
 
 function InfluencerList({
@@ -18,6 +20,7 @@ function InfluencerList({
   const [influencers, setInfluencers] = useState([]);
   const [list, setList] = useState([]);
   const [type, setType] = useState('nano');
+  const [inProcess, setInProcess] = useState(true);
 
   function getCampaign() {
     const { token } = Common.getUserInfo();
@@ -46,9 +49,9 @@ function InfluencerList({
     const array = [];
     const blogType = '1';
 
-    data.map((item) => {
+    data.map(item =>
       // console.log(item);
-      return (
+      (
         blogType === '1'
           ? array.push({
             id: item.id,
@@ -64,8 +67,7 @@ function InfluencerList({
             // username: item.username,
             subscribers: item.statistics.subscribersCount,
           })
-      );
-    });
+      ));
 
     setInfluencers(array);
   }
@@ -105,6 +107,7 @@ function InfluencerList({
     Promise.all(asyncFunc).then((res) => {
       // console.log(res);
       setSelected({ ...obj });
+      setInProcess(false);
     });
   }
 
@@ -230,35 +233,41 @@ function InfluencerList({
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Grid container spacing={2}>
-          {
-            list.map(item => (
-              <Grid key={item.INF_ID} item xs={4}>
-                <Box p={2} className={`influencer-card ${selected[type].indexOf(item.INF_ID) !== -1 ? 'selected' : null} ${selected[type].indexOf(item.INF_ID) === -1 && selected[type].length == counter[type] ? 'disabled' : ''}`}>
-                  <a href={`https://www.instagram.com/${item.username}/`} target="_blank">
-                    <img src={item.imgUrl} alt="photo" />
-                  </a>
+        {inProcess ? (
+          <Grid container justify="center">
+            <CircularProgress />
+          </Grid>
+        ) : (
+          <Grid container spacing={2}>
+            {
+                list.map(item => (
+                  <Grid key={item.INF_ID} item xs={4}>
+                    <Box p={2} className={`influencer-card ${selected[type].indexOf(item.INF_ID) !== -1 ? 'selected' : null} ${selected[type].indexOf(item.INF_ID) === -1 && selected[type].length == counter[type] ? 'disabled' : ''}`}>
+                      <a href={`https://www.instagram.com/${item.username}/`} target="_blank">
+                        <img src={item.imgUrl} alt="photo" />
+                      </a>
+                      <div>{item.name || item.username}</div>
+                      <div>{item.subscribers}</div>
+                      <Button variant="contained" color="primary" onClick={() => selectInfluencer2(type, item.INF_ID)}>
+                        {
+                            selected[type].indexOf(item.INF_ID) !== -1 ? '선택 해지' : '인플루언서 선택'
+                          }
+                      </Button>
+                    </Box>
+                  </Grid>
+                ))
+              }
+          </Grid>
+        )}
 
-                  <div>{item.name || item.username}</div>
-                  <div>{item.subscribers}</div>
-                  <Button variant="contained" color="primary" onClick={() => selectInfluencer2(type, item.INF_ID)}>
-                    {
-                      selected[type].indexOf(item.INF_ID) !== -1 ? '선택 해지' : '인플루언서 선택'
-                    }
-                  </Button>
-                </Box>
-              </Grid>
-            ))
-          }
-        </Grid>
       </Grid>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Grid container justify="center">
           <Grid item xs={3}>
             <Button fullWidth variant="contained" color="primary" onClick={sendRequest}>저장</Button>
           </Grid>
         </Grid>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

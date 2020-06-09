@@ -67,9 +67,7 @@ function InfoInstagram() {
                           <Grid item md={4} key={item.id}>
                             <img src={item.thumbnail_url ? item.thumbnail_url : item.media_url} alt="" />
                           </Grid>
-                        )) : null
-                                }
-
+                        )) : null}
                     </Grid>
                   </Grid>
                 </React.Fragment>

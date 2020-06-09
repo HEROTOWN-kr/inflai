@@ -182,6 +182,10 @@ function CustomNavbar(props) {
       text: '파트너',
       link: '/'
     },
+    {
+      text: '캠페인',
+      link: '/CampaignList'
+    },
   ];
 
   const toggleDrawer = open => (event) => {

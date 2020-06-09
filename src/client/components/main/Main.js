@@ -14,7 +14,8 @@ import Join from '../join/Join';
 import Info from '../info/Info';
 import Privacy from '../footer/Privacy';
 import Service from '../footer/Service';
-import Notification from "../notification/Notification";
+import Notification from '../notification/Notification';
+import CampaignAll from '../campaign/CampaignAll';
 
 
 function Main({
@@ -61,6 +62,10 @@ function Main({
       <Route
         path="/Policy/Privacy"
         render={props => <Privacy {...props} />}
+      />
+      <Route
+        path="/CampaignList"
+        render={props => <CampaignAll {...props} />}
       />
     </Switch>
   );
