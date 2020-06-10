@@ -145,6 +145,40 @@ router.get('/getAll', (req, res) => {
   });
 });
 
+router.get('/list', (req, res) => {
+  Advertise.findAll({
+    where: { AD_PAID: 'Y' },
+    order: [['AD_ID', 'DESC']],
+    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_TAGS', 'AD_ABOUT', 'AD_SRCH_END',
+      [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
+      // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
+    ],
+    include: [
+      {
+        model: Advertiser,
+        attributes: ['ADV_COM_NAME']
+      },
+      {
+        model: Photo,
+        attributes: ['PHO_ID', 'PHO_FILE']
+      },
+      {
+        model: Notification,
+        where: { NOTI_STATE: ['1', '4'] },
+        attributes: ['NOTI_ID'],
+        required: false,
+      },
+    ]
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/detail', (req, res) => {
   const data = req.query;
   const { id } = data;

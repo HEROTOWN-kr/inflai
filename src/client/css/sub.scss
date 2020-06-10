@@ -1701,34 +1701,44 @@ $colorGrey: #dfe2e8;
 .campaign-list {
   width: 1140px;
   padding: 100px 0;
-  img {
-    height: 255px;
-    width: 100%;
+  .campaign-item {
+    &:hover {
+      cursor: pointer;
+    }
+    img {
+      height: 255px;
+      width: 100%;
+    }
+    .tags {
+      color: #999;
+    }
+    .title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #313131;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      word-break: break-all;
+    }
+    .text {
+      font-size: 0.8em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      word-break: break-all;
+      color: #666;
+    }
+    .count {
+      color: #666;
+      font-size: 0.9em;
+    }
   }
-  .tags {
-    color: #999;
-  }
-  .title {
-    font-size: 1.1em;
-    font-weight: 600;
-    color: #313131;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    word-break: break-all;
-  }
-  .text {
-    font-size: 0.8em;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    word-break: break-all;
-    color: #666;
-  }
-  .count {
-    color: #666;
-    font-size: 0.9em;
-  }
+}
+
+.campaign-detail {
+  width: 1140px;
+  padding: 50px 0;
 }
 
 

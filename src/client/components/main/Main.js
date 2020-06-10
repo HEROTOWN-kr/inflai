@@ -15,7 +15,7 @@ import Info from '../info/Info';
 import Privacy from '../footer/Privacy';
 import Service from '../footer/Service';
 import Notification from '../notification/Notification';
-import CampaignAll from '../campaign/CampaignAll';
+import CampaignList from '../campaignList/CampaignList';
 
 
 function Main({
@@ -65,7 +65,7 @@ function Main({
       />
       <Route
         path="/CampaignList"
-        render={props => <CampaignAll {...props} />}
+        render={props => <CampaignList {...props} />}
       />
     </Switch>
   );

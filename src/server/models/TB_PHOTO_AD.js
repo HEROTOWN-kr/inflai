@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('TB_PHOTO_AD', {
+  const Photo = sequelize.define('TB_PHOTO_AD', {
     PHO_ID: {
       type: DataTypes.INTEGER(11),
       autoIncrement: true,
@@ -28,4 +28,10 @@ module.exports = function (sequelize, DataTypes) {
   }, {
     tableName: 'TB_PHOTO_AD'
   });
+
+  Photo.associate = function (models) {
+    Photo.belongsTo(models.TB_AD, { foreignKey: 'AD_ID', targetKey: 'AD_ID' });
+  };
+
+  return Photo;
 };
