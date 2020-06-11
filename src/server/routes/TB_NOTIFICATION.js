@@ -199,4 +199,29 @@ router.post('/sendNotification', (req, res) => {
   // return res.json({ code: 401, message: '', data: '' });
 });
 
+router.post('/createRequest', (req, res) => {
+  const data = req.body;
+  const {
+    AD_ID, token
+  } = data;
+  const userId = common.getIdFromToken(token).sub;
+  const post = {
+    AD_ID,
+    INF_ID: userId,
+    NOTI_STATE: '1'
+  };
+
+  Notification.create(post).then((result) => {
+    if (result) {
+      res.json({
+        code: 200
+      });
+    } else {
+      res.json({
+        code: 400
+      });
+    }
+  });
+});
+
 module.exports = router;

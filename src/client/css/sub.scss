@@ -1474,39 +1474,6 @@ $colorGrey: #dfe2e8;
     line-height: 1.43;
     text-align: center;
   }
-  /*.form {
-    padding: 50px;
-    border: 1px solid $colorGrey;
-    .MuiCheckbox-root {
-      padding: 4px;
-    }
-    .MuiOutlinedInput-input {
-      padding: 11px 14px;
-    }
-    .MuiFormControlLabel-label {
-      &.MuiTypography-body1 {
-        font-size: 14px;
-      }
-    }
-
-    .label-holder {
-      margin-bottom: 10px;
-      line-height: 1;
-      text-align: left;
-      label {
-        font-size: 15px;
-        line-height: 1.33;
-        color: #3f4653;
-      }
-    }
-    textarea {
-      //width: 100%;
-      //height: 80px;
-      padding: 23px 30px;
-      width: -webkit-fill-available;
-      resize: vertical;
-    }
-  }*/
   .submit-button {
     padding: 15px 0;
   }
@@ -1739,6 +1706,56 @@ $colorGrey: #dfe2e8;
 .campaign-detail {
   width: 1140px;
   padding: 50px 0;
+  .main-img {
+    img {
+      width: 100%;
+      height: 290px;
+    }
+  }
+  .img {
+    img {
+      width: 60px;
+      height: 60px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .product-info {
+    color: #999;
+    .channel {
+      font-size: 0.75em;
+      border: 1px solid #6292ff;
+      background-color: #6292ff;
+      color: #fff;
+      padding: 3px 5px;
+      margin: 0;
+    }
+    .category {
+      font-size: 0.75em;
+      color: #6292ff;
+      border: 1px solid #6292ff;
+      padding: 3px 5px;
+      margin-left: 4px;
+    }
+    .name {
+      color: #555;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+    .about {
+      font-size: 13px;
+    }
+    .spon-item {
+      font-size: 16px;
+      font-weight: 700;
+      color: #6292ff;
+    }
+    .date {
+      font-size: 15px;
+    }
+  }
 }
 
 
@@ -1966,86 +1983,6 @@ $colorGrey: #dfe2e8;
         border-left: 455px solid transparent;
       }
     }
-    /*.about {
-      .text {
-        min-height: 278px;
-        .title {
-          font-weight: bold;
-          font-size: 47px;
-          color: $colorBlue;
-        }
-        .main-text {
-          font-size: 30px;
-          color: #454545;
-        }
-        .text-footer {
-          font-size: 14px;
-          color: #454545;
-        }
-      }
-      .image {
-        img {
-          width: 88%;
-          height: 83%;
-        }
-      }
-    }*/
-    /*.profit {
-      height: 1030px;
-      .content {
-        height: 660px;
-        .title {
-          font-size: 38px;
-          margin: 30px 0;
-        }
-        .main-text {
-          font-size: 15px;
-          margin-bottom: 88px;
-        }
-        .detail {
-
-        }
-      }
-      .func-button {
-        padding-left: 35px;
-        padding-right: 35px;
-      }
-      !*.detail {
-        min-height: 290px;
-        margin-bottom: 85px;
-        img {
-          right: -5%;
-          top: 18%;
-          &.left {
-            right: 105%;
-          }
-        }
-        .profit-name {
-          font-size: 28px;
-        }
-        .profit-desc {
-          font-size: 16px;
-        }
-      }*!
-      .laptop {
-        .laptop-image {
-          height: 330px;
-        }
-      }
-    }*/
-    /*.rating {
-      margin: 300px 0;
-      img {
-        width: 75%;
-      }
-      .title {
-        font-size: 51px;
-        margin: 41px 0;
-      }
-      .main-text {
-        font-size: 14px;
-      }
-    }*/
     .influencer-list {
       margin: 190px 0;
       .main-title {

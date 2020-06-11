@@ -5,13 +5,11 @@ import CampaignDetail from './CampaignDetail';
 
 
 function СampaignList(props) {
-  console.log(props.match.path);
-
   return (
     <Switch>
       <Route
         path={`${props.match.path}/:id`}
-        render={renderProps => <CampaignDetail {...props} />}
+        render={renderProps => <CampaignDetail {...renderProps} />}
       />
       <Route
         path={`${props.match.path}/`}

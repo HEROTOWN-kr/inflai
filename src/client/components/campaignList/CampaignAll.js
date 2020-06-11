@@ -18,7 +18,7 @@ function CampaignAll({
 
   useEffect(() => {
     axios.get('/api/TB_AD/list').then((res) => {
-      console.log(res.data);
+      // console.log(res.data);
       const { data } = res.data;
       setCampaigns(data);
     });

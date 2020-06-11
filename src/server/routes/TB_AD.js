@@ -179,6 +179,48 @@ router.get('/list', (req, res) => {
   });
 });
 
+router.get('/campaignDetail', (req, res) => {
+  const data = req.query;
+  const { id, token } = data;
+  const includeArray = [
+    {
+      model: Photo,
+      attributes: ['PHO_ID', 'PHO_FILE'],
+      required: false,
+    }
+  ];
+  let userId;
+
+  if (token) {
+    userId = common.getIdFromToken(token).sub;
+    includeArray.push({
+      model: Notification,
+      where: { INF_ID: userId },
+      attributes: ['NOTI_ID'],
+      required: false
+    });
+  }
+
+  Advertise.findOne({
+    where: { AD_ID: id },
+    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_TAGS', 'AD_ABOUT', 'AD_SRCH_END', 'AD_CHANNEL', 'AD_SPON_ITEM', 'AD_CTG',
+      [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
+    ],
+    include: includeArray
+  }).then((result) => {
+    const resObj = result;
+    resObj.AD_CHANNEL = resObj.AD_CHANNEL ? JSON.parse(resObj.AD_CHANNEL).join('/') : '';
+    resObj.AD_CTG = resObj.AD_CTG ? JSON.parse(resObj.AD_CTG).join('/') : '';
+    res.json({
+      code: 200,
+      data: resObj,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/detail', (req, res) => {
   const data = req.query;
   const { id } = data;
