@@ -66,6 +66,23 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/userInfo', (req, res) => {
+  const { token, id } = req.query;
+  const userId = id || common.getIdFromToken(token).sub;
+
+  Influencer.findOne({
+    where: { INF_ID: userId },
+    attributes: ['INF_EMAIL', 'INF_TEL', 'INF_BLOG_TYPE', 'INF_REF_TOKEN', 'INF_TOKEN', 'INF_COUNTRY', 'INF_CITY']
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result.dataValues,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/getInstaAccounts', (req, res) => {
   const { id } = req.query;
 

@@ -82,7 +82,7 @@ $colorGrey: #dfe2e8;
 
 .user-popmenu {
   background: #f7f7f7;
-  border-radius: 16px;
+  border-radius: 10px;
   a {
     text-decoration: none;
     color: black;
@@ -92,7 +92,7 @@ $colorGrey: #dfe2e8;
       font-size: 14px;
       &:hover {
         cursor: pointer;
-        background: #9ecfca;
+        color: $colorBlue;
       }
     }
   }
@@ -1638,6 +1638,48 @@ $colorGrey: #dfe2e8;
   }
 }
 
+.profile-info {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 50px 0 250px;
+  box-sizing: border-box;
+  border: 1px solid #dfe2e8;
+  .form-container {
+    margin: 0 auto;
+    max-width: 500px;
+    .title {
+      margin-bottom: 50px;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.33;
+      text-align: center;
+      color: #3f4653;
+    }
+    .form-text {
+      font-size: 15px;
+      .label {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+      .info-text {
+        font-weight: 700;
+      }
+      .change-button {
+        width: 36px;
+        border-radius: 4px;
+        background: #444041;
+        font-size: 10px;
+        line-height: 20px;
+        text-align: center;
+        color: $colorBg;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
 .influencer-select {
   .influencer-card {
     transition: background-color 0.5s ease, color 0.5s ease;
@@ -1666,7 +1708,7 @@ $colorGrey: #dfe2e8;
 }
 
 .campaign-list {
-  width: 1140px;
+  max-width: 1140px;
   padding: 100px 0;
   .campaign-item {
     &:hover {
@@ -1704,7 +1746,7 @@ $colorGrey: #dfe2e8;
 }
 
 .campaign-detail {
-  width: 1140px;
+  max-width: 1140px;
   padding: 50px 0;
   .main-img {
     img {

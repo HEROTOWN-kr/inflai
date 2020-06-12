@@ -49,7 +49,7 @@ function Main({
       />
       <Route
         path="/Info"
-        render={props => <Info {...props} />}
+        render={props => <Info {...props} user={user} />}
       />
       <Route
         path="/Notifications"

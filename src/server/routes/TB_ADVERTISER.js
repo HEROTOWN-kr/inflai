@@ -261,6 +261,23 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/userInfo', (req, res) => {
+  const { token, id } = req.query;
+  const userId = id || common.getIdFromToken(token).sub;
+
+  Advertiser.findOne({
+    where: { ADV_ID: userId },
+    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_TYPE', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME']
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.get('/getAdvertisers', (req, res) => {
   Advertiser.findAll({
     attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME',
@@ -789,10 +806,6 @@ router.get('/delete', (req, res) => {
       });
     }
   });
-});
-
-router.post('/', (req, res) => {
-
 });
 
 module.exports = router;
