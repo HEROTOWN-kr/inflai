@@ -1,59 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import {
-  Box, Grid, CircularProgress, Button
-} from '@material-ui/core';
-import { GoogleLogout } from 'react-google-login';
-import { concatSeries } from 'async';
-import Common from '../../lib/common';
-import InfoInstagram from './InfoInstagram';
-import InfoYoutube from './InfoYoutube';
-import InfoAdvertiser from './InfoAdvertiser';
-import InfoInfluencer from './InfoInfluencer';
+import { Route, Switch } from 'react-router-dom';
+import Advertiser from '../advertiser/Advertiser';
+import InfoMain from './InfoMain';
+import InfoChange from './InfoChange';
+import Complete from '../campaign/status/Complete';
+import Combined from '../campaign/status/Combined';
 
 function Info({
-  user
+  user,
+  match
 }) {
-  const { socialType, token } = Common.getUserInfo();
-  const [userData, setUserData] = useState({});
-
-  useEffect(() => {
-    if (user.type === '1') {
-      axios.get('/api/TB_ADVERTISER/userInfo', {
-        params: { token }
-      }).then((res) => {
-        console.log(res);
-        const { data } = res.data;
-        setUserData(data);
-      });
-    } else {
-      axios.get('/api/TB_ADVERTISER/userInfo', {
-        params: { token }
-      }).then((res) => {
-        console.log(res);
-        const { data } = res.data;
-        setUserData(data);
-      });
-    }
-  }, []);
-
   return (
     <div className="profile-info">
-      <div className="form-container">
-        <div className="title">
-          계정정보
-        </div>
-        {
-          {
-            1: <InfoAdvertiser userData={userData} />,
-            2: <InfoInfluencer userData={userData} />
-          }[user.type]
-          /* {
-            facebook: <InfoInstagram />,
-            google: <InfoYoutube />
-          }[socialType] */
-        }
-      </div>
+      <Switch>
+        <Route
+          path={`${match.path}/edit`}
+          render={props => <InfoChange {...props} />}
+        />
+        <Route
+          path={`${match.path}/`}
+          render={props => <InfoMain {...props} user={user} />}
+        />
+      </Switch>
     </div>
   );
 }

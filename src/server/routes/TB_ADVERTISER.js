@@ -24,18 +24,129 @@ function getOauthClient() {
   return oauth2Client;
 }
 
-router.get('/test2', (req, res) => {
+router.get('/sendKakaoMessage', (req, res) => {
   const options = {
     method: 'POST',
     url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
     headers: {
-      'x-waple-authorization': 'MS0xMzY1NjY2MTAyNDk0LTA2MWE4ZDgyLTZhZmMtNGU5OS05YThkLTgyNmFmYzVlOTkzZQ=='
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
     },
     form: {
-
+      PHONE: '01053275745',
+      CALLBACK: '01026763937',
+      MSG: '안녕하세요. 인플라이입니다.\n'
+          + '새로운 캠페인이 등록되었습니다!\n\n'
+          + '*제품명: 미니선풍기\n'
+          + '*캠페인명: 선풍기 캠페인\n'
+          + '*혜택: 10만원 쿠폰\n'
+          + '*캠페인 신청 일자: 2020/06/18\n'
+          + '*블로거 신청 마감: 2020/06/16 \n\n'
+          + '**혜택이 있는 기회를 놓치지 마시고, 기한은 엄수해 주세요~^^\n'
+          + '**해당 메시지는 고객님께서 캠페인 공고 수신에 동의 해 주셔서 발송되었습니다.\n',
+      TEMPLATE_CODE: 'API2020',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '신청링크',
+      BTN_URLS1: 'https://www.inflai.com/CampaignList/37',
+      BTN_URLS2: 'https://www.inflai.com/CampaignList/37'
     }
     // gzip: true
+  };
+
+  request(options, (error, requestResponse, responseBody) => {
+    if (!error && requestResponse.statusCode == 200) {
+      res.json({
+        code: 200,
+        data: JSON.parse(responseBody)
+      });
+    } else if (requestResponse != null) {
+      res.json({
+        code: 400,
+        data: error
+      });
+      console.log(`error = ${requestResponse.statusCode}`);
+      console.log(`error = ${error}`);
+      console.log(options);
+    }
+  });
+});
+
+router.get('/templateCheck', (req, res) => {
+  const options = {
+    method: 'GET',
+    url: 'http://api.apistore.co.kr/kko/1/template/list/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    qs: {
+      TEMPLATE_CODE: 'API2020',
+      STATUS: '1'
+    },
+  };
+
+  request(options, (error, requestResponse, responseBody) => {
+    if (!error && requestResponse.statusCode == 200) {
+      res.json({
+        code: 200,
+        data: JSON.parse(responseBody)
+      });
+      console.log(requestResponse);
+    } else if (requestResponse != null) {
+      res.json({
+        code: 400,
+        data: error
+      });
+      console.log(`error = ${requestResponse.statusCode}`);
+      console.log(`error = ${error}`);
+      console.log(options);
+    }
+  });
+});
+
+router.get('/sendNumbersCheck', (req, res) => {
+  const options = {
+    method: 'GET',
+    url: 'http://api.apistore.co.kr/kko/1/sendnumber/list/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    }
+  };
+
+  request(options, (error, requestResponse, responseBody) => {
+    if (!error && requestResponse.statusCode == 200) {
+      res.json({
+        code: 200,
+        data: JSON.parse(responseBody)
+      });
+      console.log(requestResponse);
+    } else if (requestResponse != null) {
+      res.json({
+        code: 400,
+        data: error
+      });
+      console.log(`error = ${requestResponse.statusCode}`);
+      console.log(`error = ${error}`);
+      console.log(options);
+    }
+  });
+});
+
+router.get('/requestSenderNumber', (req, res) => {
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/2/sendnumber/save/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      sendnumber: '01026763937',
+      comment: '대가들이개발자번호',
+      pintype: 'SMS'
+    }
   };
 
   request(options, (error, requestResponse, responseBody) => {
@@ -47,21 +158,23 @@ router.get('/test2', (req, res) => {
       console.log(options);
     }
   });
+});
 
-  /* const token = 'eZeENz1BYf5OsfMiEaQJHza7Yo2ycTWLJsxUjAopcJ4AAAFyeFzWLw';
-
-  const myUrl = 'https://kapi.kakao.com/v1/api/talk/friends?secure_resource=false&friend_order=nickname&order=asc';
-
+router.get('/saveSenderNumber', (req, res) => {
   const options = {
-    method: 'GET',
-    url: myUrl,
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/2/sendnumber/save/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
     headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
     },
-    // gzip: true
+    form: {
+      sendnumber: '01026763937',
+      comment: '대가들이개발자번호',
+      pintype: 'SMS',
+      pincode: '315798'
+    }
   };
-
 
   request(options, (error, requestResponse, responseBody) => {
     if (!error && requestResponse.statusCode == 200) {
@@ -71,7 +184,7 @@ router.get('/test2', (req, res) => {
       console.log(`error = ${error}`);
       console.log(options);
     }
-  }); */
+  });
 });
 
 router.get('/test', (req, res) => {

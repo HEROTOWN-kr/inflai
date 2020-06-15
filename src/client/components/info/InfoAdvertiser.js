@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid } from '@material-ui/core';
+import axios from 'axios';
+import Common from '../../lib/common';
 
-function InfoAdvertiser({
-  userData
-}) {
+function InfoAdvertiser() {
+  const { token } = Common.getUserInfo();
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    axios.get('/api/TB_ADVERTISER/userInfo', {
+      params: { token }
+    }).then((res) => {
+      console.log(res);
+      const { data } = res.data;
+      setUserData(data);
+    });
+  }, []);
+
   return (
     <Grid container spacing={2} className="form-text">
       <Grid item xs={12}>

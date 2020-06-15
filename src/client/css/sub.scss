@@ -1675,6 +1675,10 @@ $colorGrey: #dfe2e8;
         &:hover {
           cursor: pointer;
         }
+        &.edit {
+          font-size: 12px;
+          line-height: 31px;
+        }
       }
     }
   }
