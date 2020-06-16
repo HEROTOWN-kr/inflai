@@ -50,7 +50,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     INF_MESSAGE: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER(1),
       allowNull: false,
       defaultValue: '0'
     },

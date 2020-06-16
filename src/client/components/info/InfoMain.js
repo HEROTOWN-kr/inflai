@@ -8,17 +8,23 @@ import Advertiser from '../advertiser/Advertiser';
 function InfoMain({
   user,
   history,
-  match
+  match,
+  changeEditCol
 }) {
-  function editProfile() {
-    history.push(`${match.path}edit`);
+  function editProfile(colName) {
+    changeEditCol(colName);
+    if (user.type == '1') {
+      history.push(`${match.path}editProfile`);
+    } else {
+      history.push(`${match.path}edit`);
+    }
   }
 
   return (
     <div className="form-container">
       {
                     {
-                      1: <InfoAdvertiser />,
+                      1: <InfoAdvertiser editProfile={editProfile} />,
                       2: <InfoInfluencer editProfile={editProfile} />
                     }[user.type]
                     /* {

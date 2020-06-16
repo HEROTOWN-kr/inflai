@@ -361,10 +361,20 @@ router.get('/Googletest1', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-  const { token, id } = req.query;
+  const { token, id, col } = req.query;
   const userId = id || common.getIdFromToken(token).sub;
+  const options = {
+    where: { ADV_ID: userId }
+  };
 
-  Advertiser.findOne({ where: { ADV_ID: userId } }).then((result) => {
+  if (col && col === 'name') options.attributes = ['ADV_NAME'];
+  if (col && col === 'companyName') options.attributes = ['ADV_COM_NAME'];
+  if (col && col === 'phone') options.attributes = ['ADV_TEL'];
+  if (col && col === 'registerNumber') options.attributes = ['ADV_REG_NUM'];
+  if (col && col === 'classification') options.attributes = ['ADV_CLASS'];
+  if (col && col === 'jobType') options.attributes = ['ADV_TYPE'];
+
+  Advertiser.findOne(options).then((result) => {
     res.json({
       code: 200,
       data: result.dataValues,
@@ -380,7 +390,10 @@ router.get('/userInfo', (req, res) => {
 
   Advertiser.findOne({
     where: { ADV_ID: userId },
-    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_TYPE', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME']
+    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS',
+      [Sequelize.literal('CASE ADV_TYPE WHEN \'1\' THEN \'일반\' WHEN \'2\' THEN \'에이전시\' ELSE \'소상공인\' END'), 'ADV_TYPE'],
+      [Sequelize.literal('CASE ADV_CLASS WHEN \'1\' THEN \'국내사업자\' ELSE \'해외사업자\' END'), 'ADV_CLASS'],
+    ]
   }).then((result) => {
     res.json({
       code: 200,
@@ -876,20 +889,21 @@ router.post('/signup', (req, res) => {
 
 router.post('/update', (req, res) => {
   const data = req.body;
-  const { id, token } = data;
+  const {
+    id, token, classification, registerNumber, jobType, name, phone, companyName, companyUrl, subscribeAim
+  } = data;
   const userId = id || common.getIdFromToken(data.token).sub;
 
-  const post = {
-    ADV_CLASS: data.classification,
-    ADV_REG_NUM: data.registerNumber,
-    ADV_TYPE: data.jobType,
-    ADV_NAME: data.name,
-    ADV_TEL: data.phone,
-    ADV_COM_NAME: data.companyName,
-    ADV_COM_URL: data.companyUrl,
-    ADV_SUB_AIM: data.subscribeAim,
-    ADV_FULL_REG: 'Y'
-  };
+  const post = {};
+
+  if (classification) post.ADV_CLASS = classification;
+  if (registerNumber) post.ADV_REG_NUM = registerNumber;
+  if (jobType) post.ADV_TYPE = jobType;
+  if (name) post.ADV_NAME = name;
+  if (phone) post.ADV_TEL = phone;
+  if (companyName) post.ADV_COM_NAME = companyName;
+  if (companyUrl) post.ADV_COM_URL = companyUrl;
+  if (subscribeAim) post.ADV_SUB_AIM = subscribeAim;
 
   Advertiser.update(post, {
     where: { ADV_ID: userId }

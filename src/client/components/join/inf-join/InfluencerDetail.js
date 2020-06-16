@@ -158,7 +158,8 @@ function InfluencerDetail({
                 country: 0,
                 region: '',
                 phone: '',
-                product: ''
+                product: '',
+                message: 0
               }}
               enableReinitialize
               validationSchema={SignupSchema}
@@ -261,6 +262,16 @@ function InfluencerDetail({
                                 </Grid>
                                 <Grid item md={12}>
                                   <MyTextField name="product" label="제품, 서비스" />
+                                </Grid>
+                                <Grid item xs={12}>
+                                  <Grid container spacing={2}>
+                                    <Grid item>
+                                      <input type="checkbox" checked={values.message} style={{ margin: '0' }} onChange={e => setFieldValue('message', e.target.checked ? 1 : 0)} />
+                                    </Grid>
+                                    <Grid item>
+                                              카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.
+                                    </Grid>
+                                  </Grid>
                                 </Grid>
                               </Grid>
                             </Form>

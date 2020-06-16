@@ -101,7 +101,48 @@ function instaRequest(data, cb) {
   cb(null, sortedArray); */
 }
 
+function createMessageOption(
+  phoneNumber,
+  productName,
+  campanyName,
+  bonus,
+  createdAt,
+  collectFinishDate,
+  adId
+) {
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01026763937',
+      MSG: '안녕하세요. 인플라이입니다.\n'
+          + '새로운 캠페인이 등록되었습니다!\n\n'
+          + `*제품명: ${productName}\n`
+          + `*캠페인명: ${campanyName}\n`
+          + `*혜택: ${bonus}\n`
+          + `*캠페인 신청 일자: ${createdAt}\n`
+          + `*블로거 신청 마감: ${collectFinishDate}\n\n`
+          + '**혜택이 있는 기회를 놓치지 마시고, 기한은 엄수해 주세요~^^\n'
+          + '**해당 메시지는 고객님께서 캠페인 공고 수신에 동의 해 주셔서 발송되었습니다.\n',
+      TEMPLATE_CODE: 'API2020',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '신청링크',
+      BTN_URLS1: `https://www.inflai.com/CampaignList/${adId}`,
+      BTN_URLS2: `https://www.inflai.com/CampaignList/${adId}`
+    }
+    // gzip: true
+  };
+  return options;
+}
+
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
 exports.instaRequest = instaRequest;
 exports.mailSendData = mailSendData;
+exports.createMessageOption = createMessageOption;

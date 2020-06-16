@@ -38,7 +38,14 @@ function Payment({
         .then((res) => {
           getCampaign();
           if (res.data.code === 200) {
-            axios.post('/api/TB_NOTIFICATION/sendNotification', item_data).then((res2) => {
+            /* axios.post('/api/TB_NOTIFICATION/sendNotification', item_data).then((res2) => {
+              if (res2.data.code === 200) {
+                console.log(res2);
+              } else if (res2.data.code === 401) {
+                console.log(res2);
+              }
+            }); */
+            axios.post('/api/TB_NOTIFICATION/sendKakaoNotification', item_data).then((res2) => {
               if (res2.data.code === 200) {
                 console.log(res2);
               } else if (res2.data.code === 401) {

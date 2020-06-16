@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { CircularProgress, Grid } from '@material-ui/core';
+import { Checkbox, CircularProgress, Grid } from '@material-ui/core';
 import Common from '../../lib/common';
 import NameArray from '../../lib/nameArray';
 
 function InfoInfluencer({
-  editProfile
+  editProfile,
 }) {
   const { token } = Common.getUserInfo();
   const [userData, setUserData] = useState({});
@@ -15,12 +15,27 @@ function InfoInfluencer({
     axios.get('/api/TB_INFLUENCER/userInfo', {
       params: { token }
     }).then((res) => {
-      console.log(res);
+      // console.log(res);
       const { data, instaInfo } = res.data;
       setUserData({ ...data, INF_BLOG_URL: instaInfo.username });
       setProcess(false);
     });
   }, []);
+
+  function updateData(checked) {
+    const apiObj = { token };
+    apiObj.message = checked ? 1 : 0;
+    setUserData({ ...userData, INF_MESSAGE: apiObj.message });
+    axios.post('/api/TB_INFLUENCER/updateInfo', apiObj).then((res) => {
+      if (res.data.code === 200) {
+
+      } else if (res.data.code === 401) {
+        alert(res.data);
+      } else {
+        alert(res.data);
+      }
+    }).catch(error => (error));
+  }
 
   return (
     <React.Fragment>
@@ -38,7 +53,6 @@ function InfoInfluencer({
               <div className="label">이메일 아이디</div>
               <Grid container justify="space-between" alignItems="center">
                 <Grid item className="info-text">{userData.INF_EMAIL}</Grid>
-                <Grid item className="change-button" onClick={() => editProfile()}>수정</Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
@@ -47,14 +61,14 @@ function InfoInfluencer({
                   <div className="label">이름</div>
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item className="info-text">{userData.INF_NAME}</Grid>
-                    <Grid item className="change-button" onClick={() => editProfile()}>수정</Grid>
+                    <Grid item className="change-button" onClick={() => editProfile('nickName')}>수정</Grid>
                   </Grid>
                 </Grid>
                 <Grid item xs={6}>
                   <div className="label">전화번호</div>
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item className="info-text">{userData.INF_TEL}</Grid>
-                    <Grid item className="change-button" onClick={() => editProfile()}>수정</Grid>
+                    <Grid item className="change-button" onClick={() => editProfile('phone')}>수정</Grid>
                   </Grid>
                 </Grid>
               </Grid>
@@ -65,32 +79,45 @@ function InfoInfluencer({
                   <div className="label">주소</div>
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item className="info-text">{`${NameArray.city()[userData.INF_CITY]} ${NameArray.area()[userData.INF_CITY][userData.INF_AREA]}`}</Grid>
-                    <Grid item className="change-button" onClick={() => editProfile()}>수정</Grid>
+                    <Grid item className="change-button" onClick={() => editProfile('country region')}>수정</Grid>
                   </Grid>
                 </Grid>
                 <Grid item xs={6}>
                   <div className="label">제품, 서비스</div>
                   <Grid container justify="space-between" alignItems="center">
                     <Grid item className="info-text">{userData.INF_PROD}</Grid>
-                    <Grid item className="change-button" onClick={() => editProfile()}>수정</Grid>
+                    <Grid item className="change-button" onClick={() => editProfile('product')}>수정</Grid>
                   </Grid>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
-              <Grid item xs={12}>
-                <Grid container spacing={5}>
-                  <Grid item xs={6}>
-                    <div className="label">블로그 플로필</div>
-                    <Grid container justify="space-between" alignItems="center">
-                      <Grid item className="info-text">
-                        {userData.INF_BLOG_URL}
-                      </Grid>
-                      <Grid item>
-                        <a href={`https://www.instagram.com/${userData.INF_BLOG_URL}/`} target="_blank">
-                          <div className="change-button">보기</div>
-                        </a>
-                      </Grid>
+              <Grid container spacing={5}>
+                <Grid item xs={6}>
+                  <div className="label">블로그 플로필</div>
+                  <Grid container justify="space-between" alignItems="center">
+                    <Grid item className="info-text">
+                      {userData.INF_BLOG_URL}
+                    </Grid>
+                    <Grid item>
+                      <a href={`https://www.instagram.com/${userData.INF_BLOG_URL}/`} target="_blank">
+                        <div className="change-button">보기</div>
+                      </a>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container spacing={5}>
+                <Grid item xs={12}>
+                  <div className="label">알림</div>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item>
+                      <input type="checkbox" checked={userData.INF_MESSAGE} style={{ margin: '0' }} onChange={e => updateData(e.target.checked)} />
+                    </Grid>
+                    <Grid item>
+                      카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.
                     </Grid>
                   </Grid>
                 </Grid>

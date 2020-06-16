@@ -107,7 +107,7 @@ class NameArray {
         tags: '#inflai #advertise',
         INF_ID: 48,
       },
-      /*{
+      /* {
         profile_picture_url: 'https://images.unsplash.com/photo-1549068106-b024baf5062d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80',
         username: 'Lucas',
         name: '박이솔',
@@ -183,9 +183,19 @@ class NameArray {
         name: '김민준',
         followers_count: '26542',
         INF_ID: 10,
-      },*/
+      }, */
     ];
     return testData;
+  }
+
+  static classification() {
+    const classification = [{ value: '1', text: '국내사업자' }, { value: '2', text: '해외사업자' }];
+    return classification;
+  }
+
+  static jobType() {
+    const jobType = [{ value: '1', text: '일반' }, { value: '2', text: '에이전시' }, { value: '3', text: '소상공인' }];
+    return jobType;
   }
 }
 

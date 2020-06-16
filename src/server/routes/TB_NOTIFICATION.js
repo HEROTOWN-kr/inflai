@@ -6,7 +6,7 @@ const Advertiser = require('../models').TB_ADVERTISER;
 const Notification = require('../models').TB_NOTIFICATION;
 const Influencer = require('../models').TB_INFLUENCER;
 const common = require('../config/common');
-
+const request = require('request');
 
 const router = express.Router();
 
@@ -151,6 +151,7 @@ router.post('/sendNotification', (req, res) => {
               AD_ID,
               INF_ID: item.INF_ID
             };
+
             function createNotification() {
               Notification.create(post).then((result2) => {
                 if (result2) {
@@ -197,6 +198,55 @@ router.post('/sendNotification', (req, res) => {
     return res.json({ code: 401, message: '', data: '' });
   });
   // return res.json({ code: 401, message: '', data: '' });
+});
+
+router.post('/sendKakaoNotification', (req, res) => {
+  const data = req.body;
+  const { AD_ID } = data;
+
+  Advertise.findOne({
+    where: { AD_ID },
+    attributes: ['AD_PROD_NAME', 'AD_COMP_NAME', 'AD_SPON_ITEM',
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_SRCH_END'), '%Y/%m/%d'), 'AD_SRCH_END'],
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y/%m/%d'), 'AD_DT'],
+    ]
+  }).then((adResult) => {
+    if (adResult) {
+      Influencer.findAll({
+        where: { INF_MESSAGE: '1' },
+        attributes: ['INF_TEL']
+      }).then((infResult) => {
+        if (infResult) {
+          async.map(infResult, (item, callback) => {
+            const options = common.createMessageOption(item.INF_TEL, adResult.AD_PROD_NAME, adResult.AD_COMP_NAME, adResult.AD_SPON_ITEM, adResult.AD_DT, adResult.AD_SRCH_END, AD_ID);
+            request(options, (error, requestResponse, responseBody) => {
+              if (!error && requestResponse.statusCode == 200) {
+                callback(null, 'ok');
+              } else if (requestResponse != null) {
+                callback(null, error);
+              }
+            });
+          }, (err, results) => {
+            if (err) {
+              return res.json({ code: 500, message: '에러가 발생하였습니다.', data: err });
+            }
+            return res.json({ code: 200, message: '', data: results });
+          });
+        } else {
+          res.json({
+            code: 400,
+            data: infResult,
+            adData: adResult
+          });
+        }
+      });
+    } else {
+      res.json({
+        code: 400,
+        data: 'error'
+      });
+    }
+  });
 });
 
 router.post('/createRequest', (req, res) => {

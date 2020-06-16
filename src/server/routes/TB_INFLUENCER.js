@@ -53,10 +53,20 @@ function YoutubeRequest(data) {
 }
 
 router.get('/', (req, res) => {
-  const { token, id } = req.query;
+  const { token, id, col } = req.query;
   const userId = id || common.getIdFromToken(token).sub;
+  const options = {
+    where: { INF_ID: userId }
+  };
 
-  Influencer.findOne({ where: { INF_ID: userId } }).then((result) => {
+  if (col && col === 'nickName') options.attributes = ['INF_NAME'];
+  if (col && col === 'phone') options.attributes = ['INF_TEL'];
+  if (col && col === 'country') options.attributes = ['INF_CITY'];
+  if (col && col === 'region') options.attributes = ['INF_AREA'];
+  if (col && col === 'product') options.attributes = ['INF_PROD'];
+  if (col && col === 'country region') options.attributes = ['INF_CITY', 'INF_AREA'];
+
+  Influencer.findOne(options).then((result) => {
     res.json({
       code: 200,
       data: result.dataValues,
@@ -72,7 +82,7 @@ router.get('/userInfo', (req, res) => {
 
   Influencer.findOne({
     where: { INF_ID: userId },
-    attributes: ['INF_EMAIL', 'INF_NAME', 'INF_TEL', 'INF_BLOG_TYPE', 'INF_TOKEN', 'INF_INST_ID', 'INF_COUNTRY', 'INF_CITY', 'INF_AREA', 'INF_PROD']
+    attributes: ['INF_EMAIL', 'INF_NAME', 'INF_TEL', 'INF_BLOG_TYPE', 'INF_TOKEN', 'INF_INST_ID', 'INF_COUNTRY', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_MESSAGE']
   }).then((result) => {
     const instaInfoUrl = `https://graph.facebook.com/v6.0/${result.INF_INST_ID}?fields=username&access_token=${result.INF_TOKEN}`;
     request.get(instaInfoUrl, (err3, response3, body3) => {
@@ -226,16 +236,18 @@ router.get('/getInstaInfo', (req, res) => {
 router.post('/updateInfo', (req, res) => {
   const data = req.body;
   const userId = common.getIdFromToken(data.token).sub;
-  const { channel } = data;
+  const {
+    channel, nickName, phone, country, region, product, message
+  } = data;
 
-  const post = {
-    INF_NAME: data.nickName,
-    INF_TEL: data.phone,
-    INF_CITY: data.country,
-    INF_AREA: data.region,
-    INF_PROD: data.product,
-  };
+  const post = {};
 
+  if (nickName) post.INF_NAME = nickName;
+  if (phone) post.INF_TEL = phone;
+  if (country) post.INF_CITY = country;
+  if (region) post.INF_AREA = region;
+  if (product) post.INF_PROD = product;
+  if (message === 0 || message === 1) post.INF_MESSAGE = message;
   if (channel) {
     post.INF_CHANNEL = JSON.stringify(channel);
   }
@@ -246,7 +258,10 @@ router.post('/updateInfo', (req, res) => {
     /* console.log(message.get({
           plain: true
         })); */
-    res.send(result);
+    res.json({
+      code: 200,
+      data: result
+    });
   });
 });
 
