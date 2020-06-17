@@ -119,7 +119,7 @@ function createMessageOption(
     },
     form: {
       PHONE: phoneNumber,
-      CALLBACK: '01026763937',
+      CALLBACK: '01023270875',
       MSG: '안녕하세요. 인플라이입니다.\n'
           + '새로운 캠페인이 등록되었습니다!\n\n'
           + `*제품명: ${productName}\n`

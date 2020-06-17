@@ -82,17 +82,24 @@ router.get('/userInfo', (req, res) => {
 
   Influencer.findOne({
     where: { INF_ID: userId },
-    attributes: ['INF_EMAIL', 'INF_NAME', 'INF_TEL', 'INF_BLOG_TYPE', 'INF_TOKEN', 'INF_INST_ID', 'INF_COUNTRY', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_MESSAGE']
+    attributes: ['INF_EMAIL', 'INF_NAME', 'INF_TEL', 'INF_BLOG_TYPE', 'INF_REF_TOKEN', 'INF_TOKEN', 'INF_INST_ID', 'INF_COUNTRY', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_MESSAGE']
   }).then((result) => {
-    const instaInfoUrl = `https://graph.facebook.com/v6.0/${result.INF_INST_ID}?fields=username&access_token=${result.INF_TOKEN}`;
-    request.get(instaInfoUrl, (err3, response3, body3) => {
-      const accountInfo = JSON.parse(body3);
+    if (result.INF_INST_ID) {
+      const instaInfoUrl = `https://graph.facebook.com/v6.0/${result.INF_INST_ID}?fields=username&access_token=${result.INF_TOKEN}`;
+      request.get(instaInfoUrl, (err3, response3, body3) => {
+        const accountInfo = JSON.parse(body3);
+        res.json({
+          code: 200,
+          data: result.dataValues,
+          instaInfo: accountInfo
+        });
+      });
+    } else {
       res.json({
         code: 200,
-        data: result.dataValues,
-        instaInfo: accountInfo
+        data: result,
       });
-    });
+    }
   }).error((err) => {
     res.send('error has occured');
   });

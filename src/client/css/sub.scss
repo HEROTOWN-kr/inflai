@@ -1615,6 +1615,7 @@ $colorGrey: #dfe2e8;
 }
 
 .info-insta {
+  min-height: 650px;
   font-size: 20px;
   .profile-image {
     img {
@@ -1622,7 +1623,7 @@ $colorGrey: #dfe2e8;
       width: 100%;
     }
   }
-  .profile-info {
+  .profile-info-social {
     .username {
       font-size: 28px;
     }

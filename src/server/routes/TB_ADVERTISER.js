@@ -143,16 +143,23 @@ router.get('/requestSenderNumber', (req, res) => {
       'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
     },
     form: {
-      sendnumber: '01026763937',
-      comment: '대가들이개발자번호',
+      sendnumber: '01023270875',
+      comment: '대가들이대표번호',
       pintype: 'SMS'
     }
   };
 
   request(options, (error, requestResponse, responseBody) => {
     if (!error && requestResponse.statusCode == 200) {
-      console.log(requestResponse);
+      res.json({
+        code: 200,
+        data: JSON.parse(responseBody)
+      });
     } else if (requestResponse != null) {
+      res.json({
+        code: 400,
+        data: error
+      });
       console.log(`error = ${requestResponse.statusCode}`);
       console.log(`error = ${error}`);
       console.log(options);
@@ -169,17 +176,25 @@ router.get('/saveSenderNumber', (req, res) => {
       'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
     },
     form: {
-      sendnumber: '01026763937',
-      comment: '대가들이개발자번호',
+      sendnumber: '01023270875',
+      comment: '대가들이대표번호',
       pintype: 'SMS',
-      pincode: '315798'
+      pincode: '648152'
     }
   };
 
   request(options, (error, requestResponse, responseBody) => {
     if (!error && requestResponse.statusCode == 200) {
+      res.json({
+        code: 200,
+        data: JSON.parse(responseBody)
+      });
       console.log(requestResponse);
     } else if (requestResponse != null) {
+      res.json({
+        code: 400,
+        data: error
+      });
       console.log(`error = ${requestResponse.statusCode}`);
       console.log(`error = ${error}`);
       console.log(options);

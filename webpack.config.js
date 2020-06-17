@@ -20,14 +20,14 @@ module.exports = {
         loader: 'babel-loader'
       }
     },
-      {
-        test: /\.(css|s[ac]ss)$/i,
-        use: ['style-loader', 'css-loader', 'sass-loader']
-      },
-      {
-        test: /\.(png|jpg|gif|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
-      }
+    {
+      test: /\.(css|s[ac]ss)$/i,
+      use: ['style-loader', 'css-loader', 'sass-loader']
+    },
+    {
+      test: /\.(png|jpg|gif|woff|woff2|eot|ttf|svg)$/,
+      loader: 'url-loader?limit=100000'
+    }
     ]
   },
   resolve: {
@@ -39,9 +39,9 @@ module.exports = {
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        pathRewrite: {'^/api' : ''},
-        secure:false,
-        changeOrigin:true
+        pathRewrite: { '^/api': '' },
+        secure: false,
+        changeOrigin: true
       }
     },
     historyApiFallback: true

@@ -27,12 +27,12 @@ function InfoYoutube() {
                 ? (
                   <React.Fragment>
                     <Grid item md={8}>
-                      <Box py={4}>
+                      <Box pt={8} className="social">
                         <Grid container spacing={4}>
                           <Grid item md={4} className="profile-image">
                             <img src={info.snippet.thumbnails.high.url} alt="avatar" />
                           </Grid>
-                          <Grid item md={8} className="profile-info">
+                          <Grid item md={8} className="profile-info-social">
                             <Grid container spacing={2}>
                               <Grid item md={12} className="username">{info.snippet.title}</Grid>
                               <Grid item md={12}>

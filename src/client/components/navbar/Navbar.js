@@ -106,8 +106,8 @@ function CustomNavbar(props) {
       link: '/Notifications'
     },
     {
-      text: '다름',
-      link: '/'
+      text: '소셜계정',
+      link: '/Social'
     },
   ];
 

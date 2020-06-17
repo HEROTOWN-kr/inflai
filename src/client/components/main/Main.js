@@ -16,6 +16,7 @@ import Privacy from '../footer/Privacy';
 import Service from '../footer/Service';
 import Notification from '../notification/Notification';
 import CampaignList from '../campaignList/CampaignList';
+import InfoYoutube from '../info/InfoYoutube';
 
 
 function Main({
@@ -50,6 +51,10 @@ function Main({
       <Route
         path="/Info"
         render={props => <Info {...props} user={user} />}
+      />
+      <Route
+        path="/Social"
+        render={props => <InfoYoutube {...props} user={user} />}
       />
       <Route
         path="/Notifications"

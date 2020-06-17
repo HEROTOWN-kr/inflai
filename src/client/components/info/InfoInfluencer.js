@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Checkbox, CircularProgress, Grid } from '@material-ui/core';
 import Common from '../../lib/common';
 import NameArray from '../../lib/nameArray';
+import InfoYoutube from './InfoYoutube';
 
 function InfoInfluencer({
   editProfile,
@@ -17,7 +18,11 @@ function InfoInfluencer({
     }).then((res) => {
       // console.log(res);
       const { data, instaInfo } = res.data;
-      setUserData({ ...data, INF_BLOG_URL: instaInfo.username });
+      if (instaInfo) {
+        setUserData({ ...data, INF_BLOG_URL: instaInfo.username });
+      } else {
+        setUserData({ ...data });
+      }
       setProcess(false);
     });
   }, []);
@@ -91,23 +96,29 @@ function InfoInfluencer({
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Grid container spacing={5}>
-                <Grid item xs={6}>
-                  <div className="label">블로그 플로필</div>
-                  <Grid container justify="space-between" alignItems="center">
-                    <Grid item className="info-text">
-                      {userData.INF_BLOG_URL}
-                    </Grid>
-                    <Grid item>
-                      <a href={`https://www.instagram.com/${userData.INF_BLOG_URL}/`} target="_blank">
-                        <div className="change-button">보기</div>
-                      </a>
+            {
+              userData.INF_BLOG_URL ? (
+                <Grid item xs={12}>
+                  <Grid container spacing={5}>
+                    <Grid item xs={6}>
+                      <div className="label">블로그 플로필</div>
+                      <Grid container justify="space-between" alignItems="center">
+                        <Grid item className="info-text">
+                          {userData.INF_BLOG_URL}
+                        </Grid>
+                        <Grid item>
+                          <a href={`https://www.instagram.com/${userData.INF_BLOG_URL}/`} target="_blank">
+                            <div className="change-button">보기</div>
+                          </a>
+                        </Grid>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-            </Grid>
+              ) : (
+                null
+              )
+            }
             <Grid item xs={12}>
               <Grid container spacing={5}>
                 <Grid item xs={12}>
