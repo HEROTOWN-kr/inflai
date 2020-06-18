@@ -54,6 +54,19 @@ function Greeting({
 
   return (
     <div>
+      {/* <div className="main-part">
+        <Grid container className="background-part">
+          <Grid item md={9} className="triangle-part" />
+          <Grid item md={3} />
+        </Grid>
+        <div className="text-part">
+          <Grid container className="text-container">
+            <div>
+              text
+            </div>
+          </Grid>
+        </div>
+      </div> */}
       <Grid container className="greeting">
         <Grid item xs={12} md={5} className="greeting-content">
           <div className="wraper">

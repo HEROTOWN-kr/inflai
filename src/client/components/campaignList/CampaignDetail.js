@@ -68,7 +68,7 @@ function CampaignDetail({
         {Object.keys(productData).length
           ? (
             <Grid container spacing={3}>
-              <Grid item xs={5}>
+              <Grid item sm={12} md={5}>
                 <Grid container>
                   <Grid item xs={12} className="main-img">
                     <img src={currentImage ? `https://www.inflai.com${currentImage}` : testImage} alt="nofoto" />
@@ -84,7 +84,7 @@ function CampaignDetail({
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={4} className="product-info">
+              <Grid item sm={12} md={4} className="product-info">
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Grid container spacing={1}>
@@ -155,7 +155,7 @@ function CampaignDetail({
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item xs={3}>
+              <Grid item sm={12} md={3}>
                 content
               </Grid>
             </Grid>

@@ -48,8 +48,17 @@ function App(props) {
   }
 
   return (
-    <div>
-      <CustomNavBar user={user} changeUser={changeUser} />
+    <div className="app-block">
+      <div className="app-header">
+        <CustomNavBar user={user} changeUser={changeUser} />
+      </div>
+      <div className="app-body">
+        <Main user={user} changeUser={changeUser} />
+      </div>
+      <div className="app-footer">
+        <Footer />
+      </div>
+      {/*<CustomNavBar user={user} changeUser={changeUser} />*/}
       {/* <NaverLogin
         clientId="4rBF5bJ4y2jKn0gHoSCf"
         callbackUrl="http://127.0.0.1:3000/login"
@@ -59,8 +68,8 @@ function App(props) {
         // onSuccess={result => console.log(result)}
         onFailure={result => responseNaver(result)}
       /> */}
-      <Main user={user} changeUser={changeUser} />
-      <Footer />
+      {/*<Main user={user} changeUser={changeUser} />*/}
+      {/*<Footer />*/}
       {/* <CustomNavBar user={user} changeUser={changeUser} />
       <Main />
       <Footer /> */}

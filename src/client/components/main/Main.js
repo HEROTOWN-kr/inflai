@@ -17,6 +17,7 @@ import Service from '../footer/Service';
 import Notification from '../notification/Notification';
 import CampaignList from '../campaignList/CampaignList';
 import InfoYoutube from '../info/InfoYoutube';
+import NotFound from './NotFound';
 
 
 function Main({
@@ -71,6 +72,9 @@ function Main({
       <Route
         path="/CampaignList"
         render={props => <CampaignList {...props} />}
+      />
+      <Route
+        component={NotFound}
       />
     </Switch>
   );
