@@ -54,20 +54,35 @@ function Greeting({
 
   return (
     <div>
-      {/* <div className="main-part">
+      <div className="main-part">
         <Grid container className="background-part">
-          <Grid item md={9} className="triangle-part" />
-          <Grid item md={3} />
+          <Grid item xs={12} md={8} className="triangle-part" />
+          <Hidden mdDown>
+            <Grid item md={4} />
+          </Hidden>
         </Grid>
         <div className="text-part">
-          <Grid container className="text-container">
-            <div>
-              text
-            </div>
+          <Grid container spacing={1} className="text-container">
+            <Grid container justify={document.documentElement.clientWidth < 961 ? 'center' : null} item xs={12} md={6}>
+              <Grid item>
+                <div className="title">INFLAi</div>
+                <div className="main-title">똑똑한 인플루언서 마케팅의 시작</div>
+                <div className="main-text">
+                  보다 저렴하게 보다 직관적으로
+                  <br />
+                  직접 소통을 통해 확실한 마케팅을
+                  <br />
+                  원하는 분들을 위한 서비스
+                </div>
+              </Grid>
+            </Grid>
+            <Grid item md={6} className="image-holder">
+              <img src={TitleImage} className="greeting-image" />
+            </Grid>
           </Grid>
         </div>
-      </div> */}
-      <Grid container className="greeting">
+      </div>
+      {/* <Grid container className="greeting">
         <Grid item xs={12} md={5} className="greeting-content">
           <div className="wraper">
             <Grid container>
@@ -96,7 +111,7 @@ function Greeting({
             <img src={TitleImage} className="greeting-image" />
           </Grid>
         </Hidden>
-      </Grid>
+      </Grid> */}
     </div>
   );
 }

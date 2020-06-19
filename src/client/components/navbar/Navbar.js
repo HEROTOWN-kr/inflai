@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Redirect, Link, withRouter, browserHistory
 } from 'react-router-dom';
@@ -154,6 +154,29 @@ function CustomNavbar(props) {
     }
   }, []);
 
+  const [activeClass, setActiveClass] = useState('');
+
+  function logit() {
+    if (props.history.location.pathname !== '/') {
+      setActiveClass(' active');
+    } else if (window.pageYOffset > 200) {
+      setActiveClass(' active');
+    } else {
+      setActiveClass('');
+    }
+  }
+
+  useEffect(() => {
+    function watchScroll() {
+      window.addEventListener('scroll', logit);
+    }
+    watchScroll();
+    logit();
+    return () => {
+      window.removeEventListener('scroll', logit);
+    };
+  });
+
   function parseParms(str) {
     const pieces = str.split('&'); const data = {}; let i; let
       parts;
@@ -254,8 +277,10 @@ function CustomNavbar(props) {
 
   return (
     <div className="navbar">
-      <AppBar position="static" color="transparent">
-        <Grid container alignItems="center" className="bar">
+      <AppBar position="fixed" color="transparent">
+        {' '}
+        {/* static transparent */}
+        <Grid container alignItems="center" className={`bar${activeClass}`}>
           <Grid item xs={5} md={2}>
             <Grid container justify="center">
               <Grid item>
@@ -271,7 +296,7 @@ function CustomNavbar(props) {
             </Grid>
           </Grid>
           <Hidden mdDown>
-            <Grid item md={4}>
+            <Grid item xs={4}>
               <Grid container spacing={5}>
                 <Grid item>
                   <a className="scroll-link" onClick={scrollTo}>인플라이소개</a>
@@ -288,7 +313,7 @@ function CustomNavbar(props) {
                 ))}
               </Grid>
             </Grid>
-            <Grid item md={6}>
+            <Grid item xs={6} className="right-panel">
               <Box mr={4}>
                 <Grid container spacing={2} alignItems="center" justify="flex-end">
                   {
@@ -363,7 +388,7 @@ function CustomNavbar(props) {
               </Box>
             </Grid>
           </Hidden>
-          <Hidden mdUp>
+          <Hidden lgUp>
             <Grid item xs={6}>
               <Grid container justify="flex-end">
                 <Grid item>

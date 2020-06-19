@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import NaverLogin from 'react-naver-login';
 import axios from 'axios';
@@ -9,9 +9,19 @@ import Common from '../lib/common';
 
 
 function App(props) {
-
-
   const [user, setUser] = React.useState(Common.getUserInfo());
+  const [activeClass, setActiveClass] = useState('');
+
+  function logit() {
+    if (props.history.location.pathname !== '/') {
+      setActiveClass(' active');
+    } else {
+      setActiveClass('');
+    }
+  }
+  useEffect(() => {
+    logit();
+  });
 
   /* useEffect(() => {
     if (user.regState && user.regState === 'N') {
@@ -52,13 +62,13 @@ function App(props) {
       <div className="app-header">
         <CustomNavBar user={user} changeUser={changeUser} />
       </div>
-      <div className="app-body">
+      <div className={`app-body${activeClass}`}>
         <Main user={user} changeUser={changeUser} />
       </div>
       <div className="app-footer">
         <Footer />
       </div>
-      {/*<CustomNavBar user={user} changeUser={changeUser} />*/}
+      {/* <CustomNavBar user={user} changeUser={changeUser} /> */}
       {/* <NaverLogin
         clientId="4rBF5bJ4y2jKn0gHoSCf"
         callbackUrl="http://127.0.0.1:3000/login"
@@ -68,8 +78,8 @@ function App(props) {
         // onSuccess={result => console.log(result)}
         onFailure={result => responseNaver(result)}
       /> */}
-      {/*<Main user={user} changeUser={changeUser} />*/}
-      {/*<Footer />*/}
+      {/* <Main user={user} changeUser={changeUser} /> */}
+      {/* <Footer /> */}
       {/* <CustomNavBar user={user} changeUser={changeUser} />
       <Main />
       <Footer /> */}

@@ -39,6 +39,9 @@ a {
     -ms-flex: 1 0 auto;
     flex: 1 0 auto;
     overflow: hidden;
+    &.active {
+      margin-top: 98px;
+    }
   }
   .app-footer {
     -webkit-box-flex: 0;

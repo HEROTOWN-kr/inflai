@@ -42,7 +42,31 @@ $colorGrey: #dfe2e8;
   }
   .bar {
     height: inherit;
-    background: $colorBlue;
+    transition: background 0.5s ease;
+    &.active {
+      background: $colorBlue;
+      .name-holder {
+
+      }
+    }
+    .right-panel {
+      .name-holder {
+        color: $colorBg;
+        background: $colorBlue;
+        line-height: 34px;
+        opacity: 0.8;
+        svg {
+          position: relative;
+          top: 7px;
+          left: 4px;
+        }
+        &:hover {
+          cursor: pointer;
+          opacity: 1;
+        }
+      }
+    }
+
   }
   .nav-logo {
 
@@ -79,20 +103,7 @@ $colorGrey: #dfe2e8;
       color: $aqua
     }
   }
-  .name-holder {
-    color: $colorBg;
-    line-height: 34px;
-    opacity: 0.8;
-    svg {
-      position: relative;
-      top: 7px;
-      left: 4px;
-    }
-    &:hover {
-      cursor: pointer;
-      opacity: 1;
-    }
-  }
+
 }
 
 .user-popmenu {
@@ -298,7 +309,7 @@ $colorGrey: #dfe2e8;
 .greeting-content2 {
   background: #093c5e;
 
-  background: red;
+  //background: red;
   position: relative;
   &:before {
     content: '';
@@ -317,16 +328,17 @@ $colorGrey: #dfe2e8;
 .home {
   .main-part {
     .background-part {
-      height: 900px;
+      height: 1000px;
       .triangle-part {
         background: #093c5e;
         position: relative;
         &:before {
           content: '';
           position: absolute;
-          bottom: 0; right: 0;
-          border-bottom: 900px solid $colorBg;
-          border-left: 400px solid $colorBlue;
+          bottom: 0;
+          right: 0;
+          border-bottom: 1000px solid $colorBg;
+          border-left: 510px solid $colorBlue;
           width: 0;
         }
       }
@@ -335,10 +347,36 @@ $colorGrey: #dfe2e8;
       position: relative;
       .text-container {
         position: absolute;
-        height: 200px;
-        background: red;
-        top: -800px;
+        height: 670px;
+        //background: red;
+        top: -700px;
         padding: 0 115px;
+        .title {
+          font-size: 80px;
+          color: $aqua
+        }
+        .main-title {
+          padding-top: 5px;
+          font-weight: bold;
+          font-size: 42px;
+          color: $aqua;
+        }
+        .main-text {
+          font-size: 18px;
+          color: $white;
+          line-height: 180%;
+          padding-top: 80px;
+        }
+        .image-holder {
+          position: relative;
+          .greeting-image {
+            position: absolute;
+            right: 0;
+            width: 900px;
+            //bottom: 0;
+            //height: 630px;
+          }
+        }
       }
     }
   }
@@ -1851,6 +1889,30 @@ $colorGrey: #dfe2e8;
 
 @media only screen and (max-width: 1800px) {
   .home{
+    .main-part {
+      .background-part {
+        .triangle-part {
+          &:before {
+            border-left: 415px solid $colorBlue;
+          }
+        }
+      }
+      .text-part {
+        .text-container {
+          .title {
+            font-size: 70px;
+          }
+          .main-title {
+            font-size: 34px;
+          }
+          .image-holder {
+            .greeting-image {
+              width: 750px;
+            }
+          }
+        }
+      }
+    }
     .greeting {
       .greeting-image {
         right: 42px;
@@ -2037,6 +2099,24 @@ $colorGrey: #dfe2e8;
 
 @media only screen and (max-width: 1366px) {
   .home{
+    .main-part {
+      .text-part {
+        .text-container {
+          padding: 0 75px;
+          .title {
+            font-size: 70px;
+          }
+          .main-title {
+            font-size: 32px;
+          }
+          .image-holder {
+            .greeting-image {
+              width: 600px;
+            }
+          }
+        }
+      }
+    }
     .greeting {
       .greeting-image {
         right: 42px;
@@ -2104,6 +2184,23 @@ $colorGrey: #dfe2e8;
 
 @media only screen and (max-width: 1024px) {
   .home{
+    .main-part {
+      .text-part {
+        .text-container {
+          .title {
+            font-size: 70px;
+          }
+          .main-title {
+            font-size: 26px;
+          }
+          .image-holder {
+            .greeting-image {
+              width: 545px;
+            }
+          }
+        }
+      }
+    }
     .greeting {
       .greeting-image {
         right: 42px;
@@ -2286,6 +2383,35 @@ $colorGrey: #dfe2e8;
 
 @media only screen and (max-width: 960px) {
   .home{
+    .background-part {
+      height: 1000px;
+      .triangle-part {
+        background: #093c5e;
+        position: relative;
+        &:before {
+          display: none;
+        }
+      }
+    }
+    .main-part {
+      .text-part {
+        .text-container {
+          text-align: center;
+          .title {
+            font-size: 70px;
+          }
+          .main-title {
+            font-size: 26px;
+          }
+          .image-holder {
+            display: none;
+            .greeting-image {
+
+            }
+          }
+        }
+      }
+    }
     .greeting {
       .greeting-image {
         right: 42px;
