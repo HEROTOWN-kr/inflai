@@ -154,7 +154,7 @@ function CustomNavbar(props) {
     }
   }, []);
 
-  const [activeClass, setActiveClass] = useState('');
+  // const [activeClass, setActiveClass] = useState('');
 
   function logit() {
     if (props.history.location.pathname !== '/') {
@@ -166,7 +166,7 @@ function CustomNavbar(props) {
     }
   }
 
-  useEffect(() => {
+  /* useEffect(() => {
     function watchScroll() {
       window.addEventListener('scroll', logit);
     }
@@ -175,7 +175,7 @@ function CustomNavbar(props) {
     return () => {
       window.removeEventListener('scroll', logit);
     };
-  });
+  }); */
 
   function parseParms(str) {
     const pieces = str.split('&'); const data = {}; let i; let
@@ -277,10 +277,11 @@ function CustomNavbar(props) {
 
   return (
     <div className="navbar">
-      <AppBar position="fixed" color="transparent">
+      <AppBar position="static" color="transparent">
         {' '}
-        {/* static transparent */}
-        <Grid container alignItems="center" className={`bar${activeClass}`}>
+        {/* static(fixed) transparent */}
+        {/* <Grid container alignItems="center" className={`bar${activeClass}`}> */}
+        <Grid container alignItems="center" className="bar">
           <Grid item xs={5} md={2}>
             <Grid container justify="center">
               <Grid item>

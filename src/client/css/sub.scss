@@ -42,6 +42,7 @@ $colorGrey: #dfe2e8;
   }
   .bar {
     height: inherit;
+    background: $colorBlue;
     transition: background 0.5s ease;
     &.active {
       background: $colorBlue;

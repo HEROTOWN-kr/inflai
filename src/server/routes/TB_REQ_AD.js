@@ -55,5 +55,31 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/detail', (req, res) => {
+  const data = req.query;
+  const { id } = data;
+
+  RequestAgency.findOne({
+    attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_EMAIL', 'REQ_TEL', 'REQ_BRAND', 'REQ_AIM', 'REQ_ANOTHER_AIM', 'REQ_BUDJET', 'REQ_CONSULT', 'REQ_OTHER',
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
+    where: { REQ_ID: id },
+    include: [
+      {
+        model: Advertiser,
+        attributes: ['ADV_NAME']
+      },
+    ],
+    order: [['REQ_DT', 'DESC']]
+  }).then((result) => {
+    const returnObj = {...result.dataValues, REQ_AIM: JSON.parse(result.dataValues.REQ_AIM), REQ_CONSULT: JSON.parse(result.dataValues.REQ_CONSULT)};
+
+    res.json({
+      code: 200,
+      data: returnObj
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
 
 module.exports = router;
