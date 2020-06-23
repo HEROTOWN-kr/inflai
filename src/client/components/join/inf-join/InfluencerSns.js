@@ -94,7 +94,8 @@ function InfluencerSns({
   }, []);
 
 
-  const inputRef = React.useRef(null);
+  const GoogleButtonRef = React.useRef(null);
+  const NaverButtonRef = React.useRef(null);
 
   const types = [
     {
@@ -158,11 +159,11 @@ function InfluencerSns({
         break;
       }
       case 'Youtube': {
-        inputRef.current.click();
+        GoogleButtonRef.current.click();
         break;
       }
       case 'Blog': {
-        naverLogin();
+        NaverButtonRef.current.click();
         break;
       }
     }
@@ -187,7 +188,7 @@ function InfluencerSns({
   }
 
   const responseGoogle = (response) => {
-    console.log('response google');
+    // console.log('response google');
     axios.get('/api/TB_INFLUENCER/youtubeSignUp', {
       params: {
         code: response.code
@@ -210,6 +211,32 @@ function InfluencerSns({
     });
   };
 
+  function responseNaver(response) {
+    const { user } = response;
+    axios.get('/api/TB_INFLUENCER/naverSignUp', {
+      params: {
+        email: user.email,
+        naverId: user.id,
+        name: user.name
+      }
+    }).then((res) => {
+      if (res.data.userPhone) {
+        changeUser({
+          social_type: res.data.social_type,
+          type: '2',
+          token: res.data.userToken,
+          name: res.data.userName,
+          regState: res.data.regState
+        });
+        history.push('/');
+      } else {
+        goTo(`/detail/${res.data.userId}`);
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
   return (
     <div className="join-sns">
       <Grid container justify="center">
@@ -223,20 +250,19 @@ function InfluencerSns({
                 accessType="offline"
                 prompt="consent"
                 render={renderProps => (
-                  <button ref={inputRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ display: 'none' }}>This is my custom Google button</button>
+                  <button ref={GoogleButtonRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ display: 'none' }}>This is my custom Google button</button>
                 )}
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}
               />
-              {/* <NaverLogin
-                    clientId="4rBF5bJ4y2jKn0gHoSCf"
-                    callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
-                    render={props => <div onClick={props.onClick}>Naver Login</div>}
-                    onSuccess={result => console.log(result)}
-                    isPopup="true"
-        // onSuccess={result => console.log(result)}
-                    onFailure={result => console.log(result)}
-                  /> */}
+              <NaverLogin
+                clientId="4rBF5bJ4y2jKn0gHoSCf"
+                callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
+                render={props => <div ref={NaverButtonRef} onClick={props.onClick} style={{ display: 'none' }}>Naver Login</div>}
+                isPopup="true"
+                onSuccess={result => responseNaver(result)}
+                onFailure={result => responseNaver(result)}
+              />
               {/* <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a> */}
               <InstagramDialog open={instaDialogOpen} closeDialog={toggleInstaDialog} facebookLogin={facebookLogin} />
               <Grid item md={12} className="title">인플루언서 유형을 선택해주세요</Grid>

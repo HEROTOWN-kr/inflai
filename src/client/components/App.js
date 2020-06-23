@@ -12,7 +12,7 @@ function App(props) {
   const [user, setUser] = React.useState(Common.getUserInfo());
   const [activeClass, setActiveClass] = useState('');
 
-  function logit() {
+  /* function logit() {
     if (props.history.location.pathname !== '/') {
       setActiveClass(' active');
     } else {
@@ -21,7 +21,7 @@ function App(props) {
   }
   useEffect(() => {
     logit();
-  });
+  }); */
 
   /* useEffect(() => {
     if (user.regState && user.regState === 'N') {
@@ -62,7 +62,8 @@ function App(props) {
       <div className="app-header">
         <CustomNavBar user={user} changeUser={changeUser} />
       </div>
-      <div className={`app-body${activeClass}`}>
+      {/* <div className={`app-body${activeClass}`}> */}
+      <div className="app-body">
         <Main user={user} changeUser={changeUser} />
       </div>
       <div className="app-footer">

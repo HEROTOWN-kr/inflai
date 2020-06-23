@@ -108,7 +108,10 @@ router.get('/userInfo', (req, res) => {
 router.get('/getInstaAccounts', (req, res) => {
   const { id } = req.query;
 
-  Influencer.findOne({ where: { INF_ID: id } }).then((result) => {
+  Influencer.findOne({
+    where: { INF_ID: id },
+    attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_BLOG_TYPE']
+  }).then((result) => {
     const { INF_TOKEN, INF_BLOG_TYPE } = result.dataValues;
     if (INF_BLOG_TYPE === '1') {
       const pagesUrl = `https://graph.facebook.com/v6.0/me/accounts?access_token=${INF_TOKEN}`;
@@ -149,7 +152,8 @@ router.get('/getInstaAccounts', (req, res) => {
         code: 200,
         info: {
           name: result.dataValues.INF_NAME,
-          email: result.dataValues.INF_EMAIL
+          email: result.dataValues.INF_EMAIL,
+          blogType: result.dataValues.INF_BLOG_TYPE
         }
       });
     }
@@ -407,6 +411,7 @@ router.post('/instaUpdate', (req, res) => {
   };
 
   if (data.instaAccount) post.INF_INST_ID = data.instaAccount;
+  if (data.blogUrl) post.INF_BLOG_URL = data.blogUrl;
 
   Influencer.update(post, {
     where: { INF_ID: id },
@@ -651,6 +656,45 @@ router.get('/getYoutubeInfo', (req, res) => {
 
 router.get('/naverSignUp', (req, res) => {
   const data = req.query;
+  const { email, naverId, name } = data;
+
+  Influencer.findOne({
+    where: { INF_REG_ID: naverId, INF_BLOG_TYPE: '3' },
+    attributes: ['INF_ID', 'INF_NAME', 'INF_TEL',
+      [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'facebook\' WHEN \'2\' THEN \'google\' WHEN \'3\' THEN \'naver\' ELSE \'twitch\' END'), 'INF_BLOG_TYPE'],
+    ]
+  }).then((result) => {
+    if (!result) {
+      Influencer.create({
+        INF_NAME: name,
+        INF_EMAIL: email,
+        INF_REG_ID: naverId,
+        INF_BLOG_TYPE: '3',
+      }).then((result2) => {
+        res.json({
+          code: 200,
+          userId: result2.dataValues.INF_ID,
+          userToken: common.createToken(result2.dataValues.INF_ID),
+          userName: result2.dataValues.INF_NAME,
+          userPhone: result2.dataValues.INF_TEL,
+          social_type: 'naver'
+        });
+      });
+    } else {
+      res.json({
+        code: 200,
+        userId: result.dataValues.INF_ID,
+        userToken: common.createToken(result.dataValues.INF_ID),
+        userName: result.dataValues.INF_NAME,
+        userPhone: result.dataValues.INF_TEL,
+        social_type: result.dataValues.INF_BLOG_TYPE,
+      });
+    }
+  });
+});
+
+router.get('/naverSignUpTest', (req, res) => {
+  const data = req.query;
   const { code, state } = data;
   console.log(code, state);
 
@@ -860,5 +904,6 @@ router.get('/test', (req, res) => {
     }
   });
 });
+
 
 module.exports = router;

@@ -61,6 +61,11 @@ function InfluencerDetail({
         is: instaList => instaList.length,
         then: Yup.string().required('인스타 계정을 선택해주세요'),
       }),
+    blogUrl: Yup.string()
+      .when(['blogType'], {
+        is: blogType => blogType === '3',
+        then: Yup.string().required('블로그 URL을 입력해주세요'),
+      }),
     product: Yup.string()
       .required('제품, 서비스를 입력해주세요')
   });
@@ -159,6 +164,8 @@ function InfluencerDetail({
                 region: '',
                 phone: '',
                 product: '',
+                blogUrl: '',
+                blogType: userInfo.blogType,
                 message: 0
               }}
               enableReinitialize
@@ -260,6 +267,13 @@ function InfluencerDetail({
                                 <Grid item md={12}>
                                   <Divider />
                                 </Grid>
+                                {
+                                      values.blogType === '3' ? (
+                                        <Grid item md={12}>
+                                          <MyTextField name="blogUrl" label="블로그 URL" />
+                                        </Grid>
+                                      ) : null
+                                  }
                                 <Grid item md={12}>
                                   <MyTextField name="product" label="제품, 서비스" />
                                 </Grid>

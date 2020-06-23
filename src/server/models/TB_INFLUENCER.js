@@ -70,6 +70,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(1),
       allowNull: true
     },
+    INF_BLOG_URL: {
+      type: DataTypes.STRING(1000),
+      allowNull: true
+    },
     INF_DT: {
       type: 'TIMESTAMP',
       allowNull: false,
