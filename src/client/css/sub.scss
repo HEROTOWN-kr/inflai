@@ -5,7 +5,10 @@ $white: #ffffff;
 $colorSoftBlue: #7491B4;
 $colorBlack: #000;
 $colorRed: #fa4616;
+$colorRed2: #de2e2e;
 $colorGrey: #dfe2e8;
+$colorGreen: #49d049;
+
 
 .error-message {
   color: red;
@@ -1536,6 +1539,20 @@ $colorGrey: #dfe2e8;
           &:hover {
             color: $colorBlack;
             cursor: pointer;
+          }
+        }
+      }
+      .product-payment {
+        .payment-success {
+          color: $colorGreen;
+          margin-left: 10px;
+        }
+        .list-button {
+          color: $colorRed2;
+          opacity: 60%;
+          &:hover {
+            cursor: pointer;
+            opacity: 100%;
           }
         }
       }

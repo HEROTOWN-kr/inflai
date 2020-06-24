@@ -25,6 +25,7 @@ function AdvertiserLogin({
             name: res.data.userName,
             regState: res.data.regState
           });
+          history.push('/');
         } else if (res.data.code === 401) {
           setMainError({ message: res.data.message });
         } else {

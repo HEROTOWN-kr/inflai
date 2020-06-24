@@ -26,7 +26,6 @@ function AdvertiserDetail({
   const [finishSign, setFinishSign] = useState(false);
 
   useEffect(() => {
-    console.log(location.pathname);
     axios.get('/api/TB_ADVERTISER/', {
       params: {
         // token: user.token
@@ -40,7 +39,7 @@ function AdvertiserDetail({
       });
     });
     return () => {
-      if (!finishSign) {
+      if (finishSign === 0) {
         axios.get('/api/TB_ADVERTISER/delete', {
           params: {
             id: match.params.id,
@@ -52,9 +51,15 @@ function AdvertiserDetail({
     };
   }, []);
 
-  /*history.block(({ pathname }) => {
+  React.useEffect(() => {
+    if (finishSign) {
+      history.push('/');
+    }
+  }, [finishSign]);
+
+  /* history.block(({ pathname }) => {
     if (!finishSign && (pathname.indexOf('/Detail') === -1) && location.pathname.indexOf('/Join/Advertiser/SignUp/Detail/') !== -1) return '가입이 마무리하지 않으시면 모두 데이터는 삭제됩니다. 나가시겠습니까?';
-  });*/
+  }); */
 
   const categories = {
     classification: [{ value: '1', text: '국내사업자' }, { value: '2', text: '해외사업자' }],
@@ -158,11 +163,11 @@ function AdvertiserDetail({
     <React.Fragment>
       <Formik
         initialValues={{
-          email: userData.email,
+          email: userData.email || '',
           classification: '',
           registerNumber: '',
           jobType: '',
-          name: userData.name,
+          name: userData.name || '',
           phone: '',
           companyName: '',
           companyUrl: '',
@@ -186,7 +191,6 @@ function AdvertiserDetail({
                   name: res.data.userName,
                 });
                 setFinishSign(true);
-                history.push('/');
               } else if (res.data.code === 401) {
                 console.log(res);
               } else {

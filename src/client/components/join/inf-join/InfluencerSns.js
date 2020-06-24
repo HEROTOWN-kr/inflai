@@ -188,27 +188,30 @@ function InfluencerSns({
   }
 
   const responseGoogle = (response) => {
-    // console.log('response google');
-    axios.get('/api/TB_INFLUENCER/youtubeSignUp', {
-      params: {
-        code: response.code
-      }
-    }).then((res) => {
-      if (res.data.userPhone) {
-        changeUser({
-          social_type: res.data.social_type,
-          type: '2',
-          token: res.data.userToken,
-          name: res.data.userName,
-          regState: res.data.regState
-        });
-        history.push('/');
-      } else {
-        goTo(`/detail/${res.data.userId}`);
-      }
-    }).catch((error) => {
-      console.log(error);
-    });
+    if (!response.error) {
+      axios.get('/api/TB_INFLUENCER/youtubeSignUp', {
+        params: {
+          code: response.code
+        }
+      }).then((res) => {
+        if (res.data.userPhone) {
+          changeUser({
+            social_type: res.data.social_type,
+            type: '2',
+            token: res.data.userToken,
+            name: res.data.userName,
+            regState: res.data.regState
+          });
+          history.push('/');
+        } else {
+          goTo(`/detail/${res.data.userId}`);
+        }
+      }).catch((error) => {
+        console.log(error);
+      });
+    } else {
+      console.log('google auth error');
+    }
   };
 
   function responseNaver(response) {
@@ -257,7 +260,8 @@ function InfluencerSns({
               />
               <NaverLogin
                 clientId="4rBF5bJ4y2jKn0gHoSCf"
-                callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
+                // callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
+                callbackUrl={`${window.location.origin}/Join/Influencer/sns`}
                 render={props => <div ref={NaverButtonRef} onClick={props.onClick} style={{ display: 'none' }}>Naver Login</div>}
                 isPopup="true"
                 onSuccess={result => responseNaver(result)}

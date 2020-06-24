@@ -4,6 +4,7 @@ const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
 const Notification = require('../models').TB_NOTIFICATION;
+const Payment = require('../models').TB_PAYMENT;
 const Photo = require('../models').TB_PHOTO_AD;
 const common = require('../config/common');
 
@@ -272,14 +273,22 @@ router.post('/delete', (req, res) => {
   Photo.destroy({
     where: { AD_ID: id }
   }).then((result) => {
-    Advertise.destroy({
+    Notification.destroy({
       where: { AD_ID: id }
     }).then((result2) => {
-      if (result2) {
-        res.json({
-          code: 200,
+      Payment.destroy({
+        where: { AD_ID: id }
+      }).then((result3) => {
+        Advertise.destroy({
+          where: { AD_ID: id }
+        }).then((result4) => {
+          if (result4) {
+            res.json({
+              code: 200,
+            });
+          }
         });
-      }
+      });
     });
   });
 });

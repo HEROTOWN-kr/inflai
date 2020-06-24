@@ -12,6 +12,12 @@ function App(props) {
   const [user, setUser] = React.useState(Common.getUserInfo());
   const [activeClass, setActiveClass] = useState('');
 
+  useEffect(() => {
+    if (!window.location.host.startsWith('www') && window.location.host === 'inflai.com') {
+      window.location = `${window.location.protocol}//www.${window.location.host}${window.location.pathname}`;
+    }
+  });
+
   /* function logit() {
     if (props.history.location.pathname !== '/') {
       setActiveClass(' active');

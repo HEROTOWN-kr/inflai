@@ -11,6 +11,7 @@ function LogOutButton(props) {
       props.changeUser({
         token: null, name: '', social_type: '', type: '', regState: ''
       });
+      props.history.push('/');
     });
   };
 
@@ -30,6 +31,7 @@ function LogOutButton(props) {
     props.changeUser({
       token: null, name: '', social_type: '', type: '', regState: ''
     });
+    props.history.push('/');
   };
 
   const googleLogOut = (e) => {
@@ -47,10 +49,12 @@ function LogOutButton(props) {
         props.changeUser({
           token: null, name: '', social_type: '', type: '', regState: ''
         });
+        props.history.push('/');
       } else {
         props.changeUser({
           token: null, name: '', social_type: '', type: '', regState: ''
         });
+        props.history.push('/');
       }
     });
   };
@@ -67,6 +71,7 @@ function LogOutButton(props) {
                       e.preventDefault(); window.FB.logout(); props.changeUser({
                         token: null, name: '', social_type: '', type: '', regState: ''
                       });
+                      props.history.push('/');
                     }}
                     className="login-button"
                   >
@@ -89,12 +94,28 @@ function LogOutButton(props) {
                     variant="contained"
                     color="secondary"
                     className="login-button"
-                    onClick={e => props.changeUser({
-                      token: null, name: '', social_type: '', type: '', regState: ''
-                    })}
+                    onClick={(e) => {
+                      props.changeUser({
+                        token: null, name: '', social_type: '', type: '', regState: ''
+                      });
+                      props.history.push('/');
+                    }}
                   >
-로그아웃
-                            </Button>
+                  로그아웃
+                  </Button>,
+                  naver: <Button
+                    variant="contained"
+                    color="secondary"
+                    className="login-button"
+                    onClick={(e) => {
+                      props.changeUser({
+                        token: null, name: '', social_type: '', type: '', regState: ''
+                      });
+                      props.history.push('/');
+                    }}
+                  >
+                    로그아웃
+                  </Button>
                 }[props.user.social_type]
             }
     </React.Fragment>

@@ -1,6 +1,6 @@
-const User = require('../models').TB_MEMBER;
 const PassportLocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
+const User = require('../models').TB_MEMBER;
 
 const saltRounds = 10;
 

@@ -38,6 +38,7 @@ function OnGoing(props) {
   function deleteCampaign() {
     axios.post('/api/TB_AD/delete', { id: itemId }).then((res) => {
       if (res.data.code === 200) {
+        toggleDialog();
         getCampaign();
       } else if (res.data.code === 401) {
         console.log(res);
@@ -68,7 +69,7 @@ function OnGoing(props) {
           : (campaigns.map(item => (
             <Grid key={item.AD_ID} item md={12}>
               <Grid container justify="space-between" className="campaign-card">
-                <Grid item md={3}>
+                <Grid item md={5}>
                   <Grid container spacing={2}>
                     <Grid item>
                       <p className="influencer-count">{`선발 ${item.INF_SUM}명`}</p>
@@ -91,8 +92,9 @@ function OnGoing(props) {
                             item.AD_PAID === 'Y'
                               ? (
                                 <React.Fragment>
-                                  <Button variant="contained" color="primary" onClick={() => props.history.push(`/Campaign/influencers/${item.AD_ID}`)}>리스트</Button>
-                                  <span>결제 완료</span>
+                                  {/* <Button variant="contained" color="primary" onClick={() => props.history.push(`/Campaign/influencers/${item.AD_ID}`)}>리스트</Button> */}
+                                  <span className="list-button" onClick={() => props.history.push(`/Campaign/influencers/${item.AD_ID}`)}>리스트</span>
+                                  <span className="payment-success">결제 완료</span>
                                 </React.Fragment>
                               )
                               : <Payment item_data={item} getCampaign={getCampaign} />
@@ -108,8 +110,7 @@ function OnGoing(props) {
                     : null
                 } */}
                     <Grid item md={12} className="product-date">
-                          요청일:
-                      {item.AD_SRCH_END}
+                      {`요청일: ${item.AD_SRCH_END}`}
                     </Grid>
                   </Grid>
                 </Grid>
