@@ -197,10 +197,10 @@ function CustomNavbar(props) {
       text: '성공사례',
       link: '/'
     },
-    {
+    /* {
       text: '촬영서비스',
       link: '/'
-    },
+    }, */
     {
       text: '파트너',
       link: '/'
@@ -225,13 +225,39 @@ function CustomNavbar(props) {
       onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
     >
-      <List>
+      {/* <List>
         {menuLinks.map((link, index) => (
           <ListItem button key={link.text} component={props => <Link to={link.link} {...props} />}>
             <ListItemText primary={link.text} />
           </ListItem>
         ))}
-      </List>
+      </List> */}
+      <div className="user-popmenu">
+        <Link
+          className="link"
+          to="/Join/Type"
+        >
+          로그인 | 회원가입
+        </Link>
+        {userMenuCat.map(item => (
+          <div key={item.text}>
+            <Link
+              to={item.link}
+            >
+              <div className="pop-item">{item.text}</div>
+            </Link>
+            <Divider />
+          </div>
+        ))}
+        <Grid container justify="center" className="logout">
+          <Grid item>
+            <Box my={2}>
+              {/* <button>press</button> */}
+              <LogOutButton {...props} />
+            </Box>
+          </Grid>
+        </Grid>
+      </div>
     </div>
   );
 
@@ -373,7 +399,6 @@ function CustomNavbar(props) {
                             </ClickAwayListener>
                           </Popper>
                           {/* <LogOutButton {...props} /> */}
-
                         </React.Fragment>
                       )
                       : (
@@ -406,6 +431,26 @@ function CustomNavbar(props) {
 
           </Hidden>
         </Grid>
+        <Hidden mdUp>
+          <Grid item xs={12}>
+            <Grid container justify="space-between" className="mobile-link-bar">
+              <Grid item>
+                <a className="scroll-link" onClick={scrollTo}>인플라이소개</a>
+              </Grid>
+              {menuLinks.map(link => (
+                <Grid item key={link.text}>
+                  <Link
+                    className="link"
+                    to={link.link}
+                  >
+                    {link.text}
+                  </Link>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        </Hidden>
+
         {/* <Grid container className="bar" alignItems="center">
           <Hidden mdDown>
             <Grid container xs={4} justify="flex-end" spacing={3}>

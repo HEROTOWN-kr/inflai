@@ -16,6 +16,14 @@ function SocialNetworks({
   changeUser,
   history
 }) {
+  let facebookID;
+  if (window.location.host === 'inflai.com') {
+    facebookID = '663450957780119';
+  } else {
+    facebookID = '139193384125564';
+  }
+
+
   function responseGoogle(response) {
     if (response) {
       axios.get('/api/TB_ADVERTISER/loginGoogle', {
@@ -25,20 +33,23 @@ function SocialNetworks({
           token: response.tokenId
         }
       }).then((res) => {
-        changeUser({
-          social_type: res.data.social_type,
-          type: '1',
-          token: res.data.userToken,
-          name: res.data.userName,
-          regState: res.data.regState
-        });
-        history.push('/');
+        if (res.data.userPhone) {
+          changeUser({
+            social_type: res.data.social_type,
+            type: '1',
+            token: res.data.userToken,
+            name: res.data.userName,
+            regState: res.data.regState
+          });
+          history.push('/');
+        } else {
+          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+        }
       });
     }
   }
 
   const responseFacebook = (response) => {
-    console.log(response);
     if (response) {
       axios.get('/api/TB_ADVERTISER/loginFacebook', {
         params: {
@@ -49,64 +60,77 @@ function SocialNetworks({
           social_type: response.graphDomain
         }
       }).then((res) => {
-        changeUser({
-          social_type: res.data.social_type,
-          type: '1',
-          token: res.data.userToken,
-          name: res.data.userName,
-          regState: res.data.regState
-        });
-        history.push('/');
+        if (res.data.userPhone) {
+          changeUser({
+            social_type: res.data.social_type,
+            type: '1',
+            token: res.data.userToken,
+            name: res.data.userName,
+            regState: res.data.regState
+          });
+          history.push('/');
+        } else {
+          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+        }
       });
     }
   };
 
   const responseNaver = (response) => {
-    console.log(response);
-    /* if (response) {
-          axios.get('/api/TB_ADVERTISER/loginFacebook', {
-            params: {
-              id: response.userID,
-              email: response.email,
-              name: response.name,
-              type: "1",
-              social_type: response.graphDomain
-            }
-          }).then((res) => {
-            changeUser({
-              social_type: res.data.social_type,
-              type: "1",
-              token: res.data.userToken,
-              name: res.data.userName,
-            });
-             history.push('/');
+    const { email, id, name } = response.user;
+    if (response) {
+      axios.get('/api/TB_ADVERTISER/loginNaver', {
+        params: {
+          id,
+          email,
+          name,
+          type: '1',
+          social_type: 'naver'
+        }
+      }).then((res) => {
+        if (res.data.userPhone) {
+          changeUser({
+            social_type: res.data.social_type,
+            type: '1',
+            token: res.data.userToken,
+            name: res.data.userName,
+            regState: res.data.regState
           });
-        } */
+          history.push('/');
+        } else {
+          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+        }
+      });
+    }
   };
 
   const kakaoLoginForm = () => {
-    /* window.Kakao.Auth.loginForm({
+    window.Kakao.Auth.loginForm({
       success(authObj) {
         window.Kakao.API.request({
           url: '/v2/user/me',
-          success(res) {
+          success(response) {
             axios.get('/api/TB_ADVERTISER/loginKakao', {
               params: {
-                id: res.id,
-                email: res.kakao_account.email,
-                name: res.kakao_account.profile.nickname,
+                id: response.id,
+                email: response.kakao_account.email,
+                name: response.kakao_account.profile.nickname,
                 type: '1',
                 social_type: 'kakao'
               }
-            }).then((response) => {
-              changeUser({
-                social_type: response.data.social_type,
-                type: '1',
-                token: response.data.userToken,
-                name: response.data.userName,
-                regState: response.data.regState
-              });
-              history.push('/');
+            }).then((res) => {
+              if (res.data.userPhone) {
+                changeUser({
+                  social_type: res.data.social_type,
+                  type: '1',
+                  token: res.data.userToken,
+                  name: res.data.userName,
+                  regState: res.data.regState
+                });
+                history.push('/');
+              } else {
+                history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+              }
             });
           },
           fail(error) {
@@ -117,16 +141,16 @@ function SocialNetworks({
       fail(err) {
         console.log(JSON.stringify(err));
       }
-    }); */
-    window.Kakao.Auth.login({
-      scope: 'friends',
+    });
+    /* window.Kakao.Auth.login({
+      // scope: 'friends',
       success(response) {
         console.log(response);
       },
       fail(error) {
         console.log(error);
       },
-    });
+    }); */
   };
 
 
@@ -146,7 +170,8 @@ function SocialNetworks({
         </Grid>
         <Grid item md={12}>
           <FacebookLogin
-            appId="139193384125564"
+            // appId="139193384125564"
+            appId={facebookID}
             autoLoad
             fields="name,email,picture"
             callback={responseFacebook}
@@ -155,20 +180,19 @@ function SocialNetworks({
             )}
           />
         </Grid>
-        {/* <Grid item md={12}>
+        <Grid item md={12}>
           <NaverLogin
-              clientId="4rBF5bJ4y2jKn0gHoSCf"
-              // callbackUrl="http://127.0.0.1:3000/login"
-              callbackUrl="http://127.0.0.1:3000/login"
-              render={props => <SocialButton clicked={props.onClick} icon={NaverIcon} text="네이버 로그인" bgColor="#00CE38" textColor="#FFFFFF" />}
-              onSuccess={result => responseNaver(result)}
-              onFailure={result => responseNaver(result)}
+            clientId="4rBF5bJ4y2jKn0gHoSCf"
+            callbackUrl={`${window.location.origin}/Join/Advertiser/Login`}
+            render={props => <SocialButton clicked={props.onClick} icon={NaverIcon} text="네이버 로그인" bgColor="#00CE38" textColor="#FFFFFF" />}
+            onSuccess={result => responseNaver(result)}
+            onFailure={result => responseNaver(result)}
           />
-        </Grid> */}
+        </Grid>
         <Grid item md={12}>
           <SocialButton clicked={kakaoLoginForm} icon={KakaoIcon} text="카카오 로그인" bgColor="#F7E317" textColor="#3C1E1E" />
         </Grid>
-        <Grid item md={12}>
+        {/* <Grid item md={12}>
           <SocialButton
             clicked={() => console.log('click')}
             icon={TwitchIcon}
@@ -178,7 +202,7 @@ function SocialNetworks({
               // link="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:3000&response_type=token&scope=user:edit+user:read:email&force_verify=true"
             link="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://www.inflai.com&response_type=token&scope=user:edit+user:read:email&force_verify=true"
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </React.Fragment>
   );

@@ -496,61 +496,34 @@ router.get('/loginGoogle', (req, res) => {
   const { token, type, social_type } = req.query;
   const userInfo = jwt.decode(token);
 
-  if (type === '1') {
-    Advertiser.findOne({ where: { ADV_REG_ID: userInfo.sub } }).then((result) => {
-      if (!result) {
-        Advertiser.create({
-          ADV_NAME: userInfo.name,
-          ADV_EMAIL: userInfo.email,
-          ADV_REG_ID: userInfo.sub
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.ADV_ID),
-            userName: result.dataValues.ADV_NAME,
-            regState: result.dataValues.ADV_FULL_REG,
-            social_type
-          });
-        });
-      } else {
+  Advertiser.findOne({ where: { ADV_REG_ID: userInfo.sub } }).then((result) => {
+    if (!result) {
+      Advertiser.create({
+        ADV_NAME: userInfo.name,
+        ADV_EMAIL: userInfo.email,
+        ADV_REG_ID: userInfo.sub
+      }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result.dataValues.ADV_ID),
-          userName: result.dataValues.ADV_NAME,
-          regState: result.dataValues.ADV_FULL_REG,
+          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userName: result2.dataValues.ADV_NAME,
+          userId: result2.ADV_ID,
           social_type
         });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  } else {
-    Influenser.findOne({ where: { INF_REG_ID: userInfo.sub } }).then((result) => {
-      if (!result) {
-        Influenser.create({
-          INF_NAME: userInfo.name,
-          INF_EMAIL: userInfo.email,
-          INF_REG_ID: userInfo.sub
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.INF_ID),
-            userName: result.dataValues.INF_NAME,
-            social_type
-          });
-        });
-      } else {
-        res.json({
-          code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-          social_type
-        });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  }
+      });
+    } else {
+      res.json({
+        code: 200,
+        userToken: common.createToken(result.dataValues.ADV_ID),
+        userName: result.dataValues.ADV_NAME,
+        userId: result.ADV_ID,
+        userPhone: result.ADV_TEL,
+        social_type
+      });
+    }
+  }).error((err) => {
+    res.send('error has occured');
+  });
 });
 
 router.get('/loginFacebook', (req, res) => {
@@ -558,68 +531,34 @@ router.get('/loginFacebook', (req, res) => {
     id, email, name, type, social_type
   } = req.query;
 
-  const payload = {
-    sub: id
-  };
-
-  const token = jwt.sign(payload, config.jwtSecret);
-
-
-  if (type === '1') {
-    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Advertiser.create({
-          ADV_NAME: name,
-          ADV_EMAIL: email,
-          ADV_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.ADV_ID),
-            userName: result.dataValues.ADV_NAME,
-            regState: result.dataValues.ADV_FULL_REG,
-            social_type
-          });
-        });
-      } else {
+  Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
+    if (!result) {
+      Advertiser.create({
+        ADV_NAME: name,
+        ADV_EMAIL: email,
+        ADV_REG_ID: id
+      }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result.dataValues.ADV_ID),
-          userName: result.dataValues.ADV_NAME,
-          regState: result.dataValues.ADV_FULL_REG,
+          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userName: result2.dataValues.ADV_NAME,
+          userId: result2.ADV_ID,
           social_type
         });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  } else {
-    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Influenser.create({
-          INF_NAME: name,
-          INF_EMAIL: email,
-          INF_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.INF_ID),
-            userName: result.dataValues.INF_NAME,
-            social_type
-          });
-        });
-      } else {
-        res.json({
-          code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-          social_type
-        });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  }
+      });
+    } else {
+      res.json({
+        code: 200,
+        userToken: common.createToken(result.dataValues.ADV_ID),
+        userName: result.dataValues.ADV_NAME,
+        userId: result.ADV_ID,
+        userPhone: result.ADV_TEL,
+        social_type
+      });
+    }
+  }).error((err) => {
+    res.send('error has occured');
+  });
 });
 
 router.get('/loginNaver', (req, res) => {
@@ -627,66 +566,34 @@ router.get('/loginNaver', (req, res) => {
     id, email, name, type, social_type
   } = req.query;
 
-  const payload = {
-    sub: id
-  };
-
-  const token = jwt.sign(payload, config.jwtSecret);
-
-
-  if (type === '1') {
-    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Advertiser.create({
-          ADV_NAME: name,
-          ADV_EMAIL: email,
-          ADV_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.ADV_ID),
-            userName: result.dataValues.ADV_NAME,
-            social_type
-          });
-        });
-      } else {
+  Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
+    if (!result) {
+      Advertiser.create({
+        ADV_NAME: name,
+        ADV_EMAIL: email,
+        ADV_REG_ID: id
+      }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result.dataValues.ADV_ID),
-          userName: result.dataValues.ADV_NAME,
+          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userName: result2.dataValues.ADV_NAME,
+          userId: result2.ADV_ID,
           social_type
         });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  } else {
-    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Influenser.create({
-          INF_NAME: name,
-          INF_EMAIL: email,
-          INF_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.INF_ID),
-            userName: result.dataValues.INF_NAME,
-            social_type
-          });
-        });
-      } else {
-        res.json({
-          code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-          social_type
-        });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  }
+      });
+    } else {
+      res.json({
+        code: 200,
+        userToken: common.createToken(result.dataValues.ADV_ID),
+        userName: result.dataValues.ADV_NAME,
+        userId: result.ADV_ID,
+        userPhone: result.ADV_TEL,
+        social_type
+      });
+    }
+  }).error((err) => {
+    res.send('error has occured');
+  });
 });
 
 router.get('/loginKakao', (req, res) => {
@@ -694,61 +601,34 @@ router.get('/loginKakao', (req, res) => {
     id, email, name, type, social_type
   } = req.query;
 
-  if (type === '1') {
-    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Advertiser.create({
-          ADV_NAME: name,
-          ADV_EMAIL: email,
-          ADV_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.ADV_ID),
-            userName: result.dataValues.ADV_NAME,
-            regState: result.dataValues.ADV_FULL_REG,
-            social_type
-          });
-        });
-      } else {
+  Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
+    if (!result) {
+      Advertiser.create({
+        ADV_NAME: name,
+        ADV_EMAIL: email,
+        ADV_REG_ID: id
+      }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result.dataValues.ADV_ID),
-          userName: result.dataValues.ADV_NAME,
-          regState: result.dataValues.ADV_FULL_REG,
+          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userName: result2.dataValues.ADV_NAME,
+          userId: result2.ADV_ID,
           social_type
         });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  } else {
-    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Influenser.create({
-          INF_NAME: name,
-          INF_EMAIL: email,
-          INF_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: common.createToken(result.dataValues.INF_ID),
-            userName: result.dataValues.INF_NAME,
-            social_type
-          });
-        });
-      } else {
-        res.json({
-          code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-          social_type
-        });
-      }
-    }).error((err) => {
-      res.send('error has occured');
-    });
-  }
+      });
+    } else {
+      res.json({
+        code: 200,
+        userToken: common.createToken(result.dataValues.ADV_ID),
+        userName: result.dataValues.ADV_NAME,
+        userId: result.ADV_ID,
+        userPhone: result.ADV_TEL,
+        social_type
+      });
+    }
+  }).error((err) => {
+    res.send('error has occured');
+  });
 });
 
 router.get('/loginTwitch', (req, res) => {

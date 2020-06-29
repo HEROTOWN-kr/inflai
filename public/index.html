@@ -42,9 +42,16 @@
     </script>-->
 
     <script>
+        var facebookID;
+        if (window.location.host === 'inflai.com') {
+            facebookID = '663450957780119';
+        } else {
+            facebookID = '139193384125564';
+        }
+
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : '663450957780119',
+                appId      : facebookID,
                 cookie     : true,
                 xfbml      : true,
                 version    : 'v6.0'
