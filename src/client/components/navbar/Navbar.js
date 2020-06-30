@@ -166,6 +166,43 @@ function CustomNavbar(props) {
     }
   }
 
+  function UserMenuItems() {
+    return (
+      <div className="user-popmenu">
+        {props.user.type === '1'
+          ? (
+            <React.Fragment>
+              <Link
+                to="/Product"
+              >
+                <div className="pop-item"> 마케팅 요청</div>
+              </Link>
+              <Divider />
+            </React.Fragment>
+          )
+          : null
+        }
+        {userMenuCat.map(item => (
+          <div key={item.text}>
+            <Link
+              to={item.link}
+            >
+              <div className="pop-item">{item.text}</div>
+            </Link>
+            <Divider />
+          </div>
+        ))}
+        <Grid container justify="center" className="logout">
+          <Grid item>
+            <Box my={2}>
+              <LogOutButton {...props} />
+            </Box>
+          </Grid>
+        </Grid>
+      </div>
+    );
+  }
+
   /* useEffect(() => {
     function watchScroll() {
       window.addEventListener('scroll', logit);
@@ -225,39 +262,25 @@ function CustomNavbar(props) {
       onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
     >
-      {/* <List>
-        {menuLinks.map((link, index) => (
-          <ListItem button key={link.text} component={props => <Link to={link.link} {...props} />}>
-            <ListItemText primary={link.text} />
-          </ListItem>
-        ))}
-      </List> */}
-      <div className="user-popmenu">
-        <Link
-          className="link"
-          to="/Join/Type"
-        >
-          로그인 | 회원가입
-        </Link>
-        {userMenuCat.map(item => (
-          <div key={item.text}>
-            <Link
-              to={item.link}
-            >
-              <div className="pop-item">{item.text}</div>
-            </Link>
-            <Divider />
-          </div>
-        ))}
-        <Grid container justify="center" className="logout">
-          <Grid item>
-            <Box my={2}>
-              {/* <button>press</button> */}
-              <LogOutButton {...props} />
-            </Box>
-          </Grid>
-        </Grid>
-      </div>
+      {
+        props.user.name ? (
+          <UserMenuItems />
+        ) : (
+          <Box my={2}>
+            <Grid container justify="center">
+              <Grid item xs={7}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => props.history.push('/Join/Type')}
+                >
+                  로그인 | 회원가입
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        )
+      }
     </div>
   );
 
@@ -362,39 +385,13 @@ function CustomNavbar(props) {
                                 </Link>
                               </Grid>
                             )
-                            : (
-                              <Grid item>
-                                <Link
-                                  className="link"
-                                  to="/Influencer"
-                                >
-                                    인플루언서
-                                </Link>
-                              </Grid>
-                            )
+                            : null
                           }
 
-                          <Popper id={id} open={open} anchorEl={userMenu} onClose={handleClose}>
+                          <Popper id={id} open={open} anchorEl={userMenu} onClose={handleClose} className="popper-main">
                             <ClickAwayListener onClickAway={handleClose}>
-                              <div className="user-popmenu">
-                                {userMenuCat.map(item => (
-                                  <div key={item.text}>
-                                    <Link
-                                      to={item.link}
-                                    >
-                                      <div className="pop-item">{item.text}</div>
-                                    </Link>
-                                    <Divider />
-                                  </div>
-                                ))}
-                                <Grid container justify="center" className="logout">
-                                  <Grid item>
-                                    <Box my={2}>
-                                      {/* <button>press</button> */}
-                                      <LogOutButton {...props} />
-                                    </Box>
-                                  </Grid>
-                                </Grid>
+                              <div>
+                                <UserMenuItems />
                               </div>
                             </ClickAwayListener>
                           </Popper>

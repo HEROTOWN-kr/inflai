@@ -17,12 +17,11 @@ function SocialNetworks({
   history
 }) {
   let facebookID;
-  if (window.location.host === 'inflai.com') {
+  if (window.location.host === 'www.inflai.com') {
     facebookID = '663450957780119';
   } else {
     facebookID = '139193384125564';
   }
-
 
   function responseGoogle(response) {
     if (response) {
@@ -157,7 +156,7 @@ function SocialNetworks({
   return (
     <React.Fragment>
       <Grid container spacing={1}>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <GoogleLogin
             clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID
             buttonText="LOGIN WITH GOOGLE"
@@ -168,7 +167,7 @@ function SocialNetworks({
             )}
           />
         </Grid>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <FacebookLogin
             // appId="139193384125564"
             appId={facebookID}
@@ -180,7 +179,7 @@ function SocialNetworks({
             )}
           />
         </Grid>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <NaverLogin
             clientId="4rBF5bJ4y2jKn0gHoSCf"
             callbackUrl={`${window.location.origin}/Join/Advertiser/Login`}
@@ -189,7 +188,7 @@ function SocialNetworks({
             onFailure={result => responseNaver(result)}
           />
         </Grid>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <SocialButton clicked={kakaoLoginForm} icon={KakaoIcon} text="카카오 로그인" bgColor="#F7E317" textColor="#3C1E1E" />
         </Grid>
         {/* <Grid item md={12}>

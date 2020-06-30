@@ -180,7 +180,7 @@ function InfluencerSns({
             <SvgIcon component={item.icon} htmlColor="#ffffff" />
           </Box>
         </Grid>
-        <Grid item md={12}>
+        <Grid item xs={12}>
           <p>{item.text}</p>
         </Grid>
       </Grid>
@@ -242,47 +242,39 @@ function InfluencerSns({
 
   return (
     <div className="join-sns">
-      <Grid container justify="center">
-        <Grid item md={6}>
-          <Box py={4}>
-            <Grid container spacing={5} justify="center">
-              <GoogleLogin
-                clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
-                scope="profile email https://www.googleapis.com/auth/youtube.readonly"
-                responseType="code"
-                accessType="offline"
-                prompt="consent"
-                render={renderProps => (
-                  <button ref={GoogleButtonRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ display: 'none' }}>This is my custom Google button</button>
-                )}
-                onSuccess={responseGoogle}
-                onFailure={responseGoogle}
-              />
-              <NaverLogin
-                clientId="4rBF5bJ4y2jKn0gHoSCf"
+      <Box py={4}>
+        <GoogleLogin
+          clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID                buttonText="LOGIN WITH GOOGLE"
+          scope="profile email https://www.googleapis.com/auth/youtube.readonly"
+          responseType="code"
+          accessType="offline"
+          prompt="consent"
+          render={renderProps => (
+            <button ref={GoogleButtonRef} onClick={renderProps.onClick} disabled={renderProps.disabled} style={{ display: 'none' }}>This is my custom Google button</button>
+          )}
+          onSuccess={responseGoogle}
+          onFailure={responseGoogle}
+        />
+        <NaverLogin
+          clientId="4rBF5bJ4y2jKn0gHoSCf"
                 // callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
-                callbackUrl={`${window.location.origin}/Join/Influencer/sns`}
-                render={props => <div ref={NaverButtonRef} onClick={props.onClick} style={{ display: 'none' }}>Naver Login</div>}
-                isPopup="true"
-                onSuccess={result => responseNaver(result)}
-                onFailure={result => responseNaver(result)}
-              />
-              {/* <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a> */}
-              <InstagramDialog open={instaDialogOpen} closeDialog={toggleInstaDialog} facebookLogin={facebookLogin} />
-              <Grid item md={12} className="title">인플루언서 유형을 선택해주세요</Grid>
-              <Grid item md={12}>
-                <Grid container spacing={5}>
-                  {types.map(item => (
-                    <Grid item md={4} key={item.value}>
-                      <StyledRadio item={item} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </Grid>
+          callbackUrl={`${window.location.origin}/Join/Influencer/sns`}
+          render={props => <div ref={NaverButtonRef} onClick={props.onClick} style={{ display: 'none' }}>Naver Login</div>}
+          isPopup="true"
+          onSuccess={result => responseNaver(result)}
+          onFailure={result => responseNaver(result)}
+        />
+        {/* <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a> */}
+        <InstagramDialog open={instaDialogOpen} closeDialog={toggleInstaDialog} facebookLogin={facebookLogin} />
+        <div className="title">인플루언서 유형을 선택해주세요</div>
+        <Grid container spacing={1}>
+          {types.map(item => (
+            <Grid item xs={12} md={4} key={item.value}>
+              <StyledRadio item={item} />
             </Grid>
-          </Box>
+          ))}
         </Grid>
-      </Grid>
+      </Box>
     </div>
   );
 }

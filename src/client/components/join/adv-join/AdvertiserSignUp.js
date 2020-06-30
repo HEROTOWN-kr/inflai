@@ -61,100 +61,96 @@ function AdvertiserSignUp({
         {({
           values, errors, touched, handleChange, handleBlur, setFieldValue
         }) => (
-          <Grid container justify="center" className="signUpContent">
-            <Grid item md={3}>
-              <Box p={8} my={6} className="signUpForm">
-                <Form>
-                  <Grid container spacing={3}>
-                    <Grid item md={12} className="title">
-                      <h2>회워가입</h2>
-                    </Grid>
-                    <Grid item md={12}>
-                      <TextField
-                        fullWidth
-                        placeholder="이메일"
-                        name="email"
-                        className="text-field"
-                        value={values.email}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.email && touched.email ? <span className="error-message">{errors.email}</span> : null}
-                        margin="normal"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item md={12}>
-                      <TextField
-                        fullWidth
-                        placeholder="비밀번호"
-                        type="password"
-                        name="password"
-                        className="text-field"
-                        value={values.password}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.password && touched.password ? <span className="error-message">{errors.password}</span> : null}
-                        margin="normal"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item md={12}>
-                      <TextField
-                        fullWidth
-                        placeholder="비밀번호 확인"
-                        type="password"
-                        name="passwordConfirm"
-                        className="text-field"
-                        value={values.passwordConfirm}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.passwordConfirm && touched.passwordConfirm ? <span className="error-message">{errors.passwordConfirm}</span> : null}
-                        margin="normal"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    <Grid item md={12}>
-                      <TextField
-                        fullWidth
-                        placeholder="이름"
-                        name="name"
-                        className="text-field"
-                        value={values.name}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={errors.name && touched.name ? <span className="error-message">{errors.name}</span> : null}
-                        margin="normal"
-                        variant="outlined"
-                      />
-                    </Grid>
-                    {mainError.message
-                      ? (
-                        <Grid item md={12}>
-                          <Grid container justify="center">
-                            <Grid item>
-                              <div className="error-message">{mainError.message ? mainError.message : null}</div>
-                            </Grid>
-                          </Grid>
+          <Box py={6} px={{ xs: 4, md: 6 }} className="signUpForm">
+            <Form>
+              <Grid container spacing={3}>
+                <Grid item xs={12} className="title">
+                  <h2>회워가입</h2>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    placeholder="이메일"
+                    name="email"
+                    className="text-field"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors.email && touched.email ? <span className="error-message">{errors.email}</span> : null}
+                    margin="normal"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    placeholder="비밀번호"
+                    type="password"
+                    name="password"
+                    className="text-field"
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors.password && touched.password ? <span className="error-message">{errors.password}</span> : null}
+                    margin="normal"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    placeholder="비밀번호 확인"
+                    type="password"
+                    name="passwordConfirm"
+                    className="text-field"
+                    value={values.passwordConfirm}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors.passwordConfirm && touched.passwordConfirm ? <span className="error-message">{errors.passwordConfirm}</span> : null}
+                    margin="normal"
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    placeholder="이름"
+                    name="name"
+                    className="text-field"
+                    value={values.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={errors.name && touched.name ? <span className="error-message">{errors.name}</span> : null}
+                    margin="normal"
+                    variant="outlined"
+                  />
+                </Grid>
+                {mainError.message
+                  ? (
+                    <Grid item xs={12}>
+                      <Grid container justify="center">
+                        <Grid item>
+                          <div className="error-message">{mainError.message ? mainError.message : null}</div>
                         </Grid>
-                      ) : null
+                      </Grid>
+                    </Grid>
+                  ) : null
                     }
 
-                    <Grid item md={12}>
-                      <Button fullWidth type="submit" variant="contained" color="secondary" className="login-button">
+                <Grid item xs={12}>
+                  <Button fullWidth type="submit" variant="contained" color="secondary" className="login-button">
                               회원가입
-                      </Button>
-                    </Grid>
-                    <Grid item md={12}>
-                      <Divider variant="middle" />
-                    </Grid>
-                    <Grid item md={12} className="social-networks">
-                      <SocialNetworks changeUser={changeUser} history={history} />
-                    </Grid>
-                  </Grid>
-                </Form>
-              </Box>
-            </Grid>
-          </Grid>
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <Divider variant="middle" />
+                </Grid>
+                <Grid item xs={12} className="social-networks">
+                  <SocialNetworks changeUser={changeUser} history={history} />
+                </Grid>
+              </Grid>
+            </Form>
+          </Box>
         )}
       </Formik>
     </div>
