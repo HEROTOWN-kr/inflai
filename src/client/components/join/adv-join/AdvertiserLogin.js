@@ -18,14 +18,18 @@ function AdvertiserLogin({
     axios.post('/api/auth/login', values)
       .then((res) => {
         if (res.data.code === 200) {
-          changeUser({
-            social_type: res.data.social_type,
-            type: values.type,
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
-          history.push('/');
+          if (res.data.userPhone) {
+            changeUser({
+              social_type: res.data.social_type,
+              type: values.type,
+              token: res.data.userToken,
+              name: res.data.userName,
+              regState: res.data.regState
+            });
+            history.push('/');
+          } else {
+            history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+          }
         } else if (res.data.code === 401) {
           setMainError({ message: res.data.message });
         } else {
@@ -69,6 +73,7 @@ function AdvertiserLogin({
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    error={errors.email && touched.email}
                     placeholder="이메일"
                     name="email"
                     className="text-field"
@@ -83,6 +88,7 @@ function AdvertiserLogin({
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    error={errors.password && touched.password}
                     placeholder="비밀번호"
                     name="password"
                     type="password"

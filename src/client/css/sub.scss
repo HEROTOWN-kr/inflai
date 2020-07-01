@@ -738,7 +738,12 @@ $colorGreen: #49d049;
 }
 
 .influencer-page {
-  background-color: #F5F5F5;
+  box-sizing: border-box;
+  max-width: 780px;
+  margin: 50px auto;
+  .form {
+    border: 1px solid $colorGrey;
+  }
   .first-title {
     text-align: center;
     font-size: 65px;
@@ -907,12 +912,15 @@ $colorGreen: #49d049;
     border: 2px solid #dcd8d8;
     border-radius: 20px;
     color: #dcd8d8;
+    text-align: center;
     img {
       width: 150px;
       height: 150px;
       border-radius: 100%;
       transition: opacity 0.5s ease;
       opacity: 0.3;
+      display: block;
+      margin: 0 auto;
     }
     &:hover, &.selected {
       border-color: $colorRed;
@@ -925,7 +933,9 @@ $colorGreen: #49d049;
 }
 
 .register-detail {
-  padding: 70px;
+  box-sizing: border-box;
+  max-width: 940px;
+  margin: 50px auto;
   border: solid 1px $colorGrey;
   .main-title {
     margin-bottom: 12px;
@@ -997,15 +1007,17 @@ $colorGreen: #49d049;
 }
 
 .product {
-  .select-reg-type {
+  &.select-reg-type {
+    box-sizing: border-box;
+    max-width: 780px;
+    margin: 50px auto;
     text-align: center;
     font-weight: 700;
-    padding: 70px 50px;
     border: 1px solid $colorGrey;
-    border-radius: 30px;
     .title {
       .main-title {
         font-size: 24px;
+        text-align: center;
         &.second {
           font-size: 45px;
         }
@@ -1212,7 +1224,6 @@ $colorGreen: #49d049;
             cursor: pointer;
           }
         }
-
       }
     }
 
@@ -1574,7 +1585,13 @@ $colorGreen: #49d049;
 }
 
 .agency {
+  box-sizing: border-box;
+  max-width: 780px;
+  margin: 50px auto;
   color: #3f4653;
+  .form {
+    border: 1px solid $colorGrey;
+  }
   .main-title {
     font-size: 30px;
     font-weight: 700;
@@ -2503,6 +2520,49 @@ $colorGreen: #49d049;
     .signUpForm {
       margin: 0 auto;
       border: 0;
+    }
+  }
+  .register-detail {
+    margin: 0 auto;
+    border: 0;
+  }
+  .product {
+    &.select-reg-type {
+      margin: 0 auto;
+      border: 0;
+      .title {
+        .main-title {
+          font-size: 24px;
+          &.second {
+            font-size: 30px;
+          }
+          &.third {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+  .agency {
+    .form {
+      border: 0;
+    }
+    .main-title {
+      font-size: 26px;
+    }
+    .sub-title {
+      font-size: 12px;
+    }
+  }
+  .influencer-page {
+    .form {
+      border: 0;
+    }
+    .card {
+      img {
+        width: 100px;
+        height: 100px;
+      }
     }
   }
 }

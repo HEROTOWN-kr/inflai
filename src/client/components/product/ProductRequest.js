@@ -3,6 +3,8 @@ import {
   Field, Form, Formik, FormikProps, getIn, FieldProps, ErrorMessage, useField
 } from 'formik';
 
+import Slider from 'react-slick';
+
 import {
   Radio,
   FormControlLabel,
@@ -24,6 +26,9 @@ import axios from 'axios';
 import CheckWarning from './CheckWarning';
 import Common from '../../lib/common';
 
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 
 function ProductRequest(props) {
   const [prices, setPrices] = useState({
@@ -33,6 +38,32 @@ function ProductRequest(props) {
     mega: '',
     celebrity: '',
   });
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+    autoplay: true,
+    dots: true,
+    autoplaySpeed: 2000,
+    responsive: [
+      {
+        breakpoint: 500,
+        settings: { slidesToShow: 1, slidesToScroll: 1, infinite: false }
+      },
+      /* {
+        breakpoint: 768,
+        settings: { slidesToShow: 2, slidesToScroll: 2, infinite: false }
+      },
+      {
+        breakpoint: 1024,
+        settings: { slidesToShow: 3, slidesToScroll: 3, infinite: false }
+      } */
+    ]
+    // centerMode: true
+  };
 
   function getPrices() {
     axios.get('/api/TB_PRICE/').then((res) => {
@@ -187,6 +218,22 @@ function ProductRequest(props) {
         <Radio value={item.value} />
       </Grid>
     </Paper>
+  );
+
+  const StyledRadioTest = ({ item, selected }) => (
+      <Paper className={`card-new ${item.value === selected ? 'red' : null}`}>
+        <Grid container>
+          <Grid item md={2} className="icon">
+            <WarningIconOut />
+          </Grid>
+          <Grid item md={10} className="card-text">
+            <div className="main-title">{item.name}</div>
+            <div className="secondary-title">{item.title}</div>
+            <div className="description">{item.desc}</div>
+          </Grid>
+          <Radio value={item.value} />
+        </Grid>
+      </Paper>
   );
 
   function sumCount(values) {
@@ -362,6 +409,13 @@ function ProductRequest(props) {
                         <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
                       </FormControl>
                     </Grid>
+                    {/*<Grid item xs={12}>
+                      <Slider {...settings}>
+                        {campaignType.map(item => (
+                          <StyledRadioTest key={item.name} item={item} selected={values.type} />
+                        ))}
+                      </Slider>
+                    </Grid>*/}
                     {/* <Grid item md={12}>
                       <Grid container spacing={3}>
                         <Grid item md={6}>

@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
+import axios from 'axios';
 import {
   Field, Form, Formik, FormikProps, getIn, FieldProps, ErrorMessage, useField
 } from 'formik';
-import Grid from '@material-ui/core/Grid';
-import { Button, TextField } from '@material-ui/core';
-import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
-import axios from 'axios';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Common from '../../lib/common';
+import {
+  Grid,
+  Button,
+  TextField,
+  Box,
+  FormHelperText,
+  FormControl,
+  Select,
+  MenuItem,
+  InputAdornment
+} from '@material-ui/core';
 
 function AdvertiserDetail({
   // user,
@@ -73,8 +74,8 @@ function AdvertiserDetail({
       .required('이메일을 입력해주세요'),
     classification: Yup.string()
       .required('사업자 구분을 입력해주세요'),
-    registerNumber: Yup.string()
-      .required('사업자 등록번호를 입력해주세요'),
+    /*registerNumber: Yup.string()
+      .required('사업자 등록번호를 입력해주세요'),*/
     jobType: Yup.string()
       .required('직종을 입력해주세요'),
     name: Yup.string()
@@ -85,11 +86,6 @@ function AdvertiserDetail({
       .min(2, '너무 짧습니다!')
       .max(50, '너무 김니다')
       .required('회사 명을 입력해주세요'),
-    /* companyUrl: Yup.string()
-          .required('회사 홈페이지를 입력해주세요'),
-        subscribeAim: Yup.string()
-          .required('지역을 선택해주세요'), */
-
   });
 
   const MySelect = ({
@@ -209,44 +205,42 @@ function AdvertiserDetail({
           setFieldValue,
           setFieldTouched,
         }) => (
-          <Form className="wraper vertical2">
-            <Grid container justify="center">
-              <Grid item xs={12} md={9} lg={6} className="register-detail">
-                <div className="main-title">회원가입</div>
-                <div className="title">서비스 이용을 위해 회원정보를 입력해주세요.</div>
-                <Grid container spacing={4}>
-                  <Grid item xs={6}>
-                    <MyTextField name="email" type="text" label="이메일 아이디" />
-                    <MySelect name="classification" type="select" label="사업자 구분" />
-                    <MyTextField name="registerNumber" type="text" label="사업자 등록번호" />
-                    <MySelect name="jobType" type="select" label="기업구분" />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <MyTextField name="name" type="text" label="담당자 성함 / 직함" />
-                    <MyTextField name="phone" type="text" label="담당자 연락처 (번호만 입력)" />
-                    <MyTextField name="companyName" type="text" label="회사명" />
-                    <MyTextField name="companyUrl" type="text" label="회사 홈페이지 (선택)" />
-                    <MySelect name="subscribeAim" type="select" label="가입경로 (선택)" />
-                  </Grid>
+          <Form>
+            <Box p={{ xs: 5, md: 9 }} className="register-detail">
+              <div className="main-title">회원가입</div>
+              <div className="title">서비스 이용을 위해 회원정보를 입력해주세요.</div>
+              <Grid container spacing={4}>
+                <Grid item xs={12} sm={6}>
+                  <MyTextField name="email" type="text" label="이메일 아이디" />
+                  <MySelect name="classification" type="select" label="사업자 구분" />
+                  <MyTextField name="registerNumber" type="text" label="사업자 등록번호" />
+                  <MySelect name="jobType" type="select" label="기업구분" />
                 </Grid>
-                <Grid container justify="center">
-                  <Grid item xs={12}>
-                    <div className="agreement">
-                              INFLAI의
-                      {' '}
-                      <span>이용약관</span>
-                      {' '}
-                              및
-                      {' '}
-                      <span>개인정보취급방침에</span>
-                      {' '}
-                              동의합니다.
-                    </div>
-                  </Grid>
-                  <button className="submit-button" type="submit">무료가입</button>
+                <Grid item xs={12} sm={6}>
+                  <MyTextField name="name" type="text" label="담당자 성함 / 직함" />
+                  <MyTextField name="phone" type="text" label="담당자 연락처 (번호만 입력)" />
+                  <MyTextField name="companyName" type="text" label="회사명" />
+                  <MyTextField name="companyUrl" type="text" label="회사 홈페이지 (선택)" />
+                  <MySelect name="subscribeAim" type="select" label="가입경로 (선택)" />
                 </Grid>
               </Grid>
-            </Grid>
+              <Grid container justify="center">
+                <Grid item xs={12}>
+                  <div className="agreement">
+                              INFLAI의
+                    {' '}
+                    <span>이용약관</span>
+                    {' '}
+                              및
+                    {' '}
+                    <span>개인정보취급방침에</span>
+                    {' '}
+                              동의합니다.
+                  </div>
+                </Grid>
+                <button className="submit-button" type="submit">무료가입</button>
+              </Grid>
+            </Box>
           </Form>
         )}
       </Formik>

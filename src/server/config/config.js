@@ -24,8 +24,8 @@
   config.google_client_id = '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com';
   config.google_client_secret = 'HuxvpMOAlyMa_yZPR7j4FpFg';
   // config.google_client_redirect_url = 'http://localhost:8080/TB_ADVERTISER/Googletest1';
-  // config.google_client_redirect_url = 'http://localhost:3000';
-  config.google_client_redirect_url = 'https://www.inflai.com';
+  config.google_client_redirect_url = 'http://localhost:3000';
+  // config.google_client_redirect_url = 'https://www.inflai.com';
   config.google_api_key = 'AIzaSyArMk2Jue1FRfkT29_vVZ4qhLBvQpbJaOQ';
 
   // Exports ----------------------------------------------

@@ -65,11 +65,12 @@ function AdvertiserSignUp({
             <Form>
               <Grid container spacing={3}>
                 <Grid item xs={12} className="title">
-                  <h2>회워가입</h2>
+                  <h2>회원가입</h2>
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    error={errors.email && touched.email}
                     placeholder="이메일"
                     name="email"
                     className="text-field"
@@ -84,6 +85,7 @@ function AdvertiserSignUp({
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    error={errors.password && touched.password}
                     placeholder="비밀번호"
                     type="password"
                     name="password"
@@ -99,6 +101,7 @@ function AdvertiserSignUp({
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    error={errors.passwordConfirm && touched.passwordConfirm}
                     placeholder="비밀번호 확인"
                     type="password"
                     name="passwordConfirm"
@@ -114,6 +117,7 @@ function AdvertiserSignUp({
                 <Grid item xs={12}>
                   <TextField
                     fullWidth
+                    error={errors.name && touched.name}
                     placeholder="이름"
                     name="name"
                     className="text-field"

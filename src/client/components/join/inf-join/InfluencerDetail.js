@@ -79,7 +79,7 @@ function InfluencerDetail({
         <div className="label-holder">
           <label htmlFor={props.label}>{props.label}</label>
         </div>
-        <FormControl variant="outlined" className="select-field" fullWidth>
+        <FormControl error={meta.touched && meta.error} variant="outlined" className="select-field" fullWidth>
           <Select
             id={props.label}
             value={meta.value}
@@ -108,6 +108,7 @@ function InfluencerDetail({
           <label htmlFor={props.label}>{props.label}</label>
         </div>
         <TextField
+          error={meta.touched && meta.error}
           name={field.name}
           id={props.label}
           placeholder=""
@@ -130,13 +131,13 @@ function InfluencerDetail({
     selected
   }) {
     return (
-      <Grid container className={`card ${item.id === selected ? 'selected' : null}`} justify="center">
-        <Grid item>
+      <Grid container className={`card ${item.id === selected ? 'selected' : null}`}>
+        <Grid item xs={12} className="card-avatar">
           <Box pt={3}>
             <img src={item.picture} alt="avatar" />
           </Box>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} className="cart-text">
           <p>{item.username}</p>
         </Grid>
         <Radio value={item.id} style={{ display: 'none' }} />
@@ -145,183 +146,168 @@ function InfluencerDetail({
   }
 
   return (
-    <Grid container className="influencer-page wraper vertical2">
+    <div container className="influencer-page">
+      <div className="second-title">상세 정보 입력</div>
+      <Formik
+        initialValues={{
+          instaAccount: '',
+          instaList: igData,
+          nickName: userInfo.name,
+          email: userInfo.email,
+          country: 0,
+          region: '',
+          phone: '',
+          product: '',
+          blogUrl: '',
+          blogType: userInfo.blogType,
+          message: 0
+        }}
+        enableReinitialize
+        validationSchema={SignupSchema}
+        onSubmit={(values) => {
+          // same shape as initial values
+          // console.log(values);
+          const apiObj = { ...values, id: match.params.id };
 
-      <Grid item xs={12} className="second-title">
-              상세 정보 입력
-      </Grid>
-
-      <Grid item xs={12}>
-        <Grid container justify="center">
-          <Grid item md={5}>
-            <Formik
-              initialValues={{
-                instaAccount: '',
-                instaList: igData,
-                nickName: userInfo.name,
-                email: userInfo.email,
-                country: 0,
-                region: '',
-                phone: '',
-                product: '',
-                blogUrl: '',
-                blogType: userInfo.blogType,
-                message: 0
-              }}
-              enableReinitialize
-              validationSchema={SignupSchema}
-              onSubmit={(values) => {
-                // same shape as initial values
-                // console.log(values);
-                const apiObj = { ...values, id: match.params.id };
-
-                axios.post('/api/TB_INFLUENCER/instaUpdate', apiObj)
-                  .then((res) => {
-                    if (res.data.code === 200) {
-                      changeUser({
-                        social_type: res.data.social_type,
-                        type: '2',
-                        token: res.data.userToken,
-                        name: res.data.userName
-                      });
-                      history.push('/');
-                    } else if (res.data.code === 401) {
-                      console.log(res);
-                    } else {
-                      console.log(res);
-                    }
-                  })
-                  .catch(error => (error));
-              }}
-            >
-              {({
-                values, errors, touched, handleChange, handleBlur, setFieldValue, submitForm
-              }) => (
-                <Grid container>
-                  <Grid item md={12}>
-                    <div className="form">
-                      {
-                        userInfo.name
-                          ? (
-                            <Form>
-                              <Grid container spacing={5}>
-                                <Grid item md={12}>
-                                  <Grid container spacing={2}>
-                                    <Grid item md={6}>
-                                      <MyTextField name="nickName" label="닉네임" />
-                                    </Grid>
-                                    <Grid item md={6}>
-                                      <MyTextField name="email" label="이메일" />
-                                    </Grid>
-                                    <Grid item md={6}>
-                                      <MyTextField name="phone" label="전화번호" />
-                                    </Grid>
-                                  </Grid>
-                                </Grid>
-                                <Grid item md={12}>
-                                  <Divider />
-                                </Grid>
-                                <Grid item md={12}>
-                                  <Grid container spacing={2}>
-                                    <Grid item md={6}>
-                                      <MySelect name="country" type="select" label="시/도" countryIndex={values.country} />
-                                    </Grid>
-                                    <Grid item md={6}>
-                                      {
-                                                        values.country
-                                                          ? <MySelect name="region" type="select" countryIndex={values.country} label="구/군" />
-                                                          : null
-                                                    }
-                                    </Grid>
-                                  </Grid>
-                                </Grid>
-
-                                {
-                                      igData.length > 0
-                                        ? (
-                                          <React.Fragment>
-                                            <Grid item md={12}>
-                                              <Divider />
-                                            </Grid>
-                                            <Grid item md={12}>
-                                              <div className="label-holder">
-                                                <label htmlFor="인스타 계정">인스타 계정</label>
-                                              </div>
-                                              <FormControl fullWidth>
-                                                <RadioGroup row aria-label="instaAccount" name="instaAccount" value={values.instaAccount} onChange={event => setFieldValue('instaAccount', event.target.value)}>
-                                                  <Grid container spacing={2}>
-                                                    {igData.map(item => (
-                                                      <Grid item md={4} key={item.id}>
-                                                        <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.instaAccount} />} style={{ margin: '0' }} />
-                                                      </Grid>
-                                                    ))}
-                                                  </Grid>
-                                                </RadioGroup>
-                                                <FormHelperText id="my-helper-text">{errors.instaAccount && touched.instaAccount ? <span className="error-message">{errors.instaAccount}</span> : null}</FormHelperText>
-                                              </FormControl>
-                                            </Grid>
-                                          </React.Fragment>
-                                        )
-                                        : null
-                                  }
-                                <Grid item md={12}>
-                                  <Divider />
-                                </Grid>
-                                {
-                                      values.blogType === '3' ? (
-                                        <Grid item md={12}>
-                                          <MyTextField name="blogUrl" label="블로그 URL" />
-                                        </Grid>
-                                      ) : null
-                                  }
-                                <Grid item md={12}>
-                                  <MyTextField name="product" label="제품, 서비스" />
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <Grid container spacing={2}>
-                                    <Grid item>
-                                      <input type="checkbox" checked={values.message} style={{ margin: '0' }} onChange={e => setFieldValue('message', e.target.checked ? 1 : 0)} />
-                                    </Grid>
-                                    <Grid item>
-                                              카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.
-                                    </Grid>
-                                  </Grid>
-                                </Grid>
-                              </Grid>
-                            </Form>
-                          )
-                          : (
-                            <Grid container justify="center">
-                              <Grid item>
-                                <CircularProgress />
-                              </Grid>
+          axios.post('/api/TB_INFLUENCER/instaUpdate', apiObj)
+            .then((res) => {
+              if (res.data.code === 200) {
+                changeUser({
+                  social_type: res.data.social_type,
+                  type: '2',
+                  token: res.data.userToken,
+                  name: res.data.userName
+                });
+                history.push('/');
+              } else if (res.data.code === 401) {
+                console.log(res);
+              } else {
+                console.log(res);
+              }
+            })
+            .catch(error => (error));
+        }}
+      >
+        {({
+          values, errors, touched, handleChange, handleBlur, setFieldValue, submitForm
+        }) => (
+          <React.Fragment>
+            <Box px={{ xs: 3, md: 6 }} py={{ md: 8 }} className="form">
+              {
+                userInfo.name
+                  ? (
+                    <Form>
+                      <Grid container spacing={5}>
+                        <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                              <MyTextField name="nickName" label="닉네임" />
                             </Grid>
-                          )
-                        }
-                    </div>
-                  </Grid>
-                  <Grid item md={12}>
+                            <Grid item xs={12} sm={6}>
+                              <MyTextField name="email" label="이메일" />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <MyTextField name="phone" label="전화번호" />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Divider />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6}>
+                              <MySelect name="country" type="select" label="시/도" countryIndex={values.country} />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              {
+                                                values.country
+                                                  ? <MySelect name="region" type="select" countryIndex={values.country} label="구/군" />
+                                                  : null
+                                            }
+                            </Grid>
+                          </Grid>
+                        </Grid>
+
+                        {
+                              igData.length > 0
+                                ? (
+                                  <React.Fragment>
+                                    <Grid item xs={12}>
+                                      <Divider />
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                      <div className="label-holder">
+                                        <label htmlFor="인스타 계정">인스타 계정</label>
+                                      </div>
+                                      <FormControl fullWidth>
+                                        <RadioGroup row aria-label="instaAccount" name="instaAccount" value={values.instaAccount} onChange={event => setFieldValue('instaAccount', event.target.value)}>
+                                          <Grid container spacing={2}>
+                                            {igData.map(item => (
+                                              <Grid item xs={6} sm={4} key={item.id}>
+                                                {/* <FormControlLabel value="1" control={<StyledRadio item={item} selected={values.instaAccount} />} style={{ margin: '0' }} /> */}
+                                                <label>
+                                                  <StyledRadio item={item} selected={values.instaAccount} />
+                                                </label>
+                                              </Grid>
+                                            ))}
+                                          </Grid>
+                                        </RadioGroup>
+                                        <FormHelperText id="my-helper-text">{errors.instaAccount && touched.instaAccount ? <span className="error-message">{errors.instaAccount}</span> : null}</FormHelperText>
+                                      </FormControl>
+                                    </Grid>
+                                  </React.Fragment>
+                                )
+                                : null
+                          }
+                        <Grid item xs={12}>
+                          <Divider />
+                        </Grid>
+                        {
+                              values.blogType === '3' ? (
+                                <Grid item xs={12}>
+                                  <MyTextField name="blogUrl" label="블로그 URL" />
+                                </Grid>
+                              ) : null
+                          }
+                        <Grid item xs={12}>
+                          <MyTextField name="product" label="제품, 서비스" />
+                        </Grid>
+                        <Grid item xs={12}>
+                          <input id="kakaoCheck" type="checkbox" checked={values.message} style={{ margin: '0' }} onChange={e => setFieldValue('message', e.target.checked ? 1 : 0)} />
+                          <label htmlFor="kakaoCheck">
+                            {' 카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.'}
+                          </label>
+                        </Grid>
+                      </Grid>
+                    </Form>
+                  )
+                  : (
                     <Grid container justify="center">
-                      <Grid item md={6}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          fullWidth
-                          className="submit-button"
-                          onClick={submitForm}
-                        >
-                                                  저장
-                        </Button>
+                      <Grid item>
+                        <CircularProgress />
                       </Grid>
                     </Grid>
-                  </Grid>
-                </Grid>
-              )}
-            </Formik>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+                  )
+                }
+            </Box>
+            <Grid container justify="center">
+              <Grid item xs={6}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  className="submit-button"
+                  onClick={submitForm}
+                >
+                                                  저장
+                </Button>
+              </Grid>
+            </Grid>
+          </React.Fragment>
+        )}
+      </Formik>
+    </div>
   );
 }
 
