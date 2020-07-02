@@ -45,7 +45,7 @@ function ProductRequest(props) {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
-    autoplay: true,
+    autoplay: false,
     dots: true,
     autoplaySpeed: 2000,
     responsive: [
@@ -220,7 +220,10 @@ function ProductRequest(props) {
     </Paper>
   );
 
-  const StyledRadioTest = ({ item, selected }) => (
+  const StyledRadioTest = ({ item, selected }) => {
+    const [field, meta, helpers] = useField('type');
+
+    return (
       <Paper className={`card-new ${item.value === selected ? 'red' : null}`}>
         <Grid container>
           <Grid item md={2} className="icon">
@@ -231,10 +234,14 @@ function ProductRequest(props) {
             <div className="secondary-title">{item.title}</div>
             <div className="description">{item.desc}</div>
           </Grid>
-          <Radio value={item.value} />
+          <Radio
+            value={item.value}
+            onChange={event => helpers.setValue(event.target.value)}
+          />
         </Grid>
       </Paper>
-  );
+    );
+  };
 
   function sumCount(values) {
     let sum = 0;
@@ -409,13 +416,15 @@ function ProductRequest(props) {
                         <FormHelperText id="my-helper-text">{errors.type && touched.type ? <span className="error-message">{errors.type}</span> : null}</FormHelperText>
                       </FormControl>
                     </Grid>
-                    {/*<Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                       <Slider {...settings}>
                         {campaignType.map(item => (
-                          <StyledRadioTest key={item.name} item={item} selected={values.type} />
+                          <label>
+                            <StyledRadioTest key={item.name} item={item} selected={values.type} />
+                          </label>
                         ))}
                       </Slider>
-                    </Grid>*/}
+                    </Grid> */}
                     {/* <Grid item md={12}>
                       <Grid container spacing={3}>
                         <Grid item md={6}>

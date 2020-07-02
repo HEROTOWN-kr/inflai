@@ -60,7 +60,7 @@ router.get('/detail', (req, res) => {
   const { id } = data;
 
   RequestAgency.findOne({
-    attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_EMAIL', 'REQ_TEL', 'REQ_BRAND', 'REQ_AIM', 'REQ_ANOTHER_AIM', 'REQ_BUDJET', 'REQ_CONSULT', 'REQ_OTHER',
+    attributes: ['REQ_ID', 'ADV_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_EMAIL', 'REQ_TEL', 'REQ_BRAND', 'REQ_AIM', 'REQ_ANOTHER_AIM', 'REQ_BUDJET', 'REQ_CONSULT', 'REQ_OTHER',
       [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
     where: { REQ_ID: id },
     include: [

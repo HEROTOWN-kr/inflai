@@ -37,6 +37,49 @@ router.post('/createAd', (req, res) => {
   });
 });
 
+router.post('/adminCreateAd', (req, res) => {
+  const data = req.body;
+
+  const post = {
+    ADV_ID: data.advId,
+    AD_TYPE: data.type,
+    AD_PROD_PRICE: data.price,
+    AD_PRICE: (data.nanoSum + data.microSum + data.macroSum + data.megaSum + data.celebritySum + data.videoPrice).toString()
+  };
+
+
+  if (data.reuse) post.AD_PROD_REUSE = 'Y';
+  if (data.nano) post.AD_INF_NANO = data.nano;
+  if (data.micro) post.AD_INF_MICRO = data.micro;
+  if (data.macro) post.AD_INF_MACRO = data.macro;
+  if (data.mega) post.AD_INF_MEGA = data.mega;
+  if (data.celebrity) post.AD_INF_CELEB = data.celebrity;
+
+  if (data.name) post.AD_PROD_NAME = data.name;
+  if (data.searchDate) post.AD_SRCH_END = data.searchDate;
+  if (data.finishDate) post.AD_POST_END = data.finishDate;
+  if (data.startSearch) post.AD_SRCH_START = data.startSearch;
+  if (data.typeCategory) post.AD_CTG = JSON.stringify(data.typeCategory);
+  if (data.channel) post.AD_CHANNEL = JSON.stringify(data.channel);
+  if (data.presidentName) post.AD_COMP_NAME = data.presidentName;
+  if (data.about) post.AD_ABOUT = data.about;
+  if (data.tags) post.AD_TAGS = data.tags;
+  if (data.photo) post.AD_PHOTO = JSON.stringify(data.photo);
+
+
+  /* res.json({
+    code: 200,
+    data: post
+  }); */
+
+  Advertise.create(post).then((result) => {
+    res.json({
+      code: 200,
+      id: result.dataValues.AD_ID,
+    });
+  });
+});
+
 router.post('/updateAd', (req, res) => {
   const data = req.body;
   const { id } = data;
