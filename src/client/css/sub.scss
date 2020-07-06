@@ -8,7 +8,7 @@ $colorRed: #fa4616;
 $colorRed2: #de2e2e;
 $colorGrey: #dfe2e8;
 $colorGreen: #49d049;
-
+$colorPink: #fbbaba;
 
 .error-message {
   color: red;
@@ -545,6 +545,9 @@ $colorGreen: #49d049;
         height: 85%;
       }
     }
+    .detail-mobile {
+      display: none;
+    }
   }
   .rating {
     .rating-container {
@@ -607,37 +610,41 @@ $colorGreen: #49d049;
     }
   }
   .register-link {
-    //margin: 150px 0;
     .title-holder {
-      margin-bottom: 136px;
+      margin-bottom: 75px;
+      text-align: center;
       .main-title {
-        font-size: 106px;
+        font-size: 60px;
         color: $colorBlue;
         font-weight: bold;
       }
       .second-title {
-        font-size: 40px;
+        font-size: 26px;
       }
     }
-
-    .y-wrap {
-      margin: 193px 0;
-    }
-    .job-type {
-      font-size: 40px;
-      margin: 35px 0;
-    }
-    .influencer {
-      background: $colorBlue;
-      color: $colorBg;
-      .func-button {
+    .link-field {
+      max-width: 900px;
+      margin: 0 auto;
+      .user-card {
         color: $colorBg;
-        border-color: $colorBg;
-      }
-    }
-    .advertiser {
-      img {
-        //padding-top: 47px
+        text-align: center;
+        background: $colorPink;
+        border-radius: 44px;
+        &.influencer {
+          background: $colorBlue;
+        }
+        img {
+          width: 100%;
+          height: 360px;
+        }
+        p {
+          font-size: 40px;
+          margin: 35px 0;
+        }
+        .func-button {
+          color: $colorBg;
+          border-color: $colorBg;
+        }
       }
     }
   }
@@ -1625,7 +1632,7 @@ $colorGreen: #49d049;
       transition: border-color 0.5s ease, color 0.5s ease, background-color 0.7s ease;
       box-sizing: border-box;
       border: 10px solid $colorBg;
-      background-color: #fbbaba;
+      background-color: $colorPink;
       border-radius: 44px;
       &.blue {
         background-color: $colorBlue;
@@ -1847,7 +1854,7 @@ $colorGreen: #49d049;
 
 .campaign-list {
   max-width: 1140px;
-  padding: 100px 0;
+  margin: 0 auto;
   .campaign-item {
     &:hover {
       cursor: pointer;
@@ -1858,6 +1865,10 @@ $colorGreen: #49d049;
     }
     .tags {
       color: #999;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      word-break: break-all;
     }
     .title {
       font-size: 1.1em;
@@ -2001,125 +2012,6 @@ $colorGreen: #49d049;
         border-left: 512px solid transparent;
       }
     }
-    /*.about {
-      .text {
-        min-height: 278px;
-        .title {
-          font-weight: bold;
-          font-size: 47px;
-          color: $colorBlue;
-        }
-        .main-text {
-          font-size: 30px;
-          color: #454545;
-        }
-        .text-footer {
-          font-size: 14px;
-          color: #454545;
-        }
-      }
-      .image {
-        img {
-          width: 88%;
-          height: 83%;
-        }
-      }
-    }*/
-    /*.profit {
-      //height: 1030px;
-      .content {
-        height: 660px;
-        .title {
-          font-size: 38px;
-          margin: 30px 0;
-        }
-        .main-text {
-          font-size: 15px;
-          margin-bottom: 88px;
-        }
-        .detail {
-
-        }
-      }
-      .func-button {
-        padding-left: 20px;
-        padding-right: 20px;
-      }
-      !*.detail {
-        min-height: 290px;
-        margin-bottom: 85px;
-        img {
-          right: -5%;
-          top: 18%;
-          &.left {
-            right: 105%;
-          }
-        }
-        .profit-name {
-          font-size: 24px;
-        }
-        .profit-desc {
-          font-size: 13px;
-        }
-      }*!
-      .laptop {
-        .laptop-image {
-          height: 256px;
-        }
-      }
-    }*/
-    /*.rating {
-      margin: 300px 0;
-      img {
-        width: 75%;
-      }
-      .title {
-        font-size: 51px;
-        margin: 41px 0;
-      }
-      .main-text {
-        font-size: 14px;
-      }
-    }*/
-    /*.service {
-      margin: 200px 0;
-      .main-text {
-        margin: 0 0 120px 0;
-        font-size: 100px;
-      }
-      .category-name {
-        img {
-          left: -3%;
-        }
-      }
-    }*/
-    .register-link {
-      .title-holder {
-        margin-bottom: 80px;
-        .main-title {
-          font-size: 55px;
-        }
-        .second-title {
-          font-size: 23px;
-        }
-        .arrow-image {
-          width: 17%;
-        }
-      }
-      .y-wrap {
-        margin: 135px 0;
-      }
-      .link-field {
-        img {
-          width: 65%;
-        }
-      }
-      .advertiser {
-        img {
-          //padding-top: 62px;
-        }
-      }
-    }
     .influencer-list {
       margin: 190px 0;
       .main-title {
@@ -2205,6 +2097,22 @@ $colorGreen: #49d049;
         border-left: 455px solid transparent;
       }
     }
+    .about {
+      .about-container {
+        max-width: 900px;
+        .text {
+          .title {
+            font-size: 33px;
+          }
+          .main-text {
+            font-size: 18px;
+          }
+          .text-footer {
+            font-size: 10px;
+          }
+        }
+      }
+    }
     .influencer-list {
       margin: 190px 0;
       .main-title {
@@ -2231,6 +2139,9 @@ $colorGreen: #49d049;
         }
       }
     }
+  }
+  .campaign-list {
+    max-width: 900px;
   }
 }
 
@@ -2289,26 +2200,6 @@ $colorGreen: #49d049;
         border-left: 341px solid transparent;
       }
     }
-    .about {
-      .text {
-        min-height: 216px;
-        .title {
-          font-size: 33px;
-        }
-        .main-text {
-          font-size: 18px;
-        }
-        .text-footer {
-          font-size: 10px;
-        }
-      }
-      .image {
-        img {
-          width: 88%;
-          height: 83%;
-        }
-      }
-    }
     .profit {
       height: 1030px;
       .content {
@@ -2349,58 +2240,6 @@ $colorGreen: #49d049;
       .laptop {
         .laptop-image {
           height: 256px;
-        }
-      }
-    }
-    /*.rating {
-      margin: 155px 0;
-      img {
-        width: 65%;
-      }
-      .title {
-        font-size: 41px;
-        margin: 31px 0;
-      }
-      .main-text {
-        font-size: 11px;
-      }
-    }*/
-    /*.service {
-      margin: 150px 0;
-      .main-text {
-        margin: 0 0 100px 0;
-        font-size: 90px;
-      }
-      .category-name {
-        img {
-          left: -3%;
-        }
-      }
-    }*/
-    .register-link {
-      .title-holder {
-        margin-bottom: 80px;
-        .main-title {
-          font-size: 55px;
-        }
-        .second-title {
-          font-size: 23px;
-        }
-        .arrow-image {
-          width: 17%;
-        }
-      }
-      .y-wrap {
-        margin: 135px 0;
-      }
-      .link-field {
-        img {
-          width: 65%;
-        }
-      }
-      .advertiser {
-        img {
-          //padding-top: 62px;
         }
       }
     }
@@ -2500,8 +2339,94 @@ $colorGreen: #49d049;
         border-left: 320px solid transparent;
       }
     }
+    .register-link {
+      .title-holder {
+        margin-bottom: 75px;
+        .main-title {
+          font-size: 7vw;
+        }
+        .second-title {
+          font-size: 4.5vw;
+        }
+        .arrow-image {
+          width: 35vw;
+        }
+      }
+      .link-field {
+        .user-card {
+          img {
+            height: 35vw;
+          }
+          p {
+            font-size: 4.5vw;
+            margin: 3vw;
+          }
+        }
+        //max-width: 400px;
+      }
+    }
+    .about {
+      .about-container {
+        .about-image {
+          img {
+            width: 50vw;
+            display: block;
+            margin: 0 auto;
+          }
+        }
+        .text {
+          text-align: center;
+          .title {
+            font-size: 33px;
+          }
+          .main-text {
+            font-size: 18px;
+          }
+          .text-footer {
+            font-size: 10px;
+          }
+        }
+      }
+    }
+    .profit {
+      height: auto;
+      .profit-container {
+        .title {
+          font-size: 5vw;
+        }
+        .main-text {
+          font-size: 2vw;
+        }
+        .detail {
+          .laptop {
+            display: none;
+          }
+        }
+        .detail-mobile {
+          display: block;
+          text-align: center;
+          .card {
+            border: 1px solid $colorBg;
+            .profit-name {
+              font-size: 30px;
+              font-weight: bold;
+            }
+            .profit-desc {
 
+            }
+          }
+        }
+      }
+    }
   }
+  .campaign-list {
+    .campaign-item {
+      img {
+        height: 40vw;
+      }
+    }
+  }
+
   .campaign-detail {
     max-width: 700px;
   }
@@ -2605,68 +2530,8 @@ $colorGreen: #49d049;
         border-left: 341px solid transparent;
       }
     }
-    .about {
-      .text {
-        min-height: 216px;
-        .title {
-          font-size: 33px;
-        }
-        .main-text {
-          font-size: 18px;
-        }
-        .text-footer {
-          font-size: 10px;
-        }
-      }
-      .image {
-        img {
-          width: 88%;
-          height: 83%;
-        }
-      }
-    }
     .profit {
-      height: 1030px;
-      .content {
-        height: 660px;
-        .title {
-          font-size: 38px;
-          margin: 30px 0;
-        }
-        .main-text {
-          font-size: 15px;
-          margin-bottom: 88px;
-        }
-        .detail {
 
-        }
-      }
-      .func-button {
-        padding-left: 20px;
-        padding-right: 20px;
-      }
-      .detail {
-        min-height: 290px;
-        margin-bottom: 85px;
-        img {
-          right: -5%;
-          top: 18%;
-          &.left {
-            right: 105%;
-          }
-        }
-        .profit-name {
-          font-size: 24px;
-        }
-        .profit-desc {
-          font-size: 13px;
-        }
-      }
-      .laptop {
-        .laptop-image {
-          height: 256px;
-        }
-      }
     }
     .rating {
       img {
@@ -2694,31 +2559,7 @@ $colorGreen: #49d049;
       }
     }
     .register-link {
-      .title-holder {
-        margin-bottom: 80px;
-        .main-title {
-          font-size: 55px;
-        }
-        .second-title {
-          font-size: 23px;
-        }
-        .arrow-image {
-          width: 17%;
-        }
-      }
-      .y-wrap {
-        margin: 135px 0;
-      }
-      .link-field {
-        img {
-          width: 65%;
-        }
-      }
-      .advertiser {
-        img {
-          padding-top: 62px;
-        }
-      }
+
     }
     .influencer-list {
       margin: 160px 0;
@@ -2749,9 +2590,27 @@ $colorGreen: #49d049;
   }
 }
 
-@media only screen and (max-width: 640px) {
+@media only screen and (max-width: 600px) {
+  .home {
+    .register-link {
+      .title-holder {
+        margin-bottom: 30px;
+      }
+      .link-field {
+        max-width: 350px;
+      }
+    }
+  }
   .class{
     height: 300px;
+  }
+  .campaign-list {
+    .campaign-item {
+      font-size: 12px;
+      .title {
+        font-size: 14px;
+      }
+    }
   }
   .campaign-detail {
     max-width: 350px;
@@ -2796,74 +2655,10 @@ $colorGreen: #49d049;
       }
     }
     .about {
-      .text {
-        min-height: 216px;
-        .title {
-          font-size: 44px;
-          justify-content: center;
-          margin-top: 30px;
-        }
-        .main-text {
-          font-size: 21px;
-          margin-top: 32px;
-          text-align: center;
-        }
-        .text-footer {
-          font-size: 14px;
-          text-align: center;
-          margin-top: 60px;
-        }
-      }
-      .image {
-        justify-content: center;
-        img {
-          width: 100%;
-        }
-      }
+
     }
     .profit {
-      height: 1030px;
-      .content {
-        height: 977px;
-        .title {
-          font-size: 26px;
-          margin: 30px 0;
-        }
-        .main-text {
-          font-size: 10px;
-          margin-bottom: 46px;
-        }
-        .detail {
 
-        }
-      }
-      .func-button {
-        padding-left: 20px;
-        padding-right: 20px;
-      }
-      .detail {
-        min-height: 290px;
-        margin-bottom: 85px;
-        img {
-          right: -5%;
-          top: 18%;
-          &.left {
-            right: 105%;
-          }
-        }
-        .profit-name {
-          font-size: 24px;
-        }
-        .profit-desc {
-          font-size: 13px;
-        }
-      }
-      .laptop {
-        .laptop-image {
-          height: 133px;
-          margin: 20px 0;
-        }
-      }
     }
     .rating {
       img {
@@ -2896,32 +2691,7 @@ $colorGreen: #49d049;
       }
     }
     .register-link {
-      .title-holder {
-        margin-bottom: 0;
-        .main-title {
-          font-size: 41px;
-        }
-        .second-title {
-          font-size: 17px;
-          margin-top: 10px;
-        }
-        .arrow-image {
-          width: 50%;
-        }
-      }
-      .y-wrap {
-        margin: 40px 0;
-      }
-      .link-field {
-        img {
-          width: 65%;
-        }
-      }
-      .advertiser {
-        img {
-          padding-top: 62px;
-        }
-      }
+
     }
     .influencer-list {
       margin: 90px 0;
@@ -2991,30 +2761,7 @@ $colorGreen: #49d049;
       }
     }
     .about {
-      .text {
-        min-height: 216px;
-        .title {
-          font-size: 44px;
-          justify-content: center;
-          margin-top: 30px;
-        }
-        .main-text {
-          font-size: 21px;
-          margin-top: 32px;
-          text-align: center;
-        }
-        .text-footer {
-          font-size: 14px;
-          text-align: center;
-          margin-top: 60px;
-        }
-      }
-      .image {
-        justify-content: center;
-        img {
-          width: 100%;
-        }
-      }
+
     }
     .profit {
       height: 1030px;
@@ -3091,32 +2838,7 @@ $colorGreen: #49d049;
       }
     }
     .register-link {
-      .title-holder {
-        margin-bottom: 0;
-        .main-title {
-          font-size: 41px;
-        }
-        .second-title {
-          font-size: 17px;
-          margin-top: 10px;
-        }
-        .arrow-image {
-          width: 50%;
-        }
-      }
-      .y-wrap {
-        margin: 40px 0;
-      }
-      .link-field {
-        img {
-          width: 65%;
-        }
-      }
-      .advertiser {
-        img {
-          padding-top: 62px;
-        }
-      }
+
     }
     .influencer-list {
       margin: 90px 0;

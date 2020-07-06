@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import { boxSizing, height, spacing } from '@material-ui/system';
 import * as Scroll from 'react-scroll';
 import '../../css/sub.scss';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { Box, Button, Hidden } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
+import {
+  Box, Button, Hidden, Divider, Grid, Paper
+} from '@material-ui/core';
 import Slider from 'react-slick';
 import axios from 'axios';
 import TitleImage from '../../img/home-title.png';
@@ -49,6 +48,10 @@ import Dot from '../../img/dot.png';
 import Rectangle from '../../img/rectangle.png';
 import Greeting from './Greeting';
 import SimpleSlider from './SimpleSlider';
+import CampaignAll from '../campaignList/CampaignAll';
+import RegisterLink from './RegisterLink';
+import About from './About';
+import Profit from './Profit';
 
 // import NaverLogin from 'react-naver-login';
 
@@ -279,160 +282,14 @@ function Home(props) {
 
   return (
     <div className="home">
-      <Greeting />
-      <div className="register-link">
-        <div className="title-holder">
-          <Grid container justify="center">
-            <div className="main-title">서비스 둘러보기</div>
-          </Grid>
-          <Grid container justify="center">
-            <div className="second-title">INFLAi로 최적의 효과를 누려보세요</div>
-          </Grid>
-          <Grid container justify="center">
-            <img src={Arrow} className="arrow-image" />
-          </Grid>
-        </div>
-        <Grid container className="link-field">
-          <Grid xs={12} md={6} className="advertiser">
-            <div className="y-wrap">
-              <Grid container justify="center">
-                <img src={Advertiser} />
-              </Grid>
-              <Grid container justify="center">
-                <div className="job-type">광고주</div>
-              </Grid>
-              <Grid container justify="center" alignContent="flex-end">
-                <Button variant="outlined" className="func-button">Request demo</Button>
-              </Grid>
-            </div>
-          </Grid>
-          <Grid xs={12} md={6} className="influencer">
-            <div className="y-wrap">
-              <Grid container justify="center">
-                <img src={Influencer} />
-              </Grid>
-              <Grid container justify="center">
-                <div className="job-type">인플루언서</div>
-              </Grid>
-              <Grid container justify="center">
-                <Button variant="outlined" className="func-button">Sign Up</Button>
-              </Grid>
-            </div>
-          </Grid>
-        </Grid>
-      </div>
+      {/* <Greeting /> */}
+      <CampaignAll history={props.history} />
+      <Divider variant="middle" />
+      <RegisterLink />
+      <Divider variant="middle" />
       <ElementLink name="target" />
-      <Box py={32} className="about">
-        <Grid container justify="center">
-          <Grid item className="about-container">
-            <Grid container justify="space-between" alignItems="center">
-              <Grid item md={8} className="about-image">
-                <img src={AboutImage} />
-              </Grid>
-              <Grid item md={3}>
-                <Grid container className="text" spacing={3}>
-                  <Grid item xs={12} className="title">
-                    INFL
-                    <span style={FontSettings.aqua}>Ai</span>
-                  </Grid>
-                  <Hidden smDown>
-                    <Grid item xs={12} className="main-text">
-                      아직도 팔로워나
-                      <br />
-                      좋아요 숫자에 연연하시나요?
-                      <br />
-                      구매전환율이 높은
-                      <br />
-                      인플루언서를 매칭해드립니다.
-                    </Grid>
-                  </Hidden>
-                  <Hidden smUp>
-                    <Grid item xs={12} className="main-text">
-                      아직도 팔로워나 좋아요 숫자에 연연하시나요? 구매전환율이 높은 인플루언서를 매칭해드립니다.
-                    </Grid>
-                  </Hidden>
-                  <Grid item xs={12} className="text-footer">
-                    AI 분석결과 추천된 인플루언서들은 다음과 같은 이유로
-                    <br />
-                    INFLAI 의 우수성을 증명해줍니다.
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Box>
-      <Box py={28} className="profit">
-        <Grid container justify="center">
-          <Grid item className="profit-container">
-            <Grid container spacing={6}>
-              <Grid item xs={12}>
-                <div className="title">
-                  데이터 기반 정보마케팅
-                  <span>을 통한 ROI 상승</span>
-                </div>
-              </Grid>
-              <Grid item xs={12}>
-                <div className="main-text">
-                  우리의 알고리즘은 당신의 제품을 가장 우수하고 가장 관련성이 높은 인플루언서와 매칭시켜,
-                  <br />
-                  결과적으로 최종 소비자에게 좋은 영향을 주게됩니다.
-                  <br />
-                  인플루언서들에게 우리는 그들의 팔로워들이 좋아할 서비스나 제품을 제공합니다.
-                </div>
-              </Grid>
-              <Grid item xs={12} className="detail">
-                <Box py={6}>
-                  <Grid container justify="space-between">
-                    <Grid item xs={3}>
-                      <Grid container spacing={4} style={FontSettings.textRight}>
-                        {Profits.leftCategory.map(item => (
-                          <Grid key={item.name} item xs={12}>
-                            <div className="profit-name">
-                              {item.name}
-                              <img src={Dot} />
-                            </div>
-                            <div className="profit-desc">
-                              {item.desc}
-                            </div>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={5} className="laptop">
-                      <Grid container alignItems="center" style={{ height: '100%' }}>
-                        <img src={Laptop} alt="" />
-                      </Grid>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Grid container spacing={4}>
-                        {Profits.rightCategory.map(item => (
-                          <Grid key={item.name} item xs={12}>
-                            <div className="profit-name">
-                              {item.name}
-                              <img className="left" src={Dot} />
-                            </div>
-                            <div className="profit-desc">
-                              {item.desc}
-                            </div>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Grid>
-              <Grid item xs={12}>
-                <Grid container justify="center">
-                  <Grid item>
-                    <Button variant="outlined" className="func-button">Read More</Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Box>
+      <About FontSettings={FontSettings} />
+      <Profit FontSettings={FontSettings} Profits={Profits} />
       <Box py={30} className="rating">
         <Grid container justify="center">
           <Grid container spacing={3} item className="rating-container">

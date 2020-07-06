@@ -8,7 +8,7 @@ function Payment({
 }) {
   const userCode = 'imp16565297';
 
-  const data = {
+  const dataKCP = {
     pg: 'kcp',
     pay_method: 'card',
     merchant_uid: item_data.AD_UID,
@@ -23,6 +23,22 @@ function Payment({
     request_id: 'req_1585878201926',
     tier_code: undefined,
     // data: item_data
+  };
+
+  const data = {
+    pg: 'danal_tpay',
+    pay_method: 'card',
+    merchant_uid: item_data.AD_UID,
+    name: item_data.AD_PROD_NAME,
+    // amount: item_data.AD_PRICE,
+    amount: '100',
+    currency: 'KRW',
+    buyer_name: item_data.TB_ADVERTISER.ADV_COM_NAME,
+    buyer_tel: item_data.TB_ADVERTISER.ADV_TEL,
+    buyer_email: item_data.TB_ADVERTISER.ADV_EMAIL,
+    escrow: undefined,
+    request_id: 'req_1585878201926',
+    tier_code: undefined,
   };
 
   function callback(response) {
