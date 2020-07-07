@@ -6,12 +6,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import {
   Box, Button, Hidden, Divider, Grid, Paper
 } from '@material-ui/core';
-import Slider from 'react-slick';
-import axios from 'axios';
-import TitleImage from '../../img/home-title.png';
-import AboutImage from '../../img/home-about.png';
-import RatingImage from '../../img/rating.png';
-
 import categoryOne from '../../img/icons/one.png';
 import categoryTwo from '../../img/icons/two.png';
 import categoryThree from '../../img/icons/three.png';
@@ -33,25 +27,20 @@ import categoryEighteen from '../../img/icons/eighteen.png';
 import categoryNineteen from '../../img/icons/nineteen.png';
 import categoryTwenty from '../../img/icons/twenty.png';
 import categoryTwentyOne from '../../img/icons/twentyOne.png';
-
-import Arrow from '../../img/arrow.png';
-import Laptop from '../../img/Laptop3.png';
-import Influencer from '../../img/influencer.png';
-import Advertiser from '../../img/advert.png';
 import SlideImage1 from '../../img/slider/beauty.png';
 import SlideImage2 from '../../img/slider/fashion.png';
 import SlideImage3 from '../../img/slider/food.png';
 import Instagram from '../../img/slider/instagram.png';
 import Youtube from '../../img/slider/youtube.png';
 import Naver from '../../img/slider/naver.png';
-import Dot from '../../img/dot.png';
-import Rectangle from '../../img/rectangle.png';
-import Greeting from './Greeting';
 import SimpleSlider from './SimpleSlider';
 import CampaignAll from '../campaignList/CampaignAll';
 import RegisterLink from './RegisterLink';
 import About from './About';
 import Profit from './Profit';
+import Rating from './Rating';
+import Service from './Service';
+import InfluencerList from './InfluencerList';
 
 // import NaverLogin from 'react-naver-login';
 
@@ -215,19 +204,19 @@ function Home(props) {
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: false,
-    autoplay: true,
+    // autoplay: true,
     dots: true,
     autoplaySpeed: 2000,
     responsive: [
       {
-        breakpoint: 500,
+        breakpoint: 768,
         settings: { slidesToShow: 1, slidesToScroll: 1, infinite: false }
       },
       /* {
-        breakpoint: 768,
+        breakpoint: 960,
         settings: { slidesToShow: 2, slidesToScroll: 2, infinite: false }
-      },
-      {
+      }, */
+      /* {
         breakpoint: 1024,
         settings: { slidesToShow: 3, slidesToScroll: 3, infinite: false }
       } */
@@ -290,96 +279,11 @@ function Home(props) {
       <ElementLink name="target" />
       <About FontSettings={FontSettings} />
       <Profit FontSettings={FontSettings} Profits={Profits} />
-      <Box py={30} className="rating">
-        <Grid container justify="center">
-          <Grid container spacing={3} item className="rating-container">
-            <Grid item xs={12}>
-              <img src={RatingImage} />
-            </Grid>
-            <Grid item xs={12}>
-              <div className="title">
-                마케팅이 끝나고
-                <br />
-                <span style={FontSettings.blue}>인플루언서 활동 만족도 체크</span>
-              </div>
-            </Grid>
-            <Grid item xs={12}>
-              <div className="main-text">
-                별점만족도조사를 통하여 지속적인 사후체크 및 마케팅효과 상승을 유도합니다
-              </div>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Box>
-      <hr align="center" width="90%" color="#454545" />
-      <Box py={16} className="service">
-        <Grid container justify="center">
-          <Grid item className="service-container">
-            <div className="main-text">INFLAi</div>
-            <Grid container justify="space-between">
-              <Grid item sm={10} md={5}>
-                <Grid container spacing={4}>
-                  <Grid item xs={12}>
-                    <div className="category-name">
-                      <img src={Rectangle} />
-                      인플루언서로 최적의 효과를
-                      <br />
-                      보는 카테고리
-                    </div>
-                  </Grid>
-                  {
-                    Object.keys(CategoryIcons).map(Row => (
-                      <Grid key={Row} item xs={12}>
-                        <Grid container justify="space-between">
-                          {CategoryIcons[Row].map(i => (
-                            <Grid key={i} item className="category-image">
-                              <img src={i} alt="image" />
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Grid>
-                    ))
-                  }
-                </Grid>
-              </Grid>
-              <Grid item sm={10} md={5}>
-                <Grid container spacing={4}>
-                  <Grid item xs={12}>
-                    <div className="category-name">
-                      <img src={Rectangle} />
-                      우리 플랫폼의 인플루언서들
-                    </div>
-                  </Grid>
-                  {
-                    Object.keys(InfluenserIcons).map(Row => (
-                      <Grid key={Row} item xs={12}>
-                        <Grid container justify="space-between">
-                          {InfluenserIcons[Row].map(i => (
-                            <Grid key={i} item className="category-image">
-                              <img src={i} alt="image" style={{ height: '65px', width: '80px' }} />
-                            </Grid>
-                          ))}
-                        </Grid>
-                      </Grid>
-                    ))
-                  }
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Box>
-      <div className="influencer-list">
-        <div className="main-title">
-          <Grid container justify="center">
-            <span style={FontSettings.aqua}>#</span>
-INFLAi Influencers
-          </Grid>
-        </div>
-        <div className="container">
-          <SimpleSlider settings={settings} influencers={influencers} />
-        </div>
-      </div>
+      <Rating FontSettings={FontSettings} />
+      <Divider variant="middle" />
+      <Service CategoryIcons={CategoryIcons} InfluenserIcons={InfluenserIcons} />
+      <Divider variant="middle" />
+      <InfluencerList FontSettings={FontSettings} settings={settings} influencers={influencers} />
     </div>
   );
 }
