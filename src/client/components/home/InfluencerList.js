@@ -8,7 +8,7 @@ function InfluencerList({
   influencers
 }) {
   return (
-    <Box px={4} py={{ xs: 4, md: 16 }} className="influencer-list">
+    <Box px={{ xs: 2, md: 4 }} py={{ xs: 8, md: 16 }} className="influencer-list">
       <div className="main-title">
         <span style={FontSettings.aqua}>#</span>
                   INFLAi Influencers

@@ -2,59 +2,29 @@ import Slider from 'react-slick';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import { Box } from '@material-ui/core';
 
 function SimpleSlider(props) {
   return (
-    <div>
-      <Slider {...props.settings}>
-        {props.influencers.map(person => (
-          <div key={person.url}>
-            <div style={{ height: '142px' }} />
-            <Paper className="paper">
-              <div style={{ position: 'relative' }}>
-                <div className="paper-content">
-                  <Grid container justify="center">
-                    <Grid container justify="center">
-                      <img src={person.url} className="avatar" />
-                    </Grid>
-                    <Grid container justify="center">
-                      <div className="social-name">{person.name}</div>
-                    </Grid>
-                    <Grid container justify="center">
-                      <div className="social-type">{person.type}</div>
-                    </Grid>
-                    <Grid container justify="center">
-                      <img src={person.socialImage} className="social-image" />
-                    </Grid>
-                    <Grid container justify="center">
-                      <div className="social-tags">{person.tags}</div>
-                    </Grid>
-                  </Grid>
+    <Slider {...props.settings} className="slider-influencer">
+      {
+          props.influencers.map(person => (
+            <Box p={2} key={person.url} className="card-item">
+              <Paper className="paper-item">
+                <div className="item-content">
+                  <img src={person.url} className="avatar" />
+                  <Box my={3} className="social-name">{person.name}</Box>
+                  <Box className="social-type">{person.type}</Box>
+                  <Box my={3}>
+                    <img src={person.socialImage} className="social-image" />
+                  </Box>
+                  <Box className="social-tags">{person.tags}</Box>
                 </div>
-              </div>
-            </Paper>
-          </div>
-        ))}
-      </Slider>
-      {/*<div className="influencer-list2">
-        <div style={{ height: '142px' }} />
-        <Paper className="paper">
-          <Grid container justify="center">
-            <Grid item>
-              <div style={{ position: 'relative' }}>
-                <div className="paper-content">
-                  <img src="https://html.com/wp-content/uploads/flamingo.jpg" className="avatar" />
-                  <div className="social-name">test</div>
-                  <div className="social-type">test</div>
-                  <img src="https://html.com/wp-content/uploads/flamingo.jpg" className="social-image" />
-                  <div className="social-tags">test</div>
-                </div>
-              </div>
-            </Grid>
-          </Grid>
-        </Paper>
-      </div>*/}
-    </div>
+              </Paper>
+            </Box>
+          ))
+      }
+    </Slider>
   );
 }
 

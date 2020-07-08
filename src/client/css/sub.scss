@@ -70,7 +70,6 @@ $colorPink: #fbbaba;
         }
       }
     }
-
   }
   .mobile-link-bar {
     background: $colorBlue;
@@ -114,7 +113,6 @@ $colorPink: #fbbaba;
       color: $aqua
     }
   }
-
 }
 
 .popper-main {
@@ -657,93 +655,44 @@ $colorPink: #fbbaba;
       margin-bottom: 61px;
       text-align: center;
     }
-    .paper {
-      height: 370px;
-      padding: 8px;
-      position: relative;
-      margin: 15px;
-      text-align: center;
-      .paper-content {
-        position: absolute;
-        top: -142px;
-        .social-name {
-          font-size: 12px;
-          color: #a1a1a1;
-          font-weight: bold;
-          margin: 27px 0 17px 0;
-        }
-        .avatar {
-
-        }
-        .social-type {
-          font-size: 24px;
-          font-weight: bold;
-        }
-        .social-image {
-          margin: 20px auto 32px;
-        }
-        .social-tags {
-
-        }
-      }
-    }
-    .card {
-      height: 370px;
-      padding: 8px;
-      position: relative;
-      margin: 15px;
-      border-radius: 4px;
-      box-shadow: 0 2px 3px 0 rgba(0,0,0,0.25);
-    }
-  }
-  .influencer-list2 {
-    max-width: 1100px;
-    margin: 0 auto;
-    .main-title {
-      font-size: 36px;
-      font-weight: bold;
-      margin-bottom: 61px;
-      text-align: center;
-    }
-    .paper {
-      height: 370px;
-      padding: 8px;
-      position: relative;
-      margin: 15px;
-      text-align: center;
-      .paper-content {
-        position: absolute;
-        top: -142px;
-        .social-name {
-          font-size: 12px;
-          color: #a1a1a1;
-          font-weight: bold;
-          margin: 27px 0 17px 0;
-        }
-        .avatar {
-
-        }
-        .social-type {
-          font-size: 24px;
-          font-weight: bold;
-        }
-        .social-image {
-          margin: 20px auto 32px;
-        }
-        .social-tags {
-
+    .slider-influencer {
+      .card-item {
+        height: 550px;
+        box-sizing: border-box;
+        text-align: center;
+        position: relative;
+        .paper-item {
+          position: relative;
+          top: 163px;
+          height: 370px;
+          .item-content {
+            width: 100%;
+            position: absolute;
+            top: -142px;
+            img {
+              display: block;
+              margin: 0 auto;
+            }
+            .avatar {
+              width: 280px;
+              height: 280px;
+              border-radius: 100%;
+            }
+            .social-name {
+              font-size: 12px;
+              color: #a1a1a1;
+              font-weight: bold;
+            }
+            .social-type {
+              font-size: 24px;
+              font-weight: bold;
+            }
+          }
         }
       }
     }
-    .card {
-      height: 370px;
-      padding: 8px;
-      position: relative;
-      margin: 15px;
-      border-radius: 4px;
-      box-shadow: 0 2px 3px 0 rgba(0,0,0,0.25);
-    }
   }
+
   .triangle {
     z-index: 0 !important;
     position: absolute;
@@ -2133,6 +2082,7 @@ $colorPink: #fbbaba;
         }
       }
     }
+
   }
   .campaign-list {
     max-width: 900px;
@@ -2237,16 +2187,15 @@ $colorPink: #fbbaba;
       }
     }
     .influencer-list {
-      .paper {
-        width: 260px;
-        .paper-content {
-          top: -95px;
-          .social-name {
-            font-size: 12px;
-            margin: 27px 0 17px 0;
-          }
-          .avatar {
-            width: 80%;
+      .slider-influencer {
+        .card-item {
+          .paper-item {
+            .item-content {
+              .avatar {
+                width: 250px;
+                height: 250px;
+              }
+            }
           }
         }
       }
@@ -2435,6 +2384,19 @@ $colorPink: #fbbaba;
       }
     }
     .influencer-list {
+      .slider-influencer {
+        .card-item {
+          .paper-item {
+            .item-content {
+              .social-tags {
+                font-size: 1.7vw;
+              }
+            }
+          }
+        }
+      }
+
+
       .paper {
         height: 33vw;
         width: 27vw;
@@ -2568,31 +2530,15 @@ $colorPink: #fbbaba;
       }
     }
     .influencer-list {
-      margin: 160px 0;
       .main-title {
-        font-size: 36px;
-        margin-bottom: 61px;
+        font-size: 7vw;
+        margin-bottom: 4vw;
       }
-      .paper {
-        width: 260px;
-        height: 330px;
-        margin: 0 auto;
-        .paper-content {
-          .social-name {
-            font-size: 12px;
-            margin: 27px 0 17px 0;
-          }
-          .avatar {
-            width: 80%;
-          }
-          .social-type {
-            font-size: 24px;
-          }
-          .social-tags {
-            font-size: 15px;
-          }
-          .social-image {
-            margin: 20px 0 32px 0;
+      .slider-influencer {
+        .card-item {
+          .paper-item {
+            width: 300px;
+            margin: 0 auto;
           }
         }
       }
@@ -2665,10 +2611,8 @@ $colorPink: #fbbaba;
       }
     }
     .influencer-list {
-      margin: 90px 0;
       .main-title {
-        font-size: 36px;
-        margin-bottom: 61px;
+
       }
       .paper {
         width: 260px;
@@ -2732,10 +2676,8 @@ $colorPink: #fbbaba;
       }
     }
     .influencer-list {
-      margin: 90px 0;
       .main-title {
-        font-size: 36px;
-        margin-bottom: 61px;
+
       }
       .paper {
         width: 260px;
