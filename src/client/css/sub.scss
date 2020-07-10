@@ -1738,6 +1738,7 @@ $colorPink: #fbbaba;
   color: $colorBg;
   .footer-container {
     max-width: 1024px;
+    margin: 0 auto ;
   }
   .footer-logo {
     text-align: center;
@@ -1850,6 +1851,12 @@ $colorPink: #fbbaba;
 .campaign-list {
   max-width: 1140px;
   margin: 0 auto;
+  .title {
+    font-size: 30px;
+    line-height: 1em;
+    color: #093c5e;
+    font-weight: bold;
+  }
   .campaign-item {
     &:hover {
       cursor: pointer;
@@ -2203,7 +2210,7 @@ $colorPink: #fbbaba;
   }
 }
 
-@media only screen and (max-width: 960px) {
+@media only screen and (max-width: 959px) {
   .home{
     .background-part {
       height: 1000px;
@@ -2287,6 +2294,9 @@ $colorPink: #fbbaba;
         .user-card {
           img {
             height: 35vw;
+            width: 40vw;
+            display: block;
+            margin: 0 auto;
           }
           p {
             font-size: 4.5vw;
@@ -2366,7 +2376,6 @@ $colorPink: #fbbaba;
       }
       .category-name {
         height: auto;
-        margin-top: 30px;
         font-size: 3.7vw;
         img {
           display: none;
@@ -2546,7 +2555,7 @@ $colorPink: #fbbaba;
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 599px) {
   .home {
     .register-link {
       .title-holder {
@@ -2554,6 +2563,28 @@ $colorPink: #fbbaba;
       }
       .link-field {
         max-width: 350px;
+      }
+    }
+    .service {
+      .main-text {
+        font-size: 9vw;
+      }
+      .category-name {
+        height: auto;
+        font-size: 3.7vw;
+        img {
+          display: none;
+        }
+      }
+      .category-image {
+        img {
+          height: 8vw;
+          width: 14vw;
+        }
+        .image-influencer {
+          height: 11vw;
+          width: 16vw;
+        }
       }
     }
   }
@@ -2570,6 +2601,11 @@ $colorPink: #fbbaba;
   }
   .campaign-detail {
     max-width: 350px;
+  }
+  .footer {
+    .footer-text {
+      text-align: center;
+    }
   }
 }
 

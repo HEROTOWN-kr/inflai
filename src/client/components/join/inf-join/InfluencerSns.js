@@ -177,7 +177,7 @@ function InfluencerSns({
       <Grid container className={`card ${item.addClass ? item.addClass : null}`} justify="center" onClick={() => clickSns(item.text)}>
         <Grid item>
           <Box>
-            <SvgIcon component={item.icon} htmlColor="#ffffff" />
+            <SvgIcon component={item.icon} />
           </Box>
         </Grid>
         <Grid item xs={12}>

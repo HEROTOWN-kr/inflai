@@ -272,7 +272,7 @@ function Home(props) {
   return (
     <div className="home">
       {/* <Greeting /> */}
-      <CampaignAll history={props.history} />
+      <CampaignAll history={props.history} isHome />
       <Divider variant="middle" />
       <RegisterLink />
       <Divider variant="middle" />

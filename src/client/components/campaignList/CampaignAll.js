@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Grid, Divider, Box
+  Grid, Divider, Box, Button
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -9,6 +9,7 @@ import axios from 'axios';
 
 function CampaignAll({
   history,
+  isHome,
   match
 }) {
   const [campaigns, setCampaigns] = useState([]);
@@ -18,7 +19,6 @@ function CampaignAll({
 
   useEffect(() => {
     axios.get('/api/TB_AD/list').then((res) => {
-      // console.log(res.data);
       const { data } = res.data;
       setCampaigns(data);
     });
@@ -36,7 +36,13 @@ function CampaignAll({
   }
 
   return (
-    <Box px={2} py={{ xs: 4, md: 8 }} item className="campaign-list">
+    <Box px={2} py={{ xs: 4, md: 8 }} className="campaign-list">
+      <div className="title">
+        {`${isHome ? '최근' : '진행중'} 캠페인`}
+      </div>
+      <Box my={2}>
+        <Divider />
+      </Box>
       <Grid container spacing={matches ? 4 : 2}>
         {campaigns.map(item => (
           <Grid key={item.AD_ID} item xs={6} md={4} lg={3}>
@@ -66,6 +72,15 @@ function CampaignAll({
             </Grid>
           </Grid>
         ))}
+        {
+          isHome ? (
+            <Grid container justify="flex-end" item xs={12}>
+              <Grid item>
+                <Button variant="contained" onClick={() => history.push('/CampaignList')}>더보기</Button>
+              </Grid>
+            </Grid>
+          ) : null
+        }
       </Grid>
     </Box>
   );
