@@ -45,6 +45,36 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/getRequests', (req, res) => {
+  const data = req.query;
+  const { id } = data;
+
+  Notification.findAll({
+    where: { AD_ID: id },
+    attributes: ['NOTI_ID',
+      [Sequelize.literal('CASE NOTI_STATE WHEN \'1\' THEN \'승인\' WHEN \'2\' THEN \'거절\' ELSE \'대기중\' END'), 'NOTI_STATE'],
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('NOTI_DT'), '%Y-%m-%d'), 'NOTI_DT']
+    ],
+    include: [
+      {
+        model: Influencer,
+        // attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
+        attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TEL',
+          [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'인스타\' WHEN \'2\' THEN \'유튜브\' ELSE \'블로그\' END'), 'INF_BLOG_TYPE'],
+        ],
+      }
+    ],
+    order: [['NOTI_ID', 'DESC']]
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.post('/changeState', (req, res) => {
   const data = req.body;
   const { state, id } = data;

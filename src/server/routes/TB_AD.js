@@ -275,18 +275,25 @@ router.get('/detail', (req, res) => {
       {
         model: Notification,
         required: false,
-        attributes: ['NOTI_ID'],
-        where: { NOTI_STATE: '4' },
+        attributes: ['NOTI_ID', 'NOTI_STATE'],
         include: [
           {
             model: Influencer,
-            attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
+            // attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
+            attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TEL',
+              [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'인스타\' WHEN \'2\' THEN \'유튜브\' ELSE \'블로그\' END'), 'INF_BLOG_TYPE'],
+            ],
           }
         ]
       }
     ]
   }).then((result) => {
-    if (result.TB_NOTIFICATIONs) {
+    res.json({
+      code: 200,
+      // data: result.dataValues,
+      data: result,
+    });
+    /* if (result.TB_NOTIFICATIONs) {
       const resObj = result;
       const notis = resObj.TB_NOTIFICATIONs;
       common.instaRequest(notis, (err, sortedArray) => {
@@ -303,7 +310,7 @@ router.get('/detail', (req, res) => {
         // data: result.dataValues,
         data: result,
       });
-    }
+    } */
   }).error((err) => {
     res.send('error has occured');
   });
