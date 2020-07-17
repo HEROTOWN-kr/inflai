@@ -9,6 +9,8 @@ import * as Scroll from 'react-scroll';
 const Scroller = Scroll.scroller;
 
 function NavbarMobileMenu(props) {
+  const { history } = props;
+
   const menuLinks = [
     {
       text: '성공사례',
@@ -44,21 +46,23 @@ function NavbarMobileMenu(props) {
   return (
     <Hidden mdUp>
       <Grid item xs={12}>
-        <Grid container justify="space-between" className="mobile-link-bar">
-          <Grid item>
-            <a className="scroll-link" onClick={scrollTo}>인플라이소개</a>
-          </Grid>
-          {menuLinks.map(link => (
-            <Grid item key={link.text}>
-              <Link
-                className="link"
-                to={link.link}
-              >
-                {link.text}
-              </Link>
+        <Box py={2}>
+          <Grid container justify="space-between" className="mobile-link-bar">
+            <Grid item>
+              <a className="scroll-link" onClick={scrollTo}>인플라이소개</a>
             </Grid>
-          ))}
-        </Grid>
+            {menuLinks.map(link => (
+              <Grid item key={link.text}>
+                <Link
+                  className="link"
+                  to={link.link}
+                >
+                  {link.text}
+                </Link>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Grid>
     </Hidden>
   );

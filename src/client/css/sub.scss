@@ -35,41 +35,42 @@ $colorPink: #fbbaba;
 }
 
 .navbar {
-  /*position: absolute;
-  width: 100%;*/
-  .MuiPaper-root {
-    //height: 100px;
-  }
+  background: $colorBlue;
+  transition: background 0.5s ease;
   .MuiPaper-elevation4 {
     box-shadow: none;
   }
   .bar {
-    height: inherit;
-    background: $colorBlue;
-    transition: background 0.5s ease;
-    &.active {
+    .left-side {
+      width: 610px;
+    }
+    .right-side {
+      width: 220px;
+      justify-content: flex-end;
+    }
+    .name-holder {
+      color: $colorBg;
       background: $colorBlue;
-      .name-holder {
+      line-height: 34px;
+      opacity: 0.8;
+      .name-text {
+        width: 100px;
+        text-align: right;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      svg {
+        position: relative;
+        top: 6px;
+        margin-right: 10px;
+      }
+      &:hover {
+        cursor: pointer;
+        opacity: 1;
+      }
+    }
 
-      }
-    }
-    .right-panel {
-      .name-holder {
-        color: $colorBg;
-        background: $colorBlue;
-        line-height: 34px;
-        opacity: 0.8;
-        svg {
-          position: relative;
-          top: 7px;
-          left: 4px;
-        }
-        &:hover {
-          cursor: pointer;
-          opacity: 1;
-        }
-      }
-    }
   }
   .mobile-link-bar {
     background: $colorBlue;
@@ -163,16 +164,20 @@ $colorPink: #fbbaba;
   }
 
   .social-networks {
-    .main-container {
-      height: 50px;
-      border-radius: 5px;
+    .social-main-container {
       &:hover {
         cursor: pointer;
         opacity: 0.9;
       }
     }
+    img {
+      height: 40px;
+      width: 40px;
+      border-radius: 100%;
+    }
     .button-icon {
-      padding: 6px 0 0 11px;
+      margin: 5px auto;
+      border-right: #fdfdfd 1px solid;
       img {
         height: 40px;
         width: 40px;
@@ -181,6 +186,7 @@ $colorPink: #fbbaba;
     }
     .button-text {
       font-weight: bold;
+      text-align: center;
     }
   }
 }
@@ -2211,6 +2217,14 @@ $colorPink: #fbbaba;
 }
 
 @media only screen and (max-width: 959px) {
+  .navbar {
+    .bar {
+      .left-side, .right-side {
+        width: 80px;
+      }
+    }
+  }
+
   .home{
     .background-part {
       height: 1000px;

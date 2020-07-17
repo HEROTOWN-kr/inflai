@@ -4,21 +4,23 @@ import { Link } from 'react-router-dom';
 import Logo from '../../img/logo.png';
 
 function NavbarLogo() {
+  const styles = {
+    width: '80px',
+    height: '60px',
+    overflow: 'hidden',
+    backgroundImage: `url(${Logo})`,
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat'
+  };
+
   return (
-    <Grid item xs={5} md={2}>
-      <Grid container justify="center">
-        <Grid item>
-          <Box my={2}>
-            <Link
-              className="link"
-              to="/"
-            >
-              <img src={Logo} />
-            </Link>
-          </Box>
-        </Grid>
-      </Grid>
-    </Grid>
+    <Box my={2} className="logo">
+      <Link
+        to="/"
+      >
+        <div style={styles} />
+      </Link>
+    </Box>
   );
 }
 

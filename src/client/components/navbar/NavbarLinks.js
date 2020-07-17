@@ -9,6 +9,8 @@ import * as Scroll from 'react-scroll';
 const Scroller = Scroll.scroller;
 
 function NavbarLinks(props) {
+  const { history } = props;
+
   const menuLinks = [
     {
       text: '성공사례',
@@ -29,7 +31,7 @@ function NavbarLinks(props) {
   ];
 
   function scrollTo() {
-    props.history.push('/');
+    history.push('/');
     setTimeout(() => {
       Scroller.scrollTo('target', {
         duration: 800,
@@ -42,9 +44,9 @@ function NavbarLinks(props) {
 
 
   return (
-    <Hidden mdDown>
-      <Grid item xs={4}>
-        <Grid container spacing={5}>
+    <Hidden smDown>
+      <Box className="navbar-links">
+        <Grid container spacing={8}>
           <Grid item>
             <a className="scroll-link" onClick={scrollTo}>인플라이소개</a>
           </Grid>
@@ -59,7 +61,7 @@ function NavbarLinks(props) {
             </Grid>
           ))}
         </Grid>
-      </Grid>
+      </Box>
     </Hidden>
   );
 }

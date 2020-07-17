@@ -2,7 +2,10 @@ import axios from 'axios';
 import React, { useEffect } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import GoogleLogin from 'react-google-login';
-import { Box, Button, Grid } from '@material-ui/core';
+import {
+  Box, Button, Divider, Grid
+} from '@material-ui/core';
+import { Link } from 'react-router-dom';
 import Common from '../../lib/common';
 
 import Logo from '../../img/logo.png';
@@ -10,6 +13,7 @@ import LogInComponent from '../login/LogInComponent';
 import SignUpComponent from '../login/SignUpComponent';
 import SocialButton from '../login/SocialButton';
 import GoogleIcon from '../../img/google-logo2.png';
+import LogOutButton from '../login/LogOutButton';
 
 { /* <Button onClick={twitchLogin}>TwitchLogin</Button> */ }
 { /* <a onClick={test} href="https://id.twitch.tv/oauth2/authorize?client_id=hnwk0poqnawvjedf2nxzaaznj16e1g&redirect_uri=http://localhost:8080/testRoute/twiterTest&response_type=code&scope=user:edit+user:read:email">
@@ -145,34 +149,7 @@ const googleLink = 'https://accounts.google.com'
     + 'response_type=code&'
     + 'client_id=997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com';
 
-const sideList = () => (
-  <div
-    className={classes.list}
-    role="presentation"
-    onClick={toggleDrawer(false)}
-    onKeyDown={toggleDrawer(false)}
-  >
-    {
-            props.user.name ? (
-              <UserMenuItems />
-            ) : (
-              <Box my={2}>
-                <Grid container justify="center">
-                  <Grid item xs={7}>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => props.history.push('/Join/Type')}
-                    >
-                                로그인 | 회원가입
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Box>
-            )
-        }
-  </div>
-);
+
 
 function twitchLogin() {
   axios.get('https://id.twitch.tv/oauth2/authorize', {
@@ -196,3 +173,41 @@ function scrollTo() {
     });
   }, 1);
 }
+
+function parseParms(str) {
+  const pieces = str.split('&'); const data = {}; let i; let
+    parts;
+  // process each query pair
+  for (i = 0; i < pieces.length; i++) {
+    parts = pieces[i].split('=');
+    if (parts.length < 2) {
+      parts.push('');
+    }
+    data[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+  }
+  return data;
+}
+
+
+
+
+
+
+
+
+
+function openUserMenu(event) {
+  setUserMenu(userMenu ? null : event.currentTarget);
+}
+
+const handleClose = () => {
+  setUserMenu(null);
+};
+
+
+
+
+
+
+
+
