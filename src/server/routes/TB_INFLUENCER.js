@@ -191,10 +191,14 @@ router.get('/getInstaAccounts', (req, res) => {
 });
 
 router.get('/getInfluencers', (req, res) => {
-  Influencer.findAll({
+  const data = req.query;
+  const offset = (data.page - 1) * 10;
+  Influencer.findAndCountAll({
     attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL',
       [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Instagram\' WHEN \'2\' THEN \'Youtube\' ELSE \'Naver\' END'), 'INF_BLOG_TYPE'],
       [Sequelize.fn('DATE_FORMAT', Sequelize.col('INF_DT'), '%Y-%m-%d'), 'INF_DT']],
+    limit: 10,
+    offset,
     order: [['INF_ID', 'DESC']]
   }).then((result) => {
     res.json({

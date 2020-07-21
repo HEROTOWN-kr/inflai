@@ -167,8 +167,9 @@ router.get('/getAdInfluencers', (req, res) => {
 });
 
 router.get('/getAll', (req, res) => {
-  Advertise.findAll({
-    order: [['AD_ID', 'DESC']],
+  const data = req.query;
+  const offset = (data.page - 1) * 10;
+  Advertise.findAndCountAll({
     attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_PAID',
       [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
       // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
@@ -178,7 +179,10 @@ router.get('/getAll', (req, res) => {
         model: Advertiser,
         attributes: ['ADV_COM_NAME']
       }
-    ]
+    ],
+    limit: 10,
+    offset,
+    order: [['AD_ID', 'DESC']]
   }).then((result) => {
     res.json({
       code: 200,

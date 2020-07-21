@@ -420,11 +420,15 @@ router.get('/userInfo', (req, res) => {
 });
 
 router.get('/getAdvertisers', (req, res) => {
-  Advertiser.findAll({
+  const data = req.query;
+  const offset = (data.page - 1) * 10;
+  Advertiser.findAndCountAll({
     attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME',
       [Sequelize.literal('CASE ADV_TYPE WHEN \'1\' THEN \'일반\' WHEN \'2\' THEN \'에이전시\' ELSE \'소상공인\' END'), 'ADV_TYPE'],
       [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADV_DT'), '%Y-%m-%d'), 'ADV_DT']
     ],
+    limit: 10,
+    offset,
     order: [['ADV_ID', 'DESC']]
   }).then((result) => {
     res.json({

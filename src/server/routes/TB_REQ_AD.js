@@ -35,7 +35,9 @@ router.post('/', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-  RequestAgency.findAll({
+  const data = req.query;
+  const offset = (data.page - 1) * 10;
+  RequestAgency.findAndCountAll({
     attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_TEL', 'REQ_BRAND',
       [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
     include: [
@@ -44,6 +46,8 @@ router.get('/', (req, res) => {
         attributes: ['ADV_NAME']
       },
     ],
+    limit: 10,
+    offset,
     order: [['REQ_DT', 'DESC']]
   }).then((result) => {
     res.json({
@@ -71,7 +75,7 @@ router.get('/detail', (req, res) => {
     ],
     order: [['REQ_DT', 'DESC']]
   }).then((result) => {
-    const returnObj = {...result.dataValues, REQ_AIM: JSON.parse(result.dataValues.REQ_AIM), REQ_CONSULT: JSON.parse(result.dataValues.REQ_CONSULT)};
+    const returnObj = { ...result.dataValues, REQ_AIM: JSON.parse(result.dataValues.REQ_AIM), REQ_CONSULT: JSON.parse(result.dataValues.REQ_CONSULT) };
 
     res.json({
       code: 200,
