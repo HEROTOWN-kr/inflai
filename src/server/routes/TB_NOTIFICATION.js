@@ -75,6 +75,32 @@ router.get('/getRequests', (req, res) => {
   });
 });
 
+router.get('/getRequestState', (req, res) => {
+  const data = req.query;
+  const { id } = data;
+
+  Notification.findAll({
+    where: { NOTI_ID: id },
+    attributes: ['NOTI_ID', 'NOTI_STATE'],
+    /* include: [
+      {
+        model: Influencer,
+        // attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
+        attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TEL',
+          [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'인스타\' WHEN \'2\' THEN \'유튜브\' ELSE \'블로그\' END'), 'INF_BLOG_TYPE'],
+        ],
+      }
+    ] */
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
 router.post('/changeState', (req, res) => {
   const data = req.body;
   const { state, id } = data;
