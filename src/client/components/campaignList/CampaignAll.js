@@ -48,7 +48,9 @@ function CampaignAll({
           <Grid key={item.AD_ID} item xs={6} md={4} lg={3}>
             <Grid container spacing={1} onClick={() => detailInfo(item.AD_ID)} className="campaign-item">
               <Grid item xs={12}>
-                <img src={item.TB_PHOTO_ADs[0] ? `https://www.inflai.com${item.TB_PHOTO_ADs[0].PHO_FILE}` : testImage} alt="nofoto" />
+                <div className="image">
+                  <img src={item.TB_PHOTO_ADs[0] ? `https://www.inflai.com${item.TB_PHOTO_ADs[0].PHO_FILE}` : testImage} alt="nofoto" />
+                </div>
                 {/* <img src={require('/home/inflai/upload/attach/portfolio/34/2ya5c1cokb8p1w8o.png')} alt="nofoto" /> */}
               </Grid>
               <Grid item xs={12} className="tags">

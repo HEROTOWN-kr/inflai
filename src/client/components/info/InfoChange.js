@@ -157,11 +157,9 @@ function InfoChange({
     <React.Fragment>
       {
             process ? (
-              <div>
-                <CircularProgress />
-              </div>
+              <CircularProgress />
             ) : (
-              <div className="form-container">
+              <React.Fragment>
                 <div className="title">
                         계정정보 수정
                 </div>
@@ -214,7 +212,7 @@ function InfoChange({
                     </Grid>
                   )}
                 </Formik>
-              </div>
+              </React.Fragment>
             )
         }
 

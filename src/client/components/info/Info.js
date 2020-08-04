@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { Box } from '@material-ui/core';
 import Advertiser from '../advertiser/Advertiser';
 import InfoMain from './InfoMain';
 import InfoChange from './InfoChange';
@@ -18,26 +19,28 @@ function Info({
 
   return (
     <div className="profile-info">
-      <Switch>
-        <Route
-          path={`${match.path}/editProfile`}
-          render={props => <InfoChangeAdvertiser {...props} editCol={editCol} />}
-        />
-        <Route
-          path={`${match.path}/edit`}
-          render={props => <InfoChange {...props} editCol={editCol} />}
-        />
-        <Route
-          path={`${match.path}/`}
-          render={props => (
-            <InfoMain
-              {...props}
-              user={user}
-              changeEditCol={changeEditCol}
-            />
-          )}
-        />
-      </Switch>
+      <Box px={{ xs: 3, md: 10 }} pt={{ md: 6 }} pb={{ md: 30 }} className="form-container">
+        <Switch>
+          <Route
+            path={`${match.path}/editProfile`}
+            render={props => <InfoChangeAdvertiser {...props} editCol={editCol} />}
+          />
+          <Route
+            path={`${match.path}/edit`}
+            render={props => <InfoChange {...props} editCol={editCol} />}
+          />
+          <Route
+            path={`${match.path}/`}
+            render={props => (
+              <InfoMain
+                {...props}
+                user={user}
+                changeEditCol={changeEditCol}
+              />
+            )}
+          />
+        </Switch>
+      </Box>
     </div>
   );
 }

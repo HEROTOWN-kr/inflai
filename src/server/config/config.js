@@ -19,8 +19,10 @@
   config.fcm_api_key = 'AAAAYCBYaZA:APA91bGIOYerhJ6xVTIOa-7xOrJQsVOHNyM12m1m0T-aUef9R0GZYafADItf5ETzxKlqeIngL9GLMLcCK3Nhn4YS2pkl4Eug01A64pbzik7TDaf0uZYaVyFAJiIWNnZ0q8iyUHeuNpT5';
 
   // access keys
-  config.fb_client_id = '663450957780119';
-  config.fb_client_secret = '598b25dd21a5480ad10012b4f9d51bb0';
+  // config.fb_client_id = '663450957780119';
+  // config.fb_client_secret = '598b25dd21a5480ad10012b4f9d51bb0';
+  config.fb_client_id = '139193384125564';
+  config.fb_client_secret = '085e5020f9b2cdac9357bf7301f31e01';
   config.google_client_id = '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com';
   config.google_client_secret = 'HuxvpMOAlyMa_yZPR7j4FpFg';
   // config.google_client_redirect_url = 'http://localhost:8080/TB_ADVERTISER/Googletest1';

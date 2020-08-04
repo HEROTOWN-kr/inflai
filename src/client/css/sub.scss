@@ -1784,12 +1784,8 @@ $colorPink: #fbbaba;
 .profile-info {
   max-width: 800px;
   margin: 50px auto;
-  padding: 50px 0 250px;
-  box-sizing: border-box;
-  border: 1px solid #dfe2e8;
   .form-container {
-    margin: 0 auto;
-    max-width: 500px;
+    border: 1px solid #dfe2e8;
     .title {
       margin-bottom: 50px;
       font-size: 30px;
@@ -1867,9 +1863,17 @@ $colorPink: #fbbaba;
     &:hover {
       cursor: pointer;
     }
-    img {
+    .image {
+      overflow: hidden;
       height: 255px;
-      width: 100%;
+      img {
+        height: 100%;
+        width: 100%;
+        transition: 0.5s;
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
     }
     .tags {
       color: #999;
@@ -2443,7 +2447,7 @@ $colorPink: #fbbaba;
   }
   .campaign-list {
     .campaign-item {
-      img {
+      .image {
         height: 40vw;
       }
     }
@@ -2510,6 +2514,13 @@ $colorPink: #fbbaba;
         width: 100px;
         height: 100px;
       }
+    }
+  }
+
+  .profile-info {
+    max-width: 500px;
+    .form-container {
+      border: 0;
     }
   }
 }
