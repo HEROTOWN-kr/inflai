@@ -55,8 +55,8 @@ function instaRequest(data, cb) {
   }
 
   async.map(data, (item, callback) => {
-    const instagramId = item.INF_INST_ID || item.TB_INFLUENCER.INF_INST_ID;
-    const instagramToken = item.INF_TOKEN || item.TB_INFLUENCER.INF_TOKEN;
+    const instagramId = item.INF_INST_ID || item.TB_INFLUENCER.INF_INST_ID || item.INS_ACCOUNT_ID;
+    const instagramToken = item.INF_TOKEN || item.TB_INFLUENCER.INF_TOKEN || item.INS_TOKEN;
     const influencerId = item.INF_ID || item.TB_INFLUENCER.INF_ID;
     const influencerState = item.NOTI_STATE || null;
 
@@ -66,7 +66,7 @@ function instaRequest(data, cb) {
         const parsedBody = JSON.parse(body);
         callback(null, { ...parsedBody, INF_ID: influencerId, NOTI_STATE: influencerState });
       } else {
-        callback(error || response.statusCode);
+        callback(error, {});
       }
     });
   }, (err, results) => {

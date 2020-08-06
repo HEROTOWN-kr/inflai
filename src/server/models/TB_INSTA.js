@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('TB_INSTA', {
     INS_ID: {
       type: DataTypes.INTEGER(11),
@@ -20,12 +20,20 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    INS_ACCOUNT_ID: {
+      type: DataTypes.STRING(300),
+      allowNull: true
+    },
     INS_FLW: {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },
     INS_FLWR: {
       type: DataTypes.INTEGER(11),
+      allowNull: true
+    },
+    INS_PROFILE_IMG: {
+      type: DataTypes.STRING(300),
       allowNull: true
     },
     INS_DT: {

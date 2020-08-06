@@ -1,21 +1,18 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const request = require('request');
-const bcrypt = require('bcryptjs');
-
-const config = require('../config');
 const Advertiser = require('../models').TB_ADVERTISER;
-const Influenser = require('../models').TB_INFLUENCER;
-const common = require('../config/common');
-
-const saltRounds = 10;
+const test = require('./test');
+const async = require('async');
 
 const router = express.Router();
 
 router.get('/test', (req, res) => {
-  res.json({
-    code: 200,
-    message: 'success'
+  test.getInstaData((result) => {
+    res.json({
+      code: 200,
+      message: 'success',
+      data: result
+    });
   });
 });
 
