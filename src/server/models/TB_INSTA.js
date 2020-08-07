@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('TB_INSTA', {
+  const Instagram = sequelize.define('TB_INSTA', {
     INS_ID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -44,4 +44,10 @@ module.exports = function (sequelize, DataTypes) {
   }, {
     tableName: 'TB_INSTA'
   });
+
+  Instagram.associate = function (models) {
+    Instagram.belongsTo(models.TB_INFLUENCER, { foreignKey: 'INF_ID', targetKey: 'INF_ID' });
+  };
+
+  return Instagram;
 };

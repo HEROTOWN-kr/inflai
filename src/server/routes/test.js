@@ -168,15 +168,18 @@ function getInstaData(clb) {
     attributes: ['INS_ID', 'INF_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID']
   }).then((result) => {
     FacebookRequest(result, (error, data) => {
-      async.map(result, (item, callback) => {
+      async.map(data, (item, callback) => {
+        const {
+          INF_ID, follows_count, followers_count, profile_picture_url
+        } = item;
         Insta.update(
           {
-            INS_FLW: item.follows_count,
-            INS_FLWR: item.followers_count,
-            INS_PROFILE_IMG: item.profile_picture_url,
+            INS_FLW: follows_count,
+            INS_FLWR: followers_count,
+            INS_PROFILE_IMG: profile_picture_url,
           },
           {
-            where: { INF_ID: item.INF_ID }
+            where: { INF_ID }
           }
         ).then((createResult) => {
           callback(null, 'success');
@@ -209,58 +212,59 @@ function getYoutubeData(clb) {
         refresh_token: YOU_TOKEN
       });
 
-      try {
-        youtube.channels.list({
-          auth: oauth2Client,
-          part: 'snippet, statistics',
-          mine: true,
-          fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
-          quotaUser: `secretquotastring${YOU_ID}`,
-        }, (err, response) => {
-          if (err) {
-            callback(null, err || response.statusCode);
-          }
-          const info = response.data.items;
-          if (info.length == 0) {
-            console.log('No channel found.');
-            callback(null, response.data);
-          } else {
-            callback(null, info[0]);
-          }
-        });
-      } catch (e) {
-        console.log(e);
-      }
+      youtube.channels.list({
+        auth: oauth2Client,
+        part: 'snippet, statistics',
+        mine: true,
+        fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
+        quotaUser: `secretquotastring${YOU_ID}`,
+      }, (err, response) => {
+        if (err) {
+          callback(null, err || response.statusCode);
+        }
+        const info = response.data.items;
+        if (info.length == 0) {
+          console.log('No channel found.');
+          callback(null, response.data);
+        } else {
+          callback(null, { ...info[0], YOU_ID });
+        }
+      });
     }, (err, results) => {
       if (err) {
-        cb(err);
+        cb(err, null);
       } else {
-        cb(results);
+        cb(null, results);
       }
     });
   }
 
 
-  Insta.findAll({
-    attributes: ['INS_ID', 'INF_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID']
+  Youtube.findAll({
+    attributes: ['YOU_ID', 'INF_ID', 'YOU_TOKEN']
   }).then((result) => {
     YoutubeRequest(result, (error, data) => {
-      /* async.map(result, (item, callback) => {
-        Insta.update(
+      // clb(data);
+      async.map(data, (item, callback) => {
+        const { YOU_ID } = item;
+        const { title, description } = item.snippet;
+        const { viewCount, subscriberCount, videoCount } = item.statistics;
+
+
+        Youtube.update(
           {
-            INS_FLW: item.follows_count,
-            INS_FLWR: item.followers_count,
-            INS_PROFILE_IMG: item.profile_picture_url,
+            YOU_SUBS: subscriberCount,
+            YOU_VIEWS: viewCount,
           },
           {
-            where: { INF_ID: item.INF_ID }
+            where: { YOU_ID }
           }
         ).then((createResult) => {
           callback(null, 'success');
         }).error((err) => {
           callback(null, err);
         });
-      }, (err, asyncResult) => clb(asyncResult)); */
+      }, (err, asyncResult) => clb(asyncResult));
       // if (!err) { clb(data); } else { clb(err); }
     });
   });

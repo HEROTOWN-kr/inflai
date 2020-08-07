@@ -54,6 +54,8 @@ app.use('/TB_ADMIN', require('./routes/TB_ADMIN'));
 app.use('/TB_NOTIFICATION', require('./routes/TB_NOTIFICATION'));
 app.use('/TB_REQ_AD', require('./routes/TB_REQ_AD'));
 app.use('/TB_PRICE', require('./routes/TB_PRICE'));
+app.use('/TB_YOUTUBE', require('./routes/TB_YOUTUBE'));
+app.use('/TB_INSTA', require('./routes/TB_INSTA'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 

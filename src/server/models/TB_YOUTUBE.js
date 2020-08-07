@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('TB_YOUTUBE', {
+module.exports = function (sequelize, DataTypes) {
+  const Youtube = sequelize.define('TB_YOUTUBE', {
     YOU_ID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
@@ -36,4 +36,10 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     tableName: 'TB_YOUTUBE'
   });
+
+  Youtube.associate = function (models) {
+    Youtube.belongsTo(models.TB_INFLUENCER, { foreignKey: 'INF_ID', targetKey: 'INF_ID' });
+  };
+
+  return Youtube;
 };
