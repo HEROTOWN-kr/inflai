@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
         attributes: ['INF_NAME']
       },
     ],
-    order: ''
+    order: [['INS_FLWR', 'DESC']]
   };
 
   Instagram.findAll(options).then((result) => {

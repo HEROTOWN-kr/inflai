@@ -18,6 +18,7 @@ import Notification from '../notification/Notification';
 import CampaignList from '../campaignList/CampaignList';
 import InfoYoutube from '../info/InfoYoutube';
 import NotFound from './NotFound';
+import Ranking from '../ranking/Ranking';
 
 
 function Main({
@@ -44,6 +45,10 @@ function Main({
       <Route
         path="/Campaign"
         render={props => <Campaign {...props} user={user} />}
+      />
+      <Route
+        path="/Ranking"
+        render={props => <Ranking {...props} user={user} />}
       />
       <Route
         path="/Join"

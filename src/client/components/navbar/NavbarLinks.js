@@ -28,6 +28,10 @@ function NavbarLinks(props) {
       text: '캠페인',
       link: '/CampaignList'
     },
+    {
+      text: '랭킹',
+      link: '/Ranking'
+    },
   ];
 
   function scrollTo() {

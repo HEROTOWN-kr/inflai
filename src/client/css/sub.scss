@@ -42,7 +42,7 @@ $colorPink: #fbbaba;
   }
   .bar {
     .left-side {
-      width: 610px;
+      max-width: 700px;
     }
     .right-side {
       width: 220px;
@@ -1590,6 +1590,11 @@ $colorPink: #fbbaba;
       }
     }
   }
+}
+
+.ranking {
+  max-width: 1140px;
+  margin: 0 auto;
 }
 
 .agency {

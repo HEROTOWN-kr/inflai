@@ -7,7 +7,7 @@ const async = require('async');
 const router = express.Router();
 
 router.get('/test', (req, res) => {
-  test.getInstaData((result) => {
+  test.getYoutubeData((result) => {
     res.json({
       code: 200,
       message: 'success',

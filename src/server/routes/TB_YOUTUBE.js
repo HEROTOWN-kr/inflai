@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
         attributes: ['INF_NAME']
       },
     ],
-    order: ''
+    order: [['YOU_SUBS', 'DESC']]
   };
 
   Youtube.findAll(options).then((result) => {
