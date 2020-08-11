@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Grid,
   MenuItem,
 } from '@material-ui/core';
+import axios from 'axios';
 import StyledSelect from '../containers/StyledSelect';
 import StyledTitle from '../containers/StyledTitle';
 import Instagram from './Instagram';
 import Youtube from './Youtube';
+import Common from '../../lib/common';
 
 function Ranking() {
   const [blogType, setBlogType] = useState('1');
+  const [userId, setUserId] = useState(0);
+
+  function getUser() {
+    const { token } = Common.getUserInfo();
+    if (token) {
+      axios.get('/api/TB_INFLUENCER/userId', {
+        params: {
+          token
+        }
+      }).then((res) => {
+        const {
+          userId
+        } = res.data.data;
+        setUserId(userId);
+      });
+    }
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <div className="ranking">
@@ -31,7 +54,7 @@ function Ranking() {
             </Grid>
             <Grid item sm={12}>
               {
-                  blogType === '1' ? <Instagram /> : <Youtube />
+                  blogType === '1' ? <Instagram userId={userId} /> : <Youtube userId={userId} />
                 }
             </Grid>
           </Grid>

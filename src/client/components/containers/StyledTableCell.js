@@ -2,7 +2,7 @@ import { TableCell, withStyles } from '@material-ui/core';
 
 const StyledTableCell = withStyles(theme => ({
   root: {
-    padding: '10px'
+    padding: '10px',
   },
   head: {
     backgroundColor: '#3f4b5c',
@@ -11,7 +11,12 @@ const StyledTableCell = withStyles(theme => ({
   },
   body: {
     fontSize: 14,
+    '&.current': {
+      backgroundColor: '#39ca66',
+      color: '#ffffff'
+    }
   },
+
 }))(TableCell);
 
 export default StyledTableCell;

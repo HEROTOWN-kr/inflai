@@ -105,6 +105,16 @@ router.get('/userInfo', (req, res) => {
   });
 });
 
+router.get('/userId', (req, res) => {
+  const { token, id } = req.query;
+  const userId = id || common.getIdFromToken(token).sub;
+
+  res.json({
+    code: 200,
+    data: { userId },
+  });
+});
+
 router.get('/getInstaAccounts', (req, res) => {
   const { id } = req.query;
 

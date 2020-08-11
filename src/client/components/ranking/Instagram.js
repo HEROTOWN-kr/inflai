@@ -11,11 +11,21 @@ import axios from 'axios';
 import StyledTableCell from '../containers/StyledTableCell';
 import StyledTableRow from '../containers/StyledTableRow';
 
-function Instagram() {
+function Instagram(props) {
   const [influencers, setInfluencers] = useState([]);
+  const { userId } = props;
 
   const tableRows = {
-    title: ['이름', '구독수'],
+    title: [
+      {
+        text: '이름',
+        align: 'left'
+      },
+      {
+        text: '구독수',
+        align: 'right'
+      }
+    ],
     body: ['INF_NAME', 'INS_FLWR']
   };
 
@@ -38,24 +48,25 @@ function Instagram() {
         <TableHead>
           <TableRow>
             {
-              tableRows.title.map(item => (
-                <StyledTableCell key={item}>{item}</StyledTableCell>
+              tableRows.title.map((item, index) => (
+                <StyledTableCell key={item.text} align={item.align}>{item.text}</StyledTableCell>
               ))
             }
           </TableRow>
         </TableHead>
         <TableBody>
           {influencers.map(row => (
-            <StyledTableRow hover key={row.id}>
+            <StyledTableRow hover key={row.INS_ID}>
               {
                 tableRows.body.map((item, index) => (
                   <StyledTableCell
                     key={item}
                     component={index === 0 ? 'th' : ''}
                     scope={index === 0 ? 'row' : ''}
-                    align={index > 0 ? 'right' : ''}
+                    align={index > 0 ? 'right' : 'left'}
+                    className={row.INF_ID === userId ? 'current' : null}
                   >
-                    {row[item] || row.TB_INFLUENCER[item]}
+                    {row[item] >= 0 ? row[item] : row.TB_INFLUENCER[item]}
                   </StyledTableCell>
                 ))
               }
