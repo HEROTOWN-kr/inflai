@@ -193,63 +193,16 @@ function getInstaData(clb) {
 }
 
 function getYoutubeData(clb) {
-  function YoutubeRequest(data, cb) {
-    function getOauthClient() {
-      const oauth2Client = new google.auth.OAuth2(
-        configKey.google_client_id,
-        configKey.google_client_secret,
-        configKey.google_client_redirect_url
-      );
-      return oauth2Client;
-    }
-
-    const oauth2Client = getOauthClient();
-    const youtube = google.youtube('v3');
-
-    async.map(data, (item, callback) => {
-      const { YOU_TOKEN, YOU_ID } = item;
-      oauth2Client.setCredentials({
-        refresh_token: YOU_TOKEN
-      });
-
-      youtube.channels.list({
-        auth: oauth2Client,
-        part: 'snippet, statistics',
-        mine: true,
-        fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
-        quotaUser: `secretquotastring${YOU_ID}`,
-      }, (err, response) => {
-        if (err) {
-          callback(null, err || response.statusCode);
-        }
-        const info = response.data.items;
-        if (info.length == 0) {
-          console.log('No channel found.');
-          callback(null, response.data);
-        } else {
-          callback(null, { ...info[0], YOU_ID });
-        }
-      });
-    }, (err, results) => {
-      if (err) {
-        cb(err, null);
-      } else {
-        cb(null, results);
-      }
-    });
-  }
-
-
   Youtube.findAll({
     attributes: ['YOU_ID', 'INF_ID', 'YOU_TOKEN']
   }).then((result) => {
-    YoutubeRequest(result, (error, data) => {
-      // clb(data);
-      async.map(data, (item, callback) => {
+    common.YoutubeRequest(result, (error, data) => {
+      clb(data);
+
+      /* async.map(data, (item, callback) => {
         const { YOU_ID } = item;
         const { title, description } = item.snippet;
         const { viewCount, subscriberCount, videoCount } = item.statistics;
-
 
         Youtube.update(
           {
@@ -264,8 +217,7 @@ function getYoutubeData(clb) {
         }).error((err) => {
           callback(null, err);
         });
-      }, (err, asyncResult) => clb(asyncResult));
-      // if (!err) { clb(data); } else { clb(err); }
+      }, (err, asyncResult) => clb(asyncResult)); */
     });
   });
 }

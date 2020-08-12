@@ -18,6 +18,11 @@ function Youtube(props) {
   const tableRows = {
     title: [
       {
+        text: '#',
+        align: 'center',
+        isRank: true
+      },
+      {
         text: '이름',
         align: 'left'
       },
@@ -30,14 +35,14 @@ function Youtube(props) {
         align: 'right'
       }
     ],
-    body: ['INF_NAME', 'YOU_SUBS', 'YOU_VIEWS']
+    body: ['rownum', 'INF_NAME', 'YOU_SUBS', 'YOU_VIEWS']
   };
 
   function getInfluencers() {
     axios.get('/api/TB_YOUTUBE/').then(
       (res) => {
-        const { data } = res.data;
-        setInfluencers(data);
+        const { list } = res.data.data;
+        setInfluencers(list);
       }
     );
   }
@@ -53,7 +58,13 @@ function Youtube(props) {
           <TableRow>
             {
               tableRows.title.map(item => (
-                <StyledTableCell key={item.text} align={item.align}>{item.text}</StyledTableCell>
+                <StyledTableCell
+                  key={item.text}
+                  align={item.align}
+                  className={item.isRank ? 'number' : null}
+                >
+                  {item.text}
+                </StyledTableCell>
               ))
             }
           </TableRow>
@@ -65,9 +76,9 @@ function Youtube(props) {
                 tableRows.body.map((item, index) => (
                   <StyledTableCell
                     key={item}
-                    component={index === 0 ? 'th' : ''}
-                    scope={index === 0 ? 'row' : ''}
-                    align={index > 0 ? 'right' : 'left'}
+                    component={index === 1 ? 'th' : ''}
+                    scope={index === 1 ? 'row' : ''}
+                    align={index === 1 ? 'left' : 'right'}
                     className={row.INF_ID === userId ? 'current' : null}
                   >
                     {row[item] >= 0 ? row[item] : row.TB_INFLUENCER[item]}

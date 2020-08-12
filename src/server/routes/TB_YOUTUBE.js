@@ -6,7 +6,8 @@ const Influencer = require('../models').TB_INFLUENCER;
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const { id } = req.query;
+  let list;
+  const firstRow = 0;
 
   const options = {
     where: {},
@@ -21,9 +22,20 @@ router.get('/', (req, res) => {
   };
 
   Youtube.findAll(options).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+    list = result;
+    Youtube.count().then((cnt) => {
+      let icount = cnt - 1;
+
+      for (let i = 0; i < list.length; i++) {
+        list[i].dataValues.rownum = cnt - firstRow - (icount--);
+      }
+
+      res.json({
+        code: 200,
+        data: { list, cnt },
+      });
+    }).error((err2) => {
+      res.send('error has occured');
     });
   }).error((err) => {
     res.send('error has occured');

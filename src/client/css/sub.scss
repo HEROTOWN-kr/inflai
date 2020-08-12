@@ -207,6 +207,13 @@ $colorPink: #fbbaba;
       background: #2E68F2;
     }
   }
+  .google-button {
+    width: 198px;
+    height: 48px;
+    background-image: url("../img/google_button.png" );
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
   .close-icon {
     color: $colorGrey;
     &:hover {

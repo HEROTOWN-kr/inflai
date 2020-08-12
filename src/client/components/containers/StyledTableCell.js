@@ -8,6 +8,9 @@ const StyledTableCell = withStyles(theme => ({
     backgroundColor: '#3f4b5c',
     // backgroundColor: 'theme.palette.common.black',
     color: theme.palette.common.white,
+    '&.number': {
+      width: '8px'
+    }
   },
   body: {
     fontSize: 14,

@@ -9,6 +9,7 @@ const { google } = require('googleapis');
 const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
+const Youtube = require('../models').TB_YOUTUBE;
 const Notification = require('../models').TB_NOTIFICATION;
 const common = require('../config/common');
 const testData = require('../config/testData');
@@ -458,95 +459,65 @@ router.get('/youtubeSignUp', (req, res) => {
     if (!err) {
       oauth2Client.setCredentials(tokens);
 
-      const youtube = google.youtube('v3');
       const oauth2 = google.oauth2('v2');
-
-      /* Influenser.create({
-        INF_REF_TOKEN: tokens.refresh_token,
-      }).then((result) => {
-        res.json({
-          code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-        });
-      }); */
-      /* service.channels.list({
-        auth: oauth2Client,
-        part: 'id',
-        mySubscribers: true
-      }, (err, response) => {
-        if (err) {
-          console.log(`The API returned an error: ${err}`);
-          return;
-        }
-        const channels = response.data.items;
-        if (channels.length == 0) {
-          console.log('No channel found.');
-        } else {
-          /!*console.log('This channel\'s ID is %s. Its title is \'%s\', and '
-              + 'it has %s views.',
-          channels[0].id,
-          channels[0].snippet.title,
-          channels[0].statistics.viewCount);*!/
-        }
-      }); */
-
-      /* youtube.subscriptions.list({
-        auth: oauth2Client,
-        part: 'id',
-        mySubscribers: true
-      }, (err, response) => {
-        if (err) {
-          console.log(`The API returned an error: ${err}`);
-          return;
-        }
-        const channels = response.data.items;
-        if (channels.length == 0) {
-          console.log('No channel found.');
-        } else {
-
-        }
-      }); */
 
       oauth2.userinfo.get(
         {
           auth: oauth2Client,
           alt: 'json',
         }, (err, response) => {
+          const { name, email, id } = response.data;
+          const { refreshToken } = tokens;
+
           if (err) {
             console.log(`The API returned an error: ${err}`);
           } else {
-            Influencer.findOne({ where: { INF_REG_ID: response.data.id } }).then((result) => {
+            Influencer.findOne({ where: { INF_REG_ID: id } }).then((result) => {
               if (!result) {
                 Influencer.create({
-                  INF_NAME: response.data.name,
-                  INF_EMAIL: response.data.email,
-                  INF_REG_ID: response.data.id,
+                  INF_NAME: name,
+                  INF_EMAIL: email,
+                  INF_REG_ID: id,
                   INF_BLOG_TYPE: '2',
                   INF_REF_TOKEN: tokens.refresh_token,
                 }).then((result2) => {
+                  const { INF_ID, INF_NAME, INF_TEL } = result2.dataValues;
+                  /* Youtube.create({
+                    INF_ID,
+                    YOU_TOKEN: refreshToken,
+                  }).then((result3) => {
+                    res.json({
+                      code: 200,
+                      userId: INF_ID,
+                      userToken: common.createToken(INF_ID),
+                      userName: INF_NAME,
+                      userPhone: INF_TEL,
+                      social_type: getBlogType('2')
+                    });
+                  }); */
                   res.json({
                     code: 200,
-                    userId: result2.dataValues.INF_ID,
-                    userToken: common.createToken(result2.dataValues.INF_ID),
-                    userName: result2.dataValues.INF_NAME,
-                    userPhone: result2.dataValues.INF_TEL,
+                    userId: INF_ID,
+                    userToken: common.createToken(INF_ID),
+                    userName: INF_NAME,
+                    userPhone: INF_TEL,
                     social_type: getBlogType('2')
                   });
                 });
               } else {
-                const blogType = result.dataValues.INF_BLOG_TYPE;
-                const user_id = result.dataValues.INF_ID;
-                Influencer.update({ INF_REF_TOKEN: tokens.refresh_token }, {
-                  where: { INF_ID: user_id }
+                const {
+                  INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
+                } = result.dataValues;
+                Influencer.update({ INF_REF_TOKEN: refreshToken }, {
+                  where: { INF_ID }
                 }).then((result3) => {
                   res.json({
                     code: 200,
-                    userId: result.dataValues.INF_ID,
-                    userToken: common.createToken(result.dataValues.INF_ID),
-                    userName: result.dataValues.INF_NAME,
-                    userPhone: result.dataValues.INF_TEL,
-                    social_type: getBlogType(blogType)
+                    userId: INF_ID,
+                    userToken: common.createToken(INF_ID),
+                    userName: INF_NAME,
+                    userPhone: INF_TEL,
+                    social_type: getBlogType(INF_BLOG_TYPE)
                   });
                 });
               }
@@ -554,28 +525,11 @@ router.get('/youtubeSignUp', (req, res) => {
           }
         }
       );
-
-      // session["tokens"] = tokens;
     } else {
       // res.redirect('http://localhost:3000');
       console.log(err);
     }
   });
-
-  // const { tokens } = oauth2Client.getToken(code);
-
-  /* oauth2Client.setCredentials(tokens);
-
-
-  oauth2Client.on('tokens', (token) => {
-    if (token.refresh_token) {
-      // store the refresh_token in my database!
-      console.log(token.refresh_token);
-    }
-    console.log(token.access_token);
-  }); */
-
-  // res.redirect('http://localhost:3000');
 });
 
 router.get('/getYoutubeInfo', (req, res) => {

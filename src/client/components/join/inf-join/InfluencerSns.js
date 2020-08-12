@@ -15,6 +15,7 @@ import Influencer from '../../../img/influencer.png';
 import Advertiser from '../../../img/advertiser.png';
 import Common from '../../../lib/common';
 import InstagramDialog from './InstagramDialog';
+import YoutubeDialog from './YoutubeDialog';
 
 function InfluencerSns({
   changeUser,
@@ -25,10 +26,16 @@ function InfluencerSns({
 }) {
   const { search } = document.location;
   const [instaDialogOpen, setInstaDialogOpen] = useState(false);
+  const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);
 
   function toggleInstaDialog() {
     setInstaDialogOpen(!instaDialogOpen);
   }
+
+  function toggleYoutubeDialog() {
+    setYoutubeDialogOpen(!youtubeDialogOpen);
+  }
+
 
   function parseParms(str) {
     const pieces = str.split('&');
@@ -56,35 +63,6 @@ function InfluencerSns({
     }).then((res) => {
       console.log(res);
     });
-    /* const twitchToken = urlObj.access_token;
-    Common.saveUserToken(twitchToken);
-    const header = `Bearer ${twitchToken}`; */
-
-    /* axios.get('https://api.twitch.tv/helix/users', {
-      headers: { Authorization: header }
-    }).then((res) => {
-      // console.log(res);
-      if (res.data) {
-        axios.get('/api/TB_ADVERTISER/loginTwitch', {
-          params: {
-            id: res.data.data[0].id,
-            email: res.data.data[0].email,
-            name: res.data.data[0].display_name,
-            type: '2',
-            social_type: 'twitch'
-          }
-        }).then((res) => {
-          console.log(res);
-          props.changeUser({
-            social_type: res.data.social_type,
-            type: '2',
-            token: res.data.userToken,
-            name: res.data.userName,
-          });
-          props.history.push('/');
-        });
-      }
-    }); */
   }
 
   useEffect(() => {
@@ -154,12 +132,11 @@ function InfluencerSns({
   function clickSns(sns) {
     switch (sns) {
       case 'Instagram': {
-        // facebookLogin();
         toggleInstaDialog();
         break;
       }
       case 'Youtube': {
-        GoogleButtonRef.current.click();
+        toggleYoutubeDialog();
         break;
       }
       case 'Blog': {
@@ -266,6 +243,7 @@ function InfluencerSns({
         />
         {/* <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a> */}
         <InstagramDialog open={instaDialogOpen} closeDialog={toggleInstaDialog} facebookLogin={facebookLogin} />
+        <YoutubeDialog open={youtubeDialogOpen} closeDialog={toggleYoutubeDialog} googleLogin={() => GoogleButtonRef.current.click()} />
         <div className="title">인플루언서 유형을 선택해주세요</div>
         <Grid container spacing={1}>
           {types.map(item => (
