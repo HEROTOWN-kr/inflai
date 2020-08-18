@@ -233,6 +233,43 @@ function YoutubeRequest(data, cb) {
   });
 }
 
+function YoutubeDataRequest(YOU_TOKEN, YOU_ID, cb) {
+  function getOauthClient() {
+    const oauth2Client = new google.auth.OAuth2(
+      configKey.google_client_id,
+      configKey.google_client_secret,
+      configKey.google_client_redirect_url
+    );
+    return oauth2Client;
+  }
+
+  const oauth2Client = getOauthClient();
+  const youtube = google.youtube('v3');
+
+  oauth2Client.setCredentials({
+    refresh_token: YOU_TOKEN
+  });
+
+  youtube.channels.list({
+    auth: oauth2Client,
+    part: 'snippet, statistics',
+    mine: true,
+    fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
+    quotaUser: `secretquotastring${YOU_ID}`,
+  }, (err, response) => {
+    if (err) {
+      cb(err);
+    }
+    const info = response.data.items;
+    if (info.length == 0) {
+      console.log('No channel found.');
+      cb(response.data);
+    } else {
+      cb({ ...info[0], YOU_ID });
+    }
+  });
+}
+
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
 exports.instaRequest = instaRequest;
@@ -240,3 +277,4 @@ exports.mailSendData = mailSendData;
 exports.createMessageOption = createMessageOption;
 exports.createMessageOption2 = createMessageOption2;
 exports.YoutubeRequest = YoutubeRequest;
+exports.YoutubeDataRequest = YoutubeDataRequest;

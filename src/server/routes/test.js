@@ -196,10 +196,16 @@ function getYoutubeData(clb) {
   Youtube.findAll({
     attributes: ['YOU_ID', 'INF_ID', 'YOU_TOKEN']
   }).then((result) => {
-    common.YoutubeRequest(result, (error, data) => {
+    async.map(result, (item, callback) => {
+      const { YOU_ID, YOU_TOKEN } = item;
+      common.YoutubeDataRequest(YOU_TOKEN, YOU_ID, (youtubeData) => {
+        callback(null, youtubeData);
+      });
+    }, (err, asyncResult) => clb(asyncResult));
+    /* common.YoutubeRequest(result, (error, data) => {
       clb(data);
-
-      /* async.map(data, (item, callback) => {
+    }); */
+    /* async.map(data, (item, callback) => {
         const { YOU_ID } = item;
         const { title, description } = item.snippet;
         const { viewCount, subscriberCount, videoCount } = item.statistics;
@@ -218,7 +224,6 @@ function getYoutubeData(clb) {
           callback(null, err);
         });
       }, (err, asyncResult) => clb(asyncResult)); */
-    });
   });
 }
 

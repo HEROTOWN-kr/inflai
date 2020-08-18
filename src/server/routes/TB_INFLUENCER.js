@@ -467,7 +467,7 @@ router.get('/youtubeSignUp', (req, res) => {
           alt: 'json',
         }, (err, response) => {
           const { name, email, id } = response.data;
-          const { refreshToken } = tokens;
+          const { refresh_token } = tokens;
 
           if (err) {
             console.log(`The API returned an error: ${err}`);
@@ -479,7 +479,7 @@ router.get('/youtubeSignUp', (req, res) => {
                   INF_EMAIL: email,
                   INF_REG_ID: id,
                   INF_BLOG_TYPE: '2',
-                  INF_REF_TOKEN: tokens.refresh_token,
+                  INF_REF_TOKEN: refresh_token,
                 }).then((result2) => {
                   const { INF_ID, INF_NAME, INF_TEL } = result2.dataValues;
                   /* Youtube.create({
@@ -508,7 +508,7 @@ router.get('/youtubeSignUp', (req, res) => {
                 const {
                   INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
                 } = result.dataValues;
-                Influencer.update({ INF_REF_TOKEN: refreshToken }, {
+                Influencer.update({ INF_REF_TOKEN: refresh_token }, {
                   where: { INF_ID }
                 }).then((result3) => {
                   res.json({
