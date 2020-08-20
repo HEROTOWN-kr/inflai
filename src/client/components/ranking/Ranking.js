@@ -11,7 +11,7 @@ import Youtube from './Youtube';
 import Common from '../../lib/common';
 
 function Ranking() {
-  const [blogType, setBlogType] = useState('1');
+  const [blogType, setBlogType] = useState('2');
   const [userId, setUserId] = useState(0);
 
   function getUser() {

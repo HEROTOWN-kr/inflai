@@ -259,13 +259,14 @@ function YoutubeDataRequest(YOU_TOKEN, YOU_ID, cb) {
   }, (err, response) => {
     if (err) {
       cb(err);
-    }
-    const info = response.data.items;
-    if (info.length == 0) {
-      console.log('No channel found.');
-      cb(response.data);
     } else {
-      cb({ ...info[0], YOU_ID });
+      const info = response.data.items;
+      if (info.length === 0) {
+        console.log('No channel found.');
+        cb(response.data);
+      } else {
+        cb({ ...info[0], YOU_ID });
+      }
     }
   });
 }

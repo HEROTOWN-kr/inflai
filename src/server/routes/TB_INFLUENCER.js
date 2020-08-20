@@ -479,45 +479,57 @@ router.get('/youtubeSignUp', (req, res) => {
                   INF_EMAIL: email,
                   INF_REG_ID: id,
                   INF_BLOG_TYPE: '2',
-                  INF_REF_TOKEN: refresh_token,
+                  // INF_REF_TOKEN: refresh_token,
                 }).then((result2) => {
                   const { INF_ID, INF_NAME, INF_TEL } = result2.dataValues;
-                  /* Youtube.create({
-                    INF_ID,
-                    YOU_TOKEN: refreshToken,
-                  }).then((result3) => {
-                    res.json({
-                      code: 200,
-                      userId: INF_ID,
-                      userToken: common.createToken(INF_ID),
-                      userName: INF_NAME,
-                      userPhone: INF_TEL,
-                      social_type: getBlogType('2')
+                  common.YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
+                    const { viewCount, subscriberCount } = youtubeData.statistics;
+                    Youtube.create({
+                      INF_ID,
+                      YOU_TOKEN: refresh_token,
+                      YOU_SUBS: subscriberCount,
+                      YOU_VIEWS: viewCount
+                    }).then((result3) => {
+                      res.json({
+                        code: 200,
+                        userId: INF_ID,
+                        userToken: common.createToken(INF_ID),
+                        userName: INF_NAME,
+                        userPhone: INF_TEL,
+                        social_type: getBlogType('2')
+                      });
                     });
-                  }); */
-                  res.json({
+                  });
+                  /* res.json({
                     code: 200,
                     userId: INF_ID,
                     userToken: common.createToken(INF_ID),
                     userName: INF_NAME,
                     userPhone: INF_TEL,
                     social_type: getBlogType('2')
-                  });
+                  }); */
                 });
               } else {
                 const {
                   INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
                 } = result.dataValues;
-                Influencer.update({ INF_REF_TOKEN: refresh_token }, {
-                  where: { INF_ID }
-                }).then((result3) => {
-                  res.json({
-                    code: 200,
-                    userId: INF_ID,
-                    userToken: common.createToken(INF_ID),
-                    userName: INF_NAME,
-                    userPhone: INF_TEL,
-                    social_type: getBlogType(INF_BLOG_TYPE)
+                common.YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
+                  const { viewCount, subscriberCount } = youtubeData.statistics;
+                  Youtube.update({
+                    YOU_TOKEN: refresh_token,
+                    YOU_SUBS: subscriberCount,
+                    YOU_VIEWS: viewCount
+                  }, {
+                    where: { INF_ID }
+                  }).then((result4) => {
+                    res.json({
+                      code: 200,
+                      userId: INF_ID,
+                      userToken: common.createToken(INF_ID),
+                      userName: INF_NAME,
+                      userPhone: INF_TEL,
+                      social_type: getBlogType(INF_BLOG_TYPE)
+                    });
                   });
                 });
               }
