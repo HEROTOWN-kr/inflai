@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Grid, Divider, CircularProgress, Button
+  Grid, Divider, CircularProgress, Button, Box
 } from '@material-ui/core';
 import axios from 'axios';
 import Common from '../../lib/common';
+import MainBlock from '../containers/MainBlock';
+import StyledButton from '../containers/StyledButton';
+import { Colors } from '../../lib/Сonstants';
+import StyledText from '../containers/StyledText';
 
 function CampaignDetail({
   match
@@ -63,49 +67,53 @@ function CampaignDetail({
   }
 
   return (
-    <Grid container justify="center">
-      <Grid item className="campaign-detail">
+    <MainBlock width="980">
+      <Box my={4} p={6} className="campaign-detail">
         {Object.keys(productData).length
           ? (
-            <Grid container spacing={3}>
-              <Grid item sm={12} md={5}>
-                <Grid container>
-                  <Grid item xs={12} className="main-img">
-                    <img src={currentImage ? `https://www.inflai.com${currentImage}` : testImage} alt="nofoto" />
-                  </Grid>
-                  <Grid item xs={12} className="img">
-                    <Grid container spacing={1}>
-                      {productData.TB_PHOTO_ADs.map(item => (
-                        <Grid item key={item.PHO_FILE}>
-                          <img src={`https://www.inflai.com${item.PHO_FILE}`} alt="noFoto" onMouseOver={() => setCurrentImage(item.PHO_FILE)} />
-                        </Grid>
-                      ))}
+            <Grid container justify="space-between">
+              <Grid item>
+                <div className="product-image">
+                  <Grid container>
+                    <Grid item xs={12} className="main-img">
+                      <img src={currentImage ? `https://www.inflai.com${currentImage}` : testImage} alt="nofoto" />
+                    </Grid>
+                    <Grid item xs={12} className="img-slider">
+                      <Grid container spacing={1}>
+                        {productData.TB_PHOTO_ADs.map(item => (
+                          <Grid item key={item.PHO_FILE}>
+                            <img src={`https://www.inflai.com${item.PHO_FILE}`} alt="noFoto" onMouseOver={() => setCurrentImage(item.PHO_FILE)} />
+                          </Grid>
+                        ))}
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
+                </div>
               </Grid>
-              <Grid item sm={12} md={4} className="product-info">
+              <Grid item className="product-info">
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <Grid container spacing={1}>
-                      <Grid item>
-                        <span className="channel">
-                          {productData.AD_CHANNEL}
-                        </span>
-                        <span className="category">
-                          {productData.AD_CTG}
-                        </span>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <span className="name">{productData.AD_PROD_NAME}</span>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <span className="about">{productData.AD_ABOUT}</span>
-                      </Grid>
+                    <Grid item>
+                      <span className="channel">
+                        {productData.AD_CHANNEL}
+                      </span>
+                      <span className="category">
+                        {productData.AD_CTG}
+                      </span>
                     </Grid>
                   </Grid>
                   <Grid item xs={12}>
-                    <span className="spon-item">{productData.AD_SPON_ITEM}</span>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Box mb={1}>
+                          <StyledText fontSize="26" fontWeight="700">{productData.AD_PROD_NAME}</StyledText>
+                        </Box>
+                        <Box mb={1}>
+                          <StyledText fontSize="16">{productData.AD_ABOUT}</StyledText>
+                        </Box>
+                        <StyledText fontSize="16">{productData.AD_SPON_ITEM}</StyledText>
+                      </Grid>
+                    </Grid>
                   </Grid>
                   <Grid item xs={12}>
                     <Divider />
@@ -115,7 +123,7 @@ function CampaignDetail({
                       <Grid item xs={12}>
                         <Grid container>
                           <Grid item xs={5}>
-                            캠페인 신청
+                                캠페인 신청
                           </Grid>
                           <Grid item xs={7}>
                             {productData.AD_DT}
@@ -125,7 +133,7 @@ function CampaignDetail({
                       <Grid item xs={12}>
                         <Grid container>
                           <Grid item xs={5}>
-                            블로거 신청 마감
+                                블로거 신청 마감
                           </Grid>
                           <Grid item xs={7}>
                             {productData.AD_SRCH_END}
@@ -135,7 +143,17 @@ function CampaignDetail({
                       <Grid item xs={12}>
                         <Grid container>
                           <Grid item xs={5}>
-                            캠페인 완료
+                                캠페인 완료
+                          </Grid>
+                          <Grid item xs={7}>
+                            {productData.AD_POST_END}
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Grid container>
+                          <Grid item xs={5}>
+                            제공 내역
                           </Grid>
                           <Grid item xs={7}>
                             {productData.AD_POST_END}
@@ -148,15 +166,31 @@ function CampaignDetail({
                     <Divider />
                   </Grid>
                   <Grid item xs={12}>
-                    <Button variant="contained" fullWidth color="primary" onClick={sendRequest} disabled={type === '1' || checkIsRequested()}>
-                      {checkIsRequested() ? '캠페인 신청됨' : '캠페인 신청하기'}
-                      {/* 캠페인 싱청하기 */}
-                    </Button>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <StyledButton
+                          onClick={sendRequest}
+                          disabledObj={type === '1' || checkIsRequested()}
+                          background={Colors.skyBlue}
+                          hoverBackground="#1c4dbb"
+                        >
+                          {checkIsRequested() ? '캠페인 신청됨' : '캠페인 신청하기'}
+                          {/* 캠페인 싱청하기 */}
+                        </StyledButton>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <StyledButton
+                          // onClick={sendRequest}
+                          background={Colors.skyBlue}
+                          hoverBackground="#1c4dbb"
+                        >
+                          신청자 확인
+                        </StyledButton>
+                      </Grid>
+                    </Grid>
+
                   </Grid>
                 </Grid>
-              </Grid>
-              <Grid item sm={12} md={3}>
-                content
               </Grid>
             </Grid>
           )
@@ -168,8 +202,8 @@ function CampaignDetail({
             </Grid>
           )
         }
-      </Grid>
-    </Grid>
+      </Box>
+    </MainBlock>
   );
 }
 

@@ -10,7 +10,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import * as Yup from 'yup';
 import Common from '../../lib/common';
-import NameArray from '../../lib/nameArray';
+import { classification, jobType } from '../../lib/Сonstants';
+
 
 function InfoChangeAdvertiser({
   history,
@@ -123,7 +124,7 @@ function InfoChangeAdvertiser({
 
   function MySelect(props) {
     const [field, meta, helpers] = useField(props.name);
-    const renderArray = props.name === 'classification' ? NameArray.classification() : NameArray.jobType();
+    const renderArray = props.name === 'classification' ? classification : jobType;
 
     return (
       <React.Fragment>

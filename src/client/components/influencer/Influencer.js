@@ -20,7 +20,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import NameArray from '../../lib/nameArray';
+import { city, area, blog } from '../../lib/Сonstants';
 import Common from '../../lib/common';
 
 import Minus from '../../img/minus.svg';
@@ -88,7 +88,7 @@ function Influencer({
 
   function MySelect(props) {
     const [field, meta, helpers] = useField(props.name);
-    const renderArray = props.name === 'country' ? NameArray.city() : NameArray.area()[props.countryIndex];
+    const renderArray = props.name === 'country' ? city : area[props.countryIndex];
 
     return (
       <React.Fragment>
@@ -150,7 +150,7 @@ function Influencer({
         access_token: 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB',
         // access_token: 'EAABZBmHw3RHwBAEMBmfZAgMZAUSVSeqEUNbSWwOMG5ZCEmZBHPEeMwl6kyHndjZC6bvPMwpQR93fYr96Oj7hslHuzgAp9G2cZA6e7JzQV3YXyctv2R6vAMZCexR9Kp2BhZCjdKjZCdZBRci4T1x4LTVtZAQPPUogiSGSJTtRykZAwPB5cuAZDZD',
         fields: 'ig_id, followers_count, follows_count, media_count, username, media'
-          // 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB'
+        // 'EAABZBmHw3RHwBAEVGw8VLdNx9YvKSAZAT7HxBPmU2Qma1pJouF8GizmSMwAZAWRTCH3OHIGw4CiZBWFU0IkQgAotcdLKsKg6SX3AdewZCb45GLLKESj0aKmiYzVkFKZClZAdQeexzFRhMHE5ortLRslzdaqfM7sLSn9K4ZApa7HwZCqVkwDKwleZCB'
       },
       (response) => {
         console.log(response);
@@ -403,7 +403,7 @@ function Influencer({
                                               value={values.channel[inx].type}
                                               onChange={(event => setFieldValue(`channel.${inx}.type`, event.target.value))}
                                             >
-                                              {NameArray.blog().map((item, index) => (
+                                              {blog.map((item, index) => (
                                                 <MenuItem key={item} value={index}>{item}</MenuItem>
                                               ))}
                                             </Select>

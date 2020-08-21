@@ -16,7 +16,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import * as Yup from 'yup';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox';
-import NameArray from '../../../lib/nameArray';
+import { city, area } from '../../../lib/Сonstants';
 import Common from '../../../lib/common';
 
 
@@ -72,7 +72,7 @@ function InfluencerDetail({
 
   function MySelect(props) {
     const [field, meta, helpers] = useField(props.name);
-    const renderArray = props.name === 'country' ? NameArray.city() : NameArray.area()[props.countryIndex];
+    const renderArray = props.name === 'country' ? city : area[props.countryIndex];
 
     return (
       <React.Fragment>

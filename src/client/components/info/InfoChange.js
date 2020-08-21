@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import * as Yup from 'yup';
 import Common from '../../lib/common';
-import NameArray from '../../lib/nameArray';
+import { city, area } from '../../lib/Сonstants';
 
 function InfoChange({
   history,
@@ -126,7 +126,7 @@ function InfoChange({
 
   function MySelect(props) {
     const [field, meta, helpers] = useField(props.name);
-    const renderArray = props.name === 'country' ? NameArray.city() : NameArray.area()[props.countryIndex];
+    const renderArray = props.name === 'country' ? city : area[props.countryIndex];
 
     return (
       <React.Fragment>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Checkbox, CircularProgress, Grid } from '@material-ui/core';
 import Common from '../../lib/common';
-import NameArray from '../../lib/nameArray';
+import { city, area } from '../../lib/Сonstants';
 import InfoYoutube from './InfoYoutube';
 
 function InfoInfluencer(props) {
@@ -56,7 +56,7 @@ function InfoInfluencer(props) {
             <Grid item xs={12} md={6}>
               <div className="label">주소</div>
               <Grid container justify="space-between" alignItems="center">
-                <Grid item className="info-text">{`${NameArray.city()[userData.INF_CITY]} ${NameArray.area()[userData.INF_CITY][userData.INF_AREA]}`}</Grid>
+                <Grid item className="info-text">{`${city[userData.INF_CITY]} ${area[userData.INF_CITY][userData.INF_AREA]}`}</Grid>
                 <Grid item className="change-button" onClick={() => editProfile('country region')}>수정</Grid>
               </Grid>
             </Grid>
