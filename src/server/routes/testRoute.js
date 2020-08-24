@@ -1,5 +1,6 @@
 const express = require('express');
 const request = require('request');
+const vision = require('@google-cloud/vision');
 const Advertiser = require('../models').TB_ADVERTISER;
 const test = require('./test');
 const async = require('async');
@@ -205,6 +206,32 @@ router.get('/test2', (req, res) => {
   console.log('getting all advertisers');
   Advertiser.findAll().then((result) => {
     res.json(result);
+  });
+});
+
+router.get('/googleVision', (req, res) => {
+  const testData = [];
+
+  async function quickstart() {
+    const client = new vision.ImageAnnotatorClient({
+      keyFilename: 'src/server/config/googleVisionKey.json'
+    });
+
+    // Performs label detection on the image file
+    const [result] = await client.labelDetection('https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=701&q=80');
+    const labels = result.labelAnnotations;
+    labels.forEach((label) => {
+      console.log(label);
+      testData.push(label.description);
+    });
+  }
+
+  quickstart().then((result) => {
+    res.json({
+      code: 200,
+      message: 'success',
+      data: testData
+    });
   });
 });
 

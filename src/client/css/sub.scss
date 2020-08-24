@@ -4,6 +4,7 @@ $aqua: #23c9cf;
 $white: #ffffff;
 $colorSoftBlue: #7491B4;
 $colorBlack: #000;
+$colorBlack2: #333333;
 $colorRed: #fa4616;
 $colorRed2: #de2e2e;
 $colorGrey: #dfe2e8;
@@ -1974,6 +1975,33 @@ $colorPink: #fbbaba;
     }
     .date {
       font-size: 15px;
+    }
+  }
+  .step-card {
+    box-sizing: border-box;
+    text-align: center;
+    background: #f2f2f2;
+    border: 1px solid #cacaca;
+    .active {
+      background: $white;
+      border: 2px solid #fa4616;
+    }
+  }
+  .submenu {
+    cursor: pointer;
+    background: #f2f2f2;
+    text-align: center;
+    border-bottom: 2px solid $colorBlack2;
+    &.active {
+      background: $white;
+      border-bottom: 0;
+      border-top: 2px solid $colorBlack2;
+      border-left: 2px solid $colorBlack2;
+      border-right: 2px solid $colorBlack2;
+    }
+    &.three {
+      cursor: default;
+      background: $white;
     }
   }
 }
