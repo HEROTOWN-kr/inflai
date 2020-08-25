@@ -210,6 +210,8 @@ router.get('/test2', (req, res) => {
 });
 
 router.get('/googleVision', (req, res) => {
+  console.log(req.headers.host);
+
   const testData = [];
 
   async function quickstart() {
@@ -217,20 +219,38 @@ router.get('/googleVision', (req, res) => {
       keyFilename: 'src/server/config/googleVisionKey.json'
     });
 
+    const INF_INST_ID = '17841401425431236';
+    const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
+    let resObj;
+
+    const instaMediaDataUrl = `https://graph.facebook.com/v6.0/${INF_INST_ID}/media?`
+        + 'fields='
+        + 'thumbnail_url%2C'
+        + 'media_url&'
+        + `access_token=${INF_TOKEN}`;
+
+
+    request.get(instaMediaDataUrl, (error2, response2, body2) => {
+      resObj = { ...resObj, media: JSON.parse(body2).data };
+    });
+
+
     // Performs label detection on the image file
-    const [result] = await client.labelDetection('https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=701&q=80');
+    const [result] = await client.labelDetection('https://images.unsplash.com/photo-1542728498-09c6a1af7cb9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80');
     const labels = result.labelAnnotations;
     labels.forEach((label) => {
       console.log(label);
       testData.push(label.description);
     });
+    return resObj;
   }
 
   quickstart().then((result) => {
     res.json({
       code: 200,
       message: 'success',
-      data: testData
+      data: testData,
+      img: result.media
     });
   });
 });
