@@ -10,6 +10,8 @@ import StyledButton from '../containers/StyledButton';
 import { Colors, campaignSteps } from '../../lib/Сonstants';
 import StyledText from '../containers/StyledText';
 import BlogerList from './BlogerList';
+import TestPage from '../../img/detail-page.jpg';
+import StyledImage from '../containers/StyledImage';
 
 function CampaignDetail({
   match
@@ -240,7 +242,9 @@ function CampaignDetail({
                 <Box py={4}>
                   {subMenu === 1
                     ? (
-                      <div>상세페이지</div>
+                      <div>
+                        <StyledImage width="720" src={TestPage} />
+                      </div>
                     ) : (
                       <BlogerList />
                     )
