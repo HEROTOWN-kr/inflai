@@ -126,7 +126,7 @@ function InfluencerSns({
       } else {
         console.log('not connected');
       }
-    }, { scope: 'public_profile, email, instagram_basic, instagram_manage_insights, manage_pages' });
+    }, { scope: 'public_profile, email, instagram_basic, manage_pages' });
   }
 
   function clickSns(sns) {
