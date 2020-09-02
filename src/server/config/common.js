@@ -271,6 +271,11 @@ function YoutubeDataRequest(YOU_TOKEN, YOU_ID, cb) {
   });
 }
 
+const asyncMiddleware = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next))
+    .catch(next);
+};
+
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
 exports.instaRequest = instaRequest;
@@ -279,3 +284,4 @@ exports.createMessageOption = createMessageOption;
 exports.createMessageOption2 = createMessageOption2;
 exports.YoutubeRequest = YoutubeRequest;
 exports.YoutubeDataRequest = YoutubeDataRequest;
+exports.asyncMiddleware = asyncMiddleware;
