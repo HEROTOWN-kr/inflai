@@ -221,21 +221,26 @@ router.get('/googleVision', asyncMiddleware(
     async function detectPic(imgObj) {
       /* const [result] = await client.objectLocalization(imgObj.media_url);
       const labels = result.localizedObjectAnnotations; */
-      const [result] = await client.labelDetection(imgObj.media_url);
+      const [result] = await client.labelDetection(imgObj.thumbnail_url || imgObj.media_url);
       const labels = result.labelAnnotations;
       if (labels && labels[0]) {
         const { score, description } = labels[0];
 
         return { ...imgObj, score, description };
       }
-      return { ...imgObj };
+      // return { ...imgObj };
+      return detectPic(imgObj);
     }
 
     // const INF_INST_ID = '17841401425431236';
     // const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
 
-    const INF_INST_ID = '17841404662470641';
-    const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
+    // const INF_INST_ID = '17841404662470641';
+    // const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
+
+
+    const INF_INST_ID = '17841409027165699';
+    const INF_TOKEN = 'EAAJbZA7aqFJcBAMqzR9ZBes04fxdbqO0AmJKLNQvARu06mbZCXaFpvnZCU5ZCWKiptFqAcqZA181LhiTwO1zmC2bHzNGu8M1GZBUwOqOYJ7LZC6X2N3qNqaFjJIKG9j9Gcm4u3mvUxZAiOOjVmSZAHZCt3uR8EGeQZAwVmfcLXA2uA5sSAZDZD';
 
     function getInstaData() {
       const iData = `https://graph.facebook.com/v6.0/${INF_INST_ID}/media?`
@@ -258,19 +263,20 @@ router.get('/googleVision', asyncMiddleware(
 
     const instaData = await getInstaData();
 
-    const resultData = instaData.slice(0, 10);
-    const resultData2 = instaData.slice(10, 20);
-    const resultData3 = instaData.slice(20, 25);
+    const resultData = instaData.slice(0, 7);
+    const resultData2 = instaData.slice(8, 14);
+    const resultData3 = instaData.slice(15, 25);
 
-    Promise.all(resultData.map(accInfo => detectPic(accInfo).then(result => (result)))).then((gDatas) => {
-      Promise.all(resultData2.map(accInfo2 => detectPic(accInfo2).then(result2 => (result2)))).then((gDatas2) => {
+
+    Promise.all(instaData.map(accInfo => detectPic(accInfo).then(result => (result)))).then((gDatas) => {
+      /* Promise.all(resultData2.map(accInfo2 => detectPic(accInfo2).then(result2 => (result2)))).then((gDatas2) => {
         Promise.all(resultData3.map(accInfo3 => detectPic(accInfo3).then(result3 => (result3)))).then((gDatas3) => {
           const finalArray = [...gDatas, ...gDatas2, ...gDatas3];
-          /* const statArray = finalArray.map(item => item.description);
+          /!* const statArray = finalArray.map(item => item.description);
           const statistics = statArray.reduce((acc, el) => {
             acc[el] = (acc[el] || 0) + 1;
             return acc;
-          }, {}); */
+          }, {}); *!/
 
           const statistics = finalArray.reduce((acc, el) => {
             acc[el.description] = {
@@ -292,7 +298,35 @@ router.get('/googleVision', asyncMiddleware(
             stats: statistics
           });
         });
+      }); */
+
+      // const finalArray = [...gDatas, ...gDatas2, ...gDatas3];
+      /* const statArray = finalArray.map(item => item.description);
+      const statistics = statArray.reduce((acc, el) => {
+        acc[el] = (acc[el] || 0) + 1;
+        return acc;
+      }, {}); */
+
+      const statistics = gDatas.reduce((acc, el) => {
+        acc[el.description] = {
+          percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
+          likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
+          commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
+        };
+        return acc;
+      }, {});
+
+      Object.keys(statistics).map((key) => {
+        statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
       });
+
+      res.json({
+        code: 200,
+        message: 'success',
+        data: gDatas,
+        stats: statistics
+      });
+
       /* res.json({
         code: 200,
         message: 'success',

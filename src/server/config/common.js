@@ -271,6 +271,29 @@ function YoutubeDataRequest(YOU_TOKEN, YOU_ID, cb) {
   });
 }
 
+function getInstagramData(instagramId, facebookToken) {
+  const url = `https://graph.facebook.com/v6.0/${instagramId}?`
+      + 'fields='
+      + 'followers_count%2C'
+      + 'follows_count%2C'
+      + 'media_count%2C'
+      + 'username%2C'
+      + 'profile_picture_url%2C'
+      + 'name&'
+      + `access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(url, (error, response, body) => {
+      if (!error && response.statusCode == 200) {
+        const parsedBody = JSON.parse(body);
+        resolve(parsedBody);
+      } else {
+        reject(error);
+      }
+    });
+  }));
+}
+
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next))
     .catch(next);
@@ -284,4 +307,5 @@ exports.createMessageOption = createMessageOption;
 exports.createMessageOption2 = createMessageOption2;
 exports.YoutubeRequest = YoutubeRequest;
 exports.YoutubeDataRequest = YoutubeDataRequest;
+exports.getInstagramData = getInstagramData;
 exports.asyncMiddleware = asyncMiddleware;

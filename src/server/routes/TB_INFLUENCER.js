@@ -6,11 +6,13 @@ const request = require('request');
 const async = require('async');
 const { google } = require('googleapis');
 
+const { asyncMiddleware } = require('../config/common');
 const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const Youtube = require('../models').TB_YOUTUBE;
 const Notification = require('../models').TB_NOTIFICATION;
+const Instagram = require('../models').TB_INSTA;
 const common = require('../config/common');
 const testData = require('../config/testData');
 
@@ -413,39 +415,81 @@ router.post('/instaSignUp', (req, res) => {
   });
 });
 
-router.post('/instaUpdate', (req, res) => {
-  const data = req.body;
-  const { id } = data;
+router.post('/instaUpdate', asyncMiddleware(
+  async (req, res) => {
+    const data = req.body;
+    const {
+      id, instaAccount, blogUrl, nickName, phone, country, region, product
+    } = data;
 
-  const post = {
-    INF_NAME: data.nickName,
-    INF_TEL: data.phone,
-    INF_CITY: data.country,
-    INF_AREA: data.region,
-    INF_PROD: data.product
-  };
+    const post = {
+      INF_NAME: nickName,
+      INF_TEL: phone,
+      INF_CITY: country,
+      INF_AREA: region,
+      INF_PROD: product
+    };
+    if (instaAccount) post.INF_INST_ID = instaAccount;
+    if (blogUrl) post.INF_BLOG_URL = blogUrl;
 
-  if (data.instaAccount) post.INF_INST_ID = data.instaAccount;
-  if (data.blogUrl) post.INF_BLOG_URL = data.blogUrl;
 
-  Influencer.update(post, {
-    where: { INF_ID: id },
-  }).then((result) => {
-    if (result) {
-      Influencer.findOne({ where: { INF_ID: id } }).then((result2) => {
-        const blogType = result2.dataValues.INF_BLOG_TYPE;
+    Influencer.update(post, { where: { INF_ID: id } });
+
+    const InfluencerData = await Influencer.findOne({ where: { INF_ID: id } });
+    const {
+      INF_ID, INF_NAME, INF_TEL, INF_BLOG_TYPE, INF_TOKEN
+    } = InfluencerData;
+    const successResponse = {
+      code: 200,
+      userId: INF_ID,
+      userToken: common.createToken(INF_ID),
+      userName: INF_NAME,
+      userPhone: INF_TEL,
+      social_type: getBlogType(INF_BLOG_TYPE)
+    };
+
+    if (instaAccount) {
+      try {
+        const instagramData = await common.getInstagramData(instaAccount, INF_TOKEN);
+        const {
+          follows_count, followers_count, profile_picture_url
+        } = instagramData;
+        const instaAccountExist = await Instagram.findOne({ where: { INF_ID: id } });
+        if (instaAccountExist) {
+          Instagram.update({
+            INS_TOKEN: INF_TOKEN,
+            INS_ACCOUNT_ID: instaAccount,
+            INS_FLW: follows_count,
+            INS_FLWR: followers_count,
+            INS_PROFILE_IMG: profile_picture_url
+          }, {
+            where: { INF_ID: id }
+          }).then((result4) => {
+            res.json(successResponse);
+          });
+        } else {
+          Instagram.create({
+            INF_ID: id,
+            INS_TOKEN: INF_TOKEN,
+            INS_ACCOUNT_ID: instaAccount,
+            INS_FLW: follows_count,
+            INS_FLWR: followers_count,
+            INS_PROFILE_IMG: profile_picture_url
+          }).then((result5) => {
+            res.json(successResponse);
+          });
+        }
+      } catch (err) {
         res.json({
-          code: 200,
-          userId: result2.dataValues.INF_ID,
-          userToken: common.createToken(result2.dataValues.INF_ID),
-          userName: result2.dataValues.INF_NAME,
-          userPhone: result2.dataValues.INF_TEL,
-          social_type: getBlogType(blogType)
+          code: 400,
+          error: err
         });
-      });
+      }
+    } else {
+      res.json(successResponse);
     }
-  });
-});
+  }
+));
 
 router.get('/youtubeSignUp', (req, res) => {
   const data = req.query;
