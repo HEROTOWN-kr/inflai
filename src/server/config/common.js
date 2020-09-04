@@ -294,6 +294,25 @@ function getInstagramData(instagramId, facebookToken) {
   }));
 }
 
+function getInstagramMediaData(instagramId, facebookToken) {
+  const iData = `https://graph.facebook.com/v6.0/${instagramId}/media?`
+      + 'fields='
+      + 'thumbnail_url%2C'
+      + 'media_url,like_count,comments_count&'
+      + `access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(iData, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        const imgArray = JSON.parse(body).data;
+        resolve(Object.values(imgArray));
+      } else {
+        reject(error);
+      }
+    });
+  }));
+}
+
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next))
     .catch(next);
@@ -308,4 +327,5 @@ exports.createMessageOption2 = createMessageOption2;
 exports.YoutubeRequest = YoutubeRequest;
 exports.YoutubeDataRequest = YoutubeDataRequest;
 exports.getInstagramData = getInstagramData;
+exports.getInstagramMediaData = getInstagramMediaData;
 exports.asyncMiddleware = asyncMiddleware;
