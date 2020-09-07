@@ -4,7 +4,7 @@ const async = require('async');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
-const { asyncMiddleware, getInstagramMediaData } = require('../config/common');
+const { asyncMiddleware, getInstagramMediaData, getInstagramData } = require('../config/common');
 
 const Advertiser = require('../models').TB_ADVERTISER;
 const test = require('./test');
@@ -168,11 +168,19 @@ router.get('/twiterTest3', (req, res) => {
   });
 });
 
-router.get('/test2', (req, res) => {
-  console.log('getting all advertisers');
-  Advertiser.findAll().then((result) => {
-    res.json(result);
-  });
+router.get('/readDirectory', async (req, res) => {
+  const { pathName } = req.query;
+
+  // const folderName = '/data/inflai/server/src/server/img';
+  // const folderName = './src/server/img';
+
+
+  try {
+    const files = await fs.readdirSync(pathName);
+    res.json({ code: 200, result: files });
+  } catch (err) {
+    res.json({ code: 400, result: err.message });
+  }
 });
 
 router.get('/saveImage', async (req, res) => {
@@ -207,10 +215,12 @@ router.get('/saveImage', async (req, res) => {
 router.get('/googleVision', async (req, res) => {
   const client = new vision.ImageAnnotatorClient({
     keyFilename: 'src/server/config/googleVisionKey.json'
+    // keyFilename: '/data/inflai/server/src/server/config/googleVisionKey.json'
   });
 
   async function detectPic(index) {
     const fileName = `./src/server/img/image${index}.jpg`;
+    // const fileName = `../server/img/image${index}.jpg`;
     const [result] = await client.labelDetection(fileName);
     const labels = result.labelAnnotations;
     return new Promise(((resolve, reject) => {
@@ -226,6 +236,7 @@ router.get('/googleVision', async (req, res) => {
     const response = await fetch(fileUrl);
     const buffer = await response.buffer();
     const path = `./src/server/img/image${index}.jpg`;
+    // const path = `../server/img/image${index}.jpg`;
 
     return new Promise((async (resolve, reject) => {
       fs.writeFile(path, buffer, async () => {
@@ -238,11 +249,27 @@ router.get('/googleVision', async (req, res) => {
   // const INF_INST_ID = '17841409027165699';
   // const INF_TOKEN = 'EAAJbZA7aqFJcBAMqzR9ZBes04fxdbqO0AmJKLNQvARu06mbZCXaFpvnZCU5ZCWKiptFqAcqZA181LhiTwO1zmC2bHzNGu8M1GZBUwOqOYJ7LZC6X2N3qNqaFjJIKG9j9Gcm4u3mvUxZAiOOjVmSZAHZCt3uR8EGeQZAwVmfcLXA2uA5sSAZDZD';
 
+  // 대리님 아까운트
   // const INF_INST_ID = '17841401425431236';
   // const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
 
-  const INF_INST_ID = '17841404662470641';
-  const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
+  // herotownkr 아까운트
+  // const INF_INST_ID = '17841404662470641';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
+
+  // 전혜린 아까운트 https://www.instagram.com/j.h.lyn/
+  // const INF_INST_ID = '17841400173602659';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAI9sHy3gXKLLdqMX5qYjuRI8RNaQ8ZC35BCZBOpfrcrrq6aoO9gCysFeBLhmhzcRhvtxvEl1Rfy62ZBnCITRwJIuy5JZCRpZBLJz9Juhk9JiPgq4Erm1GKBge2HAOt1YXCChZBL178iMI9Sl3vLCmQAdkv77SibeCTeAiTXv7b';
+
+
+  // 김지수 아까운트 https://www.instagram.com/j.suuu00
+  // const INF_INST_ID = '17841402219947161';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAMAkSoPRgR0qlMZCOjYZARY5r6wW0PpeFH8ZAd7jLZBmbps5SzbA77RCzv9mJPy7M3t0UrhC2IqZBPCiDlOqcpLfggbT6k7juLiwvcFTkR9OmNixwtvaN1jHEmM96hunBz9C9699CzohDl9l4lK0tCUE3mFacFgZDZD';
+
+  // 나은실 아까운트 https://www.instagram.com/j.suuu00
+  const INF_INST_ID = '17841403617928174';
+  const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
+
 
   const instaData = await getInstagramMediaData(INF_INST_ID, INF_TOKEN);
 
@@ -272,6 +299,129 @@ router.get('/googleVision', async (req, res) => {
   res.json({
     code: 200,
     message: statistics,
+  });
+});
+
+router.get('/googleVision2', async (req, res) => {
+  const client = new vision.ImageAnnotatorClient({
+    // keyFilename: 'src/server/config/googleVisionKey.json'
+    keyFilename: '/data/inflai/server/src/server/config/googleVisionKey.json'
+  });
+
+  async function detectPic(index) {
+    // const fileName = `./src/server/img/image${index}.jpg`;
+    const fileName = `../server/img/image${index}.jpg`;
+    const [result] = await client.labelDetection(fileName);
+    const labels = result.labelAnnotations;
+    return new Promise(((resolve, reject) => {
+      if (labels && labels[0]) {
+        const { score, description } = labels[0];
+        resolve({ score, description });
+      }
+      resolve({});
+    }));
+  }
+
+  async function downloadAndDetect(fileUrl, index) {
+    const response = await fetch(fileUrl);
+    const buffer = await response.buffer();
+    // const path = `./src/server/img/image${index}.jpg`;
+    const path = `../server/img/image${index}.jpg`;
+
+    return new Promise((async (resolve, reject) => {
+      /* fs.writeFile(path, buffer, async () => {
+        // const detectResult = await detectPic(index);
+        resolve(`success${index}`);
+      }); */
+      resolve(`success${index}`);
+    }));
+    /*return new Promise((async (resolve, reject) => {
+      /!* fs.writeFile(path, buffer, async () => {
+        // const detectResult = await detectPic(index);
+        resolve(`success${index}`);
+      }); *!/
+      resolve(`success${index}`);
+    }));*/
+  }
+
+  const result = await detectPic(0);
+
+  // 대리님 아까운트
+  const INF_INST_ID = '17841401425431236';
+  const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
+
+  // herotownkr 아까운트
+  // const INF_INST_ID = '17841404662470641';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
+
+  const instaData = await getInstagramMediaData(INF_INST_ID, INF_TOKEN);
+
+  const mydata = [
+    {
+      media_url: 'https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/44191010_877274945801500_683676639501143736_n.jpg?_nc_cat=104&_nc_sid=8ae9d6&_nc_eui2=AeHgpLGROkeF64zlSfzp21wcaVF4zXkz6_ppUXjNeTPr-lrGuxkbi0wBSBXTwiNotqbxHj9bDuRbQYfIONFEBClW&_nc_ohc=DceN9cEZeF4AX-YOTUs&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=5a062277ff2f8f53fb5538e9002c679a&oe=5F7CC3A0',
+      like_count: 68,
+      comments_count: 9,
+      id: '17967611695151100'
+    },
+    {
+      media_url: 'https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/15538703_1714032728859764_6792233239500029952_n.jpg?_nc_cat=107&_nc_sid=8ae9d6&_nc_eui2=AeEOJTsjtR0-Ca5GNEXbDpXtGwl_yT9cZ1UbCX_JP1xnVVwuqT7-fi2hTPYbYvWd9Ge2GBrDlO-MsLUTT43QrdDX&_nc_ohc=1At3mlQqmCoAX-ofoO7&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=81666a783dfb0896201010e4e0545a94&oe=5F7B93F8',
+      like_count: 154,
+      comments_count: 5,
+      id: '17857725382101819'
+    }
+  ];
+
+  const gDatas = await Promise.all(
+    mydata.map(async (mediaInfo, index) => {
+      const { thumbnail_url, media_url } = mediaInfo;
+      const fileUrl = thumbnail_url || media_url;
+      const detectData = await downloadAndDetect(fileUrl, index);
+      return { ...mediaInfo, ...detectData };
+    })
+  );
+
+
+  // const gDatas = await downloadAndDetect('https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/15538703_1714032728859764_6792233239500029952_n.jpg?_nc_cat=107&_nc_sid=8ae9d6&_nc_eui2=AeEOJTsjtR0-Ca5GNEXbDpXtGwl_yT9cZ1UbCX_JP1xnVVwuqT7-fi2hTPYbYvWd9Ge2GBrDlO-MsLUTT43QrdDX&_nc_ohc=1At3mlQqmCoAX-ofoO7&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=81666a783dfb0896201010e4e0545a94&oe=5F7B93F8', 0);
+
+
+  res.json({
+    code: 200,
+    message: result,
+    data: gDatas
+  });
+});
+
+router.get('/getInstaInfo', async (req, res) => {
+
+  // 대리님 아까운트
+  // const INF_INST_ID = '17841401425431236';
+  // const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
+
+  // herotownkr 아까운트
+  // const INF_INST_ID = '17841404662470641';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
+
+  // 전혜린 아까운트 https://www.instagram.com/j.h.lyn/
+  // const INF_INST_ID = '17841400173602659';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAI9sHy3gXKLLdqMX5qYjuRI8RNaQ8ZC35BCZBOpfrcrrq6aoO9gCysFeBLhmhzcRhvtxvEl1Rfy62ZBnCITRwJIuy5JZCRpZBLJz9Juhk9JiPgq4Erm1GKBge2HAOt1YXCChZBL178iMI9Sl3vLCmQAdkv77SibeCTeAiTXv7b';
+
+  // 김지수 아까운트 https://www.instagram.com/j.suuu00
+  // const INF_INST_ID = '17841402219947161';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAMAkSoPRgR0qlMZCOjYZARY5r6wW0PpeFH8ZAd7jLZBmbps5SzbA77RCzv9mJPy7M3t0UrhC2IqZBPCiDlOqcpLfggbT6k7juLiwvcFTkR9OmNixwtvaN1jHEmM96hunBz9C9699CzohDl9l4lK0tCUE3mFacFgZDZD';
+
+  // 나은실 아까운트 https://www.instagram.com/j.suuu00
+  const INF_INST_ID = '17841403617928174';
+  const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
+
+  const instaData = await getInstagramData(INF_INST_ID, INF_TOKEN);
+
+
+  // const gDatas = await downloadAndDetect('https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/15538703_1714032728859764_6792233239500029952_n.jpg?_nc_cat=107&_nc_sid=8ae9d6&_nc_eui2=AeEOJTsjtR0-Ca5GNEXbDpXtGwl_yT9cZ1UbCX_JP1xnVVwuqT7-fi2hTPYbYvWd9Ge2GBrDlO-MsLUTT43QrdDX&_nc_ohc=1At3mlQqmCoAX-ofoO7&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=81666a783dfb0896201010e4e0545a94&oe=5F7B93F8', 0);
+
+
+  res.json({
+    code: 200,
+    data: instaData
   });
 });
 

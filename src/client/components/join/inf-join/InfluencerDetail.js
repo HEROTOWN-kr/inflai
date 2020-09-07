@@ -117,7 +117,7 @@ function InfluencerDetail({
           onBlur={field.onBlur}
           fullWidth
           variant="outlined"
-          disabled={field.name === 'email'}
+          // disabled={field.name === 'email'}
           helperText={meta.touched && meta.error ? (
             <span className="error-message">{meta.error}</span>
           ) : null}
