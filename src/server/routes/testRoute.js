@@ -183,65 +183,15 @@ router.get('/readDirectory', async (req, res) => {
   }
 });
 
-router.get('/saveImage', async (req, res) => {
+router.get('/saveImageLocal', async (req, res) => {
   async function download(fileUrl, index) {
     const response = await fetch(fileUrl);
     const buffer = await response.buffer();
     const path = `./src/server/img/image${index}.jpg`;
 
-    return new Promise(((resolve, reject) => {
+    return new Promise((async (resolve, reject) => {
       fs.writeFile(path, buffer, () => {
         resolve(`finish${index}`);
-      });
-    }));
-  }
-
-  const INF_INST_ID = '17841409027165699';
-  const INF_TOKEN = 'EAAJbZA7aqFJcBAMqzR9ZBes04fxdbqO0AmJKLNQvARu06mbZCXaFpvnZCU5ZCWKiptFqAcqZA181LhiTwO1zmC2bHzNGu8M1GZBUwOqOYJ7LZC6X2N3qNqaFjJIKG9j9Gcm4u3mvUxZAiOOjVmSZAHZCt3uR8EGeQZAwVmfcLXA2uA5sSAZDZD';
-
-  const instaData = await getInstagramMediaData(INF_INST_ID, INF_TOKEN);
-
-  const finish = await Promise.all(
-    instaData.map(async (mediaInfo, index) => {
-      const { thumbnail_url, media_url } = mediaInfo;
-      const downResponse = await download(thumbnail_url || media_url, index);
-      return downResponse;
-    })
-  );
-
-  res.json({ code: 200, result: finish });
-});
-
-router.get('/googleVision', async (req, res) => {
-  const client = new vision.ImageAnnotatorClient({
-    keyFilename: 'src/server/config/googleVisionKey.json'
-    // keyFilename: '/data/inflai/server/src/server/config/googleVisionKey.json'
-  });
-
-  async function detectPic(index) {
-    const fileName = `./src/server/img/image${index}.jpg`;
-    // const fileName = `../server/img/image${index}.jpg`;
-    const [result] = await client.labelDetection(fileName);
-    const labels = result.labelAnnotations;
-    return new Promise(((resolve, reject) => {
-      if (labels && labels[0]) {
-        const { score, description } = labels[0];
-        resolve({ score, description });
-      }
-      resolve({});
-    }));
-  }
-
-  async function downloadAndDetect(fileUrl, index) {
-    const response = await fetch(fileUrl);
-    const buffer = await response.buffer();
-    const path = `./src/server/img/image${index}.jpg`;
-    // const path = `../server/img/image${index}.jpg`;
-
-    return new Promise((async (resolve, reject) => {
-      fs.writeFile(path, buffer, async () => {
-        const detectResult = await detectPic(index);
-        resolve(detectResult);
       });
     }));
   }
@@ -263,15 +213,96 @@ router.get('/googleVision', async (req, res) => {
 
 
   // 김지수 아까운트 https://www.instagram.com/j.suuu00
-  // const INF_INST_ID = '17841402219947161';
-  // const INF_TOKEN = 'EAAJbZA7aqFJcBAMAkSoPRgR0qlMZCOjYZARY5r6wW0PpeFH8ZAd7jLZBmbps5SzbA77RCzv9mJPy7M3t0UrhC2IqZBPCiDlOqcpLfggbT6k7juLiwvcFTkR9OmNixwtvaN1jHEmM96hunBz9C9699CzohDl9l4lK0tCUE3mFacFgZDZD';
+  const INF_INST_ID = '17841402219947161';
+  const INF_TOKEN = 'EAAJbZA7aqFJcBAMAkSoPRgR0qlMZCOjYZARY5r6wW0PpeFH8ZAd7jLZBmbps5SzbA77RCzv9mJPy7M3t0UrhC2IqZBPCiDlOqcpLfggbT6k7juLiwvcFTkR9OmNixwtvaN1jHEmM96hunBz9C9699CzohDl9l4lK0tCUE3mFacFgZDZD';
 
   // 나은실 아까운트 https://www.instagram.com/j.suuu00
-  const INF_INST_ID = '17841403617928174';
-  const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
+  // const INF_INST_ID = '17841403617928174';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
 
 
   const instaData = await getInstagramMediaData(INF_INST_ID, INF_TOKEN);
+
+  const finish = await Promise.all(
+    instaData.map(async (mediaInfo, index) => {
+      const { thumbnail_url, media_url } = mediaInfo;
+      const downResponse = await download(thumbnail_url || media_url, index);
+      return downResponse;
+    })
+  );
+
+  res.json({ code: 200, result: finish });
+});
+
+router.get('/saveImage', async (req, res) => {
+  async function download(fileUrl, index) {
+    const response = await fetch(fileUrl);
+    const buffer = await response.buffer();
+    const path = `../server/img/image${index}.jpg`;
+
+    return new Promise(async (resolve, reject) => {
+      fs.writeFile(path, buffer, (err) => {
+        resolve(`finish${index}`);
+      });
+    });
+  }
+
+  const INF_INST_ID = '17841409027165699';
+  const INF_TOKEN = 'EAAJbZA7aqFJcBAMqzR9ZBes04fxdbqO0AmJKLNQvARu06mbZCXaFpvnZCU5ZCWKiptFqAcqZA181LhiTwO1zmC2bHzNGu8M1GZBUwOqOYJ7LZC6X2N3qNqaFjJIKG9j9Gcm4u3mvUxZAiOOjVmSZAHZCt3uR8EGeQZAwVmfcLXA2uA5sSAZDZD';
+
+  // 안드리안 아까운트
+  // const INF_INST_ID = '17841401425431236';
+  // const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
+
+  const instaData = await getInstagramMediaData(INF_INST_ID, INF_TOKEN);
+
+  const finish = await Promise.all(
+    instaData.map(async (mediaInfo, index) => {
+      const { thumbnail_url, media_url } = mediaInfo;
+      const downResponse = await download(thumbnail_url || media_url, index);
+      return downResponse;
+    })
+  );
+  res.json({ code: 200, result: finish });
+});
+
+router.get('/googleVisionLocal', async (req, res) => {
+  const { instaId, instaToken } = req.query;
+
+  if (!instaId || !instaToken) res.json({ code: 400, message: 'input instaId and instaToken' });
+
+  const client = new vision.ImageAnnotatorClient({
+    keyFilename: 'src/server/config/googleVisionKey.json'
+  });
+
+  async function detectPic(index) {
+    const fileName = `./src/server/img/image${index}.jpg`;
+    // const fileName = `../server/img/image${index}.jpg`;
+    const [result] = await client.labelDetection(fileName);
+    const labels = result.labelAnnotations;
+    return new Promise(((resolve, reject) => {
+      if (labels && labels[0]) {
+        const { score, description } = labels[0];
+        resolve({ score, description });
+      }
+      resolve({});
+    }));
+  }
+
+  async function downloadAndDetect(fileUrl, index) {
+    const response = await fetch(fileUrl);
+    const buffer = await response.buffer();
+    const path = `./src/server/img/image${index}.jpg`;
+
+    return new Promise((async (resolve, reject) => {
+      fs.writeFile(path, buffer, async () => {
+        const detectResult = await detectPic(index);
+        resolve(detectResult);
+      });
+    }));
+  }
+
+  const instaData = await getInstagramMediaData(instaId, instaToken);
 
   const gDatas = await Promise.all(
     instaData.map(async (mediaInfo, index) => {
@@ -302,14 +333,14 @@ router.get('/googleVision', async (req, res) => {
   });
 });
 
-router.get('/googleVision2', async (req, res) => {
+router.get('/googleVision', async (req, res) => {
+  const { instaId, instaToken } = req.query;
+
   const client = new vision.ImageAnnotatorClient({
-    // keyFilename: 'src/server/config/googleVisionKey.json'
     keyFilename: '/data/inflai/server/src/server/config/googleVisionKey.json'
   });
 
   async function detectPic(index) {
-    // const fileName = `./src/server/img/image${index}.jpg`;
     const fileName = `../server/img/image${index}.jpg`;
     const [result] = await client.labelDetection(fileName);
     const labels = result.labelAnnotations;
@@ -325,54 +356,20 @@ router.get('/googleVision2', async (req, res) => {
   async function downloadAndDetect(fileUrl, index) {
     const response = await fetch(fileUrl);
     const buffer = await response.buffer();
-    // const path = `./src/server/img/image${index}.jpg`;
     const path = `../server/img/image${index}.jpg`;
 
     return new Promise((async (resolve, reject) => {
-      /* fs.writeFile(path, buffer, async () => {
-        // const detectResult = await detectPic(index);
-        resolve(`success${index}`);
-      }); */
-      resolve(`success${index}`);
+      fs.writeFile(path, buffer, async () => {
+        const detectResult = await detectPic(index);
+        resolve(detectResult);
+      });
     }));
-    /*return new Promise((async (resolve, reject) => {
-      /!* fs.writeFile(path, buffer, async () => {
-        // const detectResult = await detectPic(index);
-        resolve(`success${index}`);
-      }); *!/
-      resolve(`success${index}`);
-    }));*/
   }
 
-  const result = await detectPic(0);
-
-  // 대리님 아까운트
-  const INF_INST_ID = '17841401425431236';
-  const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
-
-  // herotownkr 아까운트
-  // const INF_INST_ID = '17841404662470641';
-  // const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
-
-  const instaData = await getInstagramMediaData(INF_INST_ID, INF_TOKEN);
-
-  const mydata = [
-    {
-      media_url: 'https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/44191010_877274945801500_683676639501143736_n.jpg?_nc_cat=104&_nc_sid=8ae9d6&_nc_eui2=AeHgpLGROkeF64zlSfzp21wcaVF4zXkz6_ppUXjNeTPr-lrGuxkbi0wBSBXTwiNotqbxHj9bDuRbQYfIONFEBClW&_nc_ohc=DceN9cEZeF4AX-YOTUs&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=5a062277ff2f8f53fb5538e9002c679a&oe=5F7CC3A0',
-      like_count: 68,
-      comments_count: 9,
-      id: '17967611695151100'
-    },
-    {
-      media_url: 'https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/15538703_1714032728859764_6792233239500029952_n.jpg?_nc_cat=107&_nc_sid=8ae9d6&_nc_eui2=AeEOJTsjtR0-Ca5GNEXbDpXtGwl_yT9cZ1UbCX_JP1xnVVwuqT7-fi2hTPYbYvWd9Ge2GBrDlO-MsLUTT43QrdDX&_nc_ohc=1At3mlQqmCoAX-ofoO7&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=81666a783dfb0896201010e4e0545a94&oe=5F7B93F8',
-      like_count: 154,
-      comments_count: 5,
-      id: '17857725382101819'
-    }
-  ];
+  const instaData = await getInstagramMediaData(instaId, instaToken);
 
   const gDatas = await Promise.all(
-    mydata.map(async (mediaInfo, index) => {
+    instaData.map(async (mediaInfo, index) => {
       const { thumbnail_url, media_url } = mediaInfo;
       const fileUrl = thumbnail_url || media_url;
       const detectData = await downloadAndDetect(fileUrl, index);
@@ -380,19 +377,28 @@ router.get('/googleVision2', async (req, res) => {
     })
   );
 
+  const statistics = gDatas.reduce((acc, el) => {
+    acc[el.description] = {
+      percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
+      likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
+      commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
+    };
+    return acc;
+  }, {});
 
-  // const gDatas = await downloadAndDetect('https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/15538703_1714032728859764_6792233239500029952_n.jpg?_nc_cat=107&_nc_sid=8ae9d6&_nc_eui2=AeEOJTsjtR0-Ca5GNEXbDpXtGwl_yT9cZ1UbCX_JP1xnVVwuqT7-fi2hTPYbYvWd9Ge2GBrDlO-MsLUTT43QrdDX&_nc_ohc=1At3mlQqmCoAX-ofoO7&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=81666a783dfb0896201010e4e0545a94&oe=5F7B93F8', 0);
-
+  Object.keys(statistics).map((key) => {
+    statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
+    return null;
+  });
 
   res.json({
     code: 200,
-    message: result,
-    data: gDatas
+    message: statistics,
+    // data: gDatas
   });
 });
 
 router.get('/getInstaInfo', async (req, res) => {
-
   // 대리님 아까운트
   // const INF_INST_ID = '17841401425431236';
   // const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';

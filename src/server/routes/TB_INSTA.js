@@ -1,8 +1,12 @@
 const express = require('express');
-const Sequelize = require('sequelize');
-const async = require('async');
-const Instagram = require('../models').TB_INSTA;
+const request = require('request');
+const fs = require('fs');
+const fetch = require('node-fetch');
+const vision = require('@google-cloud/vision');
 const Influencer = require('../models').TB_INFLUENCER;
+const Instagram = require('../models').TB_INSTA;
+const { getInstagramMediaData, getInstagramData } = require('../config/common');
+
 
 const router = express.Router();
 
@@ -43,6 +47,79 @@ router.get('/', (req, res) => {
     });
   }).error((err) => {
     res.send('error has occured');
+  });
+});
+
+router.get('/getGoogleData', async (req, res) => {
+  const { INS_ID } = req.query;
+
+  const options = {
+    where: { INS_ID },
+    attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
+  };
+
+  const InstaData = await Instagram.findOne(options);
+  const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+
+  const client = new vision.ImageAnnotatorClient({
+    keyFilename: 'src/server/config/googleVisionKey.json'
+  });
+
+  async function detectPic(index) {
+    const fileName = `./src/server/img/image${index}.jpg`;
+    // const fileName = `../server/img/image${index}.jpg`;
+    const [result] = await client.labelDetection(fileName);
+    const labels = result.labelAnnotations;
+    return new Promise(((resolve, reject) => {
+      if (labels && labels[0]) {
+        const { score, description } = labels[0];
+        resolve({ score, description });
+      }
+      resolve({});
+    }));
+  }
+
+  async function downloadAndDetect(fileUrl, index) {
+    const response = await fetch(fileUrl);
+    const buffer = await response.buffer();
+    const path = `./src/server/img/image${index}.jpg`;
+
+    return new Promise((async (resolve, reject) => {
+      fs.writeFile(path, buffer, async () => {
+        const detectResult = await detectPic(index);
+        resolve(detectResult);
+      });
+    }));
+  }
+
+  const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+
+  const gDatas = await Promise.all(
+    instaData.map(async (mediaInfo, index) => {
+      const { thumbnail_url, media_url } = mediaInfo;
+      const fileUrl = thumbnail_url || media_url;
+      const detectData = await downloadAndDetect(fileUrl, index);
+      return { ...mediaInfo, ...detectData };
+    })
+  );
+
+  const statistics = gDatas.reduce((acc, el) => {
+    acc[el.description] = {
+      percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
+      likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
+      commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
+    };
+    return acc;
+  }, {});
+
+  Object.keys(statistics).map((key) => {
+    statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
+    return null;
+  });
+
+  res.json({
+    code: 200,
+    message: statistics,
   });
 });
 
