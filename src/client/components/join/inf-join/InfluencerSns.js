@@ -143,6 +143,9 @@ function InfluencerSns({
         NaverButtonRef.current.click();
         break;
       }
+      default: {
+        break;
+      }
     }
   }
 
