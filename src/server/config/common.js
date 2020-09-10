@@ -288,7 +288,8 @@ function getInstagramData(instagramId, facebookToken) {
         const parsedBody = JSON.parse(body);
         resolve(parsedBody);
       } else {
-        reject(error);
+        const parsedError = JSON.parse(body).error;
+        reject(parsedError);
       }
     });
   }));

@@ -92,35 +92,41 @@ router.get('/getGoogleData', async (req, res) => {
     }));
   }
 
-  const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+  try {
+    const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+    const gDatas = await Promise.all(
+      instaData.map(async (mediaInfo, index) => {
+        const { thumbnail_url, media_url } = mediaInfo;
+        const fileUrl = thumbnail_url || media_url;
+        const detectData = await downloadAndDetect(fileUrl, index);
+        return { ...mediaInfo, ...detectData };
+      })
+    );
 
-  const gDatas = await Promise.all(
-    instaData.map(async (mediaInfo, index) => {
-      const { thumbnail_url, media_url } = mediaInfo;
-      const fileUrl = thumbnail_url || media_url;
-      const detectData = await downloadAndDetect(fileUrl, index);
-      return { ...mediaInfo, ...detectData };
-    })
-  );
+    const statistics = gDatas.reduce((acc, el) => {
+      acc[el.description] = {
+        percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
+        likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
+        commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
+      };
+      return acc;
+    }, {});
 
-  const statistics = gDatas.reduce((acc, el) => {
-    acc[el.description] = {
-      percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
-      likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
-      commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
-    };
-    return acc;
-  }, {});
+    Object.keys(statistics).map((key) => {
+      statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
+      return null;
+    });
 
-  Object.keys(statistics).map((key) => {
-    statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
-    return null;
-  });
-
-  res.json({
-    code: 200,
-    message: statistics,
-  });
+    res.json({
+      code: 200,
+      message: statistics,
+    });
+  } catch (err) {
+    res.json({
+      code: 400,
+      message: err,
+    });
+  }
 });
 
 module.exports = router;
