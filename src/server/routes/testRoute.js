@@ -449,7 +449,7 @@ router.get('/updateInstaInfo', async (req, res) => {
       const { INF_ID, INF_INST_ID, INF_TOKEN } = iData;
       try {
         const accountData = await getInstagramData(INF_INST_ID, INF_TOKEN);
-        return { INF_ID, ...accountData };
+        return { INF_ID, INF_TOKEN, ...accountData };
       } catch (error) {
         return { INF_ID, error };
       }
@@ -469,28 +469,37 @@ router.get('/updateInstaInfo', async (req, res) => {
   const updatedArray = await Promise.all(
     instaData.map(async (iData) => {
       const {
-        INF_ID, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
+        INF_ID, INF_TOKEN, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
       } = iData;
       if (error) {
         return { INF_ID, message: 'not updated' };
       }
       const query = 'INSERT INTO TB_INSTA'
       + '    ('
-      + '        INF_ID, INS_NAME, INS_USERNAME, INS_MEDIA_CNT, INS_FLWR, INS_FLW, INS_PROFILE_IMG '
+      + '        INF_ID, INS_TOKEN, INS_ACCOUNT_ID, INS_NAME, INS_USERNAME, INS_MEDIA_CNT, INS_FLWR, INS_FLW, INS_PROFILE_IMG '
       + '    ) '
       + 'VALUES '
-      + '    (22, 339, 484) '
+      + `    (${INF_ID}, '${INF_TOKEN}', ${id}, '${name || ''}', '${username}', ${media_count}, ${followers_count}, ${follows_count}, '${profile_picture_url}') `
       + 'ON DUPLICATE KEY UPDATE '
-      + '    INF_ID = 22, INS_FLWR = 339, INS_FLW = 484;';
+      + `    INF_ID = ${INF_ID}, INS_TOKEN = '${INF_TOKEN}', INS_ACCOUNT_ID = ${id}, INS_NAME = '${name || ''}', INS_USERNAME = '${username}', INS_MEDIA_CNT = ${media_count}, INS_FLWR = ${followers_count}, INS_FLW = ${follows_count}, INS_PROFILE_IMG = '${profile_picture_url}';`;
 
-      const [results, metadata] = await sequelize.query(query);
+      try {
+        const [results, metadata] = await sequelize.query(query);
+        return { results, metadata };
+      } catch (err) {
+        return {
+          INF_ID,
+          message: err.message,
+          query: err.sql
+        };
+      }
     })
   );
 
 
   res.json({
     code: 200,
-    data: instaData
+    data: updatedArray
     /* data1: results,
     data2: metadata */
   });

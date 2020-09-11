@@ -11,6 +11,7 @@ module.exports = function (sequelize, DataTypes) {
     INF_ID: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
+      primaryKey: true,
       references: {
         model: 'TB_INFLUENCER',
         key: 'INF_ID'
@@ -24,6 +25,19 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    INS_NAME: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    INS_USERNAME: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    INS_MEDIA_CNT: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+      defaultValue: '0'
+    },
     INS_FLW: {
       type: DataTypes.INTEGER(11),
       allowNull: true
@@ -33,7 +47,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     INS_PROFILE_IMG: {
-      type: DataTypes.STRING(300),
+      type: DataTypes.STRING(1000),
       allowNull: true
     },
     INS_DT: {

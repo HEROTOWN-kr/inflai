@@ -10,15 +10,20 @@ const { getInstagramMediaData, getInstagramData } = require('../config/common');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  let list;
+router.get('/', async (req, res) => {
   const firstRow = 0;
 
   const options = {
     where: {},
-    attributes: ['INS_ID', 'INF_ID', 'INS_FLW', 'INS_FLWR', 'INS_PROFILE_IMG',
-      // [Sequelize.literal('(RANK() OVER (ORDER BY rating DESC))'), 'rank']
-      // [Sequelize.literal('(RANK() OVER (ORDER BY INS_FLWR))'), 'rank']
+    attributes: [
+      'INS_ID',
+      'INF_ID',
+      'INS_NAME',
+      'INS_USERNAME',
+      'INS_MEDIA_CNT',
+      'INS_FLW',
+      'INS_FLWR',
+      'INS_PROFILE_IMG',
     ],
     include: [
       {
@@ -29,7 +34,45 @@ router.get('/', (req, res) => {
     order: [['INS_FLWR', 'DESC']]
   };
 
-  Instagram.findAll(options).then((result) => {
+  const InstaBlogers = await Instagram.findAll(options);
+  const InstaCount = await Instagram.count();
+  let iCount = InstaCount - 1;
+
+  for (let i = 0; i < InstaBlogers.length; i++) {
+    InstaBlogers[i].dataValues.rownum = InstaCount - firstRow - (iCount--);
+  }
+
+  res.json({
+    code: 200,
+    data: { list: InstaBlogers, cnt: InstaCount },
+  });
+
+  /* try {
+    const blogersArray = InstaBlogers.map((item, index) => {
+      // const rownum = InstaCount - firstRow - (iCount - index);
+      const rownum = { a: 5 };
+      const obj = Object.assign(item, rownum);
+      return obj;
+    /!*  const x = '';
+      return new Promise(((resolve, reject) => {
+        const rownum = InstaCount - firstRow - (iCount - index);
+        resolve({ ...item, rownum });
+      })); *!/
+    });
+
+    res.json({
+      code: 200,
+      data: blogersArray,
+    });
+  } catch (err) {
+    res.json({
+      code: 400,
+      data: err.message,
+    });
+  } */
+
+
+  /* Instagram.findAll(options).then((result) => {
     list = result;
     Instagram.count().then((cnt) => {
       let icount = cnt - 1;
@@ -47,7 +90,7 @@ router.get('/', (req, res) => {
     });
   }).error((err) => {
     res.send('error has occured');
-  });
+  }); */
 });
 
 router.get('/getGoogleData', async (req, res) => {
