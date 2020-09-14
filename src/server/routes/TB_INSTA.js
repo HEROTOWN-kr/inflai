@@ -108,6 +108,16 @@ router.get('/getGoogleData', async (req, res) => {
     keyFilename: 'src/server/config/googleVisionKey.json'
   });
 
+  const colors = [
+    '#52D726', '#FFEC00', '#FF7300', '#FF0000',
+    '#007ED6', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+    '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
+    '#B276B2', '#DECF3F', '#81726A', '#270722',
+    '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
+    '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
+    '#7CDDDD'
+  ];
+
   async function detectPic(index) {
     const fileName = `./src/server/img/image${index}.jpg`;
     // const fileName = `../server/img/image${index}.jpg`;
@@ -155,14 +165,19 @@ router.get('/getGoogleData', async (req, res) => {
       return acc;
     }, {});
 
-    Object.keys(statistics).map((key) => {
+    /* Object.keys(statistics).map((key) => {
       statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
       return null;
+    }); */
+
+    const finalArray = Object.keys(statistics).map((key, index) => {
+      statistics[key].value = 100 / (gDatas.length / statistics[key].percentage);
+      return { ...statistics[key], description: key, color: colors[index] };
     });
 
     res.json({
       code: 200,
-      message: statistics,
+      statistics: finalArray,
     });
   } catch (err) {
     res.json({
