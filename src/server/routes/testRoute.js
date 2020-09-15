@@ -9,6 +9,7 @@ const { asyncMiddleware, getInstagramMediaData, getInstagramData } = require('..
 
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
+const Insta = require('../models').TB_INSTA;
 const test = require('./test');
 
 const router = express.Router();
@@ -273,6 +274,16 @@ router.get('/googleVisionLocal', async (req, res) => {
 
   if (!instaId || !instaToken) res.json({ code: 400, message: 'input instaId and instaToken' });
 
+  const colors = [
+    '#52D726', '#FFEC00', '#FF7300', '#FF0000',
+    '#007ED6', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+    '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
+    '#B276B2', '#DECF3F', '#81726A', '#270722',
+    '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
+    '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
+    '#7CDDDD'
+  ];
+
   const client = new vision.ImageAnnotatorClient({
     keyFilename: 'src/server/config/googleVisionKey.json'
   });
@@ -280,15 +291,21 @@ router.get('/googleVisionLocal', async (req, res) => {
   async function detectPic(index) {
     const fileName = `./src/server/img/image${index}.jpg`;
     // const fileName = `../server/img/image${index}.jpg`;
-    const [result] = await client.labelDetection(fileName);
-    const labels = result.labelAnnotations;
-    return new Promise(((resolve, reject) => {
-      if (labels && labels[0]) {
-        const { score, description } = labels[0];
-        resolve({ score, description });
-      }
-      resolve({});
-    }));
+    try {
+      const [result] = await client.labelDetection(fileName);
+      const labels = result.labelAnnotations;
+      return new Promise(((resolve, reject) => {
+        if (labels && labels[0]) {
+          const { score, description } = labels[0];
+          resolve({ score, description });
+        }
+        resolve({});
+      }));
+    } catch (err) {
+      return new Promise(((resolve, reject) => {
+        resolve({});
+      }));
+    }
   }
 
   async function downloadAndDetect(fileUrl, index) {
@@ -317,21 +334,28 @@ router.get('/googleVisionLocal', async (req, res) => {
 
   const statistics = gDatas.reduce((acc, el) => {
     acc[el.description] = {
-      percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
+      count: (acc[el.description] && acc[el.description].count || 0) + 1,
       likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
       commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
     };
     return acc;
   }, {});
 
-  Object.keys(statistics).map((key) => {
+  /* Object.keys(statistics).map((key) => {
     statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
     return null;
+  }); */
+
+  const finalArray = Object.keys(statistics).map((key, index) => {
+    statistics[key].value = 100 / (gDatas.length / statistics[key].count);
+    return { ...statistics[key], description: key, color: colors[index] };
   });
+
+  finalArray.sort((a, b) => b.value - a.value);
 
   res.json({
     code: 200,
-    message: statistics,
+    message: finalArray,
   });
 });
 
@@ -484,8 +508,20 @@ router.get('/updateInstaInfo', async (req, res) => {
       + `    INF_ID = ${INF_ID}, INS_TOKEN = '${INF_TOKEN}', INS_ACCOUNT_ID = ${id}, INS_NAME = '${name || ''}', INS_USERNAME = '${username}', INS_MEDIA_CNT = ${media_count}, INS_FLWR = ${followers_count}, INS_FLW = ${follows_count}, INS_PROFILE_IMG = '${profile_picture_url}';`;
 
       try {
-        const [results, metadata] = await sequelize.query(query);
-        return { results, metadata };
+        /* const [results, metadata] = await sequelize.query(query);
+        return { results, metadata }; */
+        const result = await Insta.upsert({
+          INF_ID,
+          INS_TOKEN: INF_TOKEN,
+          INS_ACCOUNT_ID: id,
+          INS_NAME: name,
+          INS_USERNAME: username,
+          INS_MEDIA_CNT: media_count,
+          INS_FLWR: followers_count,
+          INS_FLW: follows_count,
+          INS_PROFILE_IMG: profile_picture_url
+        });
+        return result;
       } catch (err) {
         return {
           INF_ID,

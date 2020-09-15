@@ -158,7 +158,7 @@ router.get('/getGoogleData', async (req, res) => {
 
     const statistics = gDatas.reduce((acc, el) => {
       acc[el.description] = {
-        percentage: (acc[el.description] && acc[el.description].percentage || 0) + 1,
+        count: (acc[el.description] && acc[el.description].count || 0) + 1,
         likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
         commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
       };
@@ -171,9 +171,11 @@ router.get('/getGoogleData', async (req, res) => {
     }); */
 
     const finalArray = Object.keys(statistics).map((key, index) => {
-      statistics[key].value = 100 / (gDatas.length / statistics[key].percentage);
+      statistics[key].value = 100 / (gDatas.length / statistics[key].count);
       return { ...statistics[key], description: key, color: colors[index] };
     });
+
+    finalArray.sort((a, b) => b.value - a.value);
 
     res.json({
       code: 200,

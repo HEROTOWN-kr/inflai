@@ -301,6 +301,7 @@ function getInstagramMediaData(instagramId, facebookToken) {
       + 'thumbnail_url%2C'
       + 'media_url,like_count,comments_count&'
       + `access_token=${facebookToken}`;
+      // + `access_token=${facebookToken}&limit=100`;
 
   return new Promise(((resolve, reject) => {
     request.get(iData, (error, response, body) => {
