@@ -425,23 +425,6 @@ router.get('/googleVision', async (req, res) => {
 });
 
 router.get('/getInstaInfo', async (req, res) => {
-  // 대리님 아까운트
-  // const INF_INST_ID = '17841401425431236';
-  // const INF_TOKEN = 'EAABZBmHw3RHwBAE4d4diX4vGO7MNquZAnlZC3QE2xpjZBORS7YZA9SACgOsGZCqtSyVUn0R4p7PSgXaUcR802hJjHGUCUW0C54nn5o3f48U25jCdA1rcnF2dq5pbFP4XM11mMSYXfZCFtRKXdTqUKGXHf2INT1dtCDWSna5g3ez2wZDZD';
-
-  // herotownkr 아까운트
-  // const INF_INST_ID = '17841404662470641';
-  // const INF_TOKEN = 'EAAJbZA7aqFJcBAOrR55N49gVKDZATjV62gcUFZBZAoKntsXHyqlHOPw847v9yyl1IqJDupb5Eg7p1vsyBxttIiGZAhW1ZBFVdcjEzBDBpOTUaqMZA4lT8a0w4zgZCo2Yjyt7LGYGELUudVJsZBpC2uGKOrLcnQZAgxVZC87J6AXBzIC4lx0t1FIrFyL';
-
-  // 전혜린 아까운트 https://www.instagram.com/j.h.lyn/
-  // const INF_INST_ID = '17841400173602659';
-  // const INF_TOKEN = 'EAAJbZA7aqFJcBAI9sHy3gXKLLdqMX5qYjuRI8RNaQ8ZC35BCZBOpfrcrrq6aoO9gCysFeBLhmhzcRhvtxvEl1Rfy62ZBnCITRwJIuy5JZCRpZBLJz9Juhk9JiPgq4Erm1GKBge2HAOt1YXCChZBL178iMI9Sl3vLCmQAdkv77SibeCTeAiTXv7b';
-
-  // 김지수 아까운트 https://www.instagram.com/j.suuu00
-  // const INF_INST_ID = '17841402219947161';
-  // const INF_TOKEN = 'EAAJbZA7aqFJcBAMAkSoPRgR0qlMZCOjYZARY5r6wW0PpeFH8ZAd7jLZBmbps5SzbA77RCzv9mJPy7M3t0UrhC2IqZBPCiDlOqcpLfggbT6k7juLiwvcFTkR9OmNixwtvaN1jHEmM96hunBz9C9699CzohDl9l4lK0tCUE3mFacFgZDZD';
-
-  // 나은실 아까운트 https://www.instagram.com/j.suuu00
   const INF_INST_ID = '17841403617928174';
   const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
 
@@ -482,7 +465,7 @@ router.get('/updateInstaInfo', async (req, res) => {
 
   const sequelize = new Sequelize('mysql://inflai:herotown2020!@127.0.0.1:3306/inflai', {
     define: {
-      timestamps: false // true by default. false because bydefault sequelize adds createdAt, modifiedAt columns with timestamps.if you want those columns make ths true.
+      timestamps: false // true by default. false be8cause bydefault sequelize adds createdAt, modifiedAt columns with timestamps.if you want those columns make ths true.
     },
     query: {
       // plain: true
@@ -508,9 +491,9 @@ router.get('/updateInstaInfo', async (req, res) => {
       + `    INF_ID = ${INF_ID}, INS_TOKEN = '${INF_TOKEN}', INS_ACCOUNT_ID = ${id}, INS_NAME = '${name || ''}', INS_USERNAME = '${username}', INS_MEDIA_CNT = ${media_count}, INS_FLWR = ${followers_count}, INS_FLW = ${follows_count}, INS_PROFILE_IMG = '${profile_picture_url}';`;
 
       try {
-        /* const [results, metadata] = await sequelize.query(query);
-        return { results, metadata }; */
-        const result = await Insta.upsert({
+        const [results, metadata] = await sequelize.query(query);
+        return { results, metadata };
+        /* const result = await Insta.upsert({
           INF_ID,
           INS_TOKEN: INF_TOKEN,
           INS_ACCOUNT_ID: id,
@@ -521,7 +504,7 @@ router.get('/updateInstaInfo', async (req, res) => {
           INS_FLW: follows_count,
           INS_PROFILE_IMG: profile_picture_url
         });
-        return result;
+        return result; */
       } catch (err) {
         return {
           INF_ID,
@@ -539,6 +522,31 @@ router.get('/updateInstaInfo', async (req, res) => {
     /* data1: results,
     data2: metadata */
   });
+});
+
+router.get('/updateTest', async (req, res) => {
+  try {
+    const result = await Insta.upsert({
+      INF_ID: 65,
+      INS_TOKEN: 'token',
+      INS_ACCOUNT_ID: 12345,
+      INS_NAME: 'testAccount',
+      INS_USERNAME: 'testAccount',
+      INS_MEDIA_CNT: 25,
+      INS_FLWR: 25,
+      INS_FLW: 25,
+      INS_PROFILE_IMG: 'https://images.unsplash.com/photo-1542728498-09c6a1af7cb9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80'
+    });
+    res.json({
+      code: 200,
+      data: result,
+    });
+  } catch (err) {
+    return {
+      message: err.message,
+      query: err.sql
+    };
+  }
 });
 
 
