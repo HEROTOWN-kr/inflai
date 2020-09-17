@@ -11,6 +11,8 @@ const { getInstagramMediaData, getInstagramData } = require('../config/common');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
+  const { orderBy, direction } = req.query;
+
   const firstRow = 0;
 
   const options = {
@@ -31,7 +33,7 @@ router.get('/', async (req, res) => {
         attributes: ['INF_NAME']
       },
     ],
-    order: [['INS_FLWR', 'DESC']]
+    order: [[orderBy, direction]]
   };
 
   const InstaBlogers = await Instagram.findAll(options);

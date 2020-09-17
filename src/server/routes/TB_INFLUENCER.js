@@ -452,7 +452,7 @@ router.post('/instaUpdate', asyncMiddleware(
       try {
         const instagramData = await common.getInstagramData(instaAccount, INF_TOKEN);
         const {
-          follows_count, followers_count, profile_picture_url
+          follows_count, followers_count, media_count, username, name, profile_picture_url
         } = instagramData;
         const instaAccountExist = await Instagram.findOne({ where: { INF_ID: id } });
         if (instaAccountExist) {
@@ -461,6 +461,9 @@ router.post('/instaUpdate', asyncMiddleware(
             INS_ACCOUNT_ID: instaAccount,
             INS_FLW: follows_count,
             INS_FLWR: followers_count,
+            INS_NAME: name,
+            INS_USERNAME: username,
+            INS_MEDIA_CNT: media_count,
             INS_PROFILE_IMG: profile_picture_url
           }, {
             where: { INF_ID: id }
@@ -474,6 +477,9 @@ router.post('/instaUpdate', asyncMiddleware(
             INS_ACCOUNT_ID: instaAccount,
             INS_FLW: follows_count,
             INS_FLWR: followers_count,
+            INS_NAME: name,
+            INS_USERNAME: username,
+            INS_MEDIA_CNT: media_count,
             INS_PROFILE_IMG: profile_picture_url
           }).then((result5) => {
             res.json(successResponse);
