@@ -3,15 +3,19 @@ const request = require('request');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
+const Sequelize = require('sequelize');
 const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
+
+
+const { Op } = Sequelize;
 const { getInstagramMediaData, getInstagramData } = require('../config/common');
 
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const { orderBy, direction } = req.query;
+  const { orderBy, direction, searchWord } = req.query;
 
   const firstRow = 0;
 
@@ -30,11 +34,25 @@ router.get('/', async (req, res) => {
     include: [
       {
         model: Influencer,
-        attributes: ['INF_NAME']
+        attributes: ['INF_NAME'],
+        where: {}
       },
     ],
     order: [[orderBy, direction]]
   };
+
+  if (searchWord) {
+    options.where = {
+      [Op.or]: [
+        { INS_NAME: { [Op.like]: `%${searchWord}%` } },
+        { INS_USERNAME: { [Op.like]: `%${searchWord}%` } },
+        { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
+      ],
+    };
+    /* options.include[0].where = {
+      INF_NAME: { [Op.like]: `%${searchWord}%` },
+    }; */
+  }
 
   const InstaBlogers = await Instagram.findAll(options);
   const InstaCount = await Instagram.count();
