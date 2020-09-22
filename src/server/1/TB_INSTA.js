@@ -1,15 +1,14 @@
 /* jshint indent: 2 */
 
-module.exports = function (sequelize, DataTypes) {
-  const Instagram = sequelize.define('TB_INSTA', {
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('TB_INSTA', {
     INS_ID: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
+      primaryKey: true
     },
     INF_ID: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
@@ -34,16 +33,16 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     INS_MEDIA_CNT: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       allowNull: true,
       defaultValue: '0'
     },
     INS_FLW: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     INS_FLWR: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     INS_PROFILE_IMG: {
@@ -63,19 +62,11 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     INS_DT: {
-      type: 'TIMESTAMP',
+      type: DataTypes.DATE,
       allowNull: false,
       defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
-    tableName: 'TB_INSTA',
-    charset: 'utf8mb4',
-    collate: 'utf8mb4_unicode_ci'
+    tableName: 'TB_INSTA'
   });
-
-  Instagram.associate = function (models) {
-    Instagram.belongsTo(models.TB_INFLUENCER, { foreignKey: 'INF_ID', targetKey: 'INF_ID' });
-  };
-
-  return Instagram;
 };

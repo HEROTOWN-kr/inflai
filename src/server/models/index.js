@@ -27,6 +27,10 @@ function checkAssociate(modelItem) {
 
 const sequelize = new Sequelize('mysql://inflai:herotown2020!@127.0.0.1:3306/inflai', {
   define: {
+    charset: 'utf8mb4',
+    dialectOptions: {
+      collate: 'utf8mb4_general_ci'
+    },
     timestamps: false // true by default. false because bydefault sequelize adds createdAt, modifiedAt columns with timestamps.if you want those columns make ths true.
   },
   query: {

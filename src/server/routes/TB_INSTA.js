@@ -30,6 +30,8 @@ router.get('/', async (req, res) => {
       'INS_FLW',
       'INS_FLWR',
       'INS_PROFILE_IMG',
+      'INS_LIKES',
+      'INS_CMNT',
     ],
     include: [
       {
@@ -126,6 +128,7 @@ router.get('/getGoogleData', async (req, res) => {
 
   const client = new vision.ImageAnnotatorClient({
     keyFilename: 'src/server/config/googleVisionKey.json'
+    // keyFilename: '/data/inflai/src/server/config/googleVisionKey.json'
   });
 
   const colors = [
@@ -156,6 +159,7 @@ router.get('/getGoogleData', async (req, res) => {
     const response = await fetch(fileUrl);
     const buffer = await response.buffer();
     const path = `./src/server/img/image${index}.jpg`;
+    // const path = `../server/img/image${index}.jpg`;
 
     return new Promise((async (resolve, reject) => {
       fs.writeFile(path, buffer, async () => {

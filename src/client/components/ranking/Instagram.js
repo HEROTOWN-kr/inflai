@@ -35,7 +35,12 @@ function Instagram(props) {
   };
 
   function getInfluencers() {
-    axios.get('/api/TB_INSTA/').then(
+    axios.get('/api/TB_INSTA/', {
+      params: {
+        orderBy: 'INS_FLWR',
+        direction: 'desc'
+      }
+    }).then(
       (res) => {
         const { list } = res.data.data;
         setInfluencers(list);

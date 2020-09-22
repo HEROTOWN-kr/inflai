@@ -425,89 +425,81 @@ router.get('/googleVision', async (req, res) => {
 });
 
 router.get('/getInstaInfo', async (req, res) => {
-  const INF_INST_ID = '17841403617928174';
-  const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
+  const { instaId, instaToken } = req.query;
 
-  const instaData = await getInstagramData(INF_INST_ID, INF_TOKEN);
+  // const INF_INST_ID = '17841403617928174';
+  // const INF_TOKEN = 'EAAJbZA7aqFJcBAPSZACWxB1AYRvTOtxa4ISfd1cAybTZCx7yOKPKWzO97adNvqHwZAMea3QB7uAbuQgOpBTZCI7cyZAX8gutfarI3WbyFwKrZAvOQQCmJoowHybthH9FgteJpZBTqKRhQnaLnohWgUZCmdAXq4uf0RBvfstxkfwklagZDZD';
+
+  try {
+    const instaData = await getInstagramData(instaId, instaToken);
+    res.json({
+      code: 200,
+      data: instaData
+    });
+  } catch (err) {
+    res.json({
+      code: 400,
+      message: err.message
+    });
+  }
 
 
   // const gDatas = await downloadAndDetect('https://scontent-nrt1-1.cdninstagram.com/v/t51.2885-15/15538703_1714032728859764_6792233239500029952_n.jpg?_nc_cat=107&_nc_sid=8ae9d6&_nc_eui2=AeEOJTsjtR0-Ca5GNEXbDpXtGwl_yT9cZ1UbCX_JP1xnVVwuqT7-fi2hTPYbYvWd9Ge2GBrDlO-MsLUTT43QrdDX&_nc_ohc=1At3mlQqmCoAX-ofoO7&_nc_ht=scontent-nrt1-1.cdninstagram.com&oh=81666a783dfb0896201010e4e0545a94&oe=5F7B93F8', 0);
-
-
-  res.json({
-    code: 200,
-    data: instaData
-  });
 });
 
 router.get('/updateInstaInfo', async (req, res) => {
-  const influencerData = await Influencer.findAll({
-    where: { INF_BLOG_TYPE: '1' }
-  });
-
-  const myData = influencerData.map(item => ({
-    INF_ID: item.INF_ID,
-    INF_INST_ID: item.INF_INST_ID,
-    INF_TOKEN: item.INF_TOKEN
-  }));
+  const instaInfo = await Insta.findAll();
 
   const instaData = await Promise.all(
-    myData.map(async (iData) => {
-      const { INF_ID, INF_INST_ID, INF_TOKEN } = iData;
+    instaInfo.map(async (iData) => {
+      const { INF_ID, INS_ACCOUNT_ID, INS_TOKEN } = iData;
+      // const { INF_ID, INF_INST_ID, INF_TOKEN } = iData;
       try {
-        const accountData = await getInstagramData(INF_INST_ID, INF_TOKEN);
-        return { INF_ID, INF_TOKEN, ...accountData };
+        const accountData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+        const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+
+        const statistics = mediaData.reduce((acc, el) => ({
+          likeSum: (acc.likeSum || 0) + el.like_count,
+          commentsSum: (acc.commentsSum || 0) + el.comments_count,
+        }), {});
+
+        return {
+          INF_ID, INS_TOKEN, ...accountData, ...statistics
+        };
       } catch (error) {
         return { INF_ID, error };
       }
     })
   );
 
-  const sequelize = new Sequelize('mysql://inflai:herotown2020!@127.0.0.1:3306/inflai', {
-    define: {
-      timestamps: false // true by default. false be8cause bydefault sequelize adds createdAt, modifiedAt columns with timestamps.if you want those columns make ths true.
-    },
-    query: {
-      // plain: true
-      // raw:true
-    }
-  });
-
   const updatedArray = await Promise.all(
     instaData.map(async (iData) => {
       const {
-        INF_ID, INF_TOKEN, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
+        INF_ID, INF_TOKEN, likeSum, commentsSum, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
       } = iData;
       if (error) {
         return { INF_ID, message: 'not updated' };
       }
-      const query = 'INSERT INTO TB_INSTA'
-      + '    ('
-      + '        INF_ID, INS_TOKEN, INS_ACCOUNT_ID, INS_NAME, INS_USERNAME, INS_MEDIA_CNT, INS_FLWR, INS_FLW, INS_PROFILE_IMG '
-      + '    ) '
-      + 'VALUES '
-      + `    (${INF_ID}, '${INF_TOKEN}', ${id}, '${name || ''}', '${username}', ${media_count}, ${followers_count}, ${follows_count}, '${profile_picture_url}') `
-      + 'ON DUPLICATE KEY UPDATE '
-      + `    INF_ID = ${INF_ID}, INS_TOKEN = '${INF_TOKEN}', INS_ACCOUNT_ID = ${id}, INS_NAME = '${name || ''}', INS_USERNAME = '${username}', INS_MEDIA_CNT = ${media_count}, INS_FLWR = ${followers_count}, INS_FLW = ${follows_count}, INS_PROFILE_IMG = '${profile_picture_url}';`;
 
       try {
-        const [results, metadata] = await sequelize.query(query);
-        return { results, metadata };
-        /* const result = await Insta.upsert({
+        const result = await Insta.upsert({
           INF_ID,
           INS_TOKEN: INF_TOKEN,
           INS_ACCOUNT_ID: id,
-          INS_NAME: name,
+          INS_NAME: name.normalize('NFC'),
           INS_USERNAME: username,
           INS_MEDIA_CNT: media_count,
           INS_FLWR: followers_count,
           INS_FLW: follows_count,
-          INS_PROFILE_IMG: profile_picture_url
+          INS_PROFILE_IMG: profile_picture_url,
+          INS_LIKES: likeSum,
+          INS_CMNT: commentsSum
         });
-        return result; */
+        return { INF_ID, message: result ? 'inserted' : 'updated' };
       } catch (err) {
         return {
           INF_ID,
+          name,
           message: err.message,
           query: err.sql
         };
@@ -515,12 +507,9 @@ router.get('/updateInstaInfo', async (req, res) => {
     })
   );
 
-
   res.json({
     code: 200,
     data: updatedArray
-    /* data1: results,
-    data2: metadata */
   });
 });
 

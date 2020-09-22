@@ -51,8 +51,8 @@ $colorPink: #fbbaba;
       justify-content: flex-end;
     }
     .name-holder {
-      color: $colorBg;
-      background: $colorBlue;
+      //color: $colorBg;
+      //background: $colorBlue;
       line-height: 34px;
       opacity: 0.8;
       .name-text {
@@ -72,7 +72,6 @@ $colorPink: #fbbaba;
         opacity: 1;
       }
     }
-
   }
   .mobile-link-bar {
     background: $colorBlue;
