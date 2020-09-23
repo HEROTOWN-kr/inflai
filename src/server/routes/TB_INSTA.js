@@ -6,6 +6,7 @@ const vision = require('@google-cloud/vision');
 const Sequelize = require('sequelize');
 const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
+const Admin = require('../models').TB_ADMIN;
 
 
 const { Op } = Sequelize;
@@ -58,6 +59,7 @@ router.get('/', async (req, res) => {
 
   const InstaBlogers = await Instagram.findAll(options);
   const InstaCount = await Instagram.count();
+
   let iCount = InstaCount - 1;
 
   for (let i = 0; i < InstaBlogers.length; i++) {
@@ -116,7 +118,18 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/getGoogleData', async (req, res) => {
-  const { INS_ID } = req.query;
+  const { INS_ID, isLocal } = req.query;
+
+  console.log(isLocal);
+
+  const filePath = isLocal ? {
+    keyFileName: 'src/server/config/googleVisionKey.json',
+    imagePath: './src/server/img/image'
+  } : {
+    keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
+    imagePath: '../server/img/image'
+  };
+
 
   const options = {
     where: { INS_ID },
@@ -127,8 +140,7 @@ router.get('/getGoogleData', async (req, res) => {
   const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
 
   const client = new vision.ImageAnnotatorClient({
-    keyFilename: 'src/server/config/googleVisionKey.json'
-    // keyFilename: '/data/inflai/src/server/config/googleVisionKey.json'
+    keyFilename: filePath.keyFileName
   });
 
   const colors = [
@@ -142,8 +154,7 @@ router.get('/getGoogleData', async (req, res) => {
   ];
 
   async function detectPic(index) {
-    const fileName = `./src/server/img/image${index}.jpg`;
-    // const fileName = `../server/img/image${index}.jpg`;
+    const fileName = `${filePath.imagePath}${index}.jpg`;
     const [result] = await client.labelDetection(fileName);
     const labels = result.labelAnnotations;
     return new Promise(((resolve, reject) => {
@@ -158,8 +169,7 @@ router.get('/getGoogleData', async (req, res) => {
   async function downloadAndDetect(fileUrl, index) {
     const response = await fetch(fileUrl);
     const buffer = await response.buffer();
-    const path = `./src/server/img/image${index}.jpg`;
-    // const path = `../server/img/image${index}.jpg`;
+    const path = `${filePath.imagePath}${index}.jpg`;
 
     return new Promise((async (resolve, reject) => {
       fs.writeFile(path, buffer, async () => {
