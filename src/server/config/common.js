@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 const async = require('async');
+const fs = require('fs');
+const fetch = require('node-fetch');
+const vision = require('@google-cloud/vision');
 const request = require('request');
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
@@ -301,7 +304,7 @@ function getInstagramMediaData(instagramId, facebookToken) {
       + 'thumbnail_url%2C'
       + 'media_url,like_count,comments_count&'
       + `access_token=${facebookToken}`;
-      // + `access_token=${facebookToken}&limit=100`;
+  // + `access_token=${facebookToken}&limit=100`;
 
   return new Promise(((resolve, reject) => {
     request.get(iData, (error, response, body) => {
@@ -313,6 +316,108 @@ function getInstagramMediaData(instagramId, facebookToken) {
       }
     });
   }));
+}
+
+async function googleVision(instaData) {
+  /* const filePath = isLocal ? {
+    keyFileName: 'src/server/config/googleVisionKey.json',
+    imagePath: './src/server/img/image'
+  } : {
+    keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
+    imagePath: '../server/img/image'
+  }; */
+
+  const filePath = {
+    keyFileName: 'src/server/config/googleVisionKey.json',
+    imagePath: './src/server/img/image'
+  };
+
+
+  const client = new vision.ImageAnnotatorClient({
+    keyFilename: filePath.keyFileName
+  });
+
+  const colors = [
+    '#52D726', '#FFEC00', '#FF7300', '#FF0000',
+    '#007ED6', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+    '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
+    '#B276B2', '#DECF3F', '#81726A', '#270722',
+    '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
+    '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
+    '#7CDDDD'
+  ];
+
+  async function detectPic(index) {
+    const fileName = `${filePath.imagePath}${index}.jpg`;
+    try {
+      const [result] = await client.labelDetection(fileName);
+      const labels = result.labelAnnotations;
+      return new Promise(((resolve, reject) => {
+        if (labels && labels[0]) {
+          const { score, description } = labels[0];
+          resolve({ score, description });
+        }
+        resolve({});
+      }));
+    } catch (err) {
+      return new Promise(((resolve, reject) => {
+        resolve({ err });
+      }));
+    }
+  }
+
+  async function downloadAndDetect(fileUrl, index) {
+    const response = await fetch(fileUrl);
+    const buffer = await response.buffer();
+    const path = `${filePath.imagePath}${index}.jpg`;
+
+    return new Promise((async (resolve, reject) => {
+      fs.writeFile(path, buffer, async () => {
+        const detectResult = await detectPic(index);
+        resolve(detectResult);
+      });
+    }));
+  }
+
+  try {
+    const gDatas = await Promise.all(
+      instaData.map(async (mediaInfo, index) => {
+        const { thumbnail_url, media_url } = mediaInfo;
+        const fileUrl = thumbnail_url || media_url;
+        const detectData = await downloadAndDetect(fileUrl, index);
+        return { ...mediaInfo, ...detectData };
+      })
+    );
+
+    const statistics = gDatas.reduce((acc, el) => {
+      acc[el.description] = {
+        count: (acc[el.description] && acc[el.description].count || 0) + 1,
+        likeCountSum: (acc[el.description] && acc[el.description].likeCountSum || 0) + el.like_count,
+        commentsCountSum: (acc[el.description] && acc[el.description].comments_count || 0) + el.comments_count,
+      };
+      return acc;
+    }, {});
+
+    /* Object.keys(statistics).map((key) => {
+      statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
+      return null;
+    }); */
+
+    const finalArray = Object.keys(statistics).map((key, index) => {
+      statistics[key].value = 100 / (gDatas.length / statistics[key].count);
+      return { ...statistics[key], description: key, color: colors[index] };
+    });
+
+    finalArray.sort((a, b) => b.value - a.value);
+
+    return {
+      types: finalArray,
+    };
+  } catch (err) {
+    return {
+      types: err,
+    };
+  }
 }
 
 const asyncMiddleware = fn => (req, res, next) => {
@@ -330,4 +435,5 @@ exports.YoutubeRequest = YoutubeRequest;
 exports.YoutubeDataRequest = YoutubeDataRequest;
 exports.getInstagramData = getInstagramData;
 exports.getInstagramMediaData = getInstagramMediaData;
+exports.googleVision = googleVision;
 exports.asyncMiddleware = asyncMiddleware;

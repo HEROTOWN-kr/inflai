@@ -5,11 +5,12 @@ const async = require('async');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
-const { asyncMiddleware, getInstagramMediaData, getInstagramData } = require('../config/common');
+const { getInstagramMediaData, getInstagramData, googleVision } = require('../config/common');
 
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
+const Admin = require('../models').TB_ADMIN;
 const test = require('./test');
 
 const router = express.Router();
@@ -458,13 +459,15 @@ router.get('/updateInstaInfo', async (req, res) => {
         const accountData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
         const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
 
+        const googleData = await googleVision(mediaData);
+
         const statistics = mediaData.reduce((acc, el) => ({
           likeSum: (acc.likeSum || 0) + el.like_count,
           commentsSum: (acc.commentsSum || 0) + el.comments_count,
         }), {});
 
         return {
-          INF_ID, INS_TOKEN, ...accountData, ...statistics
+          INF_ID, INS_TOKEN, ...accountData, ...statistics, ...googleData
         };
       } catch (error) {
         return { INF_ID, error };
@@ -475,7 +478,7 @@ router.get('/updateInstaInfo', async (req, res) => {
   const updatedArray = await Promise.all(
     instaData.map(async (iData) => {
       const {
-        INF_ID, INF_TOKEN, likeSum, commentsSum, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
+        INF_ID, INF_TOKEN, types, likeSum, commentsSum, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
       } = iData;
       if (error) {
         return { INF_ID, message: 'not updated' };
@@ -493,7 +496,8 @@ router.get('/updateInstaInfo', async (req, res) => {
           INS_FLW: follows_count,
           INS_PROFILE_IMG: profile_picture_url,
           INS_LIKES: likeSum,
-          INS_CMNT: commentsSum
+          INS_CMNT: commentsSum,
+          INS_TYPES: JSON.stringify(types)
         });
         return { INF_ID, message: result ? 'inserted' : 'updated' };
       } catch (err) {
@@ -536,6 +540,23 @@ router.get('/updateTest', async (req, res) => {
       query: err.sql
     };
   }
+});
+
+router.get('/getDate', async (req, res) => {
+  const data = await Admin.findOne({
+    where: { ADM_ID: 1 },
+    attributes: [
+      'ADM_UPDATE_DT',
+      [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADM_UPDATE_DT'), '%Y.%m.%d %H:%i:%s'), 'ADM_UPDATE_DT2'],
+      // [Sequelize.fn('DATE_ADD', Sequelize.col('ADM_UPDATE_DT'), 'INTERVAL 9 HOUR')],
+      // [Sequelize.fn('FROM_UNIXTIME', Sequelize.col('ADM_UPDATE_DT'))],
+    ],
+  });
+
+  res.json({
+    code: 200,
+    data
+  });
 });
 
 

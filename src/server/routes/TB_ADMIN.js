@@ -128,7 +128,8 @@ router.get('/getUpdateDate', async (req, res) => {
   const UpdateDate = await Admin.findOne({
     where: { ADM_ID: 1 },
     attributes: [
-      [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADM_UPDATE_DT'), '%Y.%m.%d %H:%i:%s'), 'ADM_UPDATE_DT']
+      // [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADM_UPDATE_DT'), '%Y.%m.%d %H:%i:%s'), 'ADM_UPDATE_DT2'],
+      'ADM_UPDATE_DT',
     ],
   });
 

@@ -33,6 +33,7 @@ router.get('/', async (req, res) => {
       'INS_PROFILE_IMG',
       'INS_LIKES',
       'INS_CMNT',
+      'INS_TYPES',
     ],
     include: [
       {
@@ -49,6 +50,7 @@ router.get('/', async (req, res) => {
       [Op.or]: [
         { INS_NAME: { [Op.like]: `%${searchWord}%` } },
         { INS_USERNAME: { [Op.like]: `%${searchWord}%` } },
+        { INS_TYPES: { [Op.like]: `%${searchWord}%` } },
         { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
       ],
     };
@@ -120,9 +122,7 @@ router.get('/', async (req, res) => {
 router.get('/getGoogleData', async (req, res) => {
   const { INS_ID, isLocal } = req.query;
 
-  console.log(isLocal);
-
-  const filePath = isLocal ? {
+  const filePath = isLocal === 'true' ? {
     keyFileName: 'src/server/config/googleVisionKey.json',
     imagePath: './src/server/img/image'
   } : {
@@ -210,6 +210,15 @@ router.get('/getGoogleData', async (req, res) => {
     });
 
     finalArray.sort((a, b) => b.value - a.value);
+
+    const INS_TYPES = finalArray.reduce((acc, el) => {
+      acc.push(el.description);
+      return acc;
+    }, []);
+
+    Instagram.update({ INS_TYPES: INS_TYPES.join(' ') }, {
+      where: { INS_ID }
+    });
 
     res.json({
       code: 200,
