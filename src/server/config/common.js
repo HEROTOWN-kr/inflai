@@ -420,6 +420,30 @@ async function googleVision(instaData) {
   }
 }
 
+
+function average(data) {
+  const sum = data.reduce((sum, value) => sum + value, 0);
+
+  const avg = sum / data.length;
+  return avg;
+}
+
+function standardDeviation(values) {
+  const avg = average(values);
+
+  const squareDiffs = values.map((value) => {
+    const diff = value - avg;
+    const sqrDiff = diff * diff;
+    return sqrDiff;
+  });
+
+  const avgSquareDiff = average(squareDiffs);
+
+  const stdDev = Math.sqrt(avgSquareDiff);
+  return stdDev;
+}
+
+
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next))
     .catch(next);
@@ -436,4 +460,6 @@ exports.YoutubeDataRequest = YoutubeDataRequest;
 exports.getInstagramData = getInstagramData;
 exports.getInstagramMediaData = getInstagramMediaData;
 exports.googleVision = googleVision;
+exports.average = average;
+exports.standardDeviation = standardDeviation;
 exports.asyncMiddleware = asyncMiddleware;
