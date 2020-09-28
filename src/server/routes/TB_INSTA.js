@@ -232,4 +232,45 @@ router.get('/getGoogleData', async (req, res) => {
   }
 });
 
+router.get('/detail', async (req, res) => {
+  try {
+    const { INS_ID } = req.query;
+
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
+    };
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+
+    const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+    const statistics = instaData.reduce((acc, el) => {
+      const { like_count, comments_count } = el;
+      if (acc.likeStats) {
+        acc.likeStats.push(like_count);
+      } else {
+        acc.likeStats = [like_count];
+      }
+      if (acc.commentsStats) {
+        acc.commentsStats.push(comments_count);
+      } else {
+        acc.commentsStats = [comments_count];
+      }
+      return acc;
+    }, {});
+
+    res.json({
+      code: 200,
+      data: statistics,
+    });
+  } catch (err) {
+    res.json({
+      code: 400,
+      data: err.message,
+    });
+  }
+});
+
+
 module.exports = router;
