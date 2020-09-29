@@ -85,10 +85,10 @@ function App(props) {
         // onSuccess={result => console.log(result)}
         onFailure={result => responseNaver(result)}
       /> */}
-      {/* <Main user={user} changeUser={changeUser} /> */}
+      {/* <UserInfo user={user} changeUser={changeUser} /> */}
       {/* <Footer /> */}
       {/* <CustomNavBar user={user} changeUser={changeUser} />
-      <Main />
+      <UserInfo />
       <Footer /> */}
     </div>
   );

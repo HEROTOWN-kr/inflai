@@ -1795,6 +1795,14 @@ $colorPink: #fbbaba;
   }
 }
 
+
+.profile-menu-link {
+  cursor: pointer;
+  &:hover {
+    background: #f5f6f7;
+  }
+}
+
 .profile-info {
   max-width: 800px;
   margin: 50px auto;

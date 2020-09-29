@@ -19,6 +19,7 @@ import CampaignList from '../campaignList/CampaignList';
 import InfoYoutube from '../info/InfoYoutube';
 import NotFound from './NotFound';
 import Ranking from '../ranking/Ranking';
+import Profile from '../profile/Profile';
 
 
 function Main({
@@ -57,6 +58,10 @@ function Main({
       <Route
         path="/Info"
         render={props => <Info {...props} user={user} />}
+      />
+      <Route
+        path="/Profile"
+        render={props => <Profile {...props} user={user} />}
       />
       <Route
         path="/Social"

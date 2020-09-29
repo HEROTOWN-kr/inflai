@@ -9,7 +9,7 @@ function UserMenuItems(props) {
   const userMenu = [
     {
       text: '계정정보',
-      link: '/Info'
+      link: '/Profile'
     },
     {
       text: '마이 캠페인',

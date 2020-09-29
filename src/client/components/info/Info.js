@@ -7,6 +7,9 @@ import InfoChange from './InfoChange';
 import Complete from '../campaign/status/Complete';
 import Combined from '../campaign/status/Combined';
 import InfoChangeAdvertiser from './InfoChangeAdvertiser';
+import Profile from '../profile/Profile';
+import { Colors } from '../../lib/Сonstants';
+
 
 function Info({
   user,

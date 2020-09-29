@@ -174,6 +174,7 @@ export const classification = [{ value: '1', text: '국내사업자' }, { value:
 export const jobType = [{ value: '1', text: '일반' }, { value: '2', text: '에이전시' }, { value: '3', text: '소상공인' }];
 export const testText = 'test';
 export const Colors = {
+  white: '#ffffff',
   blue: '#093c5e',
   skyBlue: '#4376e8',
   aqua: '#23c9cf',
@@ -181,5 +182,7 @@ export const Colors = {
   black: '#333333',
   grey: '#dfe2e8',
   grey2: '#999999',
+  grey3: '#f5f6f7',
+  grey4: '#eaeaea',
 };
 export const campaignSteps = [{ value: '1', text: '리뷰어 신청' }, { value: '2', text: '리뷰어 발표' }, { value: '3', text: '리뷰등록' }, { value: '4', text: '베스트발표' }];
