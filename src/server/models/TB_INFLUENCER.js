@@ -25,6 +25,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: true
     },
+    INF_PHOTO: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
     INF_REG_ID: {
       type: DataTypes.STRING(200),
       allowNull: true

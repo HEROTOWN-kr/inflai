@@ -181,7 +181,8 @@ function SocialNetworks({
         </Grid>
         <Grid item xs={12}>
           <NaverLogin
-            clientId="4rBF5bJ4y2jKn0gHoSCf"
+            // clientId="4rBF5bJ4y2jKn0gHoSCf"
+            clientId="KyWNbHHgcX4ZcIagGtBg"
             callbackUrl={`${window.location.origin}/Join/Advertiser/Login`}
             render={props => <SocialButton clicked={props.onClick} icon={NaverIcon} text="네이버 로그인" bgColor="#00CE38" textColor="#FFFFFF" />}
             onSuccess={result => responseNaver(result)}

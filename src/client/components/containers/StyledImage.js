@@ -3,12 +3,13 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
   common: ({
-    width, margin, height
+    width, margin, height, borderRadius
   }) => ({
     display: 'block',
     margin: margin || '0 auto',
     width: `${width}px` || 'auto',
     height: `${height}px` || 'auto',
+    borderRadius: borderRadius || 0
   }),
 });
 
