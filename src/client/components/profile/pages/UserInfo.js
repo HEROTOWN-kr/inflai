@@ -19,17 +19,33 @@ import youtubeIcon from '../../../img/youtube.png';
 import naverIcon from '../../../img/naver-icon.png';
 
 
-function UserInfo() {
-  const [userInfo, setUserInfo] = useState({});
+function UserInfo(props) {
+  // const [userInfo, setUserInfo] = useState({});
+  const { userInfo, setUserInfo, getUserInfo } = props;
   const [imageUrl, setImageUrl] = useState('');
   const {
     register, handleSubmit, watch, errors, setValue, control, getValues
   } = useForm();
   const { token } = Common.getUserInfo();
-  const watchCountry = watch('city');
+  const watchCountry = watch('country');
+
+  useEffect(() => {
+    register({ name: 'photo' }, {});
+  }, [register]);
+
+  useEffect(() => {
+    setValue('nickName', userInfo.INF_NAME);
+    setValue('phone', userInfo.INF_TEL);
+    setValue('country', userInfo.INF_CITY);
+    setValue('region', userInfo.INF_AREA);
+    setValue('product', userInfo.INF_PROD);
+  }, [userInfo]);
+
 
   function ImageActionButton(props) {
-    const { children, color, background } = props;
+    const {
+      children, color, background, onClick
+    } = props;
 
     const styles = {
       cursor: 'pointer',
@@ -41,27 +57,22 @@ function UserInfo() {
     };
 
     return (
-      <div style={styles}>
+      <div style={styles} onClick={onClick}>
         {children}
       </div>
     );
   }
 
-  const onSubmit = data => console.log(data);
-
-  async function getUserInfo() {
+  /* async function getUserInfo() {
     try {
-      const response = await axios.get('/api/TB_INFLUENCER/', {
-        params: {
-          token
-        }
-      });
+      const response = await axios.get('/api/TB_INFLUENCER/', { params: { token } });
       const { data } = response.data;
       if (data) {
-        console.log(data);
-        setValue('name', data.INF_NAME);
+        setValue('nickName', data.INF_NAME);
         setValue('phone', data.INF_TEL);
-        setValue('city', data.INF_CITY);
+        setValue('country', data.INF_CITY);
+        setValue('region', data.INF_AREA);
+        setValue('product', data.INF_PROD);
         setUserInfo(data);
       }
     } catch (err) {
@@ -71,46 +82,52 @@ function UserInfo() {
 
   useEffect(() => {
     getUserInfo();
-  }, []);
+  }, []); */
+
+  const updateProfile = async (data) => {
+    try {
+      const apiObj = { ...data, token };
+      await axios.post('/api/TB_INFLUENCER/updateInfo', apiObj);
+      await getUserInfo();
+
+      if (data.photo) {
+        const { photo } = data;
+        const formData = new FormData();
+        formData.append('file', photo);
+        formData.append('token', token);
+        return axios.post('/api/TB_INFLUENCER/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }).catch(err => alert('photo upload error'));
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   function addPicture(event) {
+    setValue('photo', event.target.files[0]);
+
     const picture = event.target.files[0];
     const picUrl = URL.createObjectURL(picture);
-    // setImageUrl(picUrl);
-    // setUserInfo({ ...userInfo, INF_PHOTO: picUrl });
-    // setValue('photo', picture);
-    /* const newPics = [];
-    const pictures = event.target.files;
+    setImageUrl(picUrl);
+  }
 
-    Object.keys(pictures).map((key, i) => {
-      const picUrl = URL.createObjectURL(pictures[key]);
-      newPics.push({ file: pictures[key], picUrl });
-    });
-
-    // setFieldValue('photo', photo.concat(newPics));
-
-    // input same pictures multiple times
-    event.target.value = ''; */
+  async function deletePicture() {
+    await axios.post('/api/TB_INFLUENCER/delete', { token }).catch(err => alert('pic delete error'));
+    setImageUrl(null);
+    getUserInfo();
   }
 
   function updateData(checked) {
     const apiObj = { token };
     apiObj.message = checked ? 1 : 0;
     setUserInfo({ ...userInfo, INF_MESSAGE: apiObj.message });
-    axios.post('/api/TB_INFLUENCER/updateInfo', apiObj).then((res) => {
-      if (res.data.code === 200) {
-
-      } else if (res.data.code === 401) {
-        alert(res.data);
-      } else {
-        alert(res.data);
-      }
-    }).catch(error => (error));
+    axios.post('/api/TB_INFLUENCER/updateInfo', apiObj).catch(error => alert(error));
   }
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form>
         <WhiteBlock>
           <PageTitle>
             <StyledText fontSize="24">
@@ -131,7 +148,7 @@ function UserInfo() {
                         </Grid>
                         <Grid item xs={10}>
                           <StyledText fontSize="15">
-                            {userInfo.INF_EMAIL}
+                            {userInfo.INF_EMAIL || ''}
                           </StyledText>
                         </Grid>
                       </Grid>
@@ -149,12 +166,12 @@ function UserInfo() {
                           <Grid item xs={3}>
                             <StyledTextField
                               fullWidth
-                              name="name"
+                              name="nickName"
                               defaultValue={userInfo.INF_NAME || ''}
                               inputRef={register({ required: true })}
-                              error={!!errors.name}
+                              error={!!errors.nickName}
                               variant="outlined"
-                              helperText={errors.name ? (
+                              helperText={errors.nickName ? (
                                 <span className="error-message">이름을 입력해주세요</span>
                               ) : null}
                             />
@@ -200,9 +217,9 @@ function UserInfo() {
                         <Grid container spacing={2}>
                           <Grid item xs={3}>
                             <ReactHookFormSelect
-                              name="city"
+                              name="country"
                               control={control}
-                              error={!!errors.city}
+                              error={!!errors.country}
                               errorMessage="주소를 선택해주세요"
                               defaultValue={userInfo.INF_CITY || 0}
                               variant="outlined"
@@ -235,7 +252,7 @@ function UserInfo() {
                                   required: true,
                                 }}
                               >
-                                {area[getValues('city')].map((item, index) => (
+                                {area[getValues('country')].map((item, index) => (
                                   <MenuItem key={item} value={index}>{item}</MenuItem>
                                 ))}
                               </ReactHookFormSelect>
@@ -256,7 +273,12 @@ function UserInfo() {
                         <Grid item xs={10}>
                           <Grid container alignItems="center" spacing={2}>
                             <Grid item>
-                              <StyledImage width="110" height="110" borderRadius="100%" src={imageUrl || userInfo.INF_PHOTO || defaultAccountImage} />
+                              <StyledImage
+                                width="110"
+                                height="110"
+                                borderRadius="100%"
+                                src={imageUrl || userInfo.INF_PHOTO || defaultAccountImage}
+                              />
                             </Grid>
                             <Grid item>
                               <label htmlFor="picAdd">
@@ -265,7 +287,6 @@ function UserInfo() {
                                   <input
                                     id="picAdd"
                                     name="photo"
-                                    ref={register}
                                     type="file"
                                     style={{ display: 'none' }}
                                     // multiple
@@ -276,7 +297,7 @@ function UserInfo() {
                               </label>
                               {userInfo.INF_PHOTO ? (
                                 <Box pt={1}>
-                                  <ImageActionButton>
+                                  <ImageActionButton onClick={() => deletePicture(token)}>
                                       이미지 삭제
                                   </ImageActionButton>
                                 </Box>
@@ -381,7 +402,7 @@ function UserInfo() {
                 <Grid container justify="center">
                   <Grid item xs={3}>
                     <StyledButton
-                      onClick={handleSubmit(onSubmit)}
+                      onClick={handleSubmit(updateProfile)}
                       background={Colors.skyBlue}
                       hoverBackground="#1c4dbb"
                     >

@@ -6,6 +6,10 @@ const request = require('request');
 const async = require('async');
 const { google } = require('googleapis');
 
+const uniqid = require('uniqid');
+const fse = require('fs-extra');
+const path = require('path');
+
 const { asyncMiddleware } = require('../config/common');
 const config = require('../config/config');
 const configKey = require('../config/config');
@@ -55,28 +59,29 @@ function YoutubeRequest(data) {
 
 }
 
-router.get('/', (req, res) => {
-  const { token, id, col } = req.query;
-  const userId = id || common.getIdFromToken(token).sub;
-  const options = {
-    where: { INF_ID: userId }
-  };
+router.get('/', async (req, res) => {
+  try {
+    const { token, id, col } = req.query;
+    const userId = id || common.getIdFromToken(token).sub;
+    const options = {
+      where: { INF_ID: userId }
+    };
 
-  if (col && col === 'nickName') options.attributes = ['INF_NAME'];
-  if (col && col === 'phone') options.attributes = ['INF_TEL'];
-  if (col && col === 'country') options.attributes = ['INF_CITY'];
-  if (col && col === 'region') options.attributes = ['INF_AREA'];
-  if (col && col === 'product') options.attributes = ['INF_PROD'];
-  if (col && col === 'country region') options.attributes = ['INF_CITY', 'INF_AREA'];
+    if (col && col === 'nickName') options.attributes = ['INF_NAME'];
+    if (col && col === 'phone') options.attributes = ['INF_TEL'];
+    if (col && col === 'country') options.attributes = ['INF_CITY'];
+    if (col && col === 'region') options.attributes = ['INF_AREA'];
+    if (col && col === 'product') options.attributes = ['INF_PROD'];
+    if (col && col === 'country region') options.attributes = ['INF_CITY', 'INF_AREA'];
 
-  Influencer.findOne(options).then((result) => {
-    res.json({
-      code: 200,
-      data: result.dataValues,
-    });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+    const result = await Influencer.findOne(options);
+    const data = result.dataValues;
+    const { INF_PHOTO } = data;
+    if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
+    res.json({ code: 200, data });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 router.get('/userInfo', (req, res) => {
@@ -933,6 +938,62 @@ router.get('/test', (req, res) => {
       });
     }
   });
+});
+
+// 이미지 업로드
+router.post('/upload', async (req, res, next) => {
+  try {
+    const { file } = req.files;
+    const { token, id } = req.body;
+    const userId = id || common.getIdFromToken(token).sub;
+    // const uid = uniqid();
+    const uid = 'profile';
+
+    const newFileNm = path.normalize(uid + path.extname(file.name));
+    const uploadPath = path.normalize(`${config.attachRoot}/profile/${userId}/`) + newFileNm;
+
+
+    await fse.move(file.path, uploadPath, { clobber: true });
+
+    const DRAWING_URL = `/attach/profile/${userId}/${newFileNm}`;
+
+    const post = {
+      INF_PHOTO: DRAWING_URL
+    };
+
+    await Influencer.update(post, {
+      where: { INF_ID: userId }
+    });
+
+    return res.json({ code: 200, message: '', data: '' });
+  } catch (err) {
+    /* return res.json({
+      code: 400,
+      message: err.message
+    }); */
+    return res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/delete', async (req, res, next) => {
+  try {
+    const { token, id } = req.body;
+    const userId = id || common.getIdFromToken(token).sub;
+    const post = {
+      INF_PHOTO: null
+    };
+
+    await Influencer.update(post, {
+      where: { INF_ID: userId }
+    });
+
+    return res.json({ code: 200, message: '', data: '' });
+  } catch (err) {
+    return res.json({
+      code: 400,
+      message: err.message
+    });
+  }
 });
 
 

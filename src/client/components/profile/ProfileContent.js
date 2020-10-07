@@ -19,7 +19,7 @@ function ProfileContent(props) {
         />
         <Route
           path={`${match.path}/UserInfo`}
-          render={props => <UserInfo {...props} />}
+          render={renderProps => <UserInfo {...props} />}
         />
         <Route
           exact

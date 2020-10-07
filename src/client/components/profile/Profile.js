@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
+import axios from 'axios';
 import { Colors } from '../../lib/Сonstants';
 import MainBlock from '../containers/MainBlock';
 import ProfileMenu from './ProfileMenu';
 import ProfileContent from './ProfileContent';
+import Common from '../../lib/common';
 
 function Profile(props) {
+  const { token } = Common.getUserInfo();
+
+  const [userInfo, setUserInfo] = useState({});
+
+  async function getUserInfo() {
+    try {
+      const response = await axios.get('/api/TB_INFLUENCER/', { params: { token } });
+      const { data } = response.data;
+      if (data) {
+        setUserInfo(data);
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  useEffect(() => {
+    getUserInfo();
+  }, []);
+
   return (
     <Box
       css={{ background: Colors.grey3 }}
@@ -18,7 +40,7 @@ function Profile(props) {
             <ProfileMenu {...props} />
           </Grid>
           <Grid item>
-            <ProfileContent {...props} />
+            <ProfileContent {...props} userInfo={userInfo} setUserInfo={setUserInfo} getUserInfo={getUserInfo} />
           </Grid>
         </Grid>
       </MainBlock>
