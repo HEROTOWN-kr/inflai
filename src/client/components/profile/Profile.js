@@ -37,7 +37,7 @@ function Profile(props) {
       <MainBlock width={1500}>
         <Grid container justify="space-between">
           <Grid item>
-            <ProfileMenu {...props} />
+            <ProfileMenu {...props} userInfo={userInfo} />
           </Grid>
           <Grid item>
             <ProfileContent {...props} userInfo={userInfo} setUserInfo={setUserInfo} getUserInfo={getUserInfo} />

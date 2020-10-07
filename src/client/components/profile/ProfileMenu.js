@@ -9,7 +9,7 @@ import defaultAccountImage from '../../img/default_account_image.png';
 import WhiteBlock from '../containers/WhiteBlock';
 
 function ProfileMenu(props) {
-  const { history, match } = props;
+  const { history, match, userInfo } = props;
   const links = [
     { text: '내정보 관리', link: '/UserInfo' },
     { text: '랭킹 정보', link: '/Rank' }];
@@ -34,7 +34,7 @@ function ProfileMenu(props) {
                   </StyledText>
                 </Grid>
                 <Grid item xs={12}>
-                  <StyledImage width="110" src={defaultAccountImage} />
+                  <StyledImage width="110" borderRadius="100%" src={userInfo.INF_PHOTO || defaultAccountImage} />
                 </Grid>
                 <Grid item xs={12}>
                   <StyledText fontSize="16">
