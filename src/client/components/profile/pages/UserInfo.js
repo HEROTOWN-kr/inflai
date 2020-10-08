@@ -17,10 +17,10 @@ import defaultAccountImage from '../../../img/default_account_image.png';
 import instagramIcon from '../../../img/instagram.png';
 import youtubeIcon from '../../../img/youtube.png';
 import naverIcon from '../../../img/naver-icon.png';
+import Sns from './Sns';
 
 
 function UserInfo(props) {
-  // const [userInfo, setUserInfo] = useState({});
   const { userInfo, setUserInfo, getUserInfo } = props;
   const [imageUrl, setImageUrl] = useState('');
   const {
@@ -36,8 +36,8 @@ function UserInfo(props) {
   useEffect(() => {
     setValue('nickName', userInfo.INF_NAME);
     setValue('phone', userInfo.INF_TEL);
-    setValue('country', userInfo.INF_CITY);
-    setValue('region', userInfo.INF_AREA);
+    setValue('country', userInfo.INF_CITY || '0');
+    setValue('region', userInfo.INF_AREA || '0');
     setValue('product', userInfo.INF_PROD);
   }, [userInfo]);
 
@@ -62,27 +62,6 @@ function UserInfo(props) {
       </div>
     );
   }
-
-  /* async function getUserInfo() {
-    try {
-      const response = await axios.get('/api/TB_INFLUENCER/', { params: { token } });
-      const { data } = response.data;
-      if (data) {
-        setValue('nickName', data.INF_NAME);
-        setValue('phone', data.INF_TEL);
-        setValue('country', data.INF_CITY);
-        setValue('region', data.INF_AREA);
-        setValue('product', data.INF_PROD);
-        setUserInfo(data);
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  }
-
-  useEffect(() => {
-    getUserInfo();
-  }, []); */
 
   const updateProfile = async (data) => {
     try {
@@ -221,7 +200,7 @@ function UserInfo(props) {
                               control={control}
                               error={!!errors.country}
                               errorMessage="주소를 선택해주세요"
-                              defaultValue={userInfo.INF_CITY || 0}
+                              defaultValue={userInfo.INF_CITY || '0'}
                               variant="outlined"
                               fullWidth
                               rules={{
@@ -316,7 +295,7 @@ function UserInfo(props) {
                         </StyledText>
                       </Grid>
                       <Grid item xs={10}>
-                        <input id="kakaoCheck" type="checkbox" checked={userInfo.INF_MESSAGE} onChange={e => updateData(e.target.checked)} />
+                        <input id="kakaoCheck" type="checkbox" checked={userInfo.INF_MESSAGE || 0} onChange={e => updateData(e.target.checked)} />
                         <label htmlFor="kakaoCheck">
                           {' 카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.'}
                         </label>
@@ -332,68 +311,7 @@ function UserInfo(props) {
                 <Box pb={4}>
                   <StyledText fontSize="19" fontWeight="600">SNS</StyledText>
                 </Box>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Grid container alignItems="center">
-                      <Grid item xs={2}>
-                        <StyledText fontSize="15">
-                          인스타
-                        </StyledText>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Box py={2} px={4} border="1px solid #e9ecef">
-                          <Grid container justify="center" spacing={1}>
-                            <Grid item>
-                              <StyledImage width="18" height="18" src={instagramIcon} />
-                            </Grid>
-                            <Grid item>
-                              <StyledText>인스타그램 연결하기</StyledText>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container alignItems="center">
-                      <Grid item xs={2}>
-                        <StyledText fontSize="15">
-                          유튜브
-                        </StyledText>
-                      </Grid>
-                      <Grid item xs={3}>
-                        <Box py={2} px={4} border="1px solid #e9ecef">
-                          <Grid container justify="center" spacing={1}>
-                            <Grid item>
-                              <StyledImage width="24" height="18" src={youtubeIcon} />
-                            </Grid>
-                            <Grid item>
-                              <StyledText>유튜브 연결하기</StyledText>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Grid container alignItems="center">
-                      <Grid item xs={2}>
-                        <StyledText fontSize="15">
-                          네이버
-                        </StyledText>
-                      </Grid>
-                      <Grid item xs={4}>
-                        <Box py={1} px={2} border="1px solid #e9ecef">
-                          <InputBase
-                            fullWidth
-                            placeholder="http://블로그주소 또는 https://블로그주소"
-                            inputProps={{ 'aria-label': 'naked', style: { padding: '0' } }}
-                          />
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                </Grid>
+                <Sns userInfo={userInfo} />
               </Grid>
               <Grid item xs={12}>
                 <Divider />

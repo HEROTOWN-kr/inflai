@@ -4,9 +4,10 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const Sequelize = require('sequelize');
+const config = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
-const Admin = require('../models').TB_ADMIN;
+const common = require('../config/common');
 
 
 const { Op } = Sequelize;
@@ -272,5 +273,65 @@ router.get('/detail', async (req, res) => {
   }
 });
 
+router.post('/add', async (req, res) => {
+  try {
+    const data = req.body;
+    const { facebookToken, facebookUserId, token } = data;
+    const id = common.getIdFromToken(token).sub;
+
+    const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: facebookUserId } });
+    if (instaAccountExist) { res.status(409).json({ message: '중복된 인스타그램 계정입니다' }); }
+
+    const longToken = await common.getFacebookLongToken(facebookToken);
+    const facebookPages = await common.getFacebookPages(longToken);
+
+    const instaAccounts = await facebookPages.reduce(async (acc, item) => {
+      const instaAcc = await common.checkInstagramBusinessAccount(item.id, longToken);
+      if (instaAcc) return acc.concat('instaAcc');
+      return acc;
+    }, []);
+
+    if (instaAccounts.length > 1) {
+      res.status(202).json({ data: instaAccounts });
+    } else {
+      const instagramId = instaAccounts[0].id;
+      const instagramData = await common.getInstagramData(instagramId, longToken);
+      res.status(200).json({ message: 'success', data: instagramData });
+    }
+
+
+    /* const {
+      follows_count, followers_count, media_count, username, name, profile_picture_url
+    } = instagramData; */
+
+
+    /* await Instagram.create({
+      INF_ID: userId,
+      INS_TOKEN: INF_TOKEN,
+      INS_ACCOUNT_ID: instaAccount,
+      INS_FLW: follows_count,
+      INS_FLWR: followers_count,
+      INS_NAME: name,
+      INS_USERNAME: username,
+      INS_MEDIA_CNT: media_count,
+      INS_PROFILE_IMG: profile_picture_url
+    }); */
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/delete', async (req, res) => {
+  try {
+    const data = req.body;
+    const { id } = data;
+
+    await Instagram.destroy({ where: { INS_ID: id } });
+
+    res.status(200).json({ message: 'success' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 
 module.exports = router;

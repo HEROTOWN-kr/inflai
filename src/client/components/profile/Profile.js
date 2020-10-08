@@ -17,6 +17,7 @@ function Profile(props) {
       const response = await axios.get('/api/TB_INFLUENCER/', { params: { token } });
       const { data } = response.data;
       if (data) {
+        console.log(data);
         setUserInfo(data);
       }
     } catch (err) {

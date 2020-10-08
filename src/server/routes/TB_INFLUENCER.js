@@ -14,9 +14,9 @@ const { asyncMiddleware } = require('../config/common');
 const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
+const Instagram = require('../models').TB_INSTA;
 const Youtube = require('../models').TB_YOUTUBE;
 const Notification = require('../models').TB_NOTIFICATION;
-const Instagram = require('../models').TB_INSTA;
 const common = require('../config/common');
 const testData = require('../config/testData');
 
@@ -64,7 +64,25 @@ router.get('/', async (req, res) => {
     const { token, id, col } = req.query;
     const userId = id || common.getIdFromToken(token).sub;
     const options = {
-      where: { INF_ID: userId }
+      where: { INF_ID: userId },
+      attributes: [
+        'INF_NAME', 'INF_TEL', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
+        [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'Simple\' END'), 'INF_BLOG_TYPE']
+      ],
+      include: [
+        {
+          model: Instagram,
+          attributes: ['INS_ID', 'INS_USERNAME',
+            [Sequelize.fn('DATE_FORMAT', Sequelize.col('INS_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'INS_DT'],
+
+          ],
+          required: false,
+        },
+        {
+          model: Youtube,
+          required: false,
+        },
+      ],
     };
 
     if (col && col === 'nickName') options.attributes = ['INF_NAME'];
@@ -90,7 +108,7 @@ router.get('/userInfo', (req, res) => {
 
   Influencer.findOne({
     where: { INF_ID: userId },
-    attributes: ['INF_EMAIL', 'INF_NAME', 'INF_TEL', 'INF_BLOG_TYPE', 'INF_REF_TOKEN', 'INF_TOKEN', 'INF_INST_ID', 'INF_COUNTRY', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_MESSAGE']
+    attributes: ['INF_EMAIL', 'INF_NAME', 'INF_BLOG_TYPE', 'INF_TEL', 'INF_REF_TOKEN', 'INF_TOKEN', 'INF_INST_ID', 'INF_COUNTRY', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_MESSAGE']
   }).then((result) => {
     if (result.INF_INST_ID) {
       const instaInfoUrl = `https://graph.facebook.com/v6.0/${result.INF_INST_ID}?fields=username&access_token=${result.INF_TOKEN}`;
@@ -345,7 +363,6 @@ router.get('/getLongLivedToken', (req, res) => {
 });
 
 router.post('/instaSignUp', (req, res) => {
-  console.log('instaSignup');
   const data = req.body;
   const { facebookToken, facebookUserId } = data;
   let longToken;

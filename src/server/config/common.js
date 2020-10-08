@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const config = require('../config');
 const testData = require('../config/testData');
-const configKey = require('../config/config');
+const configKey = require('./config');
 
 
 function getIdFromToken(token) {
@@ -420,6 +420,56 @@ async function googleVision(instaData) {
   }
 }
 
+function getFacebookLongToken(facebookToken) {
+  const longTokenUrl = 'https://graph.facebook.com/v6.0/oauth/access_token?'
+      + 'grant_type=fb_exchange_token&'
+      /* + 'client_id=139193384125564&'
+      + 'client_secret=085e5020f9b2cdac9357bf7301f31e01&'  //using fbsecret */
+      + `client_id=${configKey.fb_client_id}&`
+      + `client_secret=${configKey.fb_client_secret}&` // using fbsecret
+      + `fb_exchange_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(longTokenUrl, (error, response, body) => {
+      if (JSON.parse(body).error) {
+        reject(JSON.parse(body).error);
+      } else {
+        const longToken = (JSON.parse(body)).access_token;
+        resolve(longToken);
+      }
+    });
+  }));
+}
+
+function getFacebookPages(facebookToken) {
+  const pagesUrl = `https://graph.facebook.com/v6.0/me/accounts?access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(pagesUrl, (error, response, body) => {
+      if (JSON.parse(body).error) {
+        reject(JSON.parse(body).error);
+      } else {
+        const facebookPages = (JSON.parse(body)).data;
+        resolve(facebookPages);
+      }
+    });
+  }));
+}
+
+function checkInstagramBusinessAccount(pageId, facebookToken) {
+  const instaAccUrl = `https://graph.facebook.com/v6.0/${pageId}?fields=instagram_business_account&access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(instaAccUrl, (error, response, body) => {
+      if (JSON.parse(body).error) {
+        reject(JSON.parse(body).error);
+      } else {
+        const { instagram_business_account } = JSON.parse(body);
+        resolve(instagram_business_account);
+      }
+    });
+  }));
+}
 
 function average(data) {
   const sum = data.reduce((sum, value) => sum + value, 0);
@@ -460,6 +510,9 @@ exports.YoutubeDataRequest = YoutubeDataRequest;
 exports.getInstagramData = getInstagramData;
 exports.getInstagramMediaData = getInstagramMediaData;
 exports.googleVision = googleVision;
+exports.getFacebookLongToken = getFacebookLongToken;
+exports.getFacebookPages = getFacebookPages;
+exports.checkInstagramBusinessAccount = checkInstagramBusinessAccount;
 exports.average = average;
 exports.standardDeviation = standardDeviation;
 exports.asyncMiddleware = asyncMiddleware;

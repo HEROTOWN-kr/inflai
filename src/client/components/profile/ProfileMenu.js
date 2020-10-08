@@ -34,16 +34,18 @@ function ProfileMenu(props) {
                   </StyledText>
                 </Grid>
                 <Grid item xs={12}>
-                  <StyledImage width="110" borderRadius="100%" src={userInfo.INF_PHOTO || defaultAccountImage} />
+                  <Box py={1}>
+                    <StyledImage width="110" borderRadius="100%" src={userInfo.INF_PHOTO || defaultAccountImage} />
+                  </Box>
                 </Grid>
                 <Grid item xs={12}>
-                  <StyledText fontSize="16">
-                          Name
+                  <StyledText fontSize="16" fontWeight="600">
+                    {userInfo.INF_NAME}
                   </StyledText>
                 </Grid>
                 <Grid item xs={12}>
                   <StyledText fontSize="14">
-                          Type of Auth
+                    {`${userInfo.INF_BLOG_TYPE} 로그인`}
                   </StyledText>
                 </Grid>
               </Grid>
