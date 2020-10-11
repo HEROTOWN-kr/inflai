@@ -285,11 +285,20 @@ router.post('/add', async (req, res) => {
     const longToken = await common.getFacebookLongToken(facebookToken);
     const facebookPages = await common.getFacebookPages(longToken);
 
-    const instaAccounts = await facebookPages.reduce(async (acc, item) => {
+    /* const instaAccounts = await facebookPages.reduce(async (acc, item) => {
       const instaAcc = await common.checkInstagramBusinessAccount(item.id, longToken);
-      if (instaAcc) return acc.concat('instaAcc');
+      if (instaAcc) acc.concat('instaAcc');
       return acc;
-    }, []);
+    }, []); */
+
+    const instaAccounts = [];
+
+    await facebookPages.map(async (item) => {
+      const instaAcc = await common.checkInstagramBusinessAccount(item.id, longToken);
+      if (instaAcc) instaAccounts.push(instaAcc);
+      return null;
+    });
+
 
     if (instaAccounts.length > 1) {
       res.status(202).json({ data: instaAccounts });
