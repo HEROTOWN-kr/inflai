@@ -311,7 +311,7 @@ function UserInfo(props) {
                 <Box pb={4}>
                   <StyledText fontSize="19" fontWeight="600">SNS</StyledText>
                 </Box>
-                <Sns userInfo={userInfo} />
+                <Sns userInfo={userInfo} getUserInfo={getUserInfo} />
               </Grid>
               <Grid item xs={12}>
                 <Divider />

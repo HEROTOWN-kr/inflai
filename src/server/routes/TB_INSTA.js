@@ -17,108 +17,115 @@ const { getInstagramMediaData, getInstagramData } = require('../config/common');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const { orderBy, direction, searchWord } = req.query;
+  try {
+    const {
+      orderBy, direction, searchWord
+    } = req.query;
 
-  const firstRow = 0;
+    const firstRow = 0;
 
-  const options = {
-    where: {},
-    attributes: [
-      'INS_ID',
-      'INF_ID',
-      'INS_NAME',
-      'INS_USERNAME',
-      'INS_MEDIA_CNT',
-      'INS_FLW',
-      'INS_FLWR',
-      'INS_PROFILE_IMG',
-      'INS_LIKES',
-      'INS_CMNT',
-      'INS_TYPES',
-    ],
-    include: [
-      {
-        model: Influencer,
-        attributes: ['INF_NAME'],
-        where: {}
-      },
-    ],
-    order: [[orderBy, direction]]
-  };
-
-  if (searchWord) {
-    options.where = {
-      [Op.or]: [
-        { INS_NAME: { [Op.like]: `%${searchWord}%` } },
-        { INS_USERNAME: { [Op.like]: `%${searchWord}%` } },
-        { INS_TYPES: { [Op.like]: `%${searchWord}%` } },
-        { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
+    const options = {
+      where: {},
+      attributes: [
+        'INS_ID',
+        'INF_ID',
+        'INS_NAME',
+        'INS_USERNAME',
+        'INS_MEDIA_CNT',
+        'INS_FLW',
+        'INS_FLWR',
+        'INS_PROFILE_IMG',
+        'INS_LIKES',
+        'INS_CMNT',
+        'INS_TYPES',
       ],
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_NAME'],
+          where: {}
+        },
+      ],
+      order: [[orderBy, direction]]
     };
-    /* options.include[0].where = {
-      INF_NAME: { [Op.like]: `%${searchWord}%` },
-    }; */
-  }
 
-  const InstaBlogers = await Instagram.findAll(options);
-  const InstaCount = await Instagram.count();
+    if (searchWord) {
+      options.where = {
+        [Op.or]: [
+          { INS_NAME: { [Op.like]: `%${searchWord}%` } },
+          { INS_USERNAME: { [Op.like]: `%${searchWord}%` } },
+          { INS_TYPES: { [Op.like]: `%${searchWord}%` } },
+          { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
+        ],
+      };
+      /* options.include[0].where = {
+        INF_NAME: { [Op.like]: `%${searchWord}%` },
+      }; */
+    }
 
-  let iCount = InstaCount - 1;
+    const InstaBlogers = await Instagram.findAll(options);
+    const InstaCount = await Instagram.count();
 
-  for (let i = 0; i < InstaBlogers.length; i++) {
-    InstaBlogers[i].dataValues.rownum = InstaCount - firstRow - (iCount--);
-  }
+    let iCount = InstaCount - 1;
 
-  res.json({
-    code: 200,
-    data: { list: InstaBlogers, cnt: InstaCount },
-  });
-
-  /* try {
-    const blogersArray = InstaBlogers.map((item, index) => {
-      // const rownum = InstaCount - firstRow - (iCount - index);
-      const rownum = { a: 5 };
-      const obj = Object.assign(item, rownum);
-      return obj;
-    /!*  const x = '';
-      return new Promise(((resolve, reject) => {
-        const rownum = InstaCount - firstRow - (iCount - index);
-        resolve({ ...item, rownum });
-      })); *!/
-    });
+    for (let i = 0; i < InstaBlogers.length; i++) {
+      InstaBlogers[i].dataValues.rownum = InstaCount - firstRow - (iCount--);
+    }
 
     res.json({
       code: 200,
-      data: blogersArray,
+      data: { list: InstaBlogers, cnt: InstaCount },
     });
-  } catch (err) {
-    res.json({
-      code: 400,
-      data: err.message,
-    });
-  } */
 
-
-  /* Instagram.findAll(options).then((result) => {
-    list = result;
-    Instagram.count().then((cnt) => {
-      let icount = cnt - 1;
-
-      for (let i = 0; i < list.length; i++) {
-        list[i].dataValues.rownum = cnt - firstRow - (icount--);
-      }
+    /* try {
+      const blogersArray = InstaBlogers.map((item, index) => {
+        // const rownum = InstaCount - firstRow - (iCount - index);
+        const rownum = { a: 5 };
+        const obj = Object.assign(item, rownum);
+        return obj;
+      /!*  const x = '';
+        return new Promise(((resolve, reject) => {
+          const rownum = InstaCount - firstRow - (iCount - index);
+          resolve({ ...item, rownum });
+        })); *!/
+      });
 
       res.json({
         code: 200,
-        data: { list, cnt },
+        data: blogersArray,
       });
-    }).error((err2) => {
+    } catch (err) {
+      res.json({
+        code: 400,
+        data: err.message,
+      });
+    } */
+
+
+    /* Instagram.findAll(options).then((result) => {
+      list = result;
+      Instagram.count().then((cnt) => {
+        let icount = cnt - 1;
+
+        for (let i = 0; i < list.length; i++) {
+          list[i].dataValues.rownum = cnt - firstRow - (icount--);
+        }
+
+        res.json({
+          code: 200,
+          data: { list, cnt },
+        });
+      }).error((err2) => {
+        res.send('error has occured');
+      });
+    }).error((err) => {
       res.send('error has occured');
-    });
-  }).error((err) => {
-    res.send('error has occured');
-  }); */
+    }); */
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
+
 
 router.get('/getGoogleData', async (req, res) => {
   const { INS_ID, isLocal } = req.query;
@@ -276,55 +283,79 @@ router.get('/detail', async (req, res) => {
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
-    const { facebookToken, facebookUserId, token } = data;
+    const {
+      facebookToken, facebookUserId, token, instaId
+    } = data;
     const id = common.getIdFromToken(token).sub;
-
-    const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: facebookUserId } });
-    if (instaAccountExist) { res.status(409).json({ message: '중복된 인스타그램 계정입니다' }); }
-
     const longToken = await common.getFacebookLongToken(facebookToken);
-    const facebookPages = await common.getFacebookPages(longToken);
 
-    /* const instaAccounts = await facebookPages.reduce(async (acc, item) => {
-      const instaAcc = await common.checkInstagramBusinessAccount(item.id, longToken);
-      if (instaAcc) acc.concat('instaAcc');
-      return acc;
-    }, []); */
+    if (instaId) {
+      const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instaId } });
+      if (instaAccountExist) {
+        res.status(409).send('중복된 인스타그램 계정입니다');
+      } else {
+        const instagramData = await common.getInstagramData(instaId, longToken);
+        const mediaData = await getInstagramMediaData(instaId, longToken);
+        const statistics = mediaData.reduce((acc, el) => ({
+          likeSum: (acc.likeSum || 0) + el.like_count,
+          commentsSum: (acc.commentsSum || 0) + el.comments_count,
+        }), {});
 
-    const instaAccounts = [];
-
-    await facebookPages.map(async (item) => {
-      const instaAcc = await common.checkInstagramBusinessAccount(item.id, longToken);
-      if (instaAcc) instaAccounts.push(instaAcc);
-      return null;
-    });
-
-
-    if (instaAccounts.length > 1) {
-      res.status(202).json({ data: instaAccounts });
+        const {
+          follows_count, followers_count, media_count, username, name, profile_picture_url
+        } = instagramData;
+        await Instagram.create({
+          INF_ID: id,
+          INS_TOKEN: longToken,
+          INS_ACCOUNT_ID: instaId,
+          INS_FLW: follows_count,
+          INS_FLWR: followers_count,
+          INS_NAME: name,
+          INS_USERNAME: username,
+          INS_MEDIA_CNT: media_count,
+          INS_PROFILE_IMG: profile_picture_url,
+          INS_LIKES: statistics.likeSum,
+          INS_CMNT: statistics.commentsSum
+        });
+        res.status(200).json({ message: 'success' });
+      }
     } else {
-      const instagramId = instaAccounts[0].id;
-      const instagramData = await common.getInstagramData(instagramId, longToken);
-      res.status(200).json({ message: 'success', data: instagramData });
+      const instaAccounts = await common.getInstagramBusinessAccounts(longToken);
+      if (instaAccounts.length > 1) {
+        res.status(202).json({ data: instaAccounts });
+      } else {
+        const instagramId = instaAccounts[0].id;
+        const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instagramId } });
+        if (instaAccountExist) {
+          res.status(409).json({ message: '중복된 인스타그램 계정입니다' });
+        } else {
+          const instagramData = await common.getInstagramData(instagramId, longToken);
+          const mediaData = await getInstagramMediaData(instagramId, longToken);
+          const statistics = mediaData.reduce((acc, el) => ({
+            likeSum: (acc.likeSum || 0) + el.like_count,
+            commentsSum: (acc.commentsSum || 0) + el.comments_count,
+          }), {});
+
+          const {
+            follows_count, followers_count, media_count, username, name, profile_picture_url
+          } = instagramData;
+          await Instagram.create({
+            INF_ID: id,
+            INS_TOKEN: longToken,
+            INS_ACCOUNT_ID: instagramId,
+            INS_FLW: follows_count,
+            INS_FLWR: followers_count,
+            INS_NAME: name,
+            INS_USERNAME: username,
+            INS_MEDIA_CNT: media_count,
+            INS_PROFILE_IMG: profile_picture_url,
+            INS_LIKES: statistics.likeSum,
+            INS_CMNT: statistics.commentsSum
+          });
+          res.status(200).json({ message: 'success', data: instagramData });
+        }
+      }
     }
-
-
-    /* const {
-      follows_count, followers_count, media_count, username, name, profile_picture_url
-    } = instagramData; */
-
-
-    /* await Instagram.create({
-      INF_ID: userId,
-      INS_TOKEN: INF_TOKEN,
-      INS_ACCOUNT_ID: instaAccount,
-      INS_FLW: follows_count,
-      INS_FLWR: followers_count,
-      INS_NAME: name,
-      INS_USERNAME: username,
-      INS_MEDIA_CNT: media_count,
-      INS_PROFILE_IMG: profile_picture_url
-    }); */
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

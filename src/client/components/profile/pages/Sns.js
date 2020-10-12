@@ -7,69 +7,83 @@ import instagramIcon from '../../../img/instagram.png';
 import youtubeIcon from '../../../img/youtube.png';
 import InstagramDialog from '../../join/inf-join/InstagramDialog';
 import Common from '../../../lib/common';
+import InstagramSelectDialog from '../../join/inf-join/InstagramSelectDialog';
 
 function Sns(props) {
-  const { userInfo } = props;
+  const { userInfo, getUserInfo } = props;
   const { TB_INSTum, TB_YOUTUBE } = userInfo;
   const { INS_ID, INS_USERNAME, INS_DT } = TB_INSTum || {};
   const { token } = Common.getUserInfo();
 
   const [instaDialogOpen, setInstaDialogOpen] = useState(false);
+  const [instaSelectDialogOpen, setInstaSelectDialogOpen] = useState(false);
+  const [instaAccounts, setInstaAccounts] = useState([]);
 
-  function instagramAction() {
+  async function instagramAction() {
     if (!INS_ID) {
       setInstaDialogOpen(!instaDialogOpen);
+    } else {
+      axios.post('/api/TB_INSTA/delete', {
+        id: INS_ID
+      }).then((res) => {
+        getUserInfo();
+      }).catch(err => alert(err.message));
     }
-    console.log('delete instagram acc');
+  }
+
+  function selectAccountDialog() {
+    setInstaSelectDialogOpen(!instaSelectDialogOpen);
+  }
+
+  function findInstagramAccounts(accessToken, userID) {
+    axios.post('/api/TB_INSTA/add', {
+      facebookToken: accessToken,
+      facebookUserId: userID,
+      token
+    }).then((res) => {
+      if (res.status === 200) getUserInfo();
+      if (res.status === 202) {
+        setInstaAccounts(res.data.data);
+        selectAccountDialog();
+      }
+    }).catch(err => alert(err.response.data.message));
   }
 
   function facebookLogin() {
-    window.FB.login((loginRes) => {
-      if (loginRes.status === 'connected') {
-        const { accessToken, userID } = loginRes.authResponse;
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        const { accessToken, userID } = response.authResponse;
+        findInstagramAccounts(accessToken, userID);
+      } else {
+        window.FB.login((loginRes) => {
+          if (loginRes.status === 'connected') {
+            const { accessToken, userID } = loginRes.authResponse;
+            findInstagramAccounts(accessToken, userID);
+          } else {
+            alert('not connected');
+          }
+        }, { scope: 'public_profile, email, instagram_basic, manage_pages' });
+      }
+    }, true);
+  }
+
+  async function addInstagram(selectedId) {
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        const { accessToken, userID } = response.authResponse;
         axios.post('/api/TB_INSTA/add', {
           facebookToken: accessToken,
           facebookUserId: userID,
-          token
+          token,
+          instaId: selectedId
         }).then((res) => {
-          console.log(res);
-        }).catch(err => alert(err.message));
-
-
-        /* axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken }).then((res) => {
-          if (res.data.code === 200) {
-            if (res.data.userPhone) {
-              changeUser({
-                social_type: res.data.social_type,
-                type: '2',
-                token: res.data.userToken,
-                name: res.data.userName,
-                regState: res.data.regState
-              });
-            } else {
-              goTo(`/detail/${res.data.userId}`);
-            }
-            // props.history.push(`${props.match.path}/instagram/${res.data.userId}`);
-          } else if (res.data.code === 401) {
-            console.log(res);
-          } else {
-            console.log(res);
-          }
-        }).catch(error => (error)); */
+          getUserInfo();
+        }).catch(err => alert(err.response.data));
       } else {
-        console.log('not connected');
+        alert('The user isn\'t logged in to Facebook');
       }
-    }, { scope: 'public_profile, email, instagram_basic, manage_pages' });
+    });
   }
-
-  async function deleteInstagram() {
-
-  }
-
-  async function addInstagram() {
-
-  }
-
 
   return (
     <Grid container spacing={2}>
@@ -150,6 +164,12 @@ function Sns(props) {
         </Grid>
       </Grid>
       <InstagramDialog open={instaDialogOpen} closeDialog={instagramAction} facebookLogin={facebookLogin} userPage />
+      <InstagramSelectDialog
+        open={instaSelectDialogOpen}
+        closeDialog={selectAccountDialog}
+        instaAccounts={instaAccounts}
+        connectAccount={addInstagram}
+      />
     </Grid>
   );
 }

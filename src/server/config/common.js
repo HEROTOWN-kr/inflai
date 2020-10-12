@@ -471,6 +471,26 @@ function checkInstagramBusinessAccount(pageId, facebookToken) {
   }));
 }
 
+function getInstagramBusinessAccounts(facebookToken) {
+  const instaAccUrl = `https://graph.facebook.com/v8.0/me?fields=accounts%7Binstagram_business_account%7Bid%2Cusername%2Cprofile_picture_url%7D%7D&access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(instaAccUrl, (error, response, body) => {
+      if (JSON.parse(body).error) {
+        reject(JSON.parse(body).error);
+      } else {
+        const accounts = JSON.parse(body).accounts.data;
+        const instaAccounts = accounts.reduce((acc, item) => {
+          if (item.instagram_business_account) acc.push(item.instagram_business_account);
+          return acc;
+        }, []);
+
+        resolve(instaAccounts);
+      }
+    });
+  }));
+}
+
 function average(data) {
   const sum = data.reduce((sum, value) => sum + value, 0);
 
@@ -513,6 +533,7 @@ exports.googleVision = googleVision;
 exports.getFacebookLongToken = getFacebookLongToken;
 exports.getFacebookPages = getFacebookPages;
 exports.checkInstagramBusinessAccount = checkInstagramBusinessAccount;
+exports.getInstagramBusinessAccounts = getInstagramBusinessAccounts;
 exports.average = average;
 exports.standardDeviation = standardDeviation;
 exports.asyncMiddleware = asyncMiddleware;

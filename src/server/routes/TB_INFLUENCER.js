@@ -66,7 +66,7 @@ router.get('/', async (req, res) => {
     const options = {
       where: { INF_ID: userId },
       attributes: [
-        'INF_NAME', 'INF_TEL', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
+        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
         [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'Simple\' END'), 'INF_BLOG_TYPE']
       ],
       include: [

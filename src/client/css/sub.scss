@@ -1795,7 +1795,6 @@ $colorPink: #fbbaba;
   }
 }
 
-
 .profile-menu-link {
   cursor: pointer;
   &:hover {
@@ -2011,6 +2010,20 @@ $colorPink: #fbbaba;
     &.three {
       cursor: default;
       background: $white;
+    }
+  }
+}
+
+.profile {
+  .sns-button {
+    box-sizing: border-box;
+    cursor: pointer;
+    border: 1px solid rgb(234, 234, 234);
+    &:hover {
+      border: 2px solid red;
+    }
+    &.selected {
+      border: 2px solid red;
     }
   }
 }

@@ -34,6 +34,7 @@ function Profile(props) {
       css={{ background: Colors.grey3 }}
       py={6}
       px={1}
+      className="profile"
     >
       <MainBlock width={1500}>
         <Grid container justify="space-between">
