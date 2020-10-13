@@ -281,6 +281,8 @@ function getInstagramData(instagramId, facebookToken) {
       + 'follows_count%2C'
       + 'media_count%2C'
       + 'username%2C'
+      + 'website%2C'
+      + 'biography%2C'
       + 'profile_picture_url%2C'
       + 'name&'
       + `access_token=${facebookToken}`;

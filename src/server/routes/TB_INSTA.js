@@ -58,9 +58,6 @@ router.get('/', async (req, res) => {
           { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
         ],
       };
-      /* options.include[0].where = {
-        INF_NAME: { [Op.like]: `%${searchWord}%` },
-      }; */
     }
 
     const InstaBlogers = await Instagram.findAll(options);
@@ -126,7 +123,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-
 router.get('/getGoogleData', async (req, res) => {
   const { INS_ID, isLocal } = req.query;
 
@@ -152,14 +148,15 @@ router.get('/getGoogleData', async (req, res) => {
   });
 
   const colors = [
-    '#52D726', '#FFEC00', '#FF7300', '#FF0000',
-    '#007ED6', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+    '#FF835D', '#409CFF', '#52D726', '#FF0000',
+    '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
     '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
     '#B276B2', '#DECF3F', '#81726A', '#270722',
     '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
     '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
     '#7CDDDD'
   ];
+  // '#52D726', '#FFEC00',
 
   async function detectPic(index) {
     const fileName = `${filePath.imagePath}${index}.jpg`;
@@ -206,11 +203,6 @@ router.get('/getGoogleData', async (req, res) => {
       };
       return acc;
     }, {});
-
-    /* Object.keys(statistics).map((key) => {
-      statistics[key].percentage = 100 / (gDatas.length / statistics[key].percentage);
-      return null;
-    }); */
 
     const finalArray = Object.keys(statistics).map((key, index) => {
       statistics[key].value = 100 / (gDatas.length / statistics[key].count);
@@ -279,6 +271,51 @@ router.get('/detail', async (req, res) => {
     });
   }
 });
+
+router.get('/rankingInfo', async (req, res) => {
+  try {
+    const data = req.query;
+    const { token } = data;
+    const id = common.getIdFromToken(token).sub;
+
+    const options = {
+      where: { INF_ID: id },
+      attributes: [
+        'INS_ID',
+        'INS_TOKEN',
+        'INS_ACCOUNT_ID',
+        'INS_NAME',
+        'INS_USERNAME',
+        'INS_MEDIA_CNT',
+        'INS_FLW',
+        'INS_FLWR',
+        'INS_PROFILE_IMG',
+        'INS_LIKES',
+        'INS_CMNT',
+        'INS_TYPES',
+        'INS_IS_FAKE',
+        'INS_DT',
+      ]
+    };
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+
+    const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+    const { biography, website } = detailInstaData;
+
+    res.json({
+      code: 200,
+      data: { ...InstaData.dataValues, biography, website },
+    });
+  } catch (err) {
+    res.json({
+      code: 400,
+      data: err.message,
+    });
+  }
+});
+
 
 router.post('/add', async (req, res) => {
   try {

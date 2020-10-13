@@ -176,6 +176,8 @@ export const testText = 'test';
 export const Colors = {
   white: '#ffffff',
   blue: '#093c5e',
+  blue2: '#409CFF',
+  orange: '#FF835D',
   skyBlue: '#4376e8',
   aqua: '#23c9cf',
   red: '#fa4616',
@@ -184,5 +186,6 @@ export const Colors = {
   grey2: '#999999',
   grey3: '#f5f6f7',
   grey4: '#eaeaea',
+
 };
 export const campaignSteps = [{ value: '1', text: '리뷰어 신청' }, { value: '2', text: '리뷰어 발표' }, { value: '3', text: '리뷰등록' }, { value: '4', text: '베스트발표' }];

@@ -32,7 +32,6 @@ function ProfileContent(props) {
           component={NotFound}
         />
       </Switch>
-
     </Box>
   );
 }
