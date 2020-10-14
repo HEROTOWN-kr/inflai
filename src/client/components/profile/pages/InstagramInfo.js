@@ -3,7 +3,7 @@ import { Box, CircularProgress, Grid } from '@material-ui/core';
 import axios from 'axios';
 import { PieChart } from 'react-minimal-pie-chart';
 import {
-  ChatBubble, Favorite, Image, CompareArrows, ImportExportOutlined
+  ChatBubble, Favorite, Image, CompareArrows, ImportExportOutlined, CalendarToday
 } from '@material-ui/icons';
 import WhiteBlock from '../../containers/WhiteBlock';
 import StyledImage from '../../containers/StyledImage';
@@ -14,6 +14,7 @@ import StyledSvg from '../../containers/StyledSvg';
 import GoogleVisionGraph from './Graphs/GoogleVisionGraph';
 import LikeCommentBarGraph from './Graphs/LikeCommentBarGraph';
 import { Colors } from '../../../lib/Сonstants';
+import AgeGraph from './Graphs/AgeGraph';
 
 function InstagramInfo(props) {
   const [instaData, setInstaData] = useState({});
@@ -29,7 +30,6 @@ function InstagramInfo(props) {
       console.log(InstaData);
       const { data } = InstaData.data;
       setInstaData(data);
-      getGoogleVisionData(data.INS_ID);
     } catch (err) {
       alert(err.response.data.message);
     }
@@ -45,7 +45,7 @@ function InstagramInfo(props) {
         <Grid item xs={6}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <WhiteBlock>
+              <WhiteBlock borderRadius="25px">
                 <Box px={3} py={3}>
                   <Grid container alignItems="center" spacing={3}>
                     <Grid item>
@@ -100,7 +100,7 @@ function InstagramInfo(props) {
               </WhiteBlock>
             </Grid>
             <Grid item xs={6}>
-              <WhiteBlock>
+              <WhiteBlock borderRadius="25px">
                 <Box px={2} pt={2} pb={5}>
                   <Grid container direction="column" spacing={2} alignItems="center">
                     <Grid item container justify="space-between" alignItems="center">
@@ -110,7 +110,7 @@ function InstagramInfo(props) {
                         color={Colors.orange}
                         fontSize="14px"
                         padding="8px"
-                        background="#FFEAE6"
+                        background={Colors.orangeBack}
                         borderRadius="100%"
                       />
                     </Grid>
@@ -120,7 +120,7 @@ function InstagramInfo(props) {
               </WhiteBlock>
             </Grid>
             <Grid item xs={6}>
-              <WhiteBlock>
+              <WhiteBlock borderRadius="25px">
                 <Box px={2} pt={2} pb={5}>
                   <Grid container direction="column" spacing={2} alignItems="center">
                     <Grid item container justify="space-between" alignItems="center">
@@ -130,7 +130,7 @@ function InstagramInfo(props) {
                         color={Colors.blue2}
                         fontSize="14px"
                         padding="8px"
-                        background="#DDEFFF"
+                        background={Colors.blue2Back}
                         borderRadius="100%"
                       />
                     </Grid>
@@ -142,8 +142,8 @@ function InstagramInfo(props) {
           </Grid>
         </Grid>
         <Grid item xs={6}>
-          <WhiteBlock>
-            <Box px={2} pt={2} pb={13}>
+          <WhiteBlock borderRadius="25px" height="100%">
+            <Box px={2} py={2}>
               <Grid container direction="column" spacing={2} alignItems="center">
                 <Grid item container justify="space-between" alignItems="center">
                   <Grid item><StyledText fontSize="14">콘텐츠 카테고리</StyledText></Grid>
@@ -152,7 +152,7 @@ function InstagramInfo(props) {
                     color={Colors.orange}
                     fontSize="14px"
                     padding="8px"
-                    background="#FFEAE6"
+                    background={Colors.orangeBack}
                     borderRadius="100%"
                   />
                 </Grid>
@@ -164,7 +164,7 @@ function InstagramInfo(props) {
           </WhiteBlock>
         </Grid>
         <Grid item xs={6}>
-          <WhiteBlock>
+          <WhiteBlock borderRadius="25px">
             <Box px={2} py={2}>
               <Grid container direction="column" spacing={2} alignItems="center">
                 <Grid item container justify="space-between" alignItems="center">
@@ -174,7 +174,7 @@ function InstagramInfo(props) {
                     color={Colors.orange}
                     fontSize="14px"
                     padding="8px"
-                    background="#FFEAE6"
+                    background={Colors.orangeBack}
                     borderRadius="100%"
                   />
                 </Grid>
@@ -186,7 +186,26 @@ function InstagramInfo(props) {
           </WhiteBlock>
         </Grid>
         <Grid item xs={6}>
-          <WhiteBlock>test</WhiteBlock>
+          <WhiteBlock borderRadius="25px">
+            <Box px={2} py={2}>
+              <Grid container direction="column" spacing={2} alignItems="center">
+                <Grid item container justify="space-between" alignItems="center">
+                  <Grid item><StyledText fontSize="14">나이</StyledText></Grid>
+                  <StyledSvg
+                    component={CalendarToday}
+                    color={Colors.blue2}
+                    fontSize="14px"
+                    padding="8px"
+                    background={Colors.blue2Back}
+                    borderRadius="100%"
+                  />
+                </Grid>
+                <Grid item>
+                  <AgeGraph INS_ID={instaData.INS_ID} />
+                </Grid>
+              </Grid>
+            </Box>
+          </WhiteBlock>
         </Grid>
       </Grid>
     </div>

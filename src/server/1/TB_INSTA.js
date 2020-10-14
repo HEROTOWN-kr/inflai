@@ -57,8 +57,16 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
+    INS_STAT_AGE: {
+      type: DataTypes.STRING(3000),
+      allowNull: true
+    },
+    INS_STATE_GEN_LOC: {
+      type: DataTypes.STRING(3000),
+      allowNull: true
+    },
     INS_TYPES: {
-      type: DataTypes.STRING(2000),
+      type: DataTypes.STRING(3000),
       allowNull: true
     },
     INS_IS_FAKE: {

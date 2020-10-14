@@ -6,6 +6,7 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const { getInstagramMediaData, getInstagramData, googleVision } = require('../config/common');
+const common = require('../config/common');
 
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
@@ -15,14 +16,17 @@ const test = require('./test');
 
 const router = express.Router();
 
-router.get('/test', (req, res) => {
-  test.getYoutubeData((result) => {
-    res.json({
-      code: 200,
+router.get('/test', async (req, res) => {
+  try {
+    const { instagramId, instagramToken } = req.query;
+    const insights = await common.getInstagramInsights(instagramId, instagramToken);
+    res.status(200).json({
       message: 'success',
-      data: result
+      data: insights
     });
-  });
+  } catch (err) {
+    res.status(400).send(err);
+  }
 });
 
 router.get('/naverTest', (req, res) => {

@@ -11,7 +11,14 @@ const common = require('../config/common');
 
 
 const { Op } = Sequelize;
-const { getInstagramMediaData, getInstagramData } = require('../config/common');
+const {
+  getInstagramMediaData,
+  getInstagramData,
+  getInstagramInsights,
+  getIdFromToken,
+  getFacebookLongToken,
+  getInstagramBusinessAccounts
+} = require('../config/common');
 
 
 const router = express.Router();
@@ -272,11 +279,68 @@ router.get('/detail', async (req, res) => {
   }
 });
 
+router.get('/statsAge', async (req, res) => {
+  try {
+    const { INS_ID } = req.query;
+
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_STAT_AGE'],
+    };
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_STAT_AGE } = InstaData;
+
+    if (INS_STAT_AGE) {
+      const ageStats = JSON.parse(INS_STAT_AGE);
+      const ageStatsArray = Object.keys(ageStats).map(key => ({ count: ageStats[key], interval: key.substring(2) }));
+      const filteredArray = ageStatsArray.reduce((acc, item) => {
+        if (acc[item.interval]) {
+          acc[item.interval] += item.count;
+        } else {
+          acc[item.interval] = item.count;
+        }
+        return acc;
+      }, {});
+      // const sortedArray = filteredArray.sort((a, b) => b.value - a.value);
+
+      res.json({
+        code: 200,
+        data: filteredArray,
+      });
+    } else {
+      res.json({
+        code: 200,
+        data: [],
+      });
+    }
+    /* const statistics = instaData.reduce((acc, el) => {
+      const { like_count, comments_count } = el;
+      if (acc.likeStats) {
+        acc.likeStats.push(like_count);
+      } else {
+        acc.likeStats = [like_count];
+      }
+      if (acc.commentsStats) {
+        acc.commentsStats.push(comments_count);
+      } else {
+        acc.commentsStats = [comments_count];
+      }
+      return acc;
+    }, {}); */
+  } catch (err) {
+    res.json({
+      code: 400,
+      data: err.message,
+    });
+  }
+});
+
 router.get('/rankingInfo', async (req, res) => {
   try {
     const data = req.query;
     const { token } = data;
-    const id = common.getIdFromToken(token).sub;
+    const id = getIdFromToken(token).sub;
 
     const options = {
       where: { INF_ID: id },
@@ -323,15 +387,15 @@ router.post('/add', async (req, res) => {
     const {
       facebookToken, facebookUserId, token, instaId
     } = data;
-    const id = common.getIdFromToken(token).sub;
-    const longToken = await common.getFacebookLongToken(facebookToken);
+    const id = getIdFromToken(token).sub;
+    const longToken = await getFacebookLongToken(facebookToken);
 
     if (instaId) {
       const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instaId } });
       if (instaAccountExist) {
         res.status(409).send('중복된 인스타그램 계정입니다');
       } else {
-        const instagramData = await common.getInstagramData(instaId, longToken);
+        const instagramData = await getInstagramData(instaId, longToken);
         const mediaData = await getInstagramMediaData(instaId, longToken);
         const statistics = mediaData.reduce((acc, el) => ({
           likeSum: (acc.likeSum || 0) + el.like_count,
@@ -357,7 +421,7 @@ router.post('/add', async (req, res) => {
         res.status(200).json({ message: 'success' });
       }
     } else {
-      const instaAccounts = await common.getInstagramBusinessAccounts(longToken);
+      const instaAccounts = await getInstagramBusinessAccounts(longToken);
       if (instaAccounts.length > 1) {
         res.status(202).json({ data: instaAccounts });
       } else {
@@ -366,17 +430,29 @@ router.post('/add', async (req, res) => {
         if (instaAccountExist) {
           res.status(409).json({ message: '중복된 인스타그램 계정입니다' });
         } else {
-          const instagramData = await common.getInstagramData(instagramId, longToken);
+          const instagramData = await getInstagramData(instagramId, longToken);
+          const {
+            follows_count, followers_count, media_count, username, name, profile_picture_url
+          } = instagramData;
+
           const mediaData = await getInstagramMediaData(instagramId, longToken);
           const statistics = mediaData.reduce((acc, el) => ({
             likeSum: (acc.likeSum || 0) + el.like_count,
             commentsSum: (acc.commentsSum || 0) + el.comments_count,
           }), {});
 
-          const {
-            follows_count, followers_count, media_count, username, name, profile_picture_url
-          } = instagramData;
-          await Instagram.create({
+          let ageStats;
+          let genderLocalStats;
+
+          try {
+            const insights = await getInstagramInsights(instagramId, longToken);
+            ageStats = insights[0].values[0].value;
+            genderLocalStats = insights[1].values[0].value;
+          } catch (err) {
+            console.log(err);
+          }
+
+          const createParams = {
             INF_ID: id,
             INS_TOKEN: longToken,
             INS_ACCOUNT_ID: instagramId,
@@ -388,7 +464,12 @@ router.post('/add', async (req, res) => {
             INS_PROFILE_IMG: profile_picture_url,
             INS_LIKES: statistics.likeSum,
             INS_CMNT: statistics.commentsSum
-          });
+          };
+
+          if (ageStats) createParams.INS_STAT_AGE = JSON.stringify(ageStats);
+          if (genderLocalStats) createParams.INS_STATE_GEN_LOC = JSON.stringify(genderLocalStats);
+
+          await Instagram.create(createParams);
           res.status(200).json({ message: 'success', data: instagramData });
         }
       }

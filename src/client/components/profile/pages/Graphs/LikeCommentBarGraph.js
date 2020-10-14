@@ -107,7 +107,7 @@ function LikeCommentBarGraph(props) {
   const plugins = [{
     afterDraw: (chartInstance, easing) => {
       const { ctx } = chartInstance.chart;
-      ctx.fillText('This text drawn by a plugin', 100, 100);
+      // ctx.fillText('This text drawn by a plugin', 100, 100);
     }
   }];
 
@@ -115,12 +115,12 @@ function LikeCommentBarGraph(props) {
     <div>
       {
         process ? <CircularProgress /> : (
-          <Box width="500px">
-            <Bar
-              data={data}
-              options={options}
-            />
-          </Box>
+          <Bar
+            width={500}
+            height={250}
+            data={data}
+            options={options}
+          />
         )
       }
     </div>

@@ -320,6 +320,21 @@ function getInstagramMediaData(instagramId, facebookToken) {
   }));
 }
 
+function getInstagramInsights(instagramId, facebookToken) {
+  const iData = `https://graph.facebook.com/v6.0/${instagramId}/insights?metric=audience_gender_age%2Caudience_country&period=lifetime&access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(iData, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        const imgArray = JSON.parse(body).data;
+        resolve(Object.values(imgArray));
+      } else {
+        reject(JSON.parse(response.body).error);
+      }
+    });
+  }));
+}
+
 async function googleVision(instaData) {
   /* const filePath = isLocal ? {
     keyFileName: 'src/server/config/googleVisionKey.json',
@@ -531,6 +546,7 @@ exports.YoutubeRequest = YoutubeRequest;
 exports.YoutubeDataRequest = YoutubeDataRequest;
 exports.getInstagramData = getInstagramData;
 exports.getInstagramMediaData = getInstagramMediaData;
+exports.getInstagramInsights = getInstagramInsights;
 exports.googleVision = googleVision;
 exports.getFacebookLongToken = getFacebookLongToken;
 exports.getFacebookPages = getFacebookPages;
