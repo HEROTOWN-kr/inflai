@@ -58,11 +58,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    INS_STAT_AGE: {
+    INS_STAT_AGE_GENDER: {
       type: DataTypes.STRING(3000),
       allowNull: true
     },
-    INS_STATE_GEN_LOC: {
+    INS_STATE_LOC: {
       type: DataTypes.STRING(3000),
       allowNull: true
     },

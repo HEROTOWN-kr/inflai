@@ -11,7 +11,7 @@ function GoogleVisionGraph(props) {
 
   async function getGoogleVisionData(INS_ID) {
     setProcess(true);
-    const isLocal = window.location.host !== 'admin.inflai.com';
+    const isLocal = window.location.host !== 'www.inflai.com';
 
     const googleData = await axios.get('/api/TB_INSTA/getGoogleData', {
       params: { INS_ID, isLocal }
@@ -34,9 +34,7 @@ function GoogleVisionGraph(props) {
                 <div>
                   {detectData && detectData.length ? (
                     <Box
-                      maxWidth="800px"
                       height="200px"
-                      margin="0 auto"
                     >
                       <PieChart
                         data={detectData}
@@ -45,7 +43,6 @@ function GoogleVisionGraph(props) {
                         label={({ dataEntry }) => `${dataEntry.description} : ${dataEntry.value}%`}
                         labelStyle={index => ({
                           fill: detectData[index].color,
-                          // fill: 'red',
                           fontSize: '10px',
                           fontFamily: 'sans-serif',
                         })}

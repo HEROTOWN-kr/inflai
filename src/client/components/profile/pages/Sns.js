@@ -94,11 +94,11 @@ function Sns(props) {
                           인스타
             </StyledText>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <Box py={2} px={4} border="1px solid #e9ecef" css={{ cursor: 'pointer' }} onClick={() => instagramAction()}>
               <Grid container justify="center" spacing={1}>
                 <Grid item>
-                  <StyledImage width="18" height="18" src={instagramIcon} />
+                  <StyledImage width="18px" height="18px" src={instagramIcon} />
                 </Grid>
                 <Grid item>
                   <StyledText>{INS_ID ? '인스타그램 연결 해제' : '인스타그램 연결하기'}</StyledText>
@@ -131,11 +131,11 @@ function Sns(props) {
                           유튜브
             </StyledText>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <Box py={2} px={4} border="1px solid #e9ecef" css={{ cursor: 'pointer' }}>
               <Grid container justify="center" spacing={1}>
                 <Grid item>
-                  <StyledImage width="24" height="18" src={youtubeIcon} />
+                  <StyledImage width="24px" height="18px" src={youtubeIcon} />
                 </Grid>
                 <Grid item>
                   <StyledText>유튜브 연결하기</StyledText>
@@ -152,7 +152,7 @@ function Sns(props) {
                           네이버
             </StyledText>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={5}>
             <Box py={1} px={2} border="1px solid #e9ecef">
               <InputBase
                 fullWidth

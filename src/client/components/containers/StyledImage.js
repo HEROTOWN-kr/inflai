@@ -7,8 +7,8 @@ const useStyles = makeStyles({
   }) => ({
     display: 'block',
     margin: margin || '0 auto',
-    width: `${width}px` || 'auto',
-    height: `${height}px` || 'auto',
+    width: `${width}` || 'auto',
+    height: `${height}` || 'auto',
     borderRadius: borderRadius || 0,
     border: border || 'medium none color'
   }),

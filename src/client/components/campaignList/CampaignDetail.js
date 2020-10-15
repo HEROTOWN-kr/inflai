@@ -243,7 +243,7 @@ function CampaignDetail({
                   {subMenu === 1
                     ? (
                       <div>
-                        <StyledImage width="720" src={TestPage} />
+                        <StyledImage width="720px" src={TestPage} />
                       </div>
                     ) : (
                       <BlogerList />

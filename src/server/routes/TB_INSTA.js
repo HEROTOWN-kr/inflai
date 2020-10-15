@@ -285,28 +285,35 @@ router.get('/statsAge', async (req, res) => {
 
     const options = {
       where: { INS_ID },
-      attributes: ['INS_STAT_AGE'],
+      attributes: ['INS_STAT_AGE_GENDER'],
     };
 
     const InstaData = await Instagram.findOne(options);
-    const { INS_STAT_AGE } = InstaData;
+    const { INS_STAT_AGE_GENDER } = InstaData;
 
-    if (INS_STAT_AGE) {
-      const ageStats = JSON.parse(INS_STAT_AGE);
-      const ageStatsArray = Object.keys(ageStats).map(key => ({ count: ageStats[key], interval: key.substring(2) }));
-      const filteredArray = ageStatsArray.reduce((acc, item) => {
-        if (acc[item.interval]) {
-          acc[item.interval] += item.count;
+    if (INS_STAT_AGE_GENDER) {
+      const ageStats = JSON.parse(INS_STAT_AGE_GENDER);
+      const ageStatsFiltered = Object.keys(ageStats).reduce((acc, item) => {
+        if (acc[item.substring(2)]) {
+          acc[item.substring(2)] += ageStats[item];
         } else {
-          acc[item.interval] = item.count;
+          acc[item.substring(2)] = ageStats[item];
         }
         return acc;
       }, {});
-      // const sortedArray = filteredArray.sort((a, b) => b.value - a.value);
+      const ordered = {};
+      Object.keys(ageStatsFiltered).sort().forEach((key) => {
+        ordered[key] = ageStatsFiltered[key];
+      });
+      const orderedFilter = Object.keys(ordered).reduce((acc, key) => {
+        acc.interval.push(key);
+        acc.age.push(ordered[key]);
+        return acc;
+      }, { interval: [], age: [] });
 
       res.json({
         code: 200,
-        data: filteredArray,
+        data: orderedFilter,
       });
     } else {
       res.json({
@@ -328,6 +335,106 @@ router.get('/statsAge', async (req, res) => {
       }
       return acc;
     }, {}); */
+  } catch (err) {
+    res.json({
+      code: 400,
+      data: err.message,
+    });
+  }
+});
+
+router.get('/statsGender', async (req, res) => {
+  try {
+    const { INS_ID } = req.query;
+
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_STAT_AGE_GENDER'],
+    };
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_STAT_AGE_GENDER } = InstaData;
+
+    if (INS_STAT_AGE_GENDER) {
+      const ageStats = JSON.parse(INS_STAT_AGE_GENDER);
+      const ageStatsFiltered = Object.keys(ageStats).reduce((acc, item) => {
+        if (acc[item.charAt(0)]) {
+          acc[item.charAt(0)] += ageStats[item];
+        } else {
+          acc[item.charAt(0)] = ageStats[item];
+        }
+        acc.sum = (acc.sum || 0) + ageStats[item];
+        return acc;
+      }, {});
+
+      const {
+        U, M, F, sum
+      } = ageStatsFiltered;
+
+      const male = Math.round(100 / (sum / M));
+
+      res.json({
+        code: 200,
+        data: male,
+      });
+    } else {
+      res.json({
+        code: 200,
+        data: [],
+      });
+    }
+  } catch (err) {
+    res.json({
+      code: 400,
+      data: err.message,
+    });
+  }
+});
+
+router.get('/statsMap', async (req, res) => {
+  try {
+    const { INS_ID } = req.query;
+
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_STATE_LOC'],
+    };
+
+    const colors = [
+      '#FF835D', '#409CFF', '#52D726', '#FF0000',
+      '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+      '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
+      '#B276B2', '#DECF3F', '#81726A', '#270722',
+      '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
+      '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
+      '#7CDDDD'
+    ];
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_STATE_LOC } = InstaData;
+
+    if (INS_STATE_LOC) {
+      const ageStats = JSON.parse(INS_STATE_LOC);
+
+      const ageStatsArray = Object.keys(ageStats).map((key, index) => ({ country: key, count: ageStats[key] }));
+      const sortedStats = ageStatsArray.sort((a, b) => b.count - a.count);
+      const results = sortedStats.reduce((acc, item, index) => {
+        acc.country.push(item.country);
+        acc.count.push(item.count);
+        acc.color.push(colors[index]);
+        return acc;
+      }, { country: [], count: [], color: [] });
+
+      res.json({
+        code: 200,
+        data: results,
+      });
+    } else {
+      res.json({
+        code: 200,
+        data: [],
+      });
+    }
   } catch (err) {
     res.json({
       code: 400,
@@ -380,7 +487,6 @@ router.get('/rankingInfo', async (req, res) => {
   }
 });
 
-
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
@@ -402,10 +508,22 @@ router.post('/add', async (req, res) => {
           commentsSum: (acc.commentsSum || 0) + el.comments_count,
         }), {});
 
+        let ageStats;
+        let genderLocalStats;
+
+        try {
+          const insights = await getInstagramInsights(instaId, longToken);
+          ageStats = insights[0].values[0].value;
+          genderLocalStats = insights[1].values[0].value;
+        } catch (err) {
+          console.log(err);
+        }
+
         const {
           follows_count, followers_count, media_count, username, name, profile_picture_url
         } = instagramData;
-        await Instagram.create({
+
+        const createParams = {
           INF_ID: id,
           INS_TOKEN: longToken,
           INS_ACCOUNT_ID: instaId,
@@ -417,7 +535,12 @@ router.post('/add', async (req, res) => {
           INS_PROFILE_IMG: profile_picture_url,
           INS_LIKES: statistics.likeSum,
           INS_CMNT: statistics.commentsSum
-        });
+        };
+
+        if (ageStats) createParams.INS_STAT_AGE_GENDER = JSON.stringify(ageStats);
+        if (genderLocalStats) createParams.INS_STATE_LOC = JSON.stringify(genderLocalStats);
+
+        await Instagram.create(createParams);
         res.status(200).json({ message: 'success' });
       }
     } else {
@@ -466,8 +589,8 @@ router.post('/add', async (req, res) => {
             INS_CMNT: statistics.commentsSum
           };
 
-          if (ageStats) createParams.INS_STAT_AGE = JSON.stringify(ageStats);
-          if (genderLocalStats) createParams.INS_STATE_GEN_LOC = JSON.stringify(genderLocalStats);
+          if (ageStats) createParams.INS_STAT_AGE_GENDER = JSON.stringify(ageStats);
+          if (genderLocalStats) createParams.INS_STATE_LOC = JSON.stringify(genderLocalStats);
 
           await Instagram.create(createParams);
           res.status(200).json({ message: 'success', data: instagramData });

@@ -2,8 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles({
-  common: ({ width }) => ({
-    maxWidth: `${width}px` || '300px',
+  common: ({ maxWidth }) => ({
+    maxWidth: `${maxWidth}px` || '300px',
     margin: '0 auto'
   }),
 });

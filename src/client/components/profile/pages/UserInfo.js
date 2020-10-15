@@ -142,7 +142,7 @@ function UserInfo(props) {
                       </Grid>
                       <Grid item xs={10}>
                         <Grid container spacing={2}>
-                          <Grid item xs={3}>
+                          <Grid item xs={4}>
                             <StyledTextField
                               fullWidth
                               name="nickName"
@@ -168,7 +168,7 @@ function UserInfo(props) {
                       </Grid>
                       <Grid item xs={10}>
                         <Grid container spacing={2}>
-                          <Grid item xs={3}>
+                          <Grid item xs={4}>
                             <StyledTextField
                               fullWidth
                               name="phone"
@@ -194,7 +194,7 @@ function UserInfo(props) {
                       </Grid>
                       <Grid item xs={10}>
                         <Grid container spacing={2}>
-                          <Grid item xs={3}>
+                          <Grid item xs={4}>
                             <ReactHookFormSelect
                               name="country"
                               control={control}
@@ -218,7 +218,7 @@ function UserInfo(props) {
                             </ReactHookFormSelect>
                           </Grid>
                           {watchCountry ? (
-                            <Grid item xs={3}>
+                            <Grid item xs={4}>
                               <ReactHookFormSelect
                                 name="region"
                                 control={control}
@@ -253,8 +253,8 @@ function UserInfo(props) {
                           <Grid container alignItems="center" spacing={2}>
                             <Grid item>
                               <StyledImage
-                                width="110"
-                                height="110"
+                                width="110px"
+                                height="110px"
                                 borderRadius="100%"
                                 src={imageUrl || userInfo.INF_PHOTO || defaultAccountImage}
                               />

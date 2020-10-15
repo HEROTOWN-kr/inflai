@@ -11,7 +11,10 @@ function ProfileContent(props) {
   const { match } = props;
 
   return (
-    <Box width={{ xs: 500, lg: 1000, xl: 1210 }}>
+    <Box maxWidth={{
+      xs: 200, md: 600, lg: 975
+    }}
+    >
       <Switch>
         <Route
           path={`${match.path}/Rank`}

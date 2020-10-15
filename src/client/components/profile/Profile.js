@@ -36,7 +36,12 @@ function Profile(props) {
       px={1}
       className="profile"
     >
-      <MainBlock width={1500}>
+      <Box
+        maxWidth={{
+          xs: 500, md: 900, lg: 1250
+        }}
+        css={{ margin: '0 auto' }}
+      >
         <Grid container justify="space-between">
           <Grid item>
             <ProfileMenu {...props} userInfo={userInfo} />
@@ -45,7 +50,7 @@ function Profile(props) {
             <ProfileContent {...props} userInfo={userInfo} setUserInfo={setUserInfo} getUserInfo={getUserInfo} />
           </Grid>
         </Grid>
-      </MainBlock>
+      </Box>
     </Box>
   );
 }

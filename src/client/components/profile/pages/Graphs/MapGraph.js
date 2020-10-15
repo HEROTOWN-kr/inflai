@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import { Colors } from '../../../../lib/Сonstants';
 
-function AgeGraph(props) {
+function MapGraph(props) {
   const [statistics, setStatistics] = useState({
-    interval: [],
-    age: []
+    color: [],
+    country: [],
+    count: []
   });
   const [process, setProcess] = useState(false);
   const { INS_ID } = props;
 
   async function getStatistics() {
     setProcess(true);
-    const InstaAgeInsights = await axios.get('/api/TB_INSTA/statsAge', {
+    const InstaAgeInsights = await axios.get('/api/TB_INSTA/statsMap', {
       params: { INS_ID }
     });
     const { data } = InstaAgeInsights.data;
@@ -29,38 +30,33 @@ function AgeGraph(props) {
   }, [INS_ID]);
 
   const data = {
-    labels: statistics.interval,
-    datasets: [
-      {
-        label: '팔로워 수',
-        backgroundColor: Colors.orange,
-        borderColor: Colors.orange,
-        borderWidth: 1,
-        // hoverBackgroundColor: Colors.blue2,
-        // hoverBorderColor: Colors.blue2,
-        data: statistics.age
-      }
-    ]
+    labels: statistics.country,
+    datasets: [{
+      data: statistics.count,
+      backgroundColor: statistics.color,
+      hoverBackgroundColor: statistics.color
+    }]
   };
 
   return (
     <div>
       {
         process ? <CircularProgress /> : (
-        // <Box width="500px" height="250px">
-          <Bar
+          <Doughnut
             data={data}
-            width={400}
+            width={500}
             height={250}
             options={{
-              maintainAspectRatio: false
+              maintainAspectRatio: false,
+              legend: {
+                position: 'bottom',
+              },
             }}
           />
-        // </Box>
         )
       }
     </div>
   );
 }
 
-export default AgeGraph;
+export default MapGraph;

@@ -3,7 +3,7 @@ import { Box, CircularProgress, Grid } from '@material-ui/core';
 import axios from 'axios';
 import { PieChart } from 'react-minimal-pie-chart';
 import {
-  ChatBubble, Favorite, Image, CompareArrows, ImportExportOutlined, CalendarToday
+  ChatBubble, Room, Favorite, Image, Details, ChangeHistory, ImportExportOutlined, CalendarToday
 } from '@material-ui/icons';
 import WhiteBlock from '../../containers/WhiteBlock';
 import StyledImage from '../../containers/StyledImage';
@@ -15,6 +15,8 @@ import GoogleVisionGraph from './Graphs/GoogleVisionGraph';
 import LikeCommentBarGraph from './Graphs/LikeCommentBarGraph';
 import { Colors } from '../../../lib/Сonstants';
 import AgeGraph from './Graphs/AgeGraph';
+import GenderGraph from './Graphs/GenderGraph';
+import MapGraph from './Graphs/MapGraph';
 
 function InstagramInfo(props) {
   const [instaData, setInstaData] = useState({});
@@ -48,16 +50,16 @@ function InstagramInfo(props) {
               <WhiteBlock borderRadius="25px">
                 <Box px={3} py={3}>
                   <Grid container alignItems="center" spacing={3}>
-                    <Grid item>
-                      <StyledImage width="130" height="130" borderRadius="100%" src={instaData.INS_PROFILE_IMG || defaultAccountImage} />
+                    <Grid item xs={4}>
+                      <StyledImage width="100%" borderRadius="100%" src={instaData.INS_PROFILE_IMG || defaultAccountImage} />
                     </Grid>
-                    <Grid item>
+                    <Grid item xs={8}>
                       <Grid container direction="column" spacing={2}>
                         <Grid item>
                           <StyledText fontSize="20" fontWeight="bold">{instaData.INS_NAME || instaData.INS_USERNAME}</StyledText>
                         </Grid>
                         <Grid item>
-                          <Grid container spacing={4}>
+                          <Grid container justify="space-between">
                             <Grid item>
                               <Grid container direction="column" alignItems="center" spacing={1}>
                                 <Grid item><StyledText fontWeight="bold">{instaData.INS_MEDIA_CNT}</StyledText></Grid>
@@ -144,8 +146,8 @@ function InstagramInfo(props) {
         <Grid item xs={6}>
           <WhiteBlock borderRadius="25px" height="100%">
             <Box px={2} py={2}>
-              <Grid container direction="column" spacing={2} alignItems="center">
-                <Grid item container justify="space-between" alignItems="center">
+              <Grid container justify="space-between" spacing={4}>
+                <Grid item xs={12} container justify="space-between" alignItems="center">
                   <Grid item><StyledText fontSize="14">콘텐츠 카테고리</StyledText></Grid>
                   <StyledSvg
                     component={Image}
@@ -156,7 +158,7 @@ function InstagramInfo(props) {
                     borderRadius="100%"
                   />
                 </Grid>
-                <Grid item>
+                <Grid item xs={12} style={{ width: '100%' }}>
                   <GoogleVisionGraph INS_ID={instaData.INS_ID} />
                 </Grid>
               </Grid>
@@ -190,7 +192,7 @@ function InstagramInfo(props) {
             <Box px={2} py={2}>
               <Grid container direction="column" spacing={2} alignItems="center">
                 <Grid item container justify="space-between" alignItems="center">
-                  <Grid item><StyledText fontSize="14">나이</StyledText></Grid>
+                  <Grid item><StyledText fontSize="14">팔로워의 나이</StyledText></Grid>
                   <StyledSvg
                     component={CalendarToday}
                     color={Colors.blue2}
@@ -202,6 +204,58 @@ function InstagramInfo(props) {
                 </Grid>
                 <Grid item>
                   <AgeGraph INS_ID={instaData.INS_ID} />
+                </Grid>
+              </Grid>
+            </Box>
+          </WhiteBlock>
+        </Grid>
+        <Grid item xs={6}>
+          <WhiteBlock borderRadius="25px">
+            <Box px={2} py={2}>
+              <Grid container spacing={4}>
+                <Grid item xs={12} container justify="space-between" alignItems="center">
+                  <StyledSvg
+                    component={Details}
+                    color={Colors.orange}
+                    fontSize="14px"
+                    padding="8px"
+                    background={Colors.orangeBack}
+                    borderRadius="100%"
+                  />
+                  <Grid item><StyledText fontSize="14">성비</StyledText></Grid>
+                  <StyledSvg
+                    component={ChangeHistory}
+                    color={Colors.blue2}
+                    fontSize="14px"
+                    padding="8px"
+                    background={Colors.blue2Back}
+                    borderRadius="100%"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <GenderGraph INS_ID={instaData.INS_ID} />
+                </Grid>
+              </Grid>
+            </Box>
+          </WhiteBlock>
+        </Grid>
+        <Grid item xs={6}>
+          <WhiteBlock borderRadius="25px">
+            <Box px={2} py={2}>
+              <Grid container spacing={4}>
+                <Grid item xs={12} container justify="space-between" alignItems="center">
+                  <Grid item><StyledText fontSize="14">팔로워의 지도</StyledText></Grid>
+                  <StyledSvg
+                    component={Room}
+                    color={Colors.orange}
+                    fontSize="14px"
+                    padding="8px"
+                    background={Colors.orangeBack}
+                    borderRadius="100%"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <MapGraph INS_ID={instaData.INS_ID} />
                 </Grid>
               </Grid>
             </Box>

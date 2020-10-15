@@ -58,7 +58,7 @@ function InstagramSelectDialog(props) {
                 {instaAccounts.map((item, index) => (
                   <Grid item key={item.id} onClick={() => selectAccount(item.id)}>
                     <Box px={3}>
-                      <StyledImage width="80" height="80" borderRadius="100%" border={selectedId === item.id ? '2px solid red' : '2px solid #ffffff'} src={item.profile_picture_url} />
+                      <StyledImage width="80px" height="80px" borderRadius="100%" border={selectedId === item.id ? '2px solid red' : '2px solid #ffffff'} src={item.profile_picture_url} />
                       <Box pt={1}>{item.username}</Box>
                     </Box>
                   </Grid>

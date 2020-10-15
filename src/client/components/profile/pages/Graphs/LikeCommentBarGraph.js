@@ -116,7 +116,7 @@ function LikeCommentBarGraph(props) {
       {
         process ? <CircularProgress /> : (
           <Bar
-            width={500}
+            width={400}
             height={250}
             data={data}
             options={options}
