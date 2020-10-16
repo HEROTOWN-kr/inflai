@@ -458,6 +458,22 @@ function getFacebookLongToken(facebookToken) {
   }));
 }
 
+function getFacebookInfo(facebookToken) {
+  const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=picture%7Burl%7D%2Cemail%2Cname&'
+      + `access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(myInfoUrl, (error, response, body) => {
+      if (JSON.parse(body).error) {
+        reject(JSON.parse(body).error);
+      } else {
+        const userData = JSON.parse(response.body);
+        resolve(userData);
+      }
+    });
+  }));
+}
+
 function getFacebookPages(facebookToken) {
   const pagesUrl = `https://graph.facebook.com/v6.0/me/accounts?access_token=${facebookToken}`;
 
@@ -549,6 +565,7 @@ exports.getInstagramMediaData = getInstagramMediaData;
 exports.getInstagramInsights = getInstagramInsights;
 exports.googleVision = googleVision;
 exports.getFacebookLongToken = getFacebookLongToken;
+exports.getFacebookInfo = getFacebookInfo;
 exports.getFacebookPages = getFacebookPages;
 exports.checkInstagramBusinessAccount = checkInstagramBusinessAccount;
 exports.getInstagramBusinessAccounts = getInstagramBusinessAccounts;

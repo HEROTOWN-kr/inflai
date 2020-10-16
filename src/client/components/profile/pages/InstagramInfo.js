@@ -116,7 +116,7 @@ function InstagramInfo(props) {
                         borderRadius="100%"
                       />
                     </Grid>
-                    <Grid item><StyledText fontSize="30" fontWeight="900">{instaData.INS_LIKES}</StyledText></Grid>
+                    <Grid item><StyledText fontSize="30" fontWeight="900">{instaData.INS_LIKES || instaData.INS_LIKES2}</StyledText></Grid>
                   </Grid>
                 </Box>
               </WhiteBlock>
@@ -136,7 +136,7 @@ function InstagramInfo(props) {
                         borderRadius="100%"
                       />
                     </Grid>
-                    <Grid item><StyledText fontSize="30" fontWeight="900">{instaData.INS_CMNT}</StyledText></Grid>
+                    <Grid item><StyledText fontSize="30" fontWeight="900">{instaData.INS_CMNT || instaData.INS_CMNT2}</StyledText></Grid>
                   </Grid>
                 </Box>
               </WhiteBlock>

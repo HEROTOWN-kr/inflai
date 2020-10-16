@@ -470,14 +470,20 @@ router.get('/rankingInfo', async (req, res) => {
     };
 
     const InstaData = await Instagram.findOne(options);
-    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+    const {
+      INS_TOKEN, INS_ACCOUNT_ID
+    } = InstaData;
 
     const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
     const { biography, website } = detailInstaData;
 
     res.json({
       code: 200,
-      data: { ...InstaData.dataValues, biography, website },
+      data: {
+        ...InstaData.dataValues,
+        biography,
+        website
+      },
     });
   } catch (err) {
     res.json({

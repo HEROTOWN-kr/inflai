@@ -16,6 +16,7 @@ import Advertiser from '../../../img/advertiser.png';
 import Common from '../../../lib/common';
 import InstagramDialog from './InstagramDialog';
 import YoutubeDialog from './YoutubeDialog';
+import InstagramSelectDialog from './InstagramSelectDialog';
 
 function InfluencerSns({
   changeUser,
@@ -27,6 +28,9 @@ function InfluencerSns({
   const { search } = document.location;
   const [instaDialogOpen, setInstaDialogOpen] = useState(false);
   const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);
+  const [instaAccounts, setInstaAccounts] = useState([]);
+  const [instaSelectDialogOpen, setInstaSelectDialogOpen] = useState(false);
+
 
   function toggleInstaDialog() {
     setInstaDialogOpen(!instaDialogOpen);
@@ -95,12 +99,73 @@ function InfluencerSns({
     }
   ];
 
+  function selectAccountDialog() {
+    setInstaSelectDialogOpen(!instaSelectDialogOpen);
+  }
+
+  async function addInstagram(selectedId) {
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        const { accessToken, userID } = response.authResponse;
+        axios.post('/api/TB_INFLUENCER/instaLogin', {
+          facebookToken: accessToken,
+          facebookUserId: userID,
+          instaId: selectedId
+        }).then((res) => {
+          if (res.status === 200) {
+            changeUser({
+              social_type: res.data.social_type,
+              type: '2',
+              token: res.data.userToken,
+              name: res.data.userName,
+              regState: res.data.regState
+            });
+            history.push('/profile');
+          }
+        }).catch(err => alert(err.response.data));
+      } else {
+        alert('The user isn\'t logged in to Facebook');
+      }
+    });
+  }
+
   function facebookLogin() {
     window.FB.login((loginRes) => {
       if (loginRes.status === 'connected') {
         const { accessToken, userID } = loginRes.authResponse;
 
-        axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
+        axios.post('/api/TB_INFLUENCER/facebookLogin', {
+          facebookToken: accessToken,
+          facebookUserId: userID
+        }).then((res) => {
+          if (res.status === 200) {
+            if (res.data.userPhone) {
+              changeUser({
+                social_type: res.data.social_type,
+                type: '2',
+                token: res.data.userToken,
+                name: res.data.userName,
+                regState: res.data.regState
+              });
+              history.push('/');
+            } else {
+              changeUser({
+                social_type: res.data.social_type,
+                type: '2',
+                token: res.data.userToken,
+                name: res.data.userName,
+                regState: res.data.regState
+              });
+              history.push('/profile');
+            }
+          }
+          if (res.status === 202) {
+            setInstaAccounts(res.data.data);
+            selectAccountDialog();
+          }
+        });
+
+        /* axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
           .then((res) => {
             if (res.data.code === 200) {
               if (res.data.userPhone) {
@@ -122,11 +187,11 @@ function InfluencerSns({
               console.log(res);
             }
           })
-          .catch(error => (error));
+          .catch(error => (error)); */
       } else {
         console.log('not connected');
       }
-    }, { scope: 'public_profile, email, instagram_basic, manage_pages' });
+    }, { scope: 'pages_manage_engagement, public_profile, email, instagram_basic, instagram_manage_insights' });
   }
 
   function clickSns(sns) {
@@ -246,6 +311,12 @@ function InfluencerSns({
         />
         {/* <a href="https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=4rBF5bJ4y2jKn0gHoSCf&redirect_uri=http://127.0.0.1:3000/Join/Influencer/sns&state=hLiDdL2uhPtsftcU">naverlink</a> */}
         <InstagramDialog open={instaDialogOpen} closeDialog={toggleInstaDialog} facebookLogin={facebookLogin} />
+        <InstagramSelectDialog
+          open={instaSelectDialogOpen}
+          closeDialog={selectAccountDialog}
+          instaAccounts={instaAccounts}
+          connectAccount={addInstagram}
+        />
         <YoutubeDialog open={youtubeDialogOpen} closeDialog={toggleYoutubeDialog} googleLogin={() => GoogleButtonRef.current.click()} />
         <div className="title">인플루언서 유형을 선택해주세요</div>
         <Grid container spacing={1}>

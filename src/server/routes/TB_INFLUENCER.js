@@ -17,7 +17,18 @@ const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
 const Youtube = require('../models').TB_YOUTUBE;
 const Notification = require('../models').TB_NOTIFICATION;
-const common = require('../config/common');
+const {
+  getInstagramMediaData,
+  getInstagramData,
+  getInstagramInsights,
+  YoutubeDataRequest,
+  instaRequest,
+  getIdFromToken,
+  getFacebookLongToken,
+  createToken,
+  getFacebookInfo,
+  getInstagramBusinessAccounts
+} = require('../config/common');
 const testData = require('../config/testData');
 
 
@@ -62,7 +73,7 @@ function YoutubeRequest(data) {
 router.get('/', async (req, res) => {
   try {
     const { token, id, col } = req.query;
-    const userId = id || common.getIdFromToken(token).sub;
+    const userId = id || getIdFromToken(token).sub;
     const options = {
       where: { INF_ID: userId },
       attributes: [
@@ -104,7 +115,7 @@ router.get('/', async (req, res) => {
 
 router.get('/userInfo', (req, res) => {
   const { token, id } = req.query;
-  const userId = id || common.getIdFromToken(token).sub;
+  const userId = id || getIdFromToken(token).sub;
 
   Influencer.findOne({
     where: { INF_ID: userId },
@@ -133,7 +144,7 @@ router.get('/userInfo', (req, res) => {
 
 router.get('/userId', (req, res) => {
   const { token, id } = req.query;
-  const userId = id || common.getIdFromToken(token).sub;
+  const userId = id || getIdFromToken(token).sub;
 
   res.json({
     code: 200,
@@ -248,7 +259,7 @@ router.get('/getInfluencers', (req, res) => {
 
 router.get('/getInstaInfo', (req, res) => {
   const { token } = req.query;
-  const userId = common.getIdFromToken(token).sub;
+  const userId = getIdFromToken(token).sub;
   let resObj = {};
 
   Influencer.findOne({ where: { INF_ID: userId } }).then((result) => {
@@ -286,7 +297,7 @@ router.get('/getInstaInfo', (req, res) => {
 
 router.post('/updateInfo', (req, res) => {
   const data = req.body;
-  const userId = common.getIdFromToken(data.token).sub;
+  const userId = getIdFromToken(data.token).sub;
   const {
     channel, nickName, phone, country, region, product, message
   } = data;
@@ -320,7 +331,7 @@ router.get('/getLongLivedToken', (req, res) => {
   const {
     token, facebookToken, facebookUserId, instagramBusinessId
   } = req.query;
-  const userId = common.getIdFromToken(token).sub;
+  const userId = getIdFromToken(token).sub;
   // const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
 
   const apiUrl = 'https://graph.facebook.com/v6.0/oauth/access_token?'
@@ -403,7 +414,7 @@ router.post('/instaSignUp', (req, res) => {
                 res.json({
                   code: 200,
                   userId: result2.dataValues.INF_ID,
-                  userToken: common.createToken(result2.dataValues.INF_ID),
+                  userToken: createToken(result2.dataValues.INF_ID),
                   userName: result2.dataValues.INF_NAME,
                   userPhone: result2.dataValues.INF_TEL,
                   social_type: getBlogType(result2.dataValues.INF_BLOG_TYPE)
@@ -417,7 +428,7 @@ router.post('/instaSignUp', (req, res) => {
                 res.json({
                   code: 200,
                   userId: result.dataValues.INF_ID,
-                  userToken: common.createToken(result.dataValues.INF_ID),
+                  userToken: createToken(result.dataValues.INF_ID),
                   userName: result.dataValues.INF_NAME,
                   userPhone: result.dataValues.INF_TEL,
                   social_type: getBlogType(blogType)
@@ -435,6 +446,191 @@ router.post('/instaSignUp', (req, res) => {
       }
     }
   });
+});
+
+router.post('/facebookLogin', async (req, res) => {
+  try {
+    const data = req.body;
+    const { facebookToken, facebookUserId } = data;
+
+    const longToken = await getFacebookLongToken(facebookToken);
+
+    const userExist = await Influencer.findOne({ where: { INF_REG_ID: facebookUserId } });
+
+    if (userExist) {
+      const {
+        INF_ID, INF_NAME, INF_BLOG_TYPE, INF_TEL
+      } = userExist;
+      await Influencer.update({ INF_TOKEN: longToken }, { where: { INF_REG_ID: facebookUserId } });
+
+      res.status(200).json({
+        code: 200,
+        userId: INF_ID,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userPhone: INF_TEL,
+        social_type: getBlogType(INF_BLOG_TYPE)
+      });
+    } else {
+      const instaAccounts = await getInstagramBusinessAccounts(longToken);
+      if (instaAccounts.length === 0) {
+        res.status(400).json({ message: '페이스북 페이지에 연결된 인스타그램 계정이 없습니다' });
+      } else if (instaAccounts.length > 1) {
+        res.status(202).json({ data: instaAccounts });
+      } else {
+        const instagramId = instaAccounts[0].id;
+        const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instagramId } });
+
+        if (instaAccountExist) {
+          res.status(400).json({ message: '중복된 인스타그램 계정입니다' });
+        } else {
+          const { picture, name, email } = await getFacebookInfo(facebookToken);
+          const newUserData = await Influencer.create({
+            INF_REG_ID: facebookUserId,
+            INF_NAME: name,
+            INF_EMAIL: email,
+            // INF_PHOTO: picture.data.url || '',
+            INF_BLOG_TYPE: '1'
+          });
+
+          const {
+            INF_ID, INF_NAME, INF_BLOG_TYPE
+          } = newUserData;
+
+          const instagramData = await getInstagramData(instagramId, longToken);
+          const {
+            follows_count, followers_count, media_count, username, profile_picture_url
+          } = instagramData;
+
+          const mediaData = await getInstagramMediaData(instagramId, longToken);
+          const statistics = mediaData.reduce((acc, el) => ({
+            likeSum: (acc.likeSum || 0) + el.like_count,
+            commentsSum: (acc.commentsSum || 0) + el.comments_count,
+          }), {});
+
+          let ageStats;
+          let genderLocalStats;
+
+          try {
+            const insights = await getInstagramInsights(instagramId, longToken);
+            ageStats = insights[0].values[0].value;
+            genderLocalStats = insights[1].values[0].value;
+          } catch (err) {
+            console.log(err);
+          }
+
+          const createParams = {
+            INF_ID,
+            INS_TOKEN: longToken,
+            INS_ACCOUNT_ID: instagramId,
+            INS_FLW: follows_count,
+            INS_FLWR: followers_count,
+            INS_NAME: instagramData.name,
+            INS_USERNAME: username,
+            INS_MEDIA_CNT: media_count,
+            INS_PROFILE_IMG: profile_picture_url,
+            INS_LIKES: statistics.likeSum,
+            INS_CMNT: statistics.commentsSum
+          };
+
+          if (ageStats) createParams.INS_STAT_AGE_GENDER = JSON.stringify(ageStats);
+          if (genderLocalStats) createParams.INS_STATE_LOC = JSON.stringify(genderLocalStats);
+
+          await Instagram.create(createParams);
+
+          res.status(200).json({
+            userId: INF_ID,
+            userToken: createToken(INF_ID),
+            userName: INF_NAME,
+            userPhone: '',
+            social_type: getBlogType(INF_BLOG_TYPE)
+          });
+        }
+      }
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/instaLogin', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      facebookToken, facebookUserId, instaId
+    } = data;
+
+    const longToken = await getFacebookLongToken(facebookToken);
+    const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instaId } });
+
+    if (instaAccountExist) {
+      res.status(400).json({ message: '중복된 인스타그램 계정입니다' });
+    } else {
+      const { picture, name, email } = await getFacebookInfo(facebookToken);
+      const newUserData = await Influencer.create({
+        INF_REG_ID: facebookUserId,
+        INF_NAME: name,
+        INF_EMAIL: email,
+        // INF_PHOTO: picture.data.url || '',
+        INF_BLOG_TYPE: '1'
+      });
+
+      const {
+        INF_ID, INF_NAME, INF_BLOG_TYPE
+      } = newUserData;
+
+      const instagramData = await getInstagramData(instaId, longToken);
+      const {
+        follows_count, followers_count, media_count, username, profile_picture_url
+      } = instagramData;
+
+      const mediaData = await getInstagramMediaData(instaId, longToken);
+      const statistics = mediaData.reduce((acc, el) => ({
+        likeSum: (acc.likeSum || 0) + el.like_count,
+        commentsSum: (acc.commentsSum || 0) + el.comments_count,
+      }), {});
+
+      let ageStats;
+      let genderLocalStats;
+
+      try {
+        const insights = await getInstagramInsights(instaId, longToken);
+        ageStats = insights[0].values[0].value;
+        genderLocalStats = insights[1].values[0].value;
+      } catch (err) {
+        console.log(err);
+      }
+
+      const createParams = {
+        INF_ID,
+        INS_TOKEN: longToken,
+        INS_ACCOUNT_ID: instaId,
+        INS_FLW: follows_count,
+        INS_FLWR: followers_count,
+        INS_NAME: instagramData.name,
+        INS_USERNAME: username,
+        INS_MEDIA_CNT: media_count,
+        INS_PROFILE_IMG: profile_picture_url,
+        INS_LIKES: statistics.likeSum,
+        INS_CMNT: statistics.commentsSum
+      };
+
+      if (ageStats) createParams.INS_STAT_AGE_GENDER = JSON.stringify(ageStats);
+      if (genderLocalStats) createParams.INS_STATE_LOC = JSON.stringify(genderLocalStats);
+
+      await Instagram.create(createParams);
+
+      res.status(200).json({
+        userId: INF_ID,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userPhone: '',
+        social_type: getBlogType(INF_BLOG_TYPE)
+      });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 router.post('/instaUpdate', asyncMiddleware(
@@ -464,7 +660,7 @@ router.post('/instaUpdate', asyncMiddleware(
     const successResponse = {
       code: 200,
       userId: INF_ID,
-      userToken: common.createToken(INF_ID),
+      userToken: createToken(INF_ID),
       userName: INF_NAME,
       userPhone: INF_TEL,
       social_type: getBlogType(INF_BLOG_TYPE)
@@ -472,7 +668,7 @@ router.post('/instaUpdate', asyncMiddleware(
 
     if (instaAccount) {
       try {
-        const instagramData = await common.getInstagramData(instaAccount, INF_TOKEN);
+        const instagramData = await getInstagramData(instaAccount, INF_TOKEN);
         const {
           follows_count, followers_count, media_count, username, name, profile_picture_url
         } = instagramData;
@@ -554,7 +750,7 @@ router.get('/youtubeSignUp', (req, res) => {
                   // INF_REF_TOKEN: refresh_token,
                 }).then((result2) => {
                   const { INF_ID, INF_NAME, INF_TEL } = result2.dataValues;
-                  common.YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
+                  YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
                     const { viewCount, subscriberCount } = youtubeData.statistics;
                     Youtube.create({
                       INF_ID,
@@ -565,7 +761,7 @@ router.get('/youtubeSignUp', (req, res) => {
                       res.json({
                         code: 200,
                         userId: INF_ID,
-                        userToken: common.createToken(INF_ID),
+                        userToken: createToken(INF_ID),
                         userName: INF_NAME,
                         userPhone: INF_TEL,
                         social_type: getBlogType('2')
@@ -575,7 +771,7 @@ router.get('/youtubeSignUp', (req, res) => {
                   /* res.json({
                     code: 200,
                     userId: INF_ID,
-                    userToken: common.createToken(INF_ID),
+                    userToken: createToken(INF_ID),
                     userName: INF_NAME,
                     userPhone: INF_TEL,
                     social_type: getBlogType('2')
@@ -585,7 +781,7 @@ router.get('/youtubeSignUp', (req, res) => {
                 const {
                   INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
                 } = result.dataValues;
-                common.YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
+                YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
                   const { viewCount, subscriberCount } = youtubeData.statistics;
                   Youtube.update({
                     YOU_TOKEN: refresh_token,
@@ -597,7 +793,7 @@ router.get('/youtubeSignUp', (req, res) => {
                     res.json({
                       code: 200,
                       userId: INF_ID,
-                      userToken: common.createToken(INF_ID),
+                      userToken: createToken(INF_ID),
                       userName: INF_NAME,
                       userPhone: INF_TEL,
                       social_type: getBlogType(INF_BLOG_TYPE)
@@ -618,7 +814,7 @@ router.get('/youtubeSignUp', (req, res) => {
 
 router.get('/getYoutubeInfo', (req, res) => {
   const { token } = req.query;
-  const userId = common.getIdFromToken(token).sub;
+  const userId = getIdFromToken(token).sub;
   const resObj = {};
   const oauth2Client = getOauthClient();
   const youtube = google.youtube('v3');
@@ -726,7 +922,7 @@ router.get('/naverSignUp', (req, res) => {
         res.json({
           code: 200,
           userId: result2.dataValues.INF_ID,
-          userToken: common.createToken(result2.dataValues.INF_ID),
+          userToken: createToken(result2.dataValues.INF_ID),
           userName: result2.dataValues.INF_NAME,
           userPhone: result2.dataValues.INF_TEL,
           social_type: 'naver'
@@ -736,7 +932,7 @@ router.get('/naverSignUp', (req, res) => {
       res.json({
         code: 200,
         userId: result.dataValues.INF_ID,
-        userToken: common.createToken(result.dataValues.INF_ID),
+        userToken: createToken(result.dataValues.INF_ID),
         userName: result.dataValues.INF_NAME,
         userPhone: result.dataValues.INF_TEL,
         social_type: result.dataValues.INF_BLOG_TYPE,
@@ -785,7 +981,7 @@ router.get('/naverSignUpTest', (req, res) => {
           res.json({
             code: 200,
             userId: result2.dataValues.INF_ID,
-            userToken: common.createToken(result2.dataValues.INF_ID),
+            userToken: createToken(result2.dataValues.INF_ID),
             userName: result2.dataValues.INF_NAME,
             userPhone: result2.dataValues.INF_TEL,
             social_type: getBlogType('3')
@@ -805,7 +1001,7 @@ router.get('/rankInstagram', (req, res) => {
     where: { INF_BLOG_TYPE: type },
     attributes: ['INF_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID', 'INF_DT']
   }).then((result) => {
-    common.instaRequest(result, (err, sortedArray) => {
+    instaRequest(result, (err, sortedArray) => {
       if (err) {
         res.json({
           code: 401,
@@ -836,7 +1032,7 @@ router.get('/getInstagramRequests', (req, res) => {
       },
     ],
   }).then((result) => {
-    common.instaRequest(result, (err, sortedArray) => {
+    instaRequest(result, (err, sortedArray) => {
       if (err) {
         res.json({
           code: 401,
@@ -962,7 +1158,7 @@ router.post('/upload', async (req, res, next) => {
   try {
     const { file } = req.files;
     const { token, id } = req.body;
-    const userId = id || common.getIdFromToken(token).sub;
+    const userId = id || getIdFromToken(token).sub;
     // const uid = uniqid();
     const uid = 'profile';
 
@@ -995,7 +1191,7 @@ router.post('/upload', async (req, res, next) => {
 router.post('/delete', async (req, res, next) => {
   try {
     const { token, id } = req.body;
-    const userId = id || common.getIdFromToken(token).sub;
+    const userId = id || getIdFromToken(token).sub;
     const post = {
       INF_PHOTO: null
     };
