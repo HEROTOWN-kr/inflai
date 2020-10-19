@@ -62,7 +62,7 @@ function Sns(props) {
           } else {
             alert('not connected');
           }
-        }, { scope: 'pages_manage_engagement, public_profile, email, instagram_basic, instagram_manage_insights' });
+        }, { scope: 'public_profile, email, manage_pages, instagram_basic, instagram_manage_insights' });
       }
     }, true);
   }

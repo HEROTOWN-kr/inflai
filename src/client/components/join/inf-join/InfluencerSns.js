@@ -163,35 +163,13 @@ function InfluencerSns({
             setInstaAccounts(res.data.data);
             selectAccountDialog();
           }
+        }).catch((err) => {
+          alert(err.response.data.message);
         });
-
-        /* axios.post('/api/TB_INFLUENCER/instaSignUp', { facebookToken: accessToken })
-          .then((res) => {
-            if (res.data.code === 200) {
-              if (res.data.userPhone) {
-                changeUser({
-                  social_type: res.data.social_type,
-                  type: '2',
-                  token: res.data.userToken,
-                  name: res.data.userName,
-                  regState: res.data.regState
-                });
-                history.push('/');
-              } else {
-                goTo(`/detail/${res.data.userId}`);
-              }
-              // props.history.push(`${props.match.path}/instagram/${res.data.userId}`);
-            } else if (res.data.code === 401) {
-              console.log(res);
-            } else {
-              console.log(res);
-            }
-          })
-          .catch(error => (error)); */
       } else {
         console.log('not connected');
       }
-    }, { scope: 'pages_manage_engagement, public_profile, email, instagram_basic, instagram_manage_insights' });
+    }, { scope: 'public_profile, email, manage_pages, instagram_basic, instagram_manage_insights' });
   }
 
   function clickSns(sns) {
@@ -301,7 +279,7 @@ function InfluencerSns({
           onFailure={responseGoogle}
         />
         <NaverLogin
-          clientId="4rBF5bJ4y2jKn0gHoSCf"
+          clientId="KyWNbHHgcX4ZcIagGtBg"
                 // callbackUrl="http://127.0.0.1:3000/Join/Influencer/sns"
           callbackUrl={`${window.location.origin}/Join/Influencer/sns`}
           render={props => <div ref={NaverButtonRef} onClick={props.onClick} style={{ display: 'none' }}>Naver Login</div>}

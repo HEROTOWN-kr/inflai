@@ -239,6 +239,115 @@ router.get('/getGoogleData', async (req, res) => {
   }
 });
 
+router.get('/getGoogleDataObject', async (req, res) => {
+  try {
+    const { INS_ID, isLocal } = req.query;
+
+    const filePath = isLocal === 'true' ? {
+      keyFileName: 'src/server/config/googleVisionKey.json',
+      imagePath: './src/server/img/image'
+    } : {
+      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
+      imagePath: '../server/img/image'
+    };
+
+
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
+    };
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+
+    const client = new vision.ImageAnnotatorClient({
+      keyFilename: filePath.keyFileName
+    });
+
+    const colors = [
+      '#FF835D', '#409CFF', '#52D726', '#FF0000',
+      '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+      '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
+      '#B276B2', '#DECF3F', '#81726A', '#270722',
+      '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
+      '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
+      '#7CDDDD'
+    ];
+    // '#52D726', '#FFEC00',
+
+    async function detectPic(index) {
+      const fileName = `${filePath.imagePath}${index}.jpg`;
+      const [result] = await client.objectLocalization(fileName);
+
+      const objects = result.localizedObjectAnnotations;
+
+      const data = objects.map(object => ({
+        name: object.name,
+        confidence: object.score
+      }));
+
+
+      return new Promise(((resolve, reject) => {
+        /* if (labels && labels[0]) {
+          const { score, description } = labels[0];
+          resolve({ score, description });
+        } */
+        // resolve({});
+        resolve(data[0]);
+      }));
+    }
+
+    async function downloadAndDetect(fileUrl, index) {
+      const response = await fetch(fileUrl);
+      const buffer = await response.buffer();
+      const path = `${filePath.imagePath}${index}.jpg`;
+
+      return new Promise((async (resolve, reject) => {
+        fs.writeFile(path, buffer, async () => {
+          const detectResult = await detectPic(index);
+          resolve(detectResult);
+        });
+      }));
+    }
+
+    const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+    const gDatas = await Promise.all(
+      instaData.map(async (mediaInfo, index) => {
+        const { thumbnail_url, media_url } = mediaInfo;
+        const fileUrl = thumbnail_url || media_url;
+        const detectData = await downloadAndDetect(fileUrl, index);
+        return { ...mediaInfo, ...detectData };
+      })
+    );
+
+    const statistics = gDatas.reduce((acc, el) => {
+      acc[el.name] = {
+        count: (acc[el.name] && acc[el.name].count || 0) + 1,
+        likeCountSum: (acc[el.name] && acc[el.name].likeCountSum || 0) + el.like_count,
+        commentsCountSum: (acc[el.name] && acc[el.name].comments_count || 0) + el.comments_count,
+      };
+      return acc;
+    }, {});
+
+    const finalArray = Object.keys(statistics).map((key, index) => {
+      statistics[key].value = 100 / (gDatas.length / statistics[key].count);
+      return { ...statistics[key], description: key, color: colors[index] };
+    });
+
+    finalArray.sort((a, b) => b.value - a.value);
+
+    /* const fileUrl = instaData[0].media_url;
+    const gData = await downloadAndDetect(fileUrl, 0); */
+
+    res.json({
+      code: 200,
+      statistics: finalArray,
+    });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 router.get('/detail', async (req, res) => {
   try {
     const { INS_ID } = req.query;
@@ -380,7 +489,7 @@ router.get('/statsGender', async (req, res) => {
     } else {
       res.json({
         code: 200,
-        data: [],
+        data: 0,
       });
     }
   } catch (err) {
@@ -535,7 +644,7 @@ router.post('/add', async (req, res) => {
           INS_ACCOUNT_ID: instaId,
           INS_FLW: follows_count,
           INS_FLWR: followers_count,
-          INS_NAME: name,
+          INS_NAME: name.normalize(),
           INS_USERNAME: username,
           INS_MEDIA_CNT: media_count,
           INS_PROFILE_IMG: profile_picture_url,

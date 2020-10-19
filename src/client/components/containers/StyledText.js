@@ -11,6 +11,7 @@ const useStyles = makeStyles({
     lineHeight: lineHeight || '1em',
     color: color || Colors.black,
     fontWeight: fontWeight || 'normal',
+    textAlign: textAlign || 'inherit'
   }),
 });
 

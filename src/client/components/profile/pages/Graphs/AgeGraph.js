@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@material-ui/core';
 import axios from 'axios';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import { Colors } from '../../../../lib/Сonstants';
+import StyledText from '../../../containers/StyledText';
 
 function AgeGraph(props) {
   const [statistics, setStatistics] = useState({
@@ -47,16 +48,24 @@ function AgeGraph(props) {
     <div>
       {
         process ? <CircularProgress /> : (
-        // <Box width="500px" height="250px">
-          <Bar
-            data={data}
-            width={400}
-            height={250}
-            options={{
-              maintainAspectRatio: false
-            }}
-          />
-        // </Box>
+          <React.Fragment>
+            {
+              statistics.age && statistics.age.length > 0 ? (
+                <Bar
+                  data={data}
+                  width={400}
+                  height={250}
+                  options={{
+                    maintainAspectRatio: false
+                  }}
+                />
+              ) : (
+                <StyledText fontSize="14" textAlign="center">
+                      팔로워가 100명 미만인 데이터가 제공되지 않습니다.
+                </StyledText>
+              )
+              }
+          </React.Fragment>
         )
       }
     </div>

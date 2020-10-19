@@ -314,7 +314,8 @@ function getInstagramMediaData(instagramId, facebookToken) {
         const imgArray = JSON.parse(body).data;
         resolve(Object.values(imgArray));
       } else {
-        reject(error);
+        const messageError = JSON.parse(response.body).error;
+        reject(messageError);
       }
     });
   }));
