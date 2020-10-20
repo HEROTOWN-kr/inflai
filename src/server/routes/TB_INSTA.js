@@ -8,6 +8,7 @@ const config = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
 const common = require('../config/common');
+const category = require('../config/detectCategory');
 
 
 const { Op } = Sequelize;
@@ -132,6 +133,7 @@ router.get('/', async (req, res) => {
 
 router.get('/getGoogleData', async (req, res) => {
   const { INS_ID, isLocal } = req.query;
+  const { detectCategory } = category;
 
   const filePath = isLocal === 'true' ? {
     keyFileName: 'src/server/config/googleVisionKey.json',
@@ -169,10 +171,18 @@ router.get('/getGoogleData', async (req, res) => {
     const fileName = `${filePath.imagePath}${index}.jpg`;
     const [result] = await client.labelDetection(fileName);
     const labels = result.labelAnnotations;
+
     return new Promise(((resolve, reject) => {
       if (labels && labels[0]) {
         const { score, description } = labels[0];
-        resolve({ score, description });
+
+        const name = detectCategory.reduce((acc, item) => {
+          const wordExist = (item.categories.indexOf(description) > -1);
+          if (wordExist) acc.description = item.name;
+          return acc;
+        }, { score, description });
+
+        resolve(name);
       }
       resolve({});
     }));
@@ -242,6 +252,7 @@ router.get('/getGoogleData', async (req, res) => {
 router.get('/getGoogleDataObject', async (req, res) => {
   try {
     const { INS_ID, isLocal } = req.query;
+    const { detectCategory } = category;
 
     const filePath = isLocal === 'true' ? {
       keyFileName: 'src/server/config/googleVisionKey.json',
@@ -275,25 +286,40 @@ router.get('/getGoogleDataObject', async (req, res) => {
     ];
     // '#52D726', '#FFEC00',
 
+
     async function detectPic(index) {
       const fileName = `${filePath.imagePath}${index}.jpg`;
       const [result] = await client.objectLocalization(fileName);
 
       const objects = result.localizedObjectAnnotations;
 
-      const data = objects.map(object => ({
-        name: object.name,
-        confidence: object.score
-      }));
+      if (objects.length > 0) {
+        const { name, score } = objects[0];
 
+        const returnObj = detectCategory.reduce((acc, item) => {
+          const wordExist = (item.categories.indexOf(name) > -1);
+          if (wordExist) acc.name = item.name;
+          return acc;
+        }, { score, name });
 
+        return new Promise(((resolve, reject) => {
+          resolve(returnObj);
+        }));
+      }
+      const [result2] = await client.labelDetection(fileName);
+      const labels = result2.labelAnnotations;
       return new Promise(((resolve, reject) => {
-        /* if (labels && labels[0]) {
+        if (labels && labels[0]) {
           const { score, description } = labels[0];
-          resolve({ score, description });
-        } */
-        // resolve({});
-        resolve(data[0]);
+          const name = detectCategory.reduce((acc, item) => {
+            const wordExist = (item.categories.indexOf(description) > -1);
+            if (wordExist) acc.name = item.name;
+            return acc;
+          }, { score, name: description });
+
+          resolve(name);
+        }
+        resolve({});
       }));
     }
 
@@ -330,7 +356,7 @@ router.get('/getGoogleDataObject', async (req, res) => {
     }, {});
 
     const finalArray = Object.keys(statistics).map((key, index) => {
-      statistics[key].value = 100 / (gDatas.length / statistics[key].count);
+      statistics[key].value = Math.round(100 / (gDatas.length / statistics[key].count));
       return { ...statistics[key], description: key, color: colors[index] };
     });
 
