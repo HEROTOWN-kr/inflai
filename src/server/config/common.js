@@ -190,6 +190,35 @@ function createMessageOption2(
   return options;
 }
 
+function getGoogleData(code) {
+  function getOauthClient() {
+    const oauth2Client = new google.auth.OAuth2(
+      configKey.google_client_id,
+      configKey.google_client_secret,
+      configKey.google_client_redirect_url
+    );
+    return oauth2Client;
+  }
+  const oauth2Client = getOauthClient();
+
+  return new Promise(((resolve, reject) => {
+    oauth2Client.getToken(code, (err, tokens) => {
+      if (err) { reject(err); }
+      oauth2Client.setCredentials(tokens);
+      const oauth2 = google.oauth2('v2');
+      oauth2.userinfo.get({ auth: oauth2Client, alt: 'json' }, (err2, response) => {
+        if (err2) { reject(err2); }
+        const { name, email, id } = response.data;
+        const { refresh_token } = tokens;
+        resolve({
+          name, email, id, refresh_token
+        });
+      });
+    });
+  }));
+}
+
+
 function YoutubeRequest(data, cb) {
   async.map(data, (item, callback) => {
     function getOauthClient() {
@@ -236,7 +265,7 @@ function YoutubeRequest(data, cb) {
   });
 }
 
-function YoutubeDataRequest(YOU_TOKEN, YOU_ID, cb) {
+function YoutubeDataRequest(YOU_TOKEN, YOU_ID) {
   function getOauthClient() {
     const oauth2Client = new google.auth.OAuth2(
       configKey.google_client_id,
@@ -253,25 +282,23 @@ function YoutubeDataRequest(YOU_TOKEN, YOU_ID, cb) {
     refresh_token: YOU_TOKEN
   });
 
-  youtube.channels.list({
-    auth: oauth2Client,
-    part: 'snippet, statistics',
-    mine: true,
-    fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
-    quotaUser: `secretquotastring${YOU_ID}`,
-  }, (err, response) => {
-    if (err) {
-      cb(err);
-    } else {
+  return new Promise(((resolve, reject) => {
+    youtube.channels.list({
+      auth: oauth2Client,
+      part: 'snippet, statistics, id',
+      mine: true,
+      fields: 'items(id, snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
+      quotaUser: `secretquotastring${YOU_ID}`,
+    }, (err, response) => {
+      if (err) { reject(err); }
       const info = response.data.items;
       if (info.length === 0) {
-        console.log('No channel found.');
-        cb(response.data);
+        reject(new Error('No channel found.'));
       } else {
-        cb({ ...info[0], YOU_ID });
+        resolve({ ...info[0], YOU_ID });
       }
-    }
-  });
+    });
+  }));
 }
 
 function getInstagramData(instagramId, facebookToken) {
@@ -573,3 +600,4 @@ exports.getInstagramBusinessAccounts = getInstagramBusinessAccounts;
 exports.average = average;
 exports.standardDeviation = standardDeviation;
 exports.asyncMiddleware = asyncMiddleware;
+exports.getGoogleData = getGoogleData;

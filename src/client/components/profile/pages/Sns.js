@@ -13,6 +13,7 @@ function Sns(props) {
   const { userInfo, getUserInfo } = props;
   const { TB_INSTum, TB_YOUTUBE } = userInfo;
   const { INS_ID, INS_USERNAME, INS_DT } = TB_INSTum || {};
+  const { YOU_ID, YOU_NAME, YOU_DT } = TB_YOUTUBE || {};
   const { token } = Common.getUserInfo();
 
   const [instaDialogOpen, setInstaDialogOpen] = useState(false);
@@ -36,17 +37,29 @@ function Sns(props) {
   }
 
   function findInstagramAccounts(accessToken, userID) {
-    axios.post('/api/TB_INSTA/add', {
-      facebookToken: accessToken,
-      facebookUserId: userID,
-      token
-    }).then((res) => {
-      if (res.status === 200) getUserInfo();
-      if (res.status === 202) {
-        setInstaAccounts(res.data.data);
+    const { FB } = window;
+
+    FB.api('/me', 'GET', {
+      fields: 'accounts{instagram_business_account{id,username,profile_picture_url}}'
+    }, (response) => {
+      const { data } = response.accounts;
+      if (!data) {
+        alert('페이스북 페이지에 연결된 인스타그램 계정이 없습니다');
+      } else if (data && data.length > 1) {
+        const accounts = data.map(item => item.instagram_business_account);
+        setInstaAccounts(accounts);
         selectAccountDialog();
+      } else {
+        axios.post('/api/TB_INSTA/add', {
+          facebookToken: accessToken,
+          facebookUserId: userID,
+          token,
+          instaId: data[0].instagram_business_account.id
+        }).then((res) => {
+          getUserInfo();
+        }).catch(err => alert(err.response.data));
       }
-    }).catch(err => alert(err.response.data.message));
+    });
   }
 
   function facebookLogin() {
@@ -65,6 +78,44 @@ function Sns(props) {
         }, { scope: 'public_profile, email, manage_pages, instagram_basic, instagram_manage_insights' });
       }
     }, true);
+  }
+
+  async function testFacebookLogin() {
+    const { FB } = window;
+
+    window.FB.getLoginStatus((loginRes) => {
+      if (loginRes.status === 'connected') {
+        FB.api('/me', 'GET', {
+          fields: 'accounts{instagram_business_account{id,username,profile_picture_url}}'
+        }, (response) => {
+          const { data } = response.accounts;
+          if (!data) {
+            alert('페이스북 페이지에 연결된 인스타그램 계정이 없습니다');
+          } else if (data && data.length > 1) {
+            const accounts = data.map(item => item.instagram_business_account);
+            setInstaAccounts(accounts);
+            selectAccountDialog();
+          } else {
+
+          }
+        });
+      } else {
+        window.FB.login((loginRes2) => {
+          if (loginRes2.status === 'connected') {
+            const { accessToken, userID } = loginRes2.authResponse;
+            findInstagramAccounts(accessToken, userID);
+          } else {
+            alert('not connected');
+          }
+        }, { scope: 'public_profile, email, manage_pages, instagram_basic, instagram_manage_insights' });
+      }
+    }, true);
+
+    FB.login((loginRes) => {
+      if (loginRes.status === 'connected') {
+
+      }
+    });
   }
 
   async function addInstagram(selectedId) {
@@ -138,13 +189,29 @@ function Sns(props) {
                   <StyledImage width="24px" height="18px" src={youtubeIcon} />
                 </Grid>
                 <Grid item>
-                  <StyledText>유튜브 연결하기</StyledText>
+                  <StyledText>{YOU_ID ? '유튜브 연결 해제' : '유튜브 연결하기'}</StyledText>
                 </Grid>
               </Grid>
             </Box>
           </Grid>
         </Grid>
       </Grid>
+      {YOU_ID ? (
+        <Grid item xs={12}>
+          <Grid container alignItems="center">
+            <Grid item xs={2} />
+            <Grid item xs={10}>
+              <Box pb={2}>
+                <StyledText fontSize="14">
+                  {'연결한 채널: '}
+                  <b>{YOU_NAME}</b>
+                </StyledText>
+              </Box>
+              <StyledText fontSize="13">{`${YOU_DT}에 연결되었습니다`}</StyledText>
+            </Grid>
+          </Grid>
+        </Grid>
+      ) : null}
       <Grid item xs={12}>
         <Grid container alignItems="center">
           <Grid item xs={2}>
@@ -163,7 +230,7 @@ function Sns(props) {
           </Grid>
         </Grid>
       </Grid>
-      <InstagramDialog open={instaDialogOpen} closeDialog={instagramAction} facebookLogin={facebookLogin} userPage />
+      <InstagramDialog open={instaDialogOpen} closeDialog={instagramAction} facebookLogin={testFacebookLogin} userPage />
       <InstagramSelectDialog
         open={instaSelectDialogOpen}
         closeDialog={selectAccountDialog}

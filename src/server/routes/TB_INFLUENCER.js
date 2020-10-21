@@ -27,21 +27,14 @@ const {
   getFacebookLongToken,
   createToken,
   getFacebookInfo,
-  getInstagramBusinessAccounts
+  getInstagramBusinessAccounts,
+  getGoogleData
 } = require('../config/common');
 const testData = require('../config/testData');
 
 
 const router = express.Router();
 
-function getOauthClient() {
-  const oauth2Client = new google.auth.OAuth2(
-    configKey.google_client_id,
-    configKey.google_client_secret,
-    configKey.google_client_redirect_url
-  );
-  return oauth2Client;
-}
 
 function getBlogType(blogType) {
   let social;
@@ -91,6 +84,10 @@ router.get('/', async (req, res) => {
         },
         {
           model: Youtube,
+          attributes: ['YOU_ID', 'YOU_NAME',
+            [Sequelize.fn('DATE_FORMAT', Sequelize.col('YOU_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'YOU_DT'],
+
+          ],
           required: false,
         },
       ],
@@ -715,101 +712,70 @@ router.post('/instaUpdate', asyncMiddleware(
   }
 ));
 
-router.get('/youtubeSignUp', (req, res) => {
-  const data = req.query;
-  const { code } = data;
-  console.log(code);
+router.get('/youtubeSignUp', async (req, res) => {
+  try {
+    const data = req.query;
+    const { code } = data;
+    const googleData = await getGoogleData(code);
+    const {
+      name, email, id, refresh_token
+    } = googleData;
+    const influencerData = await Influencer.findOne({ where: { INF_REG_ID: id } });
 
-  const oauth2Client = getOauthClient();
-
-  oauth2Client.getToken(code, (err, tokens) => {
-    // Now tokens contains an access_token and an optional refresh_token. Save them.
-    if (!err) {
-      oauth2Client.setCredentials(tokens);
-
-      const oauth2 = google.oauth2('v2');
-
-      oauth2.userinfo.get(
-        {
-          auth: oauth2Client,
-          alt: 'json',
-        }, (err, response) => {
-          const { name, email, id } = response.data;
-          const { refresh_token } = tokens;
-
-          if (err) {
-            console.log(`The API returned an error: ${err}`);
-          } else {
-            Influencer.findOne({ where: { INF_REG_ID: id } }).then((result) => {
-              if (!result) {
-                Influencer.create({
-                  INF_NAME: name,
-                  INF_EMAIL: email,
-                  INF_REG_ID: id,
-                  INF_BLOG_TYPE: '2',
-                  // INF_REF_TOKEN: refresh_token,
-                }).then((result2) => {
-                  const { INF_ID, INF_NAME, INF_TEL } = result2.dataValues;
-                  YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
-                    const { viewCount, subscriberCount } = youtubeData.statistics;
-                    Youtube.create({
-                      INF_ID,
-                      YOU_TOKEN: refresh_token,
-                      YOU_SUBS: subscriberCount,
-                      YOU_VIEWS: viewCount
-                    }).then((result3) => {
-                      res.json({
-                        code: 200,
-                        userId: INF_ID,
-                        userToken: createToken(INF_ID),
-                        userName: INF_NAME,
-                        userPhone: INF_TEL,
-                        social_type: getBlogType('2')
-                      });
-                    });
-                  });
-                  /* res.json({
-                    code: 200,
-                    userId: INF_ID,
-                    userToken: createToken(INF_ID),
-                    userName: INF_NAME,
-                    userPhone: INF_TEL,
-                    social_type: getBlogType('2')
-                  }); */
-                });
-              } else {
-                const {
-                  INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
-                } = result.dataValues;
-                YoutubeDataRequest(refresh_token, INF_ID, (youtubeData) => {
-                  const { viewCount, subscriberCount } = youtubeData.statistics;
-                  Youtube.update({
-                    YOU_TOKEN: refresh_token,
-                    YOU_SUBS: subscriberCount,
-                    YOU_VIEWS: viewCount
-                  }, {
-                    where: { INF_ID }
-                  }).then((result4) => {
-                    res.json({
-                      code: 200,
-                      userId: INF_ID,
-                      userToken: createToken(INF_ID),
-                      userName: INF_NAME,
-                      userPhone: INF_TEL,
-                      social_type: getBlogType(INF_BLOG_TYPE)
-                    });
-                  });
-                });
-              }
-            });
-          }
-        }
-      );
+    if (!influencerData) {
+      const newInfluencer = await Influencer.create({
+        INF_NAME: name,
+        INF_EMAIL: email,
+        INF_REG_ID: id,
+        INF_BLOG_TYPE: '2',
+      });
+      const { INF_ID, INF_NAME } = newInfluencer;
+      const youtubeChannelData = await YoutubeDataRequest(refresh_token, INF_ID);
+      const channelId = youtubeChannelData.id;
+      const { viewCount, subscriberCount } = youtubeChannelData.statistics;
+      const { title, description } = youtubeChannelData.snippet;
+      await Youtube.create({
+        INF_ID,
+        YOU_TOKEN: refresh_token,
+        YOU_ACCOUNT_ID: channelId,
+        YOU_NAME: title,
+        YOU_SUBS: subscriberCount,
+        YOU_VIEWS: viewCount
+      });
+      res.json({
+        code: 200,
+        userId: INF_ID,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userPhone: null,
+        social_type: getBlogType('2')
+      });
     } else {
-      // res.redirect('http://localhost:3000');
-      console.log(err);
+      const {
+        INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
+      } = influencerData;
+      const youtubeChannelData = await YoutubeDataRequest(refresh_token, INF_ID);
+      const { viewCount, subscriberCount } = youtubeChannelData.statistics;
+      const { title, description } = youtubeChannelData.snippet;
+      await Youtube.update({
+        YOU_TOKEN: refresh_token,
+        YOU_NAME: title,
+        YOU_SUBS: subscriberCount,
+        YOU_VIEWS: viewCount
+      }, { where: { INF_ID } });
+
+      res.json({
+        code: 200,
+        userId: INF_ID,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userPhone: INF_TEL,
+        social_type: getBlogType(INF_BLOG_TYPE)
+      });
     }
-  });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
 });
 
 router.get('/getYoutubeInfo', (req, res) => {

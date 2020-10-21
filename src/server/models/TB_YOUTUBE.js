@@ -20,6 +20,14 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    YOU_ACCOUNT_ID: {
+      type: DataTypes.STRING(300),
+      allowNull: true
+    },
+    YOU_NAME: {
+      type: DataTypes.STRING(500),
+      allowNull: true
+    },
     YOU_SUBS: {
       type: DataTypes.INTEGER(11),
       allowNull: true
