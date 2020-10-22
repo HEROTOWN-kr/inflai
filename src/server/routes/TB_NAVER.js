@@ -1,7 +1,7 @@
 const express = require('express');
 const Sequelize = require('sequelize');
-const Youtube = require('../models').TB_YOUTUBE;
-const Influencer = require('../models').TB_INFLUENCER;
+const Naver = require('../models').TB_NAVER;
+
 const {
   getGoogleData,
   getIdFromToken,
@@ -50,30 +50,16 @@ router.get('/', (req, res) => {
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
-    const { code, token } = data;
+    const { url, token } = data;
     const INF_ID = getIdFromToken(token).sub;
-    const googleData = await getGoogleData(code);
 
-    const {
-      name, email, id, refresh_token
-    } = googleData;
-
-    const youtubeChannelData = await YoutubeDataRequest(refresh_token, INF_ID);
-    const channelId = youtubeChannelData.id;
-    const { viewCount, subscriberCount } = youtubeChannelData.statistics;
-    const { title, description } = youtubeChannelData.snippet;
-
-    const youtubeAccountExist = await Youtube.findOne({ where: { YOU_ACCOUNT_ID: channelId } });
-    if (youtubeAccountExist) {
-      res.status(409).json({ message: '중복된 유튜브 채널입니다' });
+    const naverAccountExist = await Naver.findOne({ where: { NAV_URL: url } });
+    if (naverAccountExist) {
+      res.status(500).json({ message: '중복된 네이버 블로그입니다' });
     } else {
-      await Youtube.create({
+      await Naver.create({
         INF_ID,
-        YOU_TOKEN: refresh_token,
-        YOU_ACCOUNT_ID: channelId,
-        YOU_NAME: title,
-        YOU_SUBS: subscriberCount,
-        YOU_VIEWS: viewCount
+        NAV_URL: url
       });
       res.status(200).json({ message: 'success' });
     }
@@ -87,7 +73,7 @@ router.post('/delete', async (req, res) => {
     const data = req.body;
     const { id } = data;
 
-    await Youtube.destroy({ where: { YOU_ID: id } });
+    await Naver.destroy({ where: { NAV_ID: id } });
 
     res.status(200).json({ message: 'success' });
   } catch (err) {

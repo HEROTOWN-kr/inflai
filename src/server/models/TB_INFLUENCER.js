@@ -103,6 +103,7 @@ module.exports = function (sequelize, DataTypes) {
     influencer.hasMany(models.TB_NOTIFICATION, { foreignKey: 'INF_ID', sourceKey: 'INF_ID' });
     influencer.hasOne(models.TB_INSTA, { foreignKey: 'INF_ID', sourceKey: 'INF_ID' });
     influencer.hasOne(models.TB_YOUTUBE, { foreignKey: 'INF_ID', sourceKey: 'INF_ID' });
+    influencer.hasOne(models.TB_NAVER, { foreignKey: 'INF_ID', sourceKey: 'INF_ID' });
   };
 
   return influencer;

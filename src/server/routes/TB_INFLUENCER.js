@@ -16,6 +16,7 @@ const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
 const Youtube = require('../models').TB_YOUTUBE;
+const Naver = require('../models').TB_NAVER;
 const Notification = require('../models').TB_NOTIFICATION;
 const {
   getInstagramMediaData,
@@ -52,15 +53,11 @@ function getBlogType(blogType) {
       break;
     }
     case '4': {
-      social = 'twitch';
+      social = 'kakao';
       break;
     }
   }
   return social;
-}
-
-function YoutubeRequest(data) {
-
 }
 
 router.get('/', async (req, res) => {
@@ -87,6 +84,13 @@ router.get('/', async (req, res) => {
           attributes: ['YOU_ID', 'YOU_NAME',
             [Sequelize.fn('DATE_FORMAT', Sequelize.col('YOU_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'YOU_DT'],
 
+          ],
+          required: false,
+        },
+        {
+          model: Naver,
+          attributes: ['NAV_ID', 'NAV_URL',
+            [Sequelize.fn('DATE_FORMAT', Sequelize.col('NAV_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'NAV_DT'],
           ],
           required: false,
         },
@@ -868,96 +872,80 @@ router.get('/getYoutubeInfo', (req, res) => {
   });
 });
 
-router.get('/naverSignUp', (req, res) => {
-  const data = req.query;
-  const { email, naverId, name } = data;
+router.get('/naverLogin', async (req, res) => {
+  try {
+    const data = req.query;
+    const {
+      email, id, name, social_type
+    } = data;
 
-  Influencer.findOne({
-    where: { INF_REG_ID: naverId, INF_BLOG_TYPE: '3' },
-    attributes: ['INF_ID', 'INF_NAME', 'INF_TEL',
-      [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'facebook\' WHEN \'2\' THEN \'google\' WHEN \'3\' THEN \'naver\' ELSE \'twitch\' END'), 'INF_BLOG_TYPE'],
-    ]
-  }).then((result) => {
-    if (!result) {
-      Influencer.create({
+    const influencerData = await Influencer.findOne({ where: { INF_REG_ID: id, INF_BLOG_TYPE: '3' } });
+    if (!influencerData) {
+      const newData = await Influencer.create({
         INF_NAME: name,
         INF_EMAIL: email,
-        INF_REG_ID: naverId,
-        INF_BLOG_TYPE: '3',
-      }).then((result2) => {
-        res.json({
-          code: 200,
-          userId: result2.dataValues.INF_ID,
-          userToken: createToken(result2.dataValues.INF_ID),
-          userName: result2.dataValues.INF_NAME,
-          userPhone: result2.dataValues.INF_TEL,
-          social_type: 'naver'
-        });
+        INF_REG_ID: id,
+        INF_BLOG_TYPE: '3'
+      });
+      const { INF_ID, INF_NAME } = newData;
+      res.status(200).json({
+        code: 200,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userId: INF_ID,
+        social_type
       });
     } else {
-      res.json({
-        code: 200,
-        userId: result.dataValues.INF_ID,
-        userToken: createToken(result.dataValues.INF_ID),
-        userName: result.dataValues.INF_NAME,
-        userPhone: result.dataValues.INF_TEL,
-        social_type: result.dataValues.INF_BLOG_TYPE,
+      const { INF_ID, INF_NAME, INF_TEL } = influencerData;
+      res.status(200).json({
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userId: INF_ID,
+        userPhone: INF_TEL,
+        social_type
       });
     }
-  });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-router.get('/naverSignUpTest', (req, res) => {
-  const data = req.query;
-  const { code, state } = data;
-  console.log(code, state);
+router.get('/kakaoLogin', async (req, res) => {
+  try {
+    const {
+      id, email, name, type, social_type
+    } = req.query;
 
-  const url = 'https://nid.naver.com/oauth2.0/token?'
-      + 'grant_type=authorization_code&'
-      + 'client_id=4rBF5bJ4y2jKn0gHoSCf&'
-      + 'client_secret=AOIyRQ5l6Q&'
-      + `code=${code}&`
-      + `state=${state}`;
+    const influencerData = await Influencer.findOne({ where: { INF_REG_ID: id } });
+    if (!influencerData) {
+      const newData = await Influencer.create({
+        INF_NAME: name,
+        INF_EMAIL: email,
+        INF_REG_ID: id,
+        INF_BLOG_TYPE: '4'
+      });
+      const { INF_ID, INF_NAME } = newData;
 
-  request.get(url, (error, response, body) => {
-    const resData = JSON.parse(body);
-    const { access_token, refresh_token } = resData;
-    const header = `Bearer ${access_token}`;
-    // const api_url = 'https://openapi.naver.com/v1/nid/me';
-    const api_url = 'https://openapi.naver.com/blog/listCategory';
-    const options = {
-      url: api_url,
-      headers: { Authorization: header }
-    };
-
-    request.get(options, (error2, response2, body2) => {
-      if (!error && response2.statusCode == 200) {
-        const userData = JSON.parse(body2).response;
-        res.json({
-          code: 200,
-          data: userData
-        });
-        /* Influencer.create({
-          INF_NAME: userData.name,
-          INF_EMAIL: userData.email,
-          INF_REG_ID: userData.id,
-          INF_BLOG_TYPE: '3',
-          INF_REF_TOKEN: refresh_token,
-        }).then((result2) => {
-          res.json({
-            code: 200,
-            userId: result2.dataValues.INF_ID,
-            userToken: createToken(result2.dataValues.INF_ID),
-            userName: result2.dataValues.INF_NAME,
-            userPhone: result2.dataValues.INF_TEL,
-            social_type: getBlogType('3')
-          });
-        }); */
-      } else {
-        console.log('error');
-      }
-    });
-  });
+      res.status(200).json({
+        code: 200,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userId: INF_ID,
+        social_type
+      });
+    } else {
+      const { INF_ID, INF_NAME, INF_TEL } = influencerData;
+      res.status(200).json({
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userId: INF_ID,
+        userPhone: INF_TEL,
+        social_type
+      });
+    }
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
 });
 
 router.get('/rankInstagram', (req, res) => {
@@ -1080,45 +1068,6 @@ router.get('/rankYoutube', (req, res) => {
   });
 });
 
-router.get('/test', (req, res) => {
-  const oauth2Client = getOauthClient();
-  const youtube = google.youtube('v3');
-
-  const INF_REF_TOKEN = '1//0e6yP7bFZ4ScGCgYIARAAGA4SNwF-L9Ir6I5IUOom6YWt2Dvljz325otOTVO2pzWSEuy4_czsL0X6Z1BA1VOYdNrGXV2H-Ydz5B4';
-
-  oauth2Client.setCredentials({
-    refresh_token: INF_REF_TOKEN
-  });
-  youtube.channels.list({
-    auth: oauth2Client,
-    part: 'snippet, statistics',
-    mine: true,
-    fields: 'items(snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
-    quotaUser: 'secretquotastring',
-    // mySubscribers: true
-  }, (err, response) => {
-    if (err) {
-      res.json({
-        code: response.statusCode,
-        message: err
-      });
-    }
-    const channels = response.data.items;
-    if (channels.length == 0) {
-      res.json({
-        code: 200,
-        message: response.data
-      });
-      console.log('No channel found.');
-    } else {
-      res.json({
-        code: 200,
-        message: response.data
-      });
-    }
-  });
-});
-
 // 이미지 업로드
 router.post('/upload', async (req, res, next) => {
   try {
@@ -1174,6 +1123,5 @@ router.post('/delete', async (req, res, next) => {
     });
   }
 });
-
 
 module.exports = router;

@@ -27,7 +27,7 @@ function InfluencerSocial(props) {
   const GoogleButtonRef = React.useRef(null);
 
   const responseGoogle = async (response) => {
-    if (!response.error) {1
+    if (!response.error) {
       axios.get('/api/TB_INFLUENCER/youtubeSignUp', {
         params: {
           code: response.code
@@ -142,71 +142,88 @@ function InfluencerSocial(props) {
   }
 
   const responseNaver = (response) => {
-    const { email, id, name } = response.user;
-    if (response) {
-      axios.get('/api/TB_ADVERTISER/loginNaver', {
-        params: {
-          id,
-          email,
-          name,
-          type: '1',
-          social_type: 'naver'
-        }
-      }).then((res) => {
-        if (res.data.userPhone) {
+    try {
+      if (response) {
+        const { email, id, name } = response.user;
+        axios.get('/api/TB_INFLUENCER/naverLogin', {
+          params: {
+            id,
+            email,
+            name,
+            type: '2',
+            social_type: 'naver'
+          }
+        }).then((influencerData) => {
+          const {
+            social_type, userToken, userName, regState, userPhone
+          } = influencerData.data;
           changeUser({
-            social_type: res.data.social_type,
-            type: '1',
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
+            social_type,
+            type: '2',
+            token: userToken,
+            name: userName,
+            regState
           });
-          history.push('/');
-        } else {
-          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
-        }
-      });
+          if (userPhone) {
+            history.push('/');
+          } else {
+            history.push('/profile');
+          }
+        });
+      }
+    } catch (err) {
+      alert(err.message);
     }
   };
 
   const kakaoLoginForm = () => {
-    window.Kakao.Auth.loginForm({
-      success(authObj) {
-        window.Kakao.API.request({
-          url: '/v2/user/me',
-          success(response) {
-            axios.get('/api/TB_ADVERTISER/loginKakao', {
-              params: {
-                id: response.id,
-                email: response.kakao_account.email,
-                name: response.kakao_account.profile.nickname,
-                type: '1',
-                social_type: 'kakao'
-              }
-            }).then((res) => {
-              if (res.data.userPhone) {
-                changeUser({
-                  social_type: res.data.social_type,
+    try {
+      const { Kakao } = window;
+
+      Kakao.Auth.loginForm({
+        success(authObj) {
+          Kakao.API.request({
+            url: '/v2/user/me',
+            success(response) {
+              const { id, kakao_account } = response;
+              axios.get('/api/TB_INFLUENCER/kakaoLogin', {
+                params: {
+                  id,
+                  email: kakao_account.email,
+                  name: kakao_account.profile.nickname,
                   type: '1',
-                  token: res.data.userToken,
-                  name: res.data.userName,
-                  regState: res.data.regState
+                  social_type: 'kakao'
+                }
+              }).then((influencerData) => {
+                const {
+                  social_type, userToken, userName, regState, userPhone
+                } = influencerData.data;
+                changeUser({
+                  social_type,
+                  type: '2',
+                  token: userToken,
+                  name: userName,
+                  regState
                 });
-                history.push('/');
-              } else {
-                history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
-              }
-            });
-          },
-          fail(error) {
-            console.log(JSON.stringify(error));
-          }
-        });
-      },
-      fail(err) {
-        console.log(JSON.stringify(err));
-      }
-    });
+                if (userPhone) {
+                  history.push('/');
+                } else {
+                  history.push('/profile');
+                }
+              });
+            },
+            fail(err2) {
+              console.log(JSON.stringify(err2));
+            }
+          });
+        },
+        fail(err) {
+          console.log(JSON.stringify(err));
+        }
+      });
+    } catch (err) {
+      alert(err.response.message);
+    }
   };
 
 
@@ -222,7 +239,7 @@ function InfluencerSocial(props) {
         <Grid item xs={12}>
           <NaverLogin
                         // clientId="4rBF5bJ4y2jKn0gHoSCf"
-            clientId="KyWNbHHgcX4ZcIagGtBg"
+            clientId="HddfazOY2WePr9AUHcfh"
             callbackUrl={`${window.location.origin}/Join/Influencer/Login`}
             render={props => <SocialButton clicked={props.onClick} icon={NaverIcon} text="네이버 로그인" bgColor="#00CE38" textColor="#FFFFFF" />}
             onSuccess={result => responseNaver(result)}

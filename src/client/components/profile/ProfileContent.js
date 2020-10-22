@@ -11,7 +11,7 @@ function ProfileContent(props) {
   const { match } = props;
 
   return (
-    <Box maxWidth={{
+    <Box width={{
       xs: 200, md: 600, lg: 975
     }}
     >
