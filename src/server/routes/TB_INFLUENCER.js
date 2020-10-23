@@ -29,7 +29,8 @@ const {
   createToken,
   getFacebookInfo,
   getInstagramBusinessAccounts,
-  getGoogleData
+  getGoogleData,
+  hashData
 } = require('../config/common');
 const testData = require('../config/testData');
 
@@ -54,6 +55,10 @@ function getBlogType(blogType) {
     }
     case '4': {
       social = 'kakao';
+      break;
+    }
+    case '5': {
+      social = 'noSocial';
       break;
     }
   }
@@ -372,6 +377,41 @@ router.get('/getLongLivedToken', (req, res) => {
       }
     }
   });
+});
+
+router.post('/signup', async (req, res) => {
+  try {
+    const data = req.body;
+    const { email, name, password } = data;
+
+    const influencerData = await Influencer.findOne({
+      where: { INF_EMAIL: email, INF_BLOG_TYPE: '5' }
+    });
+
+    if (influencerData) {
+      res.status(201).json({ message: '이 이메일은 이미 사용중입니다.' });
+    } else {
+      const hashedPass = await hashData(password);
+      const params = {
+        INF_EMAIL: email,
+        INF_NAME: name,
+        INF_PASS: hashedPass,
+        INF_BLOG_TYPE: '5'
+      };
+      const newUser = await Influencer.create(params);
+      const { INF_ID, INF_NAME, INF_BLOG_TYPE } = newUser;
+
+      res.status(200).json({
+        userId: INF_ID,
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userPhone: '',
+        social_type: getBlogType(INF_BLOG_TYPE)
+      });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.post('/instaSignUp', (req, res) => {

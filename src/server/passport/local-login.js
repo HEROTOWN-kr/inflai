@@ -64,10 +64,10 @@ module.exports = new PassportLocalStrategy({
   }
   if (type === '2') {
     return Influenser.findOne({
-      where: { INF_EMAIL: userData.email }
+      where: { INF_EMAIL: userData.email, INF_BLOG_TYPE: '5' }
     }).then((user) => {
       if (!user) {
-        const error = new Error('Incorrect email or password');
+        const error = new Error('입력하신 정보가 틀립니다');
         error.name = 'IncorrectCredentialsError';
 
         return done(error);
@@ -77,7 +77,7 @@ module.exports = new PassportLocalStrategy({
         if (passwordErr) { return done(passwordErr); }
 
         if (!isMatch) {
-          const error = new Error('Incorrect email or password');
+          const error = new Error('입력하신 정보가 틀립니다');
           error.name = 'IncorrectCredentialsError';
 
           return done(error);

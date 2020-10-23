@@ -10,10 +10,6 @@ function InfluencerJoin(props) {
         path={`${props.match.path}/Login`}
         render={renderProps => <InfluencerLogin {...renderProps} changeUser={props.changeUser} />}
       />
-      {/* <Route
-        path={`${props.match.path}/SignUp/Detail/:id`}
-        render={renderProps => <AdvertiserDetail {...renderProps} changeUser={props.changeUser} />}
-      /> */}
       <Route
         path={`${props.match.path}/SignUp`}
         render={renderProps => <InfluencerSignUp {...renderProps} changeUser={props.changeUser} />}

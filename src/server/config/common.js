@@ -6,6 +6,7 @@ const vision = require('@google-cloud/vision');
 const request = require('request');
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
+const bcrypt = require('bcryptjs');
 const config = require('../config');
 const testData = require('../config/testData');
 const configKey = require('./config');
@@ -21,6 +22,20 @@ function createToken(id) {
     sub: id
   };
   return jwt.sign(payload, config.jwtSecret);
+}
+
+function hashData(string) {
+  const saltRounds = 10;
+
+  return new Promise(((resolve, reject) => {
+    bcrypt.hash(string, saltRounds, (err, hash) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(hash);
+      }
+    });
+  }));
 }
 
 function mailSendData() {
@@ -582,6 +597,7 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
+exports.hashData = hashData;
 exports.instaRequest = instaRequest;
 exports.mailSendData = mailSendData;
 exports.createMessageOption = createMessageOption;

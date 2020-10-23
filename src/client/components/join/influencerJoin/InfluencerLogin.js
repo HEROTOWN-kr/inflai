@@ -16,17 +16,17 @@ function InfluencerLogin(props) {
     axios.post('/api/auth/login', values)
       .then((res) => {
         if (res.data.code === 200) {
+          changeUser({
+            social_type: res.data.social_type,
+            type: values.type,
+            token: res.data.userToken,
+            name: res.data.userName,
+            regState: res.data.regState
+          });
           if (res.data.userPhone) {
-            changeUser({
-              social_type: res.data.social_type,
-              type: values.type,
-              token: res.data.userToken,
-              name: res.data.userName,
-              regState: res.data.regState
-            });
             history.push('/');
           } else {
-            history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+            history.push('/Profile');
           }
         } else if (res.data.code === 401) {
           setMainError({ message: res.data.message });
