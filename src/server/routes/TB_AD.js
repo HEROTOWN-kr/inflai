@@ -1,11 +1,18 @@
 const express = require('express');
 const Sequelize = require('sequelize');
+
+const uniqid = require('uniqid');
+const fse = require('fs-extra');
+const path = require('path');
+const config = require('../config/config');
+
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
 const Notification = require('../models').TB_NOTIFICATION;
 const Payment = require('../models').TB_PAYMENT;
 const Photo = require('../models').TB_PHOTO_AD;
+const { getIdFromToken } = require('../config/common');
 const common = require('../config/common');
 
 
@@ -346,5 +353,28 @@ router.post('/delete', (req, res) => {
     });
   });
 });
+
+// 이미지 업로드
+router.post('/upload', async (req, res, next) => {
+  try {
+    const file = req.files.upload;
+    // const { token, id } = req.body;
+    // const userId = id || getIdFromToken(token).sub;
+    const uid = uniqid();
+    // const uid = 'profile';
+
+    const newFileNm = path.normalize(uid + path.extname(file.name));
+    const uploadPath = path.normalize(`${config.attachRoot}/campaign/`) + newFileNm;
+
+    const DRAWING_URL = `/attach/campaign/${newFileNm}`;
+
+    await fse.move(file.path, uploadPath, { clobber: true });
+
+    return res.status(200).send({ uploaded: true, url: DRAWING_URL });
+  } catch (err) {
+    return res.status(400).json({ uploaded: false, error: { message: err.message } });
+  }
+});
+
 
 module.exports = router;

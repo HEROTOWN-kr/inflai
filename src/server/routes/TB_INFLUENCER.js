@@ -111,8 +111,8 @@ router.get('/', async (req, res) => {
 
     const result = await Influencer.findOne(options);
     const data = result.dataValues;
-    const { INF_PHOTO } = data;
-    if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
+    // const { INF_PHOTO } = data;
+    // if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
     res.json({ code: 200, data });
   } catch (err) {
     res.status(400).json({ message: err.message });
