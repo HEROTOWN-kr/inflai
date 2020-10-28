@@ -44,6 +44,54 @@ router.post('/createAd', (req, res) => {
   });
 });
 
+router.post('/create', async (req, res) => {
+  try {
+    const data = req.body;
+    // const userId = common.getIdFromToken(data.token).sub;
+    const userId = 48;
+    const {
+      advertiserId, campaignName, delivery, detailAddress, detailInfo,
+      discription, email, extraAddress, influencerCount, phone,
+      postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
+      searchStart, shortDisc, sns, subtype, type, visible, insta,
+      naver, youtube
+    } = data;
+
+    const post = {
+      ADV_ID: userId,
+      AD_INF_CNT: influencerCount,
+      AD_SRCH_START: searchStart,
+      AD_SRCH_END: searchFinish,
+      AD_DELIVERY: delivery,
+      AD_VISIBLE: visible,
+      AD_CTG: type,
+      AD_CTG2: subtype,
+      AD_POST_CODE: postcode,
+      AD_ROAD_ADDR: roadAddress,
+      AD_DETAIL_ADDR: detailAddress,
+      AD_EXTR_ADDR: extraAddress,
+      AD_TEL: phone,
+      AD_EMAIL: email,
+      AD_NAME: campaignName,
+      AD_SHRT_DISC: shortDisc,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_DISC: discription,
+      AD_INSTA: insta,
+      AD_YOUTUBE: youtube,
+      AD_NAVER: naver,
+    };
+
+    if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideInfo) post.AD_PROVIDE = provideInfo;
+
+    const newAdvertise = await Advertise.create(post);
+
+    res.status(200).json({ data: newAdvertise });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
 router.post('/adminCreateAd', (req, res) => {
   const data = req.body;
 

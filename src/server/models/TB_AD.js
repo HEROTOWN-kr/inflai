@@ -16,8 +16,96 @@ module.exports = function (sequelize, DataTypes) {
         key: 'ADV_ID'
       }
     },
+    AD_INSTA: {
+      type: DataTypes.INTEGER(1),
+      allowNull: true
+    },
+    AD_YOUTUBE: {
+      type: DataTypes.INTEGER(1),
+      allowNull: true
+    },
+    AD_NAVER: {
+      type: DataTypes.INTEGER(1),
+      allowNull: true
+    },
     AD_TYPE: {
       type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    AD_INF_CNT: {
+      type: DataTypes.STRING(45),
+      allowNull: false
+    },
+    AD_SRCH_START: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    AD_SRCH_END: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    AD_DELIVERY: {
+      type: DataTypes.INTEGER(1),
+      allowNull: true
+    },
+    AD_VISIBLE: {
+      type: DataTypes.STRING(1),
+      allowNull: true
+    },
+    AD_CTG: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    AD_CTG2: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    AD_POST_CODE: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    AD_ROAD_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    AD_DETAIL_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    AD_EXTR_ADDR: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    AD_TEL: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    AD_EMAIL: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    AD_NAME: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    AD_SHRT_DISC: {
+      type: DataTypes.STRING(1000),
+      allowNull: true
+    },
+    AD_SEARCH_KEY: {
+      type: DataTypes.STRING(300),
+      allowNull: true
+    },
+    AD_DISC: {
+      type: DataTypes.STRING(1000),
+      allowNull: true
+    },
+    AD_DETAIL: {
+      type: DataTypes.STRING(2000),
+      allowNull: true
+    },
+    AD_PROVIDE: {
+      type: DataTypes.STRING(2000),
       allowNull: true
     },
     AD_INF_NANO: {
@@ -55,18 +143,6 @@ module.exports = function (sequelize, DataTypes) {
     },
     AD_PROD_NAME: {
       type: DataTypes.STRING(45),
-      allowNull: true
-    },
-    AD_CTG: {
-      type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    AD_SRCH_START: {
-      type: DataTypes.DATEONLY,
-      allowNull: true
-    },
-    AD_SRCH_END: {
-      type: DataTypes.DATEONLY,
       allowNull: true
     },
     AD_POST_END: {
