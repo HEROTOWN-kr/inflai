@@ -221,31 +221,47 @@ router.get('/getAdInfluencers', (req, res) => {
   });
 });
 
-router.get('/getAll', (req, res) => {
-  const data = req.query;
-  const offset = (data.page - 1) * 10;
-  Advertise.findAndCountAll({
-    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_PAID',
-      [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
-      // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
-    ],
-    include: [
-      {
-        model: Advertiser,
-        attributes: ['ADV_COM_NAME']
-      }
-    ],
-    limit: 10,
-    offset,
-    order: [['AD_ID', 'DESC']]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+router.get('/getAll', async (req, res) => {
+  try {
+    const data = req.query;
+    const offset = (data.page - 1) * 10;
+    const firstRow = 0;
+
+    const dbData = await Advertise.findAndCountAll({
+      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
+      ],
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_FILE'],
+          required: false,
+        }
+      ],
+      limit: 10,
+      offset,
+      order: [['AD_ID', 'DESC']]
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    const { rows, count } = dbData;
+
+    let icount = count - 1;
+
+    const campaignsRes = rows.map((item, index) => {
+      const { dataValues } = item;
+      const rownum = count - firstRow - (icount--);
+      return { ...dataValues, rownum };
+    });
+
+    res.status(200).json({ data: { campaignsRes, countRes: count } });
+
+    /* let icount = cnt - 1;
+    for (let i = 0; i < list.length; i++) {
+      list[i].dataValues.rownum = cnt - firstRow - (icount--);
+    } */
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.get('/list', (req, res) => {
@@ -324,55 +340,27 @@ router.get('/campaignDetail', (req, res) => {
   });
 });
 
-router.get('/detail', (req, res) => {
-  const data = req.query;
-  const { id } = data;
+router.get('/detail', async (req, res) => {
+  try {
+    const data = req.query;
+    const { id } = data;
 
-  Advertise.findOne({
-    where: { AD_ID: id },
-    include: [
-      {
-        model: Notification,
-        required: false,
-        attributes: ['NOTI_ID', 'NOTI_STATE'],
-        include: [
-          {
-            model: Influencer,
-            // attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID']
-            attributes: ['INF_ID', 'INF_TOKEN', 'INF_INST_ID', 'INF_NAME', 'INF_EMAIL', 'INF_TEL',
-              [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'인스타\' WHEN \'2\' THEN \'유튜브\' ELSE \'블로그\' END'), 'INF_BLOG_TYPE'],
-            ],
-          }
-        ]
-      }
-    ]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      // data: result.dataValues,
-      data: result,
+    const advertiseData = await Advertise.findOne({
+      where: { AD_ID: id },
+      include: [
+        {
+          model: Photo,
+          required: false,
+        }
+      ]
     });
-    /* if (result.TB_NOTIFICATIONs) {
-      const resObj = result;
-      const notis = resObj.TB_NOTIFICATIONs;
-      common.instaRequest(notis, (err, sortedArray) => {
-        resObj.dataValues.TB_INFLUENCER = sortedArray;
-        res.json({
-          code: 200,
-          // data: result.dataValues,
-          data: resObj,
-        });
-      });
-    } else {
-      res.json({
-        code: 200,
-        // data: result.dataValues,
-        data: result,
-      });
-    } */
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    res.status(200).json({
+      data: advertiseData
+    });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.post('/delete', (req, res) => {
