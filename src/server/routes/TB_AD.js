@@ -18,30 +18,47 @@ const common = require('../config/common');
 
 const router = express.Router();
 
-router.post('/createAd', (req, res) => {
-  const data = req.body;
-  const userId = common.getIdFromToken(data.token).sub;
+router.get('/getAll', async (req, res) => {
+  try {
+    const data = req.query;
+    const offset = (data.page - 1) * 10;
+    const firstRow = 0;
 
-  const post = {
-    ADV_ID: userId,
-    AD_TYPE: data.type,
-    AD_PROD_PRICE: data.price,
-    AD_PRICE: (data.nanoSum + data.microSum + data.macroSum + data.megaSum + data.celebritySum + data.videoPrice).toString()
-  };
-
-  if (data.reuse) post.AD_PROD_REUSE = 'Y';
-  if (data.nano) post.AD_INF_NANO = data.nano;
-  if (data.micro) post.AD_INF_MICRO = data.micro;
-  if (data.macro) post.AD_INF_MACRO = data.macro;
-  if (data.mega) post.AD_INF_MEGA = data.mega;
-  if (data.celebrity) post.AD_INF_CELEB = data.celebrity;
-
-  Advertise.create(post).then((result) => {
-    res.json({
-      code: 200,
-      id: result.dataValues.AD_ID,
+    const dbData = await Advertise.findAndCountAll({
+      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
+      ],
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_FILE'],
+          required: false,
+        }
+      ],
+      limit: 10,
+      offset,
+      order: [['AD_ID', 'DESC']]
     });
-  });
+
+    const { rows, count } = dbData;
+
+    let icount = count - 1;
+
+    const campaignsRes = rows.map((item, index) => {
+      const { dataValues } = item;
+      const rownum = count - firstRow - (icount--);
+      return { ...dataValues, rownum };
+    });
+
+    res.status(200).json({ data: { campaignsRes, countRes: count } });
+
+    /* let icount = cnt - 1;
+    for (let i = 0; i < list.length; i++) {
+      list[i].dataValues.rownum = cnt - firstRow - (icount--);
+    } */
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.post('/create', async (req, res) => {
@@ -92,6 +109,51 @@ router.post('/create', async (req, res) => {
   }
 });
 
+router.post('/update', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      campaignId, campaignName, delivery, detailAddress, detailInfo,
+      discription, email, extraAddress, influencerCount, phone,
+      postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
+      searchStart, shortDisc, subtype, type, visible, insta,
+      naver, youtube
+    } = data;
+
+    const post = {
+      AD_INF_CNT: influencerCount,
+      AD_SRCH_START: searchStart,
+      AD_SRCH_END: searchFinish,
+      AD_DELIVERY: delivery,
+      AD_VISIBLE: visible,
+      AD_CTG: type,
+      AD_CTG2: subtype,
+      AD_POST_CODE: postcode,
+      AD_ROAD_ADDR: roadAddress,
+      AD_DETAIL_ADDR: detailAddress,
+      AD_EXTR_ADDR: extraAddress,
+      AD_TEL: phone,
+      AD_EMAIL: email,
+      AD_NAME: campaignName,
+      AD_SHRT_DISC: shortDisc,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_DISC: discription,
+      AD_INSTA: insta,
+      AD_YOUTUBE: youtube,
+      AD_NAVER: naver,
+    };
+
+    if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideInfo) post.AD_PROVIDE = provideInfo;
+
+    await Advertise.update(post, { where: { AD_ID: campaignId } });
+
+    res.status(200).json({ message: 'success' });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
 router.post('/adminCreateAd', (req, res) => {
   const data = req.body;
 
@@ -132,48 +194,6 @@ router.post('/adminCreateAd', (req, res) => {
       code: 200,
       id: result.dataValues.AD_ID,
     });
-  });
-});
-
-router.post('/updateAd', (req, res) => {
-  const data = req.body;
-  const { id } = data;
-
-  // data.typeCategory, data.age, data.channel, data.photo are arrays
-  // try to stringify them
-  // need search_start datetime data
-
-
-  const post = {
-    AD_PROD_NAME: data.name,
-    AD_SRCH_END: data.searchDate,
-    AD_POST_END: data.finishDate,
-    AD_SEX: data.sex,
-    AD_COMP_NAME: data.presidentName,
-    AD_ABOUT: data.about,
-    AD_SPON_ITEM: data.sponsoredItem,
-    AD_CONT_TYPE: data.content,
-    AD_VIDEO_TYPE: data.videoType,
-    AD_PUBL_TEXT: data.publicText,
-    AD_TAGS: data.tags,
-    AD_UID: `merchant_${id}`
-  };
-
-  if (data.typeCategory) post.AD_CTG = JSON.stringify(data.typeCategory);
-  if (data.age) post.AD_AGE = JSON.stringify(data.age);
-  if (data.channel) post.AD_CHANNEL = JSON.stringify(data.channel);
-  if (data.photo) post.AD_PHOTO = JSON.stringify(data.photo);
-
-
-  Advertise.update(post, {
-    where: { AD_ID: id }
-  }).then((result) => {
-    if (result) {
-      res.json({
-        code: 200,
-        userName: data.name,
-      });
-    }
   });
 });
 
@@ -219,49 +239,6 @@ router.get('/getAdInfluencers', (req, res) => {
   }).error((err) => {
     res.send('error has occured');
   });
-});
-
-router.get('/getAll', async (req, res) => {
-  try {
-    const data = req.query;
-    const offset = (data.page - 1) * 10;
-    const firstRow = 0;
-
-    const dbData = await Advertise.findAndCountAll({
-      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2',
-        [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
-      ],
-      include: [
-        {
-          model: Photo,
-          attributes: ['PHO_FILE'],
-          required: false,
-        }
-      ],
-      limit: 10,
-      offset,
-      order: [['AD_ID', 'DESC']]
-    });
-
-    const { rows, count } = dbData;
-
-    let icount = count - 1;
-
-    const campaignsRes = rows.map((item, index) => {
-      const { dataValues } = item;
-      const rownum = count - firstRow - (icount--);
-      return { ...dataValues, rownum };
-    });
-
-    res.status(200).json({ data: { campaignsRes, countRes: count } });
-
-    /* let icount = cnt - 1;
-    for (let i = 0; i < list.length; i++) {
-      list[i].dataValues.rownum = cnt - firstRow - (icount--);
-    } */
-  } catch (e) {
-    res.status(400).send({ message: e.message });
-  }
 });
 
 router.get('/list', (req, res) => {
@@ -363,6 +340,74 @@ router.get('/detail', async (req, res) => {
   }
 });
 
+router.post('/createAd', (req, res) => {
+  const data = req.body;
+  const userId = common.getIdFromToken(data.token).sub;
+
+  const post = {
+    ADV_ID: userId,
+    AD_TYPE: data.type,
+    AD_PROD_PRICE: data.price,
+    AD_PRICE: (data.nanoSum + data.microSum + data.macroSum + data.megaSum + data.celebritySum + data.videoPrice).toString()
+  };
+
+  if (data.reuse) post.AD_PROD_REUSE = 'Y';
+  if (data.nano) post.AD_INF_NANO = data.nano;
+  if (data.micro) post.AD_INF_MICRO = data.micro;
+  if (data.macro) post.AD_INF_MACRO = data.macro;
+  if (data.mega) post.AD_INF_MEGA = data.mega;
+  if (data.celebrity) post.AD_INF_CELEB = data.celebrity;
+
+  Advertise.create(post).then((result) => {
+    res.json({
+      code: 200,
+      id: result.dataValues.AD_ID,
+    });
+  });
+});
+
+router.post('/updateAd', (req, res) => {
+  const data = req.body;
+  const { id } = data;
+
+  // data.typeCategory, data.age, data.channel, data.photo are arrays
+  // try to stringify them
+  // need search_start datetime data
+
+
+  const post = {
+    AD_PROD_NAME: data.name,
+    AD_SRCH_END: data.searchDate,
+    AD_POST_END: data.finishDate,
+    AD_SEX: data.sex,
+    AD_COMP_NAME: data.presidentName,
+    AD_ABOUT: data.about,
+    AD_SPON_ITEM: data.sponsoredItem,
+    AD_CONT_TYPE: data.content,
+    AD_VIDEO_TYPE: data.videoType,
+    AD_PUBL_TEXT: data.publicText,
+    AD_TAGS: data.tags,
+    AD_UID: `merchant_${id}`
+  };
+
+  if (data.typeCategory) post.AD_CTG = JSON.stringify(data.typeCategory);
+  if (data.age) post.AD_AGE = JSON.stringify(data.age);
+  if (data.channel) post.AD_CHANNEL = JSON.stringify(data.channel);
+  if (data.photo) post.AD_PHOTO = JSON.stringify(data.photo);
+
+
+  Advertise.update(post, {
+    where: { AD_ID: id }
+  }).then((result) => {
+    if (result) {
+      res.json({
+        code: 200,
+        userName: data.name,
+      });
+    }
+  });
+});
+
 router.post('/delete', (req, res) => {
   const data = req.body;
   const { id } = data;
@@ -400,9 +445,9 @@ router.post('/upload', async (req, res, next) => {
     // const uid = 'profile';
 
     const newFileNm = path.normalize(uid + path.extname(file.name));
-    const uploadPath = path.normalize(`${config.attachRoot}/campaign/`) + newFileNm;
+    const uploadPath = path.normalize(`${config.attachRoot}/campaign/detailPage/`) + newFileNm;
 
-    const DRAWING_URL = `/attach/campaign/${newFileNm}`;
+    const DRAWING_URL = `/attach/campaign/detailPage/${newFileNm}`;
 
     await fse.move(file.path, uploadPath, { clobber: true });
 

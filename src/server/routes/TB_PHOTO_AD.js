@@ -10,6 +10,34 @@ const Photo = require('../models').TB_PHOTO_AD;
 const config = require('../config/config');
 
 // 이미지 업로드
+
+router.post('/uploadImage', async (req, res, next) => {
+  try {
+    const { file } = req.files;
+    const { id } = req.body;
+    const uid = uniqid();
+    // const uid = 'profile';
+
+    const newFileNm = path.normalize(uid + path.extname(file.name));
+    const uploadPath = path.normalize(`${config.attachRoot}/campaign/${id}/`) + newFileNm;
+
+    await fse.move(file.path, uploadPath, { clobber: true });
+
+    const DRAWING_URL = `/attach/campaign/${id}/${newFileNm}`;
+
+    const post = {
+      AD_ID: id,
+      PHO_FILE: DRAWING_URL
+    };
+
+    await Photo.create(post);
+
+    return res.status(200).send({ uploaded: true, url: DRAWING_URL });
+  } catch (err) {
+    return res.status(400).json({ uploaded: false, error: { message: err.message } });
+  }
+});
+
 router.post('/upload', (req, res, next) => {
   const { file } = req.files;
   const { id } = req.body;
@@ -56,27 +84,16 @@ router.post('/upload', (req, res, next) => {
 });
 
 // 삭제
-router.post('/delete', (req, res, next) => {
-  const data = req.body;
-  const PRF_ID = data.id;
+router.post('/delete', async (req, res, next) => {
+  try {
+    const data = req.body;
+    const { id } = data;
 
-  async.waterfall([
-    function (done) {
-      db.exec('DELETE FROM ?? WHERE PRF_ID = ?', [table_name, PRF_ID], (err, result) => {
-        if (err) {
-          return done(err);
-        }
-
-        done(null, result.changedRows);
-      });
-    }],
-  (err, data) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send({ result: err });
-    }
-    res.json(data);
-  });
+    Photo.destroy({ where: { PHO_ID: id } });
+    res.status(200).json({ message: 'success' });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 module.exports = router;
