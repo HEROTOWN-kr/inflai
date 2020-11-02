@@ -188,6 +188,6 @@ export const Colors = {
   grey2: '#999999',
   grey3: '#f5f6f7',
   grey4: '#eaeaea',
-
+  pink: '#eb128c'
 };
 export const campaignSteps = [{ value: '1', text: '리뷰어 신청' }, { value: '2', text: '리뷰어 발표' }, { value: '3', text: '리뷰등록' }, { value: '4', text: '베스트발표' }];

@@ -10,6 +10,7 @@ const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
 const Notification = require('../models').TB_NOTIFICATION;
+const Participant = require('../models').TB_PARTICIPANT;
 const Payment = require('../models').TB_PAYMENT;
 const Photo = require('../models').TB_PHOTO_AD;
 const { getIdFromToken } = require('../config/common');
@@ -241,38 +242,29 @@ router.get('/getAdInfluencers', (req, res) => {
   });
 });
 
-router.get('/list', (req, res) => {
-  Advertise.findAll({
-    where: { AD_PAID: 'Y' },
-    order: [['AD_ID', 'DESC']],
-    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_TAGS', 'AD_ABOUT', 'AD_SRCH_END',
-      [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
-      // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
-    ],
-    include: [
-      {
-        model: Advertiser,
-        attributes: ['ADV_COM_NAME']
-      },
-      {
-        model: Photo,
-        attributes: ['PHO_ID', 'PHO_FILE']
-      },
-      {
-        model: Notification,
-        where: { NOTI_STATE: ['1', '4'] },
-        attributes: ['NOTI_ID'],
-        required: false,
-      },
-    ]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+router.get('/list', async (req, res) => {
+  try {
+    const advertises = await Advertise.findAll({
+      where: { AD_VISIBLE: 1 },
+      order: [['AD_ID', 'DESC']],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_ID', 'PHO_FILE'],
+          required: false
+        },
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false,
+        },
+      ],
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+    res.status(200).json({ data: advertises });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.get('/campaignDetail', (req, res) => {
