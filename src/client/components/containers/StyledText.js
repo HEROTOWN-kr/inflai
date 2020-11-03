@@ -5,15 +5,22 @@ import { Colors } from '../../lib/Сonstants';
 
 const useStyles = makeStyles({
   common: ({
-    fontSize, lineHeight, color, fontWeight, textAlign
+    fontSize, lineHeight, color, fontWeight, textAlign, overflowHidden
   }) => ({
-    fontSize: `${fontSize}px` || '14px',
+    fontSize: fontSize ? `${fontSize}px` : '14px',
     lineHeight: lineHeight || '1em',
     color: color || Colors.black,
     fontWeight: fontWeight || 'normal',
-    textAlign: textAlign || 'inherit'
+    textAlign: textAlign || 'inherit',
+    overflow: overflowHidden ? 'hidden' : 'visible',
+    whiteSpace: overflowHidden ? 'nowrap' : 'normal',
+    textOverflow: overflowHidden ? 'ellipsis' : 'clip',
   }),
 });
+
+/* overflow: hidden !important;
+white-space: nowrap;
+text-overflow: ellipsis; */
 
 function StyledText(props) {
   const {

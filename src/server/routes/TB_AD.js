@@ -261,52 +261,60 @@ router.get('/list', async (req, res) => {
         },
       ],
     });
-    res.status(200).json({ data: advertises });
+
+    const advertisesMaped = advertises.map((item) => {
+      const { AD_INF_CNT, TB_PARTICIPANTs } = item.dataValues;
+      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+      return {
+        ...item.dataValues, proportion
+      };
+    });
+
+
+    res.status(200).json({ data: advertisesMaped });
   } catch (e) {
     res.status(400).send({ message: e.message });
   }
 });
 
-router.get('/campaignDetail', (req, res) => {
-  const data = req.query;
-  const { id, token } = data;
-  const includeArray = [
-    {
-      model: Photo,
-      attributes: ['PHO_ID', 'PHO_FILE'],
-      required: false,
+router.get('/campaignDetail', async (req, res) => {
+  try {
+    const data = req.query;
+    const { id, token } = data;
+    const includeArray = [
+      {
+        model: Photo,
+        attributes: ['PHO_ID', 'PHO_FILE'],
+        required: false,
+      }
+    ];
+    let userId;
+
+    if (token) {
+      userId = common.getIdFromToken(token).sub;
+      includeArray.push({
+        model: Notification,
+        where: { INF_ID: userId },
+        attributes: ['NOTI_ID'],
+        required: false
+      });
     }
-  ];
-  let userId;
 
-  if (token) {
-    userId = common.getIdFromToken(token).sub;
-    includeArray.push({
-      model: Notification,
-      where: { INF_ID: userId },
-      attributes: ['NOTI_ID'],
-      required: false
+    const advertise = await Advertise.findOne({
+      where: { AD_ID: id },
+      attributes: [
+        'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START',
+        'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
+        'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
+        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_EMAIL'
+      ],
+      include: includeArray
     });
+
+    res.status(200).json({ data: advertise });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
   }
-
-  Advertise.findOne({
-    where: { AD_ID: id },
-    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PROD_PRICE', 'AD_TAGS', 'AD_ABOUT', 'AD_SRCH_END', 'AD_CHANNEL', 'AD_SPON_ITEM', 'AD_CTG',
-      [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
-      [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
-    ],
-    include: includeArray
-  }).then((result) => {
-    const resObj = result;
-    resObj.AD_CHANNEL = resObj.AD_CHANNEL ? JSON.parse(resObj.AD_CHANNEL).join('/') : '';
-    resObj.AD_CTG = resObj.AD_CTG ? JSON.parse(resObj.AD_CTG).join('/') : '';
-    res.json({
-      code: 200,
-      data: resObj,
-    });
-  }).error((err) => {
-    res.send('error has occured');
-  });
 });
 
 router.get('/detail', async (req, res) => {

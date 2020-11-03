@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Grid, Divider, Box, Button
+  Grid, Divider, Box, Button, Icon
 } from '@material-ui/core';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { SupervisorAccount } from '@material-ui/icons';
+import { Room, SupervisorAccount } from '@material-ui/icons';
 
 import axios from 'axios';
 import StyledText from '../containers/StyledText';
-import { Colors } from '../../lib/Сonstants';
+import { AdvertiseTypes, Colors } from '../../lib/Сonstants';
 import StyledGrid from '../containers/StyledGrid';
+import StyledImage from '../containers/StyledImage';
+import StyledSvg from '../containers/StyledSvg';
 
 function CampaignAll({
   history,
@@ -26,7 +28,7 @@ function CampaignAll({
       const { data } = res.data;
       setCampaigns(data);
       console.log(data);
-    });
+    }).catch(err => alert(err.response.data.message));
   }, []);
 
   function calculateDates(date) {
@@ -51,78 +53,67 @@ function CampaignAll({
           </StyledText>
         </Grid>
         <Grid item xs={12}>
-          <Grid container spacing={matches ? 4 : 2}>
-            <Grid item style={{ background: 'red', width: '20%' }}>
-              test
-            </Grid>
-            <Grid item style={{ background: 'red', width: '20%' }}>
-              test
-            </Grid>
-            <Grid item style={{ background: 'red', width: '20%' }}>
-              test
-            </Grid>
-            <Grid item style={{ background: 'red', width: '20%' }}>
-              test
-            </Grid>
-            <Grid item style={{ background: 'red', width: '20%' }}>
-              test
-            </Grid>
-            <Grid item style={{ background: 'red', width: '20%' }}>
-              test
-            </Grid>
+          <Grid container spacing={3}>
+            {campaigns.map(item => (
+              <Grid item style={{ width: '16.666%' }}>
+                <Box border="1px solid #eaeaea" overflow="hidden" borderRadius="10px" css={{ cursor: 'pointer' }} onClick={() => detailInfo(item.AD_ID)}>
+                  <StyledImage width="100%" height="auto" src={item.TB_PHOTO_ADs[0].PHO_FILE || testImage} />
+                  <Box p={3}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12}>
+                        <StyledText overflowHidden>
+                          <span style={{ color: Colors.pink }}>{`${AdvertiseTypes.mainType[item.AD_CTG]}/${AdvertiseTypes.subType[item.AD_CTG][item.AD_CTG2]}`}</span>
+                          {` D-${calculateDates(item.AD_SRCH_END)}`}
+                        </StyledText>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <StyledText overflowHidden fontWeight="bold" fontSize="16">
+                          {item.AD_NAME}
+                        </StyledText>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
+                          {item.AD_SHRT_DISC}
+                        </StyledText>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Box pt={1}>
+                          <Grid container alignItems="center" justify="space-between">
+                            <Grid item>
+                              <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <StyledSvg
+                                  component={SupervisorAccount}
+                                  color={Colors.grey5}
+                                  fontSize="20px"
+                                />
+                                <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
+                                  <span style={{ color: Colors.pink }}>{`${item.TB_PARTICIPANTs.length}`}</span>
+                                  {`/${item.AD_INF_CNT}명`}
+                                </StyledText>
+                              </div>
+                            </Grid>
+                            <Grid item>
+                              <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
+                                {`${item.proportion}%`}
+                              </StyledText>
+                            </Grid>
+                          </Grid>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Box height="5px" borderRadius="50px" overflow="hidden" css={{ background: Colors.grey6 }}>
+                          <Box height="4px" width={`${item.proportion}%`} css={{ background: Colors.pink2 }} />
+                        </Box>
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Box>
+              </Grid>
+            ))}
           </Grid>
         </Grid>
       </Grid>
     </Box>
-  /* <Box px={2} py={{ xs: 4, md: 8 }} className="campaign-list">
-      <div className="title">
-        {`${isHome ? '최근' : '진행중'} 캠페인`}
-      </div>
-      <Box my={2}>
-        <Divider />
-      </Box>
-      <Grid container spacing={matches ? 4 : 2}>
-        {campaigns.map(item => (
-          <Grid key={item.AD_ID} item xs={6} md={4} lg={3}>
-            <Grid container spacing={1} onClick={() => detailInfo(item.AD_ID)} className="campaign-item">
-              <Grid item xs={12}>
-                <div className="image">
-                  <img src={item.TB_PHOTO_ADs[0] ? `${item.TB_PHOTO_ADs[0].PHO_FILE}` : testImage} alt="nofoto" />
-                </div>
-                 <img src={require('/home/inflai/upload/attach/portfolio/34/2ya5c1cokb8p1w8o.png')} alt="nofoto" />
-              </Grid>
-              <Grid item xs={12} className="tags">
-                {item.AD_TAGS}
-              </Grid>
-              <Grid item xs={12} className="title">
-                {item.AD_PROD_NAME}
-              </Grid>
-              <Grid item xs={12} className="text">
-                {item.AD_ABOUT}
-              </Grid>
-              <Grid item xs={12}>
-                <Divider />
-              </Grid>
-              <Grid item xs={12} className="count">
-                <Grid container justify="space-between">
-                  <Grid item>{`D-${calculateDates(item.AD_SRCH_END)}`}</Grid>
-                  <Grid item>{`신청 ${(item.TB_PARTICIPANTs).length}/모집 ${item.AD_INF_CNT}`}</Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        ))}
-        {
-          isHome ? (
-            <Grid container justify="flex-end" item xs={12}>
-              <Grid item>
-                <Button variant="contained" onClick={() => history.push('/CampaignList')}>더보기</Button>
-              </Grid>
-            </Grid>
-          ) : null
-        }
-      </Grid>
-    </Box> */
   );
 }
 
