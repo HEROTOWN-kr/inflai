@@ -3,7 +3,9 @@ import {
   Grid, Divider, CircularProgress, Button, Box
 } from '@material-ui/core';
 import axios from 'axios';
-import { Sync } from '@material-ui/icons';
+import {
+  Sync, Favorite, Print, Share, Error, SupervisorAccount
+} from '@material-ui/icons';
 import Common from '../../lib/common';
 import MainBlock from '../containers/MainBlock';
 import StyledButton from '../containers/StyledButton';
@@ -12,6 +14,7 @@ import StyledText from '../containers/StyledText';
 import BlogerList from './BlogerList';
 import TestPage from '../../img/detail-page.jpg';
 import StyledImage from '../containers/StyledImage';
+import StyledSvg from '../containers/StyledSvg';
 
 function CampaignDetail({
   match
@@ -71,10 +74,87 @@ function CampaignDetail({
   }
 
   return (
-    <Box my={4} p={6} width="1160px" margin="0 auto" className="campaign-detail">
+    <Box p={6} width="1160px" margin="0 auto" className="campaign-detail">
       {Object.keys(productData).length
         ? (
-          <Grid container spacing={8}>
+          <Grid container>
+            <Grid item xs={8}>
+              <StyledText fontSize="33">{productData.AD_NAME}</StyledText>
+              <Box mt={3} mb={5}>
+                <StyledText fontSize="16" color={Colors.grey2}>{productData.AD_SHRT_DISC}</StyledText>
+              </Box>
+              <Grid container justify="flex-end">
+                <Grid item>
+                  <Box width="130px" mb={2}>
+                    <Grid container justify="space-between">
+                      <Grid item>
+                        <Favorite />
+                      </Grid>
+                      <Grid item>
+                        <Share />
+                      </Grid>
+                      <Grid item>
+                        <Print />
+                      </Grid>
+                      <Grid item>
+                        <Error />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Grid>
+              </Grid>
+              <StyledImage width="100%" height="435px" src={currentImage || testImage} />
+              <Box mt={1} mb={5}>
+                <Grid container spacing={1}>
+                  {productData.TB_PHOTO_ADs.map(item => (
+                    <Grid item xs={2} key={item.PHO_FILE}>
+                      <StyledImage width="100%" src={item.PHO_FILE} alt="noFoto" onMouseOver={() => setCurrentImage(item.PHO_FILE)} />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+              <Grid container justify="flex-end" spacing={1}>
+                <Grid item xs={7}>
+                  <Box border={`1px solid ${Colors.grey7}`} borderRadius="5px" p={3}>
+                    <StyledText fontSize="16px" fontWeight="bold">리뷰어 신청현황</StyledText>
+                    <Box mt={3}>
+                      <Grid container alignItems="center" justify="space-between">
+                        <Grid item>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <StyledSvg
+                              component={SupervisorAccount}
+                              color={Colors.grey5}
+                              fontSize="20px"
+                            />
+                            <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
+                              <span style={{ color: Colors.pink }}>{`${productData.TB_PARTICIPANTs.length}`}</span>
+                              {`/${productData.AD_INF_CNT}명`}
+                            </StyledText>
+                          </div>
+                        </Grid>
+                        <Grid item>
+                          <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
+                            {`${productData.proportion}%`}
+                          </StyledText>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                    <Box mt={1} height="5px" borderRadius="50px" overflow="hidden" css={{ background: Colors.grey6 }}>
+                      <Box height="4px" width={`${productData.proportion}%`} css={{ background: Colors.pink2 }} />
+                    </Box>
+                  </Box>
+                </Grid>
+                <Grid item xs={5}>
+                  <Box border={`1px solid ${Colors.grey7}`} p={3}>
+                    <StyledText>test</StyledText>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={4}>dates</Grid>
+
+          </Grid>
+      /* <Grid container spacing={8}>
             <Grid item xs={12}>
               <Grid container justify="space-between">
                 <Grid item>
@@ -179,7 +259,7 @@ function CampaignDetail({
                             hoverBackground="#1c4dbb"
                           >
                             {checkIsRequested() ? '캠페인 신청됨' : '캠페인 신청하기'}
-                            {/* 캠페인 싱청하기 */}
+                            {/!* 캠페인 싱청하기 *!/}
                           </StyledButton>
                         </Grid>
                         <Grid item xs={6}>
@@ -250,8 +330,7 @@ function CampaignDetail({
               </Box>
             </Grid>
 
-          </Grid>
-
+          </Grid> */
         )
         : (
           <Grid container justify="center">

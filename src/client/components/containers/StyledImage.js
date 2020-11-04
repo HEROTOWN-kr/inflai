@@ -16,12 +16,12 @@ const useStyles = makeStyles({
 
 function StyledImage(props) {
   const {
-    className, src
+    className, src, onMouseOver
   } = props;
   const classes = useStyles(props);
 
   return (
-    <img src={src} className={`${classes.common} ${className}`} alt="noImage" />
+    <img src={src} className={`${classes.common} ${className}`} onMouseOver={onMouseOver} alt="noImage" />
   );
 }
 

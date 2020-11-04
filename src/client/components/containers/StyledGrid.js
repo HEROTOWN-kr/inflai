@@ -3,7 +3,7 @@ import React from 'react';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
-const theme = createMuiTheme({
+const cardTheme = createMuiTheme({
   breakpoints: {
     keys: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'],
     values: {
@@ -14,7 +14,6 @@ const theme = createMuiTheme({
 
 const styles = theme => ({
   root: {
-    backgroundColor: 'blue',
     [theme.breakpoints.down('md')]: {
       backgroundColor: 'red',
     },
@@ -24,10 +23,10 @@ const styles = theme => ({
   }
 });
 
-export default function StyledGrid({ xxl, ...other }) {
-  // const classes =
-
+export default function StyledGrid({ xxl, children, ...other }) {
   return (
-    <Grid {...other} />
+    <Grid {...other} classes={{ root: styles.root, item: styles.item }}>
+      {children}
+    </Grid>
   );
 }

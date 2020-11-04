@@ -21,7 +21,24 @@ function CampaignAll({
   const [campaigns, setCampaigns] = useState([]);
   const testImage = 'https://www.inflai.com/attach/portfolio/33/1yqw1whkavscxke.PNG';
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
+  const isXl = useMediaQuery(theme.breakpoints.up('xl'));
+  const is1600 = useMediaQuery('(min-width:1600px)');
+  const isLG = useMediaQuery(theme.breakpoints.up('lg'));
+  const isMD = useMediaQuery(theme.breakpoints.up('md'));
+
+  function getCardWidth() {
+    if (isXl) {
+      return '16.666%';
+    } if (is1600) {
+      return '20%';
+    } if (isLG) {
+      return '25%';
+    } if (isMD) {
+      return '33.333%';
+    }
+    return '100%';
+  }
 
   useEffect(() => {
     axios.get('/api/TB_AD/list').then((res) => {
@@ -43,8 +60,9 @@ function CampaignAll({
     // width="100%" maxWidth="1920px" minWidth="1200px"
   }
 
+
   return (
-    <Box px={{ xs: 2, md: 6 }} py={{ xs: 4, md: 8 }}>
+    <Box px={{ xs: 2, md: 6 }} py={{ xs: 4, md: 8 }} maxWidth="1920px" margin="0 auto">
       <Grid container spacing={6}>
         <Grid item xs={12}>
           <StyledText fontSize="25">
@@ -55,7 +73,7 @@ function CampaignAll({
         <Grid item xs={12}>
           <Grid container spacing={3}>
             {campaigns.map(item => (
-              <Grid item style={{ width: '16.666%' }}>
+              <Grid item style={{ width: getCardWidth() }}>
                 <Box border="1px solid #eaeaea" overflow="hidden" borderRadius="10px" css={{ cursor: 'pointer' }} onClick={() => detailInfo(item.AD_ID)}>
                   <StyledImage width="100%" height="auto" src={item.TB_PHOTO_ADs[0].PHO_FILE || testImage} />
                   <Box p={3}>

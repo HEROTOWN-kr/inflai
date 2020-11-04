@@ -288,17 +288,6 @@ router.get('/campaignDetail', async (req, res) => {
         required: false,
       }
     ];
-    let userId;
-
-    if (token) {
-      userId = common.getIdFromToken(token).sub;
-      includeArray.push({
-        model: Notification,
-        where: { INF_ID: userId },
-        attributes: ['NOTI_ID'],
-        required: false
-      });
-    }
 
     const advertise = await Advertise.findOne({
       where: { AD_ID: id },
@@ -308,10 +297,24 @@ router.get('/campaignDetail', async (req, res) => {
         'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
         'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_EMAIL'
       ],
-      include: includeArray
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_ID', 'PHO_FILE'],
+          required: false,
+        },
+        {
+          model: Participant,
+          required: false,
+        },
+      ]
     });
 
-    res.status(200).json({ data: advertise });
+
+    const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
+    const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+
+    res.status(200).json({ data: { ...advertise.dataValues, proportion } });
   } catch (e) {
     res.status(400).send({ message: e.message });
   }
