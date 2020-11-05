@@ -61,6 +61,7 @@
     "react-facebook-login": "^4.1.1",
     "react-google-login": "^5.1.1",
     "react-hook-form": "^6.9.0",
+    "react-html-parser": "^2.0.2",
     "react-kakao-login": "^1.2.1",
     "react-minimal-pie-chart": "^8.0.1",
     "react-naver-login": "^0.1.3-alpha1",

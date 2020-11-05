@@ -178,6 +178,7 @@ export const Colors = {
   blue: '#093c5e',
   blue2: '#409CFF',
   blue2Back: '#DDEFFF',
+  blue2Hover: '#467fbd',
   orange: '#FF835D',
   orangeBack: '#FFEAE6',
   skyBlue: '#4376e8',
@@ -193,6 +194,7 @@ export const Colors = {
   grey7: '#e9e9e9',
   pink: '#eb128c',
   pink2: '#fec1e3',
+  pink3: '#f971b8',
 };
 export const campaignSteps = [{ value: '1', text: '리뷰어 신청' }, { value: '2', text: '리뷰어 발표' }, { value: '3', text: '리뷰등록' }, { value: '4', text: '베스트발표' }];
 

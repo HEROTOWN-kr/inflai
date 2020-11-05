@@ -138,7 +138,7 @@ router.post('/update', async (req, res) => {
       AD_NAME: campaignName,
       AD_SHRT_DISC: shortDisc,
       AD_SEARCH_KEY: searchKeyword,
-      AD_DISC: discription,
+      AD_DISC: discription.split('\n').join('<br>'),
       AD_INSTA: insta,
       AD_YOUTUBE: youtube,
       AD_NAVER: naver,
@@ -295,7 +295,7 @@ router.get('/campaignDetail', async (req, res) => {
         'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START',
         'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
         'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
-        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_EMAIL'
+        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_EMAIL'
       ],
       include: [
         {
@@ -311,7 +311,7 @@ router.get('/campaignDetail', async (req, res) => {
     });
 
 
-    const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
+    const { AD_INF_CNT, AD_DISC, TB_PARTICIPANTs } = advertise.dataValues;
     const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
 
     res.status(200).json({ data: { ...advertise.dataValues, proportion } });

@@ -5,7 +5,7 @@ import { Colors } from '../../lib/Сonstants';
 
 const useStyles = makeStyles({
   common: ({
-    fontSize, lineHeight, color, fontWeight, textAlign, overflowHidden
+    fontSize, lineHeight, color, fontWeight, textAlign, overflowHidden, cursor
   }) => ({
     fontSize: fontSize ? `${fontSize}px` : '14px',
     lineHeight: lineHeight || '1em',
@@ -15,6 +15,7 @@ const useStyles = makeStyles({
     overflow: overflowHidden ? 'hidden' : 'visible',
     whiteSpace: overflowHidden ? 'nowrap' : 'normal',
     textOverflow: overflowHidden ? 'ellipsis' : 'clip',
+    cursor: cursor || 'auto'
   }),
 });
 
@@ -24,12 +25,12 @@ text-overflow: ellipsis; */
 
 function StyledText(props) {
   const {
-    className, children
+    className, children, onClick
   } = props;
   const classes = useStyles(props);
 
   return (
-    <div className={`${classes.common} ${className}`}>
+    <div className={`${classes.common} ${className}`} onClick={onClick}>
       {children}
     </div>
   );
