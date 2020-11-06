@@ -4,7 +4,7 @@ import { Colors } from '../../lib/Сonstants';
 
 const useStyles = makeStyles({
   root: ({
-    background, border, borderRadius, boxShadow, color, height, padding, hoverBackground
+    background, border, borderRadius, boxShadow, color, height, padding, hoverBackground, fontSize, fontWeight
   }) => ({
     background: background || Colors.blue2,
     border: border || 0,
@@ -13,6 +13,8 @@ const useStyles = makeStyles({
     color: color || 'white',
     height: height || 48,
     padding: padding || '0 30px',
+    fontSize: fontSize || 'auto',
+    fontWeight: fontWeight || 'normal',
     '&:hover': {
       background: hoverBackground || Colors.blue2Hover
     }

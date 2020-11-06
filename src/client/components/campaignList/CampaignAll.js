@@ -73,7 +73,7 @@ function CampaignAll({
         <Grid item xs={12}>
           <Grid container spacing={3}>
             {campaigns.map(item => (
-              <Grid item style={{ width: getCardWidth() }}>
+              <Grid item key={item.AD_ID} style={{ width: getCardWidth() }}>
                 <Box border="1px solid #eaeaea" overflow="hidden" borderRadius="10px" css={{ cursor: 'pointer' }} onClick={() => detailInfo(item.AD_ID)}>
                   <StyledImage width="100%" height="auto" src={item.TB_PHOTO_ADs[0].PHO_FILE || testImage} />
                   <Box p={3}>
