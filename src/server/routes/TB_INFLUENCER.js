@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
     const options = {
       where: { INF_ID: userId },
       attributes: [
-        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
+        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR', 'INF_DETAIL_ADDR', 'INF_EXTR_ADDR', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
         [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'Simple\' END'), 'INF_BLOG_TYPE']
       ],
       include: [
@@ -301,36 +301,81 @@ router.get('/getInstaInfo', (req, res) => {
   });
 });
 
-router.post('/updateInfo', (req, res) => {
-  const data = req.body;
-  const userId = getIdFromToken(data.token).sub;
-  const {
-    channel, nickName, phone, country, region, product, message
-  } = data;
+router.get('/getApplicant', async (req, res) => {
+  try {
+    const { token, id, col } = req.query;
+    const userId = id || getIdFromToken(token).sub;
+    const options = {
+      where: { INF_ID: userId },
+      attributes: [
+        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR',
+        'INF_DETAIL_ADDR', 'INF_EXTR_ADDR'
+      ],
+      include: [
+        {
+          model: Instagram,
+          attributes: ['INS_ID', 'INS_USERNAME',
+            [Sequelize.fn('DATE_FORMAT', Sequelize.col('INS_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'INS_DT'],
+          ],
+          required: false,
+        },
+        {
+          model: Youtube,
+          attributes: ['YOU_ID', 'YOU_NAME',
+            [Sequelize.fn('DATE_FORMAT', Sequelize.col('YOU_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'YOU_DT'],
+          ],
+          required: false,
+        },
+        {
+          model: Naver,
+          attributes: ['NAV_ID', 'NAV_URL',
+            [Sequelize.fn('DATE_FORMAT', Sequelize.col('NAV_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'NAV_DT'],
+          ],
+          required: false,
+        },
+      ],
+    };
 
-  const post = {};
-
-  if (nickName) post.INF_NAME = nickName;
-  if (phone) post.INF_TEL = phone;
-  if (country) post.INF_CITY = country;
-  if (region) post.INF_AREA = region;
-  if (product) post.INF_PROD = product;
-  if (message === 0 || message === 1) post.INF_MESSAGE = message;
-  if (channel) {
-    post.INF_CHANNEL = JSON.stringify(channel);
+    const result = await Influencer.findOne(options);
+    const data = result.dataValues;
+    // const { INF_PHOTO } = data;
+    // if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
+    res.json({ code: 200, data });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
+});
 
-  Influencer.update(post, {
-    where: { INF_ID: userId }
-  }).then((result) => {
-    /* console.log(message.get({
-          plain: true
-        })); */
-    res.json({
-      code: 200,
-      data: result
-    });
-  });
+router.post('/updateInfo', async (req, res) => {
+  try {
+    const data = req.body;
+    const userId = getIdFromToken(data.token).sub;
+    const {
+      channel, nickName, phone, country, region, product, message, postcode,
+      roadAddress, detailAddress, extraAddress
+    } = data;
+
+    const post = {};
+
+    if (nickName) post.INF_NAME = nickName;
+    if (phone) post.INF_TEL = phone;
+    if (country) post.INF_CITY = country;
+    if (region) post.INF_AREA = region;
+    if (postcode) post.INF_POST_CODE = postcode;
+    if (roadAddress) post.INF_ROAD_ADDR = roadAddress;
+    if (detailAddress) post.INF_DETAIL_ADDR = detailAddress;
+    if (extraAddress) post.INF_EXTR_ADDR = extraAddress;
+    if (product) post.INF_PROD = product;
+    if (message === 0 || message === 1) post.INF_MESSAGE = message;
+    if (channel) {
+      post.INF_CHANNEL = JSON.stringify(channel);
+    }
+
+    const updateData = await Influencer.update(post, { where: { INF_ID: userId } });
+    res.status(200).json({ data: updateData });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.get('/getLongLivedToken', (req, res) => {

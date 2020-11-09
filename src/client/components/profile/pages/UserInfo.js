@@ -18,6 +18,7 @@ import instagramIcon from '../../../img/instagram.png';
 import youtubeIcon from '../../../img/youtube.png';
 import naverIcon from '../../../img/naver-icon.png';
 import Sns from './Sns';
+import DaumPostCode from '../../containers/DaumPostCode';
 
 
 function UserInfo(props) {
@@ -37,6 +38,10 @@ function UserInfo(props) {
     setValue('nickName', userInfo.INF_NAME);
     setValue('phone', userInfo.INF_TEL);
     setValue('country', userInfo.INF_CITY || '0');
+    setValue('postcode', userInfo.INF_POST_CODE);
+    setValue('roadAddress', userInfo.INF_ROAD_ADDR);
+    setValue('detailAddress', userInfo.INF_DETAIL_ADDR);
+    setValue('extraAddress', userInfo.INF_EXTR_ADDR);
     setValue('region', userInfo.INF_AREA || '0');
     setValue('product', userInfo.INF_PROD);
   }, [userInfo]);
@@ -193,7 +198,8 @@ function UserInfo(props) {
                         </StyledText>
                       </Grid>
                       <Grid item xs={10}>
-                        <Grid container spacing={2}>
+                        <DaumPostCode setValue={setValue} register={register} errors={errors} />
+                        {/* <Grid container spacing={2}>
                           <Grid item xs={4}>
                             <ReactHookFormSelect
                               name="country"
@@ -237,7 +243,7 @@ function UserInfo(props) {
                               </ReactHookFormSelect>
                             </Grid>
                           ) : null}
-                        </Grid>
+                        </Grid> */}
                       </Grid>
                     </Grid>
                   </Grid>

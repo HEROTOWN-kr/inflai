@@ -24,6 +24,54 @@ module.exports = function (sequelize, DataTypes) {
         key: 'AD_ID'
       }
     },
+    PAR_INSTA: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    PAR_YOUTUBE: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    PAR_NAVER: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    PAR_NAME: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    PAR_MESSAGE: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    PAR_TEL: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    PAR_EMAIL: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    PAR_RECEIVER: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    PAR_POST_CODE: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    PAR_ROAD_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    PAR_DETAIL_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    PAR_EXTR_ADDR: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     PAR_STATUS: {
       type: DataTypes.STRING(1),
       allowNull: false,

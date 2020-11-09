@@ -37,6 +37,22 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: true
     },
+    INF_POST_CODE: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    INF_ROAD_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    INF_DETAIL_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    INF_EXTR_ADDR: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     INF_COUNTRY: {
       type: DataTypes.STRING(45),
       allowNull: true

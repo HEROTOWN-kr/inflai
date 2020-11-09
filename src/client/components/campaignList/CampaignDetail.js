@@ -22,47 +22,6 @@ import StyledButton from '../containers/StyledButton';
 import CampaignApplyDialog from '../dialog/CampaignApplyDialog';
 
 function CampaignDetail(props) {
-  /* const JsonTest = {
-    AD_ID: 56,
-    AD_INSTA: 1,
-    AD_YOUTUBE: 1,
-    AD_NAVER: 1,
-    AD_SRCH_START: '2020-10-28',
-    AD_SRCH_END: '2020-10-30',
-    AD_CTG: '0',
-    AD_CTG2: '0',
-    AD_NAME: '[배송형]패브릭 Cozy 컬러쿠션 20종',
-    AD_SHRT_DISC: '인스타 감성 낭낭한 색감 예쁜 쿠션으로 인테리어 효과 up!',
-    AD_INF_CNT: '5',
-    AD_DELIVERY: 0,
-    AD_POST_CODE: '03387',
-    AD_ROAD_ADDR: '서울 은평구 연서로20길 25',
-    AD_DETAIL_ADDR: '5증',
-    AD_EXTR_ADDR: ' (대조동)',
-    AD_TEL: '01026763937',
-    AD_EMAIL: 'andriantsoy@gmail.com',
-    AD_SEARCH_KEY: '원룸인테리어,인테리어쿠션,소파쿠션,쿠션인테리어,패브릭쿠션,거실쿠션,침대쿠션',
-    AD_DISC: '*제공되는 가이드라인에 맞추어 리뷰를 등록해주세요<br>*게시물 유지기간은 6개월입니다<br>*제품 제공 후, 리뷰 미 이행 시, 제품값이 청구됩니다.',
-    AD_DETAIL: '<p style="margin-left:0px;text-align:center;">의정부 다이닝카페 투앤디!</p><p style="margin-left:0px;text-align:center;">어디서 찍어도 인생사진 건질 수 있는 인스타감성 맛집</p><figure class="image"><img src="/attach/campaign/detailPage/2ya5cg38kgvwrmew.jpg"></figure><p style="text-align:center;"><span style="color:rgb(34,34,34);">적외선램프 온열찜질기(유럽산/필립스전구)</span></p><p style="text-align:center;"><span style="color:rgb(0,0,0);">야외 테라스도 마련되어있고 정원도 있어서 애견동반이 가능한곳!!</span></p>',
-    AD_PROVIDE: '<p style="margin-left:0px;">●오전타임</p><p style="margin-left:0px;">*낮12시~오후3시반</p><p style="margin-left:0px;">2인: 3만원 제공 (브런치 or 와플 택1 필수)</p><p style="margin-left:0px;">3~4인: 4만5천원 제공 (빵 or 와플 택1 포함 필수)</p>',
-    TB_PHOTO_ADs: [
-      {
-        PHO_ID: 37,
-        PHO_FILE: '/attach/campaign/56/2ya5cl6wkgw37lnx.jpg'
-      },
-      {
-        PHO_ID: 38,
-        PHO_FILE: '/attach/campaign/56/2ya5cl6wkgw37lny.jpg'
-      },
-      {
-        PHO_ID: 39,
-        PHO_FILE: '/attach/campaign/56/2ya5cl6wkgw37lnz.jpg'
-      }
-    ],
-    TB_PARTICIPANTs: [],
-    proportion: 0
-  }; */
-
   const { match, history } = props;
   const [productData, setProductData] = useState({});
   const [currentImage, setCurrentImage] = useState('');
