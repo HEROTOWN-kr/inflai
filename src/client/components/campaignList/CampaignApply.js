@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box, CircularProgress, Divider, Grid, TextareaAutosize
+  Box, Checkbox, CircularProgress, Divider, Grid, TextareaAutosize, TextField
 } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import axios from 'axios';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Check, CheckBox } from '@material-ui/icons';
 import StyledText from '../containers/StyledText';
-import { Colors } from '../../lib/Сonstants';
+import { blog, Colors } from '../../lib/Сonstants';
 import Common from '../../lib/common';
 import ReactFormText from '../containers/ReactFormText';
 import DaumPostCode from '../containers/DaumPostCode';
@@ -17,6 +18,28 @@ import StyledImage from '../containers/StyledImage';
 import noImage from '../../img/noImage.png';
 import Sns from '../profile/pages/Sns';
 import StyledButton from '../containers/StyledButton';
+import instagramIcon from '../../img/instagram.png';
+import youtubeIcon from '../../img/youtube.png';
+import blogIcon from '../../img/icon_blog_url.png';
+import StyledCheckBox from '../containers/StyledCheckBox';
+
+function ApplyFormComponent(componentProps) {
+  const { title, children } = componentProps;
+  return (
+    <Grid container alignItems="center">
+      <Grid item xs={3}>
+        <Box>
+          <div fontWeight="bold" fontSize="16">
+            {title}
+          </div>
+        </Box>
+      </Grid>
+      <Grid item xs={9}>
+        <Box py={5}>{children}</Box>
+      </Grid>
+    </Grid>
+  );
+}
 
 function CampaignApply(props) {
   const applyConstant = {
@@ -51,7 +74,10 @@ function CampaignApply(props) {
   } = useForm({
     mode: 'onBlur',
     resolver: yupResolver(schema2),
-    shouldUnregister: false
+    defaultValues: {
+      Insta: false
+    }
+    // shouldUnregister: false
   });
 
   function getWidth() {
@@ -113,6 +139,8 @@ function CampaignApply(props) {
         setValue('phone', INF_TEL);
         setValue('email', INF_EMAIL);
         setValue('postcode', INF_POST_CODE);
+        setValue('test', INF_POST_CODE);
+        setValue('test2', INF_POST_CODE);
         setValue('roadAddress', INF_ROAD_ADDR);
         setValue('detailAddress', INF_DETAIL_ADDR);
         setValue('extraAddress', INF_EXTR_ADDR);
@@ -131,25 +159,6 @@ function CampaignApply(props) {
     getApplicantInfo();
   }, []);
 
-  function ApplyFormComponent(props) {
-    const { title, children } = props;
-    return (
-      <Grid container alignItems="center">
-        <Grid item xs={3}>
-          <Box py={5}>
-            <StyledText fontWeight="bold" fontSize="16">
-              {title}
-            </StyledText>
-          </Box>
-        </Grid>
-        <Grid item xs={9}>
-          <Box py={5} borderBottom={`1px solid ${Colors.grey7}`}>
-            {children}
-          </Box>
-        </Grid>
-      </Grid>
-    );
-  }
 
   function SnsBlock(props) {
     const { color, text } = props;
@@ -170,9 +179,109 @@ function CampaignApply(props) {
             <Box mt={3} mb={2}>
               <Divider />
             </Box>
-            <ApplyFormComponent title="SNS">
+            <Grid container alignItems="center">
+              <Grid item xs={3}>
+                <Box py={5}>
+                  <StyledText fontWeight="bold" fontSize="16">
+                    SNS
+                  </StyledText>
+                </Box>
+              </Grid>
+              <Grid item xs={9}>
+                <Box py={5} borderBottom={`1px solid ${Colors.grey7}`}>
+                  <Grid container spacing={1} alignItems="center">
+                    <Grid item xs={12}>
+                      <Grid container alignItems="center">
+                        <Grid item>
+                          <Box padding="12px" border="1px solid #e9ecef" borderRight="0">
+                            <Controller
+                              as={<StyledCheckBox disabled={!applyData.instaUserName} />}
+                              name="Insta"
+                              type="checkbox"
+                              control={control}
+                            />
+                          </Box>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Box py={2} px={4} border="1px solid #e9ecef">
+                            <Grid container justify="center" spacing={1} alignItems="center">
+                              <Grid item>
+                                <StyledImage width="18px" height="18px" src={instagramIcon} />
+                              </Grid>
+                              <Grid item>
+                                <StyledText>{applyData.instaUserName || '인스타그램'}</StyledText>
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        </Grid>
+                        {
+                          applyData.instaUserName ? null : (
+                            <Grid item>
+                              <Box padding="18px" border="1px solid #e9ecef" borderLeft="0" css={{ cursor: 'pointer' }}>
+                                <StyledText onClick={() => history.push('/Profile/UserInfo')}>연결하기</StyledText>
+                              </Box>
+                            </Grid>
+                          )
+                        }
 
-            </ApplyFormComponent>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Grid container alignItems="center">
+                        <Grid item>
+                          <Box padding="12px" border="1px solid #e9ecef" borderRight="0" borderRight="0">
+                            <StyledCheckBox disabled={!applyData.youtubeChannelName} />
+                          </Box>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Box py={2} px={4} border="1px solid #e9ecef">
+                            <Grid container justify="center" spacing={1} alignItems="center">
+                              <Grid item>
+                                <StyledImage width="18px" height="18px" src={youtubeIcon} />
+                              </Grid>
+                              <Grid item>
+                                <StyledText>{applyData.youtubeChannelName || '유튜브'}</StyledText>
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        </Grid>
+                        <Grid item>
+                          <Box padding="18px" border="1px solid #e9ecef" borderLeft="0" css={{ cursor: 'pointer' }}>
+                            <StyledText onClick={() => history.push('/Profile/UserInfo')}>연결하기</StyledText>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Grid container alignItems="center">
+                        <Grid item>
+                          <Box padding="12px" border="1px solid #e9ecef" borderRight="0">
+                            <StyledCheckBox disabled={!applyData.naverChannelName} name="insta" inputRef={register} />
+                          </Box>
+                        </Grid>
+                        <Grid item xs={5}>
+                          <Box py={2} px={4} border="1px solid #e9ecef">
+                            <Grid container justify="center" spacing={1} alignItems="center">
+                              <Grid item>
+                                <StyledImage width="18px" height="18px" src={blogIcon} />
+                              </Grid>
+                              <Grid item>
+                                <StyledText>{applyData.naverChannelName || '블로그'}</StyledText>
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        </Grid>
+                        <Grid item>
+                          <Box padding="18px" border="1px solid #e9ecef" borderLeft="0" css={{ cursor: 'pointer' }}>
+                            <StyledText onClick={() => history.push('/Profile/UserInfo')}>연결하기</StyledText>
+                          </Box>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
+            </Grid>
             <ApplyFormComponent title="이름">
               <ReactFormText register={register} errors={errors} name="name" />
             </ApplyFormComponent>
@@ -261,6 +370,7 @@ function CampaignApply(props) {
           </Grid>
         </Grid>
       )} */}
+
     </Box>
   );
 }

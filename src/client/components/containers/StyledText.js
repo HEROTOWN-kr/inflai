@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     overflow: overflowHidden ? 'hidden' : 'visible',
     whiteSpace: overflowHidden ? 'nowrap' : 'normal',
     textOverflow: overflowHidden ? 'ellipsis' : 'clip',
-    cursor: cursor || 'auto'
+    cursor: cursor || 'inherit'
   }),
 });
 

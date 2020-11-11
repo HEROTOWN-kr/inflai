@@ -360,7 +360,7 @@ function CampaignDetail(props) {
               <Box py={6} pl={6} style={isSticky ? fixedStyles : {}}>
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
-                    <StyledText fontSize="16" fontWeight="bold">리뷰어 신청  2020-11-01 ~ 2020-11-30</StyledText>
+                    <StyledText fontSize="16" fontWeight="bold">{`리뷰어 신청  ${productData.AD_SRCH_START} ~ ${productData.AD_SRCH_END}`}</StyledText>
                   </Grid>
                   <Grid item xs={12}><Divider /></Grid>
                   <Grid item xs={12}>

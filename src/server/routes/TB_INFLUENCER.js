@@ -338,9 +338,18 @@ router.get('/getApplicant', async (req, res) => {
 
     const result = await Influencer.findOne(options);
     const data = result.dataValues;
+
+    const instaUserName = data.TB_INSTum && data.TB_INSTum.INS_USERNAME ? data.TB_INSTum.INS_USERNAME : '';
+    const youtubeChannelName = data.TB_YOUTUBE && data.TB_YOUTUBE.YOU_NAME ? data.TB_YOUTUBE.YOU_NAME : '';
+    const naverChannelName = data.TB_NAVER && data.TB_NAVER.NAV_URL ? data.TB_NAVER.NAV_URL : '';
     // const { INF_PHOTO } = data;
     // if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
-    res.json({ code: 200, data });
+    res.json({
+      code: 200,
+      data: {
+        ...data, instaUserName, youtubeChannelName, naverChannelName
+      }
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
