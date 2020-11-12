@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box, Checkbox, CircularProgress, Divider, Grid, TextareaAutosize, TextField
+  Box, Checkbox, CircularProgress, Divider, Grid, Snackbar, TextareaAutosize, TextField
 } from '@material-ui/core';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
@@ -22,6 +22,7 @@ import instagramIcon from '../../img/instagram.png';
 import youtubeIcon from '../../img/youtube.png';
 import blogIcon from '../../img/icon_blog_url.png';
 import StyledCheckBox from '../containers/StyledCheckBox';
+import Alert from '../containers/Alert';
 
 function ApplyFormComponent(componentProps) {
   const { title, children } = componentProps;
@@ -55,10 +56,16 @@ function CampaignApply(props) {
     TB_YOUTUBE: null,
   };
 
-  const { match, history } = props;
+  const { match, history, setMessage } = props;
   const [applyData, setApplyData] = useState({});
+  const [snsData, setSnsData] = useState({
+    insta: false,
+    youtube: false,
+    naver: false
+  });
   const [addData, setAddData] = useState({ TB_PHOTO_ADs: [] });
   const [isSticky, setSticky] = useState(false);
+
   const theme = useTheme();
   const { token } = Common.getUserInfo();
 
@@ -67,18 +74,61 @@ function CampaignApply(props) {
   const isLG = useMediaQuery(theme.breakpoints.up('lg'));
   const isMD = useMediaQuery(theme.breakpoints.up('md'));
 
-  const schema2 = Yup.object().shape({});
+  const schema = Yup.object().shape({
+    sns: Yup.string()
+      .when(['naver', 'youtube', 'insta'], {
+        is: (naver, youtube, insta) => !naver && !youtube && !insta,
+        then: Yup.string().required('SNS를 선택해주세요'),
+      }),
+    name: Yup.string()
+      .required('이름을 입력해주세요'),
+    message: Yup.string()
+      .required('신청한마디를 입력해주세요'),
+    receiverName: Yup.string()
+      .when(['delivery'], {
+        is: delivery => delivery,
+        then: Yup.string().required('제공상품 수령인을 입력해주세요'),
+      }),
+    postcode: Yup.string()
+      .when(['delivery'], {
+        is: delivery => delivery,
+        then: Yup.string().required('우편번호를 입력해주세요'),
+      }),
+    roadAddress: Yup.string()
+      .when(['delivery'], {
+        is: delivery => delivery,
+        then: Yup.string().required('도로명주소를 입력해주세요'),
+      }),
+    detailAddress: Yup.string()
+      .when(['delivery'], {
+        is: delivery => delivery,
+        then: Yup.string().required('상세주소를 입력해주세요'),
+      }),
+    phone: Yup.string()
+      .required('연락처를 입력해주세요'),
+    email: Yup.string()
+      .email('잘못된 이메일 형식 입니다')
+      .required('이메일을 입력해주세요'),
+  });
 
   const {
     register, handleSubmit, handleBlur, watch, errors, setValue, control, getValues
   } = useForm({
     mode: 'onBlur',
-    resolver: yupResolver(schema2),
+    resolver: yupResolver(schema),
     defaultValues: {
-      Insta: false
+      insta: false,
+      youtube: false,
+      naver: false
     }
     // shouldUnregister: false
   });
+
+  useEffect(() => {
+    setValue('insta', snsData.insta);
+    setValue('youtube', snsData.youtube);
+    setValue('naver', snsData.naver);
+  }, [snsData]);
 
   function getWidth() {
     if (isXl) {
@@ -117,6 +167,7 @@ function CampaignApply(props) {
       if (data) {
         console.log(data);
         setAddData(data);
+        setValue('delivery', !!data.AD_DELIVERY);
       }
     } catch (err) {
       alert(err.message);
@@ -150,13 +201,32 @@ function CampaignApply(props) {
     }
   }
 
-  const onSubmit2 = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      const apiObj = {
+        ...data,
+        adId: match.params.id,
+        token
+      };
+
+      axios.post('/api/TB_PARTICIPANT/save', apiObj).then((res) => {
+        setMessage({ type: 'success', open: true, text: '신청되었습니다' });
+        history.push(`/CampaignList/${match.params.id}`);
+      }).catch((err) => {
+        alert(err.response.data.message);
+      });
+    } catch (err) {
+      alert(err);
+    }
   };
 
   useEffect(() => {
     getAddInfo();
     getApplicantInfo();
+    register({ name: 'insta' });
+    register({ name: 'youtube' });
+    register({ name: 'naver' });
+    register({ name: 'delivery' });
   }, []);
 
 
@@ -194,12 +264,7 @@ function CampaignApply(props) {
                       <Grid container alignItems="center">
                         <Grid item>
                           <Box padding="12px" border="1px solid #e9ecef" borderRight="0">
-                            <Controller
-                              as={<StyledCheckBox disabled={!applyData.instaUserName} />}
-                              name="Insta"
-                              type="checkbox"
-                              control={control}
-                            />
+                            <StyledCheckBox checked={snsData.insta} onChange={event => setSnsData({ ...snsData, insta: event.target.checked })} disabled={!applyData.instaUserName} />
                           </Box>
                         </Grid>
                         <Grid item xs={5}>
@@ -217,20 +282,25 @@ function CampaignApply(props) {
                         {
                           applyData.instaUserName ? null : (
                             <Grid item>
-                              <Box padding="18px" border="1px solid #e9ecef" borderLeft="0" css={{ cursor: 'pointer' }}>
-                                <StyledText onClick={() => history.push('/Profile/UserInfo')}>연결하기</StyledText>
+                              <Box
+                                padding="18px"
+                                border="1px solid #e9ecef"
+                                borderLeft="0"
+                                css={{ cursor: 'pointer' }}
+                                onClick={() => history.push('/Profile/UserInfo')}
+                              >
+                                <StyledText>연결하기</StyledText>
                               </Box>
                             </Grid>
                           )
                         }
-
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
                       <Grid container alignItems="center">
                         <Grid item>
                           <Box padding="12px" border="1px solid #e9ecef" borderRight="0" borderRight="0">
-                            <StyledCheckBox disabled={!applyData.youtubeChannelName} />
+                            <StyledCheckBox checked={snsData.youtube} onChange={event => setSnsData({ ...snsData, youtube: event.target.checked })} disabled={!applyData.youtubeChannelName} />
                           </Box>
                         </Grid>
                         <Grid item xs={5}>
@@ -245,18 +315,28 @@ function CampaignApply(props) {
                             </Grid>
                           </Box>
                         </Grid>
-                        <Grid item>
-                          <Box padding="18px" border="1px solid #e9ecef" borderLeft="0" css={{ cursor: 'pointer' }}>
-                            <StyledText onClick={() => history.push('/Profile/UserInfo')}>연결하기</StyledText>
-                          </Box>
-                        </Grid>
+                        {
+                          applyData.youtubeChannelName ? null : (
+                            <Grid item>
+                              <Box
+                                padding="18px"
+                                border="1px solid #e9ecef"
+                                borderLeft="0"
+                                css={{ cursor: 'pointer' }}
+                                onClick={() => history.push('/Profile/UserInfo')}
+                              >
+                                <StyledText>연결하기</StyledText>
+                              </Box>
+                            </Grid>
+                          )
+                        }
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
                       <Grid container alignItems="center">
                         <Grid item>
                           <Box padding="12px" border="1px solid #e9ecef" borderRight="0">
-                            <StyledCheckBox disabled={!applyData.naverChannelName} name="insta" inputRef={register} />
+                            <StyledCheckBox checked={snsData.naver} onChange={event => setSnsData({ ...snsData, naver: event.target.checked })} disabled={!applyData.naverChannelName} />
                           </Box>
                         </Grid>
                         <Grid item xs={5}>
@@ -265,19 +345,45 @@ function CampaignApply(props) {
                               <Grid item>
                                 <StyledImage width="18px" height="18px" src={blogIcon} />
                               </Grid>
-                              <Grid item>
-                                <StyledText>{applyData.naverChannelName || '블로그'}</StyledText>
+                              <Grid item xs={6}>
+                                <StyledText overflowHidden>{applyData.naverChannelName || '블로그'}</StyledText>
                               </Grid>
                             </Grid>
                           </Box>
                         </Grid>
-                        <Grid item>
-                          <Box padding="18px" border="1px solid #e9ecef" borderLeft="0" css={{ cursor: 'pointer' }}>
-                            <StyledText onClick={() => history.push('/Profile/UserInfo')}>연결하기</StyledText>
-                          </Box>
-                        </Grid>
+                        {
+                          applyData.naverChannelName ? null : (
+                            <Grid item>
+                              <Box
+                                padding="18px"
+                                border="1px solid #e9ecef"
+                                borderLeft="0"
+                                css={{ cursor: 'pointer' }}
+                                onClick={() => history.push('/Profile/UserInfo')}
+                              >
+                                <StyledText>연결하기</StyledText>
+                              </Box>
+                            </Grid>
+                          )
+                        }
                       </Grid>
                     </Grid>
+                    {
+                      errors.sns ? (
+                        <div className="error-message">
+                          {errors.sns.message}
+                        </div>
+                      ) : null
+                    }
+                    <input
+                      type="text"
+                      readOnly
+                      name="sns"
+                      ref={register}
+                      style={{
+                        opacity: '0', width: '0', padding: '0', border: '0', height: '0'
+                      }}
+                    />
                   </Grid>
                 </Box>
               </Grid>
@@ -288,7 +394,7 @@ function CampaignApply(props) {
             <ApplyFormComponent title="신청한마디">
               <TextareaAutosize ref={register} rowsMin={8} style={{ width: '99%' }} placeholder="신청한마디" name="message" />
               {
-                errors.shortDisc ? (
+                errors.message ? (
                   <div className="error-message">{errors.message.message}</div>
                 ) : null
               }
@@ -342,7 +448,7 @@ function CampaignApply(props) {
                 <Divider />
               </Grid>
               <Grid item xs={12}>
-                <StyledButton background={Colors.pink3} hoverBackground={Colors.pink} fontWeight="bold" fontSize="20px" onClick={handleSubmit(onSubmit2)}>
+                <StyledButton background={Colors.pink3} hoverBackground={Colors.pink} fontWeight="bold" fontSize="20px" onClick={handleSubmit(onSubmit)}>
                   캠페인 신청하기
                 </StyledButton>
               </Grid>
