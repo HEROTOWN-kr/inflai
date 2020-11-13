@@ -12,6 +12,7 @@ import { AdvertiseTypes, Colors } from '../../lib/Сonstants';
 import StyledGrid from '../containers/StyledGrid';
 import StyledImage from '../containers/StyledImage';
 import StyledSvg from '../containers/StyledSvg';
+import CampaignCard from './CampaignCard';
 
 
 function CampaignAll({
@@ -61,7 +62,6 @@ function CampaignAll({
     // width="100%" maxWidth="1920px" minWidth="1200px"
   }
 
-
   return (
     <Box px={{ xs: 2, md: 6 }} py={{ xs: 4, md: 8 }} maxWidth="1920px" margin="0 auto">
       <Grid container spacing={6}>
@@ -73,62 +73,27 @@ function CampaignAll({
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={3}>
-            {campaigns.map(item => (
-              <Grid item key={item.AD_ID} style={{ width: getCardWidth() }}>
-                <Box border="1px solid #eaeaea" overflow="hidden" borderRadius="10px" css={{ cursor: 'pointer' }} onClick={() => detailInfo(item.AD_ID)}>
-                  <StyledImage width="100%" height="auto" src={item.TB_PHOTO_ADs[0].PHO_FILE || testImage} />
-                  <Box p={3}>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <StyledText overflowHidden>
-                          <span style={{ color: Colors.pink }}>{`${AdvertiseTypes.mainType[item.AD_CTG]}/${AdvertiseTypes.subType[item.AD_CTG][item.AD_CTG2]}`}</span>
-                          {` D-${calculateDates(item.AD_SRCH_END)}`}
-                        </StyledText>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <StyledText overflowHidden fontWeight="bold" fontSize="16">
-                          {item.AD_NAME}
-                        </StyledText>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
-                          {item.AD_SHRT_DISC}
-                        </StyledText>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Box pt={1}>
-                          <Grid container alignItems="center" justify="space-between">
-                            <Grid item>
-                              <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <StyledSvg
-                                  component={SupervisorAccount}
-                                  color={Colors.grey5}
-                                  fontSize="20px"
-                                />
-                                <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
-                                  <span style={{ color: Colors.pink }}>{`${item.TB_PARTICIPANTs.length}`}</span>
-                                  {`/${item.AD_INF_CNT}명`}
-                                </StyledText>
-                              </div>
-                            </Grid>
-                            <Grid item>
-                              <StyledText overflowHidden fontSize="13" color={Colors.grey5}>
-                                {`${item.proportion}%`}
-                              </StyledText>
-                            </Grid>
-                          </Grid>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Box height="5px" borderRadius="50px" overflow="hidden" css={{ background: Colors.grey6 }}>
-                          <Box height="4px" width={`${item.proportion}%`} css={{ background: Colors.pink2 }} />
-                        </Box>
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </Box>
-              </Grid>
-            ))}
+            {campaigns.map((item) => {
+              const {
+                AD_ID, AD_CTG, AD_CTG2, AD_SRCH_END, AD_NAME, AD_SHRT_DISC, TB_PARTICIPANTs, AD_INF_CNT, proportion, TB_PHOTO_ADs,
+              } = item;
+              return (
+                <Grid item key={AD_ID} style={{ width: getCardWidth() }}>
+                  <CampaignCard
+                    image={TB_PHOTO_ADs[0].PHO_FILE}
+                    ctg1={AD_CTG}
+                    ctg2={AD_CTG2}
+                    srchEnd={AD_SRCH_END}
+                    name={AD_NAME}
+                    shrtDisc={AD_SHRT_DISC}
+                    participantsLength={TB_PARTICIPANTs.length}
+                    cnt={AD_INF_CNT}
+                    proportion={proportion}
+                    onClick={() => detailInfo(item.AD_ID)}
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
         </Grid>
       </Grid>

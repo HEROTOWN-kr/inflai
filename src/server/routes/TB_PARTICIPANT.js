@@ -1,5 +1,9 @@
 const express = require('express');
+const Sequelize = require('sequelize');
 const Participant = require('../models').TB_PARTICIPANT;
+const Influencer = require('../models').TB_INFLUENCER;
+const Advertise = require('../models').TB_AD;
+const Photo = require('../models').TB_PHOTO_AD;
 
 const router = express.Router();
 const {
@@ -175,5 +179,77 @@ router.get('/checkParticipant', async (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
+router.get('/getList', async (req, res) => {
+  try {
+    const { adId } = req.query;
+
+    const result = await Participant.findAll({
+      where: { AD_ID: adId },
+      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
+      ],
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_PHOTO']
+        },
+      ],
+    });
+
+    const ParticipantsList = result.map((item) => {
+      const {
+        INF_ID, INF_NAME, INF_EMAIL, INF_PHOTO
+      } = item.TB_INFLUENCER.dataValues;
+      return {
+        ...item.dataValues,
+        INF_NAME,
+        INF_EMAIL,
+        INF_PHOTO
+      };
+    });
+
+    // const { INF_ID, INF_NAME, INF_EMAIL } = ParticipantsList.TB_INFLUENCER.dataValues;
+
+    res.status(200).json({
+      data: ParticipantsList
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.get('/getCampaigns', async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    const id = getIdFromToken(token).sub;
+
+    const advertises = await Participant.findAll({
+      where: { INF_ID: id },
+      attributes: ['PAR_ID'],
+      include: [
+        {
+          model: Advertise,
+          attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+          include: [
+            {
+              model: Photo,
+              attributes: ['PHO_ID', 'PHO_FILE'],
+              required: false
+            }
+          ]
+        },
+      ],
+    });
+
+    res.status(200).json({
+      data: ''
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 
 module.exports = router;

@@ -6,6 +6,7 @@ import WhiteBlock from '../containers/WhiteBlock';
 import NotFound from '../main/NotFound';
 import Rank from './pages/Rank';
 import UserInfo from './pages/UserInfo';
+import CampaignInfo from './pages/CampaignInfo';
 
 function ProfileContent(props) {
   const { match } = props;
@@ -16,6 +17,10 @@ function ProfileContent(props) {
     }}
     >
       <Switch>
+        <Route
+          path={`${match.path}/CampaignInfo`}
+          render={props => <CampaignInfo {...props} />}
+        />
         <Route
           path={`${match.path}/Rank`}
           render={props => <Rank {...props} />}

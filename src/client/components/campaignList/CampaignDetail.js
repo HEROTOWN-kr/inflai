@@ -49,37 +49,62 @@ function TabComponent(props) {
 
 function ParticipantList(props) {
   const { adId } = props;
+  const [participants, setParticipants] = useState([]);
+
+  function getParticipants() {
+    axios.get('/api/TB_PARTICIPANT/getList', {
+      params: { adId }
+    }).then((res) => {
+      const { data } = res.data;
+      console.log(data);
+      setParticipants(data);
+    }).catch(err => alert(err.response.data.message));
+  }
+
+  useEffect(() => {
+    getParticipants();
+  }, []);
 
   return (
-    <Box py={2} borderBottom={`1px solid ${Colors.grey7}`}>
-      <Grid container>
-        <Grid item xs={2}>
-          <StyledImage width="90px" height="90px" src={defaultAccountImage} />
-        </Grid>
-        <Grid item xs={10}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <StyledText fontSize={16}>watershed (naver_69787697)</StyledText>
+    <>
+      {participants.map(item => (
+        <Box key={item.PAR_ID} py={2} borderBottom={`1px solid ${Colors.grey7}`}>
+          <Grid container alignItems="center">
+            <Grid item xs={2}>
+              <StyledImage borderRadius="100%" width="90px" height="90px" src={item.INF_PHOTO || defaultAccountImage} />
             </Grid>
-            <Grid item xs={12}>
-              <StyledText fontSize={16}>
-                그동안 그냥 먹었는데 전자레인지에 되는 용기가 있고 안되는게 있더라구요 ㅜㅜ 그동안 그냥 먹은게 너무 안타깝지만 앞으로라도 안전한 식기로 먹고 싶어 신청합니다!!
-              </StyledText>
-            </Grid>
-            <Grid item xs={12}>
-              <StyledText fontSize={16}>
-                2020-11-12 10:26:23
-              </StyledText>
+            <Grid item xs={10}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Grid container alignItems="center" spacing={1}>
+                    <Grid item>
+                      <StyledText fontSize={16} fontWeight="bold">{item.PAR_NAME}</StyledText>
+                    </Grid>
+                    <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
+                    <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
+                    <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
+                  </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                  <StyledText fontSize={15} lineHeight="1.3em">{item.PAR_MESSAGE}</StyledText>
+                </Grid>
+                <Grid item xs={12}>
+                  <StyledText fontSize={15}>
+                    {item.PAR_DT}
+                  </StyledText>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Grid>
-    </Box>
+        </Box>
+      ))}
+    </>
   );
 }
 
 function CampaignDetail(props) {
   const { match, history } = props;
+  const adId = match.params.id;
   const [productData, setProductData] = useState({
     TB_PHOTO_ADs: [],
     TB_PARTICIPANTs: [],
@@ -150,9 +175,10 @@ function CampaignDetail(props) {
   }
 
   function sendRequest() {
-    const adId = match.params.id;
     if (token) {
-      axios.get('/api/TB_PARTICIPANT/checkParticipant', {
+      history.push(`/CampaignList/apply/${adId}`);
+
+      /* axios.get('/api/TB_PARTICIPANT/checkParticipant', {
         params: {
           adId,
           token
@@ -163,7 +189,7 @@ function CampaignDetail(props) {
         } else {
           history.push(`/CampaignList/apply/${adId}`);
         }
-      }).catch(error => (error.response.data.message));
+      }).catch(error => (error.response.data.message)); */
     } else {
       alert('인플루언서로 로그인 해 주세요');
     }
@@ -321,7 +347,7 @@ function CampaignDetail(props) {
                 {ReactHtmlParser(productData.AD_DETAIL)}
               </>
             ) : (
-              <ParticipantList />
+              <ParticipantList adId={adId} />
             )}
 
             <Grid container spacing={4}>
