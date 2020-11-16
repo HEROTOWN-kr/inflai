@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Box, Checkbox, CircularProgress, Divider, Grid, Snackbar, TextareaAutosize, TextField
 } from '@material-ui/core';
@@ -23,6 +23,7 @@ import youtubeIcon from '../../img/youtube.png';
 import blogIcon from '../../img/icon_blog_url.png';
 import StyledCheckBox from '../containers/StyledCheckBox';
 import Alert from '../containers/Alert';
+import AuthContext from '../../context/AuthContext';
 
 function ApplyFormComponent(componentProps) {
   const { title, children } = componentProps;
@@ -67,7 +68,7 @@ function CampaignApply(props) {
   const [isSticky, setSticky] = useState(false);
 
   const theme = useTheme();
-  const { token } = Common.getUserInfo();
+  const { token } = useContext(AuthContext);
 
   const isXl = useMediaQuery(theme.breakpoints.up('xl'));
   const is1600 = useMediaQuery('(min-width:1600px)');
@@ -221,13 +222,15 @@ function CampaignApply(props) {
   };
 
   useEffect(() => {
-    getAddInfo();
-    getApplicantInfo();
-    register({ name: 'insta' });
-    register({ name: 'youtube' });
-    register({ name: 'naver' });
-    register({ name: 'delivery' });
-  }, []);
+    if (token) {
+      getAddInfo();
+      getApplicantInfo();
+      register({ name: 'insta' });
+      register({ name: 'youtube' });
+      register({ name: 'naver' });
+      register({ name: 'delivery' });
+    }
+  }, [token]);
 
 
   function SnsBlock(props) {

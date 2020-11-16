@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Grid, Hidden } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import MobileUserMenu from './MobileView/MobileUserMenu';
 import UserMenuPopper from './UserMenuPopper';
+import AuthContext from '../../context/AuthContext';
 
 
 function NavbarUserMenu(props) {
   const { user } = props;
+  const { isAuthenticated } = useContext(AuthContext);
 
   function UserMenu() {
     return (
       <Hidden smDown>
         <Grid container alignItems="center" justify="flex-end">
           {
-              user.name ? (
+              isAuthenticated ? (
                 <React.Fragment>
                   <UserMenuPopper {...props} />
                 </React.Fragment>

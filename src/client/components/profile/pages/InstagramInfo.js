@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, CircularProgress, Grid } from '@material-ui/core';
 import axios from 'axios';
 import { PieChart } from 'react-minimal-pie-chart';
@@ -17,10 +17,11 @@ import { Colors } from '../../../lib/Сonstants';
 import AgeGraph from './Graphs/AgeGraph';
 import GenderGraph from './Graphs/GenderGraph';
 import MapGraph from './Graphs/MapGraph';
+import AuthContext from '../../../context/AuthContext';
 
 function InstagramInfo(props) {
   const [instaData, setInstaData] = useState({});
-  const { token } = Common.getUserInfo();
+  const { token } = useContext(AuthContext);
 
   async function getInstaInfo() {
     try {
@@ -38,8 +39,8 @@ function InstagramInfo(props) {
   }
 
   useEffect(() => {
-    getInstaInfo();
-  }, []);
+    if (token) getInstaInfo();
+  }, [token]);
 
   return (
     <div>

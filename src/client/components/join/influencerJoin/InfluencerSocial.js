@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -14,11 +14,13 @@ import TwitchIcon from '../../../img/twitch-logo-white.png';
 import InstagramDialog from './InstagramDialog';
 import InstagramSelectDialog from './InstagramSelectDialog';
 import YoutubeDialog from '../inf-join/YoutubeDialog';
+import AuthContext from '../../../context/AuthContext';
 
 
 function InfluencerSocial(props) {
   const { changeUser, history } = props;
   const { search } = document.location;
+  const auth = useContext(AuthContext);
   const [instaDialogOpen, setInstaDialogOpen] = useState(false);
   const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);
   const [instaAccounts, setInstaAccounts] = useState([]);
@@ -33,23 +35,13 @@ function InfluencerSocial(props) {
           code: response.code
         }
       }).then((res) => {
-        if (res.data.userPhone) {
-          changeUser({
-            social_type: res.data.social_type,
-            type: '2',
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
+        const {
+          userPhone, social_type, userToken, userName, regState
+        } = res.data;
+        auth.login(userToken, '2', userName, social_type);
+        if (userPhone) {
           history.push('/');
         } else {
-          changeUser({
-            social_type: res.data.social_type,
-            type: '2',
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
           history.push('/profile');
         }
       }).catch((error) => {
@@ -82,14 +74,15 @@ function InfluencerSocial(props) {
           instaId: selectedId
         }).then((res) => {
           if (res.status === 200) {
-            changeUser({
-              social_type: res.data.social_type,
-              type: '2',
-              token: res.data.userToken,
-              name: res.data.userName,
-              regState: res.data.regState
-            });
-            history.push('/profile');
+            const {
+              userPhone, social_type, userToken, userName, regState
+            } = res.data;
+            auth.login(userToken, '2', userName, social_type);
+            if (userPhone) {
+              history.push('/');
+            } else {
+              history.push('/profile');
+            }
           }
         }).catch(err => alert(err.response.data));
       } else {
@@ -108,23 +101,13 @@ function InfluencerSocial(props) {
           facebookUserId: userID
         }).then((res) => {
           if (res.status === 200) {
-            if (res.data.userPhone) {
-              changeUser({
-                social_type: res.data.social_type,
-                type: '2',
-                token: res.data.userToken,
-                name: res.data.userName,
-                regState: res.data.regState
-              });
+            const {
+              userPhone, social_type, userToken, userName, regState
+            } = res.data;
+            auth.login(userToken, '2', userName, social_type);
+            if (userPhone) {
               history.push('/');
             } else {
-              changeUser({
-                social_type: res.data.social_type,
-                type: '2',
-                token: res.data.userToken,
-                name: res.data.userName,
-                regState: res.data.regState
-              });
               history.push('/profile');
             }
           }
@@ -144,12 +127,16 @@ function InfluencerSocial(props) {
   const responseNaver = (response) => {
     try {
       if (response) {
-        const { email, id, name } = response.user;
+        console.log(response);
+        const {
+          email, id, name, profile_image
+        } = response.user;
         axios.get('/api/TB_INFLUENCER/naverLogin', {
           params: {
             id,
             email,
             name,
+            profile_image,
             type: '2',
             social_type: 'naver'
           }
@@ -157,18 +144,14 @@ function InfluencerSocial(props) {
           const {
             social_type, userToken, userName, regState, userPhone
           } = influencerData.data;
-          changeUser({
-            social_type,
-            type: '2',
-            token: userToken,
-            name: userName,
-            regState
-          });
+          auth.login(userToken, '2', userName, social_type);
           if (userPhone) {
             history.push('/');
           } else {
             history.push('/profile');
           }
+        }).catch((err) => {
+          alert(err.response.data.message);
         });
       }
     } catch (err) {
@@ -198,13 +181,7 @@ function InfluencerSocial(props) {
                 const {
                   social_type, userToken, userName, regState, userPhone
                 } = influencerData.data;
-                changeUser({
-                  social_type,
-                  type: '2',
-                  token: userToken,
-                  name: userName,
-                  regState
-                });
+                auth.login(userToken, '2', userName, social_type);
                 if (userPhone) {
                   history.push('/');
                 } else {

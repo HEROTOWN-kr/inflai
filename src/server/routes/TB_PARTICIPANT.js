@@ -225,7 +225,7 @@ router.get('/getCampaigns', async (req, res) => {
 
     const id = getIdFromToken(token).sub;
 
-    const advertises = await Participant.findAll({
+    const dbData = await Participant.findAll({
       where: { INF_ID: id },
       attributes: ['PAR_ID'],
       include: [
@@ -237,14 +237,27 @@ router.get('/getCampaigns', async (req, res) => {
               model: Photo,
               attributes: ['PHO_ID', 'PHO_FILE'],
               required: false
-            }
-          ]
+            },
+            {
+              model: Participant,
+              attributes: ['PAR_ID'],
+              required: false
+            },
+          ],
         },
       ],
     });
 
+    const advertises = dbData.map((item) => {
+      const data = item.dataValues;
+      const adData = data.TB_AD.dataValues;
+      const proportion = Math.round(100 / (adData.AD_INF_CNT / adData.TB_PARTICIPANTs.length));
+      return { ...adData, proportion, PAR_ID: data.PAR_ID };
+    });
+
+
     res.status(200).json({
-      data: ''
+      data: advertises
     });
   } catch (err) {
     res.status(400).send(err.message);

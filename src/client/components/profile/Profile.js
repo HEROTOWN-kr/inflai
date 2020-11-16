@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import axios from 'axios';
 import { Colors } from '../../lib/Сonstants';
@@ -6,9 +6,10 @@ import MainBlock from '../containers/MainBlock';
 import ProfileMenu from './ProfileMenu';
 import ProfileContent from './ProfileContent';
 import Common from '../../lib/common';
+import AuthContext from '../../context/AuthContext';
 
 function Profile(props) {
-  const { token } = Common.getUserInfo();
+  const { token } = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState({});
 
@@ -26,8 +27,10 @@ function Profile(props) {
   }
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+    if (token) {
+      getUserInfo();
+    }
+  }, [token]);
 
   return (
     <Box

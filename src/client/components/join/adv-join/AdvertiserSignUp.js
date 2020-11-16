@@ -19,7 +19,6 @@ function AdvertiserSignUp({
     axios.post('/api/TB_ADVERTISER/signup', values)
       .then((res) => {
         if (res.data.code === 200) {
-          // console.log(res.data);
           history.push(`${match.path}/Detail/${res.data.userId}`);
         } else if (res.data.code === 401) {
           setMainError({ message: res.data.message });

@@ -970,7 +970,7 @@ router.get('/naverLogin', async (req, res) => {
   try {
     const data = req.query;
     const {
-      email, id, name, social_type
+      email, id, name, profile_image, social_type
     } = data;
 
     const influencerData = await Influencer.findOne({ where: { INF_REG_ID: id, INF_BLOG_TYPE: '3' } });
@@ -978,6 +978,7 @@ router.get('/naverLogin', async (req, res) => {
       const newData = await Influencer.create({
         INF_NAME: name,
         INF_EMAIL: email,
+        INF_PHOTO: profile_image,
         INF_REG_ID: id,
         INF_BLOG_TYPE: '3'
       });

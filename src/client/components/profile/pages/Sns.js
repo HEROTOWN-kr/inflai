@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Box, Button, Grid, InputBase
 } from '@material-ui/core';
@@ -15,6 +15,7 @@ import InstagramSelectDialog from '../../join/inf-join/InstagramSelectDialog';
 import YoutubeDialog from '../../join/inf-join/YoutubeDialog';
 import StyledButton from '../../containers/StyledButton';
 import { Colors } from '../../../lib/Сonstants';
+import AuthContext from '../../../context/AuthContext';
 
 function Sns(props) {
   const { userInfo, getUserInfo } = props;
@@ -22,7 +23,7 @@ function Sns(props) {
   const { INS_ID, INS_USERNAME, INS_DT } = TB_INSTum || {};
   const { YOU_ID, YOU_NAME, YOU_DT } = TB_YOUTUBE || {};
   const { NAV_ID, NAV_URL, NAV_DT } = TB_NAVER || {};
-  const { token } = Common.getUserInfo();
+  const { token } = useContext(AuthContext);
 
   const {
     register, handleSubmit, watch, errors, setValue, control, getValues

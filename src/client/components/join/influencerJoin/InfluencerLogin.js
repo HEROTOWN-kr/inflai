@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import * as Yup from 'yup';
 import { Form, Formik } from 'formik';
@@ -7,23 +7,22 @@ import {
   Box, Button, Divider, TextField
 } from '@material-ui/core';
 import SocialNetworks from './InfluencerSocial';
+import AuthContext from '../../../context/AuthContext';
 
 function InfluencerLogin(props) {
-  const { changeUser, history } = props;
+  const { history } = props;
   const [mainError, setMainError] = useState({});
+  const auth = useContext(AuthContext);
 
   function logIn(values) {
     axios.post('/api/auth/login', values)
       .then((res) => {
         if (res.data.code === 200) {
-          changeUser({
-            social_type: res.data.social_type,
-            type: values.type,
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
-          if (res.data.userPhone) {
+          const {
+            social_type, userToken, userName, regState, userPhone, message
+          } = res.data;
+          auth.login(userToken, '2', userName, social_type);
+          if (userPhone) {
             history.push('/');
           } else {
             history.push('/Profile');
@@ -118,7 +117,7 @@ function InfluencerLogin(props) {
                   <Divider variant="middle" />
                 </Grid>
                 <Grid item xs={12} className="social-networks">
-                  <SocialNetworks changeUser={changeUser} history={history} />
+                  <SocialNetworks history={history} />
                 </Grid>
                 <Grid item xs={12}>
                   <Divider variant="middle" />

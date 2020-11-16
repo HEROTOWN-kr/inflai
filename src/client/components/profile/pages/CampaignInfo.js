@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { SupervisorAccount } from '@material-ui/icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -12,6 +12,8 @@ import StyledImage from '../../containers/StyledImage';
 import StyledSvg from '../../containers/StyledSvg';
 import CampaignCard from '../../campaignList/CampaignCard';
 import Common from '../../../lib/common';
+import noImage from '../../../img/noImage.png';
+import AuthContext from '../../../context/AuthContext';
 
 
 function TabComponent(props) {
@@ -43,17 +45,21 @@ function CampaignInfo(props) {
   const { history, match } = props;
   const [tab, setTab] = useState(1);
   const [campaigns, setCampaigns] = useState([]);
-  const { token } = Common.getUserInfo();
+  const { token } = useContext(AuthContext);
 
-  useEffect(() => {
+  function getCampaigns() {
     axios.get('/api/TB_PARTICIPANT/getCampaigns', {
       params: { token }
     }).then((res) => {
       const { data } = res.data;
-      // setCampaigns(data);
+      setCampaigns(data);
       // console.log(data);
     }).catch(err => alert(err));
-  }, []);
+  }
+
+  useEffect(() => {
+    if (token) getCampaigns();
+  }, [token]);
 
   const theme = useTheme();
 
@@ -86,6 +92,7 @@ function CampaignInfo(props) {
           <StyledText fontSize="24">
             캠페인 관리
           </StyledText>
+          {/* <button onClick={getCampaigns}>testApi</button> */}
         </PageTitle>
         <Box py={4} px={6}>
           <Box borderBottom={`2px solid ${Colors.grey7}`}>
@@ -99,29 +106,37 @@ function CampaignInfo(props) {
             </Grid>
           </Box>
           <Box mt={4}>
-            <Grid container spacing={3}>
-              {campaigns.map((item) => {
-                const {
-                  AD_ID, AD_CTG, AD_CTG2, AD_SRCH_END, AD_NAME, AD_SHRT_DISC, TB_PARTICIPANTs, AD_INF_CNT, proportion, TB_PHOTO_ADs,
-                } = item;
-                return (
-                  <Grid item key={AD_ID} style={{ width: getCardWidth() }}>
-                    <CampaignCard
-                      image={TB_PHOTO_ADs[0].PHO_FILE}
-                      ctg1={AD_CTG}
-                      ctg2={AD_CTG2}
-                      srchEnd={AD_SRCH_END}
-                      name={AD_NAME}
-                      shrtDisc={AD_SHRT_DISC}
-                      participantsLength={TB_PARTICIPANTs.length}
-                      cnt={AD_INF_CNT}
-                      proportion={proportion}
-                      onClick={() => detailInfo(item.AD_ID)}
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
+            { campaigns.length > 0 ? (
+              <Grid container spacing={3}>
+                {campaigns.map((item) => {
+                  const {
+                    AD_ID, AD_CTG, AD_CTG2, AD_SRCH_END, AD_NAME, AD_SHRT_DISC, TB_PARTICIPANTs, AD_INF_CNT, proportion, TB_PHOTO_ADs,
+                  } = item;
+                  return (
+                    <Grid item key={AD_ID} style={{ width: getCardWidth() }}>
+                      <CampaignCard
+                        image={TB_PHOTO_ADs[0].PHO_FILE}
+                        ctg1={AD_CTG}
+                        ctg2={AD_CTG2}
+                        srchEnd={AD_SRCH_END}
+                        name={AD_NAME}
+                        shrtDisc={AD_SHRT_DISC}
+                        participantsLength={TB_PARTICIPANTs.length}
+                        cnt={AD_INF_CNT}
+                        proportion={proportion}
+                        onClick={() => detailInfo(AD_ID)}
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            ) : (
+              <Grid container>
+                <Grid item>
+                  신청한 블로그 캠페인이 없습니다.
+                </Grid>
+              </Grid>
+            )}
           </Box>
         </Box>
       </WhiteBlock>

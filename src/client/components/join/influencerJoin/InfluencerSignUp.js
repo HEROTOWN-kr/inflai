@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Formik } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import {
@@ -7,10 +7,12 @@ import {
 import axios from 'axios';
 import * as Yup from 'yup';
 import SocialNetworks from './InfluencerSocial';
+import AuthContext from '../../../context/AuthContext';
 
 function InfluencerSignUp(props) {
   const { changeUser, history, match } = props;
   const [mainError, setMainError] = useState({});
+  const auth = useContext(AuthContext);
 
   async function signUp(values) {
     try {
@@ -19,13 +21,7 @@ function InfluencerSignUp(props) {
         social_type, userToken, userName, regState, userPhone, message
       } = urlResponse.data;
       if (urlResponse.status === 200) {
-        changeUser({
-          social_type,
-          type: '2',
-          token: userToken,
-          name: userName,
-          regState
-        });
+        auth.login(userToken, '2', userName, social_type);
         if (userPhone) {
           history.push('/');
         } else {

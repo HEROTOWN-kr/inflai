@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Grid, Divider, CircularProgress, Button, Box
 } from '@material-ui/core';
@@ -21,6 +21,7 @@ import StyledSvg from '../containers/StyledSvg';
 import StyledButton from '../containers/StyledButton';
 import CampaignApplyDialog from '../dialog/CampaignApplyDialog';
 import defaultAccountImage from '../../img/default_account_image.png';
+import AuthContext from '../../context/AuthContext';
 
 function TabComponent(props) {
   const {
@@ -114,7 +115,7 @@ function CampaignDetail(props) {
   const [isSticky, setSticky] = useState(false);
   const [tab, setTab] = useState(2);
   const testImage = 'https://www.inflai.com/attach/portfolio/33/1yqw1whkavscxke.PNG';
-  const { token, type } = Common.getUserInfo();
+  const { token } = useContext(AuthContext);
   const theme = useTheme();
   const Scroller = Scroll.scroller;
   const ElementLink = Scroll.Element;
@@ -162,7 +163,6 @@ function CampaignDetail(props) {
     const apiObj = {
       id: match.params.id,
     };
-    if (token && type === '2') apiObj.token = token;
 
     axios.get('/api/TB_AD/campaignDetail', {
       params: apiObj
@@ -176,9 +176,9 @@ function CampaignDetail(props) {
 
   function sendRequest() {
     if (token) {
-      history.push(`/CampaignList/apply/${adId}`);
+      // history.push(`/CampaignList/apply/${adId}`);
 
-      /* axios.get('/api/TB_PARTICIPANT/checkParticipant', {
+      axios.get('/api/TB_PARTICIPANT/checkParticipant', {
         params: {
           adId,
           token
@@ -189,7 +189,7 @@ function CampaignDetail(props) {
         } else {
           history.push(`/CampaignList/apply/${adId}`);
         }
-      }).catch(error => (error.response.data.message)); */
+      }).catch(error => (error.response.data.message));
     } else {
       alert('인플루언서로 로그인 해 주세요');
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Box, ClickAwayListener, Divider, Grid, Popper
 } from '@material-ui/core';
@@ -6,16 +6,11 @@ import { Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import LogOutButton from '../login/LogOutButton';
 import UserMenuItems from './UserMenuItems';
+import AuthContext from '../../context/AuthContext';
 
 function UserMenuPopper(props) {
-  const {
-    history,
-    user
-    /* setUserMenu,
-    userMenu,
-    anchorEl,
-    openUserMenu */
-  } = props;
+  const { history, user } = props;
+  const { userName } = useContext(AuthContext);
 
 
   const [userMenu, setUserMenu] = React.useState(null);
@@ -39,7 +34,7 @@ function UserMenuPopper(props) {
     <React.Fragment>
       <Grid container item aria-describedby={id} className="name-holder" onClick={openUserMenu}>
         <Grid item>
-          <div className="name-text">{user.name}</div>
+          <div className="name-text">{userName}</div>
         </Grid>
         <Grid item>
           <ExpandMoreIcon />

@@ -281,7 +281,7 @@ router.get('/list', async (req, res) => {
 router.get('/campaignDetail', async (req, res) => {
   try {
     const data = req.query;
-    const { id, token } = data;
+    const { id } = data;
     const includeArray = [
       {
         model: Photo,
