@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
@@ -10,12 +10,12 @@ import KakaoIcon from '../../img/kakao-logo.png';
 import GoogleIcon from '../../img/google-logo2.png';
 import FacebookIcon from '../../img/facebook-logo.png';
 import TwitchIcon from '../../img/twitch-logo-white.png';
+import AuthContext from '../../context/AuthContext';
 
 
-function SocialNetworks({
-  changeUser,
-  history
-}) {
+function SocialNetworks(props) {
+  const { changeUser, history } = props;
+  const auth = useContext(AuthContext);
   let facebookID;
   if (window.location.host === 'www.inflai.com') {
     facebookID = '663450957780119';
@@ -32,17 +32,14 @@ function SocialNetworks({
           token: response.tokenId
         }
       }).then((res) => {
-        if (res.data.userPhone) {
-          changeUser({
-            social_type: res.data.social_type,
-            type: '1',
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
+        const {
+          userPhone, social_type, userToken, userName, regState
+        } = res.data;
+        auth.login(userToken, '1', userName, social_type);
+        if (userPhone) {
           history.push('/');
         } else {
-          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+          history.push('/profile');
         }
       });
     }
@@ -59,17 +56,14 @@ function SocialNetworks({
           social_type: response.graphDomain
         }
       }).then((res) => {
-        if (res.data.userPhone) {
-          changeUser({
-            social_type: res.data.social_type,
-            type: '1',
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
+        const {
+          userPhone, social_type, userToken, userName
+        } = res.data;
+        auth.login(userToken, '1', userName, social_type);
+        if (userPhone) {
           history.push('/');
         } else {
-          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+          history.push('/profile');
         }
       });
     }
@@ -87,17 +81,14 @@ function SocialNetworks({
           social_type: 'naver'
         }
       }).then((res) => {
-        if (res.data.userPhone) {
-          changeUser({
-            social_type: res.data.social_type,
-            type: '1',
-            token: res.data.userToken,
-            name: res.data.userName,
-            regState: res.data.regState
-          });
+        const {
+          userPhone, social_type, userToken, userName
+        } = res.data;
+        auth.login(userToken, '1', userName, social_type);
+        if (userPhone) {
           history.push('/');
         } else {
-          history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+          history.push('/profile');
         }
       });
     }
@@ -118,17 +109,14 @@ function SocialNetworks({
                 social_type: 'kakao'
               }
             }).then((res) => {
-              if (res.data.userPhone) {
-                changeUser({
-                  social_type: res.data.social_type,
-                  type: '1',
-                  token: res.data.userToken,
-                  name: res.data.userName,
-                  regState: res.data.regState
-                });
+              const {
+                userPhone, social_type, userToken, userName
+              } = res.data;
+              auth.login(userToken, '1', userName, social_type);
+              if (userPhone) {
                 history.push('/');
               } else {
-                history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+                history.push('/profile');
               }
             });
           },
@@ -141,15 +129,6 @@ function SocialNetworks({
         console.log(JSON.stringify(err));
       }
     });
-    /* window.Kakao.Auth.login({
-      // scope: 'friends',
-      success(response) {
-        console.log(response);
-      },
-      fail(error) {
-        console.log(error);
-      },
-    }); */
   };
 
 
@@ -182,7 +161,8 @@ function SocialNetworks({
         <Grid item xs={12}>
           <NaverLogin
             // clientId="4rBF5bJ4y2jKn0gHoSCf"
-            clientId="KyWNbHHgcX4ZcIagGtBg"
+            // clientId="KyWNbHHgcX4ZcIagGtBg"
+            clientId="HddfazOY2WePr9AUHcfh"
             callbackUrl={`${window.location.origin}/Join/Advertiser/Login`}
             render={props => <SocialButton clicked={props.onClick} icon={NaverIcon} text="네이버 로그인" bgColor="#00CE38" textColor="#FFFFFF" />}
             onSuccess={result => responseNaver(result)}

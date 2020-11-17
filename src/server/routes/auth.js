@@ -209,22 +209,22 @@ router.post('/login', (req, res, next) => {
   return passport.authenticate('local-login', (err, token, userData) => {
     if (err) {
       if (err.name === 'IncorrectCredentialsError') {
-        return res.json({
+        return res.status(201).json({
           code: 401,
           success: false,
           message: err.message
         });
       }
 
-      return res.json({
+      return res.status(202).json({
         code: 400,
         success: false,
-        message: 'User not exist'
+        message: '해당 사용자가 없습니다'
       });
     }
 
 
-    return res.json({
+    return res.status(200).json({
       code: 200,
       success: true,
       message: 'You have successfully logged in!',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Grid } from '@material-ui/core';
 import { Colors } from '../../lib/Сonstants';
 import MainBlock from '../containers/MainBlock';
@@ -7,21 +7,18 @@ import TestPage from '../../img/detail-page.jpg';
 import StyledImage from '../containers/StyledImage';
 import defaultAccountImage from '../../img/default_account_image.png';
 import WhiteBlock from '../containers/WhiteBlock';
+import AuthContext from '../../context/AuthContext';
 
 function ProfileMenu(props) {
   const { history, match, userInfo } = props;
+  const { userRole } = useContext(AuthContext);
+
   const links = [
     { text: '내정보 관리', link: '/UserInfo' },
     { text: '캠페인 관리', link: '/CampaignInfo' },
-    { text: '랭킹 정보', link: '/Rank' }
   ];
 
-  const styles = {
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: 'red',
-    }
-  };
+  if (userRole === '2') links.push({ text: '랭킹 정보', link: '/Rank' });
 
   return (
     <Box width={250}>

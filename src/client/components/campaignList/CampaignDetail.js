@@ -81,9 +81,15 @@ function ParticipantList(props) {
                     <Grid item>
                       <StyledText fontSize={16} fontWeight="bold">{item.PAR_NAME}</StyledText>
                     </Grid>
-                    <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
-                    <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
-                    <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
+                    {item.PAR_INSTA ? (
+                      <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
+                    ) : null}
+                    {item.PAR_YOUTUBE ? (
+                      <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
+                    ) : null}
+                    {item.PAR_NAVER ? (
+                      <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
+                    ) : null}
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>

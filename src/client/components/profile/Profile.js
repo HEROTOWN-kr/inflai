@@ -9,13 +9,14 @@ import Common from '../../lib/common';
 import AuthContext from '../../context/AuthContext';
 
 function Profile(props) {
-  const { token } = useContext(AuthContext);
+  const { token, userRole } = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState({});
 
   async function getUserInfo() {
     try {
-      const response = await axios.get('/api/TB_INFLUENCER/', { params: { token } });
+      const url = userRole === '1' ? '/api/TB_INFLUENCER/' : '/api/TB_INFLUENCER/';
+      const response = await axios.get(url, { params: { token } });
       const { data } = response.data;
       if (data) {
         console.log(data);

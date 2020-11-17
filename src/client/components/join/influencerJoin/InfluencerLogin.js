@@ -17,7 +17,7 @@ function InfluencerLogin(props) {
   function logIn(values) {
     axios.post('/api/auth/login', values)
       .then((res) => {
-        if (res.data.code === 200) {
+        if (res.status === 200) {
           const {
             social_type, userToken, userName, regState, userPhone, message
           } = res.data;
@@ -27,7 +27,7 @@ function InfluencerLogin(props) {
           } else {
             history.push('/Profile');
           }
-        } else if (res.data.code === 401) {
+        } else if (res.status === 201) {
           setMainError({ message: res.data.message });
         } else {
           setMainError({ message: res.data.message });

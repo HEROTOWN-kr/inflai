@@ -18,8 +18,7 @@ import AuthContext from '../../../context/AuthContext';
 
 
 function InfluencerSocial(props) {
-  const { changeUser, history } = props;
-  const { search } = document.location;
+  const { history } = props;
   const auth = useContext(AuthContext);
   const [instaDialogOpen, setInstaDialogOpen] = useState(false);
   const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);

@@ -16,7 +16,7 @@ function ReactFormText(props) {
       name={name}
       disabled={disabled}
       placeholder={placeholder || ''}
-      // defaultValue={userInfo.INF_NAME || ''}
+      // defaultValue={UserInfo.INF_NAME || ''}
       inputRef={register}
       error={!!errors[name]}
       helperText={<span className="error-message">{errors[name]?.message}</span>}

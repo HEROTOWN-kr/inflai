@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Formik } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import {
@@ -7,6 +7,7 @@ import {
 import axios from 'axios';
 import * as Yup from 'yup';
 import SocialNetworks from '../../login/SocialNetworks';
+import AuthContext from '../../../context/AuthContext';
 
 function AdvertiserSignUp({
   changeUser,
@@ -14,19 +15,24 @@ function AdvertiserSignUp({
   match
 }) {
   const [mainError, setMainError] = useState({});
+  const auth = useContext(AuthContext);
 
   function signUp(values) {
-    axios.post('/api/TB_ADVERTISER/signup', values)
-      .then((res) => {
-        if (res.data.code === 200) {
-          history.push(`${match.path}/Detail/${res.data.userId}`);
-        } else if (res.data.code === 401) {
-          setMainError({ message: res.data.message });
+    axios.post('/api/TB_ADVERTISER/signup', values).then((res) => {
+      const {
+        userToken, userName, userPhone, message
+      } = res.data;
+      if (res.status === 200) {
+        auth.login(userToken, '2', userName);
+        if (userPhone) {
+          history.push('/');
         } else {
-          console.log(res);
+          history.push('/Profile');
         }
-      })
-      .catch(error => (error));
+      } else if (res.status === 201) {
+        setMainError({ message });
+      }
+    }).catch(error => alert(error.response.data.message));
   }
 
   const SignupSchema = Yup.object().shape({

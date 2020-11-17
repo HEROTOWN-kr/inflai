@@ -47,8 +47,14 @@ $colorPink: #fbbaba;
       max-width: 900px;
     }
     .right-side {
-      width: 220px;
-      justify-content: flex-end;
+      position: relative;
+      .navbarProfileImage {
+         &:hover {
+           cursor: pointer ;
+           border-radius: 100%;
+           border: 3px solid #eb128c;
+         }
+      }
     }
     .name-holder {
       //color: $colorBg;
@@ -123,18 +129,17 @@ $colorPink: #fbbaba;
 }
 
 .user-popmenu {
-  background: #f7f7f7;
-  border-radius: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-top: 0;
   a {
     text-decoration: none;
     color: black;
     .pop-item {
-      padding: 15px 60px;
-      text-align: center;
-      font-size: 14px;
       &:hover {
         cursor: pointer;
-        color: $colorBlue;
+        color: #eb128c;
+        font-weight: bold;
       }
     }
   }

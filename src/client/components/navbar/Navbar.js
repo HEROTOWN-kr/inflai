@@ -27,23 +27,11 @@ function CustomNavbar(props) {
               <NavbarLinks {...props} />
             </Grid>
           </Grid>
-          <Grid item className="right-side">
+          <Grid item>
             <Grid container justify="flex-end" alignItems="center">
               <Grid item>
                 <NavbarUserMenu {...props} />
               </Grid>
-              {props.user.type === '1' ? (
-                <Hidden smDown>
-                  <Grid item>
-                    <Link
-                      className="link"
-                      to="/Product"
-                    >
-                        마케팅 요청
-                    </Link>
-                  </Grid>
-                </Hidden>
-              ) : null }
             </Grid>
           </Grid>
           <NavbarMobileMenu {...props} />

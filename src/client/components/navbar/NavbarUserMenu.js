@@ -13,24 +13,18 @@ function NavbarUserMenu(props) {
   function UserMenu() {
     return (
       <Hidden smDown>
-        <Grid container alignItems="center" justify="flex-end">
-          {
-              isAuthenticated ? (
-                <React.Fragment>
-                  <UserMenuPopper {...props} />
-                </React.Fragment>
-              ) : (
-                <Grid item>
-                  <Link
-                    className="link"
-                    to="/Join/Type"
-                  >
-                          로그인 | 회원가입
-                  </Link>
-                </Grid>
-              )
-            }
-        </Grid>
+        {
+          isAuthenticated ? (
+            <UserMenuPopper {...props} />
+          ) : (
+            <Link
+              className="link"
+              to="/Join/Type"
+            >
+                  로그인 | 회원가입
+            </Link>
+          )
+        }
       </Hidden>
     );
   }

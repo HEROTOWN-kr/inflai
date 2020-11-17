@@ -90,7 +90,9 @@ module.exports = new PassportLocalStrategy({
         // create a token string
         const token = jwt.sign(payload, config.jwtSecret);
         const data = {
-          name: user.dataValues.INF_NAME
+          userId: user.dataValues.INF_ID,
+          name: user.dataValues.INF_NAME,
+          userPhone: user.dataValues.INF_TEL
         };
 
         return done(null, token, data);

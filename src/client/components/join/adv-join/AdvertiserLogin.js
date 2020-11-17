@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import * as Yup from 'yup';
 import { Form, Formik } from 'formik';
@@ -7,30 +7,29 @@ import {
   Box, Button, Divider, TextField
 } from '@material-ui/core';
 import SocialNetworks from '../../login/SocialNetworks';
+import AuthContext from '../../../context/AuthContext';
 
 function AdvertiserLogin({
   changeUser,
   history
 }) {
   const [mainError, setMainError] = useState({});
+  const auth = useContext(AuthContext);
 
   function logIn(values) {
     axios.post('/api/auth/login', values)
       .then((res) => {
-        if (res.data.code === 200) {
-          if (res.data.userPhone) {
-            changeUser({
-              social_type: res.data.social_type,
-              type: values.type,
-              token: res.data.userToken,
-              name: res.data.userName,
-              regState: res.data.regState
-            });
+        if (res.status === 200) {
+          const {
+            social_type, userToken, userName, regState, userPhone, message
+          } = res.data;
+          auth.login(userToken, '1', userName, social_type);
+          if (userPhone) {
             history.push('/');
           } else {
-            history.push(`/Join/Advertiser/SignUp/Detail/${res.data.userId}`);
+            history.push('/Profile');
           }
-        } else if (res.data.code === 401) {
+        } else if (res.status === 201) {
           setMainError({ message: res.data.message });
         } else {
           setMainError({ message: res.data.message });

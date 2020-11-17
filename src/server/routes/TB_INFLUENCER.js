@@ -119,7 +119,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/userInfo', (req, res) => {
+router.get('/UserInfo', (req, res) => {
   const { token, id } = req.query;
   const userId = id || getIdFromToken(token).sub;
 

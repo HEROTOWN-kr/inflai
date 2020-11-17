@@ -9,7 +9,11 @@ const config = require('../config');
 const configKey = require('../config/config');
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influenser = require('../models').TB_INFLUENCER;
-const common = require('../config/common');
+const {
+  getIdFromToken,
+  createToken,
+  hashData
+} = require('../config/common');
 
 const saltRounds = 10;
 
@@ -377,7 +381,7 @@ router.get('/Googletest1', (req, res) => {
 
 router.get('/', (req, res) => {
   const { token, id, col } = req.query;
-  const userId = id || common.getIdFromToken(token).sub;
+  const userId = id || getIdFromToken(token).sub;
   const options = {
     where: { ADV_ID: userId }
   };
@@ -399,16 +403,13 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/userInfo', (req, res) => {
+router.get('/UserInfo', (req, res) => {
   const { token, id } = req.query;
-  const userId = id || common.getIdFromToken(token).sub;
+  const userId = id || getIdFromToken(token).sub;
 
   Advertiser.findOne({
     where: { ADV_ID: userId },
-    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS',
-      [Sequelize.literal('CASE ADV_TYPE WHEN \'1\' THEN \'일반\' WHEN \'2\' THEN \'에이전시\' ELSE \'소상공인\' END'), 'ADV_TYPE'],
-      [Sequelize.literal('CASE ADV_CLASS WHEN \'1\' THEN \'국내사업자\' ELSE \'해외사업자\' END'), 'ADV_CLASS'],
-    ]
+    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS']
   }).then((result) => {
     res.json({
       code: 200,
@@ -509,7 +510,7 @@ router.get('/loginGoogle', (req, res) => {
       }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userToken: createToken(result2.dataValues.ADV_ID),
           userName: result2.dataValues.ADV_NAME,
           userId: result2.ADV_ID,
           social_type
@@ -518,7 +519,7 @@ router.get('/loginGoogle', (req, res) => {
     } else {
       res.json({
         code: 200,
-        userToken: common.createToken(result.dataValues.ADV_ID),
+        userToken: createToken(result.dataValues.ADV_ID),
         userName: result.dataValues.ADV_NAME,
         userId: result.ADV_ID,
         userPhone: result.ADV_TEL,
@@ -544,7 +545,7 @@ router.get('/loginFacebook', (req, res) => {
       }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userToken: createToken(result2.dataValues.ADV_ID),
           userName: result2.dataValues.ADV_NAME,
           userId: result2.ADV_ID,
           social_type
@@ -553,7 +554,7 @@ router.get('/loginFacebook', (req, res) => {
     } else {
       res.json({
         code: 200,
-        userToken: common.createToken(result.dataValues.ADV_ID),
+        userToken: createToken(result.dataValues.ADV_ID),
         userName: result.dataValues.ADV_NAME,
         userId: result.ADV_ID,
         userPhone: result.ADV_TEL,
@@ -579,7 +580,7 @@ router.get('/loginNaver', (req, res) => {
       }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userToken: createToken(result2.dataValues.ADV_ID),
           userName: result2.dataValues.ADV_NAME,
           userId: result2.ADV_ID,
           social_type
@@ -588,7 +589,7 @@ router.get('/loginNaver', (req, res) => {
     } else {
       res.json({
         code: 200,
-        userToken: common.createToken(result.dataValues.ADV_ID),
+        userToken: createToken(result.dataValues.ADV_ID),
         userName: result.dataValues.ADV_NAME,
         userId: result.ADV_ID,
         userPhone: result.ADV_TEL,
@@ -614,7 +615,7 @@ router.get('/loginKakao', (req, res) => {
       }).then((result2) => {
         res.json({
           code: 200,
-          userToken: common.createToken(result2.dataValues.ADV_ID),
+          userToken: createToken(result2.dataValues.ADV_ID),
           userName: result2.dataValues.ADV_NAME,
           userId: result2.ADV_ID,
           social_type
@@ -623,7 +624,7 @@ router.get('/loginKakao', (req, res) => {
     } else {
       res.json({
         code: 200,
-        userToken: common.createToken(result.dataValues.ADV_ID),
+        userToken: createToken(result.dataValues.ADV_ID),
         userName: result.dataValues.ADV_NAME,
         userId: result.ADV_ID,
         userPhone: result.ADV_TEL,
@@ -657,7 +658,7 @@ router.get('/loginTwitch', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: common.createToken(result.dataValues.ADV_ID),
+            userToken: createToken(result.dataValues.ADV_ID),
             userName: result.dataValues.ADV_NAME,
             regState: result.dataValues.ADV_FULL_REG,
             social_type
@@ -666,7 +667,7 @@ router.get('/loginTwitch', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: common.createToken(result.dataValues.ADV_ID),
+          userToken: createToken(result.dataValues.ADV_ID),
           userName: result.dataValues.ADV_NAME,
           regState: result.dataValues.ADV_FULL_REG,
           social_type
@@ -685,7 +686,7 @@ router.get('/loginTwitch', (req, res) => {
         }).then((result) => {
           res.json({
             code: 200,
-            userToken: common.createToken(result.dataValues.INF_ID),
+            userToken: createToken(result.dataValues.INF_ID),
             userName: result.dataValues.INF_NAME,
             social_type
           });
@@ -693,7 +694,7 @@ router.get('/loginTwitch', (req, res) => {
       } else {
         res.json({
           code: 200,
-          userToken: common.createToken(result.dataValues.INF_ID),
+          userToken: createToken(result.dataValues.INF_ID),
           userName: result.dataValues.INF_NAME,
           social_type
         });
@@ -704,85 +705,37 @@ router.get('/loginTwitch', (req, res) => {
   }
 });
 
-router.post('/signup', (req, res) => {
-  const data = req.body;
-  const { type } = data;
+router.post('/signup', async (req, res) => {
+  try {
+    const data = req.body;
+    const { email, name, password } = data;
 
-  const userData = {};
-
-  if (type === '1') {
-    userData.ADV_EMAIL = data.email;
-    userData.ADV_NAME = data.name;
-
-    bcrypt.hash(data.password, saltRounds, (err, hash) => {
-      userData.ADV_PASS = hash;
-      if (err) {
-        console.log(err);
-      } else {
-        Advertiser.findOne({
-          where: { ADV_EMAIL: data.email }
-        }).then((user) => {
-          if (user) {
-            res.json({
-              code: 401,
-              message: '이 이메일은 이미 사용중입니다.'
-            });
-          } else {
-            Advertiser.create(userData).then((result) => {
-              res.json({
-                code: 200,
-                userId: result.dataValues.ADV_ID,
-                // userToken: common.createToken(result.dataValues.ADV_ID),
-                userName: data.name,
-                social_type: 'not-social'
-              });
-            }).catch((err) => {
-              res.json({
-                code: 400,
-                success: false,
-                error: err
-              });
-            });
-          }
-        });
-      }
+    const advertiserData = await Advertiser.findOne({
+      where: { ADV_EMAIL: email }
     });
-  } else {
-    userData.INF_EMAIL = data.email;
-    userData.INF_NAME = data.name;
 
-    bcrypt.hash(data.password, saltRounds, (err, hash) => {
-      userData.INF_PASS = hash;
-      if (err) {
-        console.log(err);
-      } else {
-        Influenser.findOne({
-          where: { INF_EMAIL: data.email }
-        }).then((user) => {
-          if (user) {
-            res.json({
-              code: 401,
-              message: '이 이메일은 이미 사용중입니다.'
-            });
-          } else {
-            Influenser.create(userData).then((result) => {
-              res.json({
-                code: 200,
-                userToken: common.createToken(result.dataValues.INF_ID),
-                userName: data.name,
-                social_type: 'not-social'
-              });
-            }).catch((err) => {
-              res.json({
-                code: 400,
-                success: false,
-                error: err
-              });
-            });
-          }
-        });
-      }
-    });
+    if (advertiserData) {
+      res.status(201).json({ message: '이 이메일은 이미 사용중입니다.' });
+    } else {
+      const hashedPass = await hashData(password);
+      const params = {
+        ADV_EMAIL: email,
+        ADV_NAME: name,
+        ADV_PASS: hashedPass,
+      };
+      const newUser = await Advertiser.create(params);
+      const { ADV_ID, ADV_EMAIL, ADV_NAME } = newUser;
+
+      res.status(200).json({
+        userId: ADV_ID,
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: '',
+        social_type: 'noSocial'
+      });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
   }
 });
 
@@ -791,7 +744,7 @@ router.post('/update', (req, res) => {
   const {
     id, token, classification, registerNumber, jobType, name, phone, companyName, companyUrl, subscribeAim
   } = data;
-  const userId = id || common.getIdFromToken(data.token).sub;
+  const userId = id || getIdFromToken(data.token).sub;
 
   const post = {};
 
@@ -812,7 +765,7 @@ router.post('/update', (req, res) => {
         code: 200,
         social_type: 'noSocial',
         userName: data.name,
-        userToken: token || common.createToken(userId),
+        userToken: token || createToken(userId),
       });
     }
   });
@@ -821,7 +774,7 @@ router.post('/update', (req, res) => {
 router.get('/delete', (req, res) => {
   const data = req.query;
   const { id, token } = data;
-  const userId = id || common.getIdFromToken(token).sub;
+  const userId = id || getIdFromToken(token).sub;
 
   Advertiser.destroy({
     where: { ADV_ID: userId }

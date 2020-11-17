@@ -5,7 +5,7 @@ import { Colors } from '../../lib/Сonstants';
 import WhiteBlock from '../containers/WhiteBlock';
 import NotFound from '../main/NotFound';
 import Rank from './pages/Rank';
-import UserInfo from './pages/UserInfo';
+import UserInfo from './pages/UserInfo/UserInfo';
 import CampaignInfo from './pages/CampaignInfo';
 
 function ProfileContent(props) {
