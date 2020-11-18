@@ -34,17 +34,17 @@ function ProfileMenu(props) {
                 </Grid>
                 <Grid item xs={12}>
                   <Box py={1}>
-                    <StyledImage width="110px" height="110px" borderRadius="100%" src={userInfo.INF_PHOTO || defaultAccountImage} />
+                    <StyledImage width="110px" height="110px" borderRadius="100%" src={userInfo.INF_PHOTO || userInfo.ADV_PHOTO || defaultAccountImage} />
                   </Box>
                 </Grid>
                 <Grid item xs={12}>
                   <StyledText fontSize="16" fontWeight="600">
-                    {userInfo.INF_NAME}
+                    {userInfo.INF_NAME || userInfo.ADV_NAME }
                   </StyledText>
                 </Grid>
                 <Grid item xs={12}>
                   <StyledText fontSize="14">
-                    {`${userInfo.INF_BLOG_TYPE} 로그인`}
+                    {`${userInfo.INF_BLOG_TYPE || userInfo.ADV_BLOG_TYPE} 로그인`}
                   </StyledText>
                 </Grid>
               </Grid>

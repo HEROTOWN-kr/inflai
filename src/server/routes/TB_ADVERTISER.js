@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const request = require('request');
 const bcrypt = require('bcryptjs');
 const { google } = require('googleapis');
+const fse = require('fs-extra');
+const path = require('path');
+const uniqid = require('uniqid');
 
 const config = require('../config');
 const configKey = require('../config/config');
@@ -409,7 +412,9 @@ router.get('/UserInfo', (req, res) => {
 
   Advertiser.findOne({
     where: { ADV_ID: userId },
-    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS']
+    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS', 'ADV_POST_CODE', 'ADV_ROAD_ADDR', 'ADV_DETAIL_ADDR', 'ADV_EXTR_ADDR', 'ADV_PHOTO',
+      [Sequelize.literal('CASE ADV_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'ADV_BLOG_TYPE']
+    ]
   }).then((result) => {
     res.json({
       code: 200,
@@ -739,52 +744,81 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.post('/update', (req, res) => {
-  const data = req.body;
-  const {
-    id, token, classification, registerNumber, jobType, name, phone, companyName, companyUrl, subscribeAim
-  } = data;
-  const userId = id || getIdFromToken(data.token).sub;
+router.post('/update', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      id, token, nickName, registerNumber, phone, companyName, postcode, roadAddress,
+      detailAddress, extraAddress
+    } = data;
+    const userId = id || getIdFromToken(token).sub;
 
-  const post = {};
+    const post = {};
 
-  if (classification) post.ADV_CLASS = classification;
-  if (registerNumber) post.ADV_REG_NUM = registerNumber;
-  if (jobType) post.ADV_TYPE = jobType;
-  if (name) post.ADV_NAME = name;
-  if (phone) post.ADV_TEL = phone;
-  if (companyName) post.ADV_COM_NAME = companyName;
-  if (companyUrl) post.ADV_COM_URL = companyUrl;
-  if (subscribeAim) post.ADV_SUB_AIM = subscribeAim;
+    if (nickName) post.ADV_NAME = nickName;
+    if (registerNumber) post.ADV_REG_NUM = registerNumber;
+    if (phone) post.ADV_TEL = phone;
+    if (companyName) post.ADV_COM_NAME = companyName;
+    if (postcode) post.ADV_POST_CODE = postcode;
+    if (roadAddress) post.ADV_ROAD_ADDR = roadAddress;
+    if (detailAddress) post.ADV_DETAIL_ADDR = detailAddress;
+    if (extraAddress) post.ADV_EXTR_ADDR = extraAddress;
 
-  Advertiser.update(post, {
-    where: { ADV_ID: userId }
-  }).then((result) => {
-    if (result) {
-      res.json({
-        code: 200,
-        social_type: 'noSocial',
-        userName: data.name,
-        userToken: token || createToken(userId),
-      });
-    }
-  });
+    await Advertiser.update(post, { where: { ADV_ID: userId } });
+
+    res.status(200).json({ message: 'success' });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
-router.get('/delete', (req, res) => {
-  const data = req.query;
-  const { id, token } = data;
-  const userId = id || getIdFromToken(token).sub;
+// 이미지 업로드
+router.post('/upload', async (req, res, next) => {
+  try {
+    const { file } = req.files;
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+    // const uid = uniqid();
+    const uid = 'profile';
 
-  Advertiser.destroy({
-    where: { ADV_ID: userId }
-  }).then((result) => {
-    if (result) {
-      res.json({
-        code: 200
-      });
-    }
-  });
+    const newFileNm = path.normalize(uid + path.extname(file.name));
+    const uploadPath = path.normalize(`${configKey.attachRoot}/profile/advertiser/${userId}/`) + newFileNm;
+
+
+    await fse.move(file.path, uploadPath, { clobber: true });
+
+    const DRAWING_URL = `/attach/profile/advertiser/${userId}/${newFileNm}`;
+
+    const post = {
+      ADV_PHOTO: DRAWING_URL
+    };
+
+    await Advertiser.update(post, {
+      where: { ADV_ID: userId }
+    });
+
+    return res.status(200).json({ message: '' });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/delete', async (req, res) => {
+  try {
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+    const post = {
+      ADV_PHOTO: null
+    };
+
+    await Advertiser.update(post, {
+      where: { ADV_ID: userId }
+    });
+
+    return res.status(200).json({ message: '', data: '' });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
 });
 
 module.exports = router;

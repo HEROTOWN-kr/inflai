@@ -11,7 +11,7 @@ import AuthContext from '../context/AuthContext';
 
 function App() {
   const {
-    token, login, logout, userRole, socialType, userName, ready
+    token, login, logout, userDataUpdate, userRole, userPhoto, socialType, userName, ready
   } = useAuth();
   const isAuthenticated = !!token;
 
@@ -31,7 +31,7 @@ function App() {
 
   return (
     <AuthContext.Provider value={{
-      token, login, logout, userRole, socialType, userName, isAuthenticated
+      token, login, logout, userDataUpdate, userRole, userPhoto, socialType, userName, isAuthenticated
     }}
     >
       <div className="app-block">

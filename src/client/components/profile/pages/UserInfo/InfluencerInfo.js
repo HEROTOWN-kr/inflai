@@ -128,7 +128,7 @@ function InfluencerInfo(props) {
               <Grid container alignItems="center">
                 <Grid item xs={2}>
                   <StyledText fontSize="15">
-                                      이름
+                    이름
                   </StyledText>
                 </Grid>
                 <Grid item xs={10}>
@@ -203,7 +203,7 @@ function InfluencerInfo(props) {
                           width="110px"
                           height="110px"
                           borderRadius="100%"
-                          src={imageUrl || userInfo.INF_PHOTO || defaultAccountImage}
+                          src={imageUrl || userInfo.ADV_PHOTO || defaultAccountImage}
                         />
                       </Grid>
                       <Grid item>
@@ -221,7 +221,7 @@ function InfluencerInfo(props) {
                             />
                           </ImageActionButton>
                         </label>
-                        {userInfo.INF_PHOTO ? (
+                        {userInfo.ADV_PHOTO ? (
                           <Box pt={1}>
                             <ImageActionButton onClick={() => deletePicture(token)}>
                                                           이미지 삭제
@@ -242,7 +242,7 @@ function InfluencerInfo(props) {
                   </StyledText>
                 </Grid>
                 <Grid item xs={10}>
-                  <input id="kakaoCheck" type="checkbox" checked={userInfo.INF_MESSAGE || 0} onChange={e => updateData(e.target.checked)} />
+                  <input id="kakaoCheck" type="checkbox" checked={userInfo.ADV_MESSAGE || 0} onChange={e => updateData(e.target.checked)} />
                   <label htmlFor="kakaoCheck">
                     {' 카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.'}
                   </label>

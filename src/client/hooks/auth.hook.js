@@ -8,6 +8,7 @@ const useAuth = () => {
   const [userRole, setUserRole] = useState(null);
   const [socialType, setSocialType] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [userPhoto, setUserPhoto] = useState(null);
 
   const login = useCallback((jwtToken, role, name, type) => {
     setToken(jwtToken);
@@ -29,6 +30,11 @@ const useAuth = () => {
     localStorage.removeItem(storageName);
   }, []);
 
+  const userDataUpdate = useCallback((name, photo) => {
+    setUserName(name);
+    setUserPhoto(photo);
+  }, []);
+
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem(storageName));
 
@@ -40,7 +46,7 @@ const useAuth = () => {
 
 
   return {
-    login, logout, token, userRole, socialType, userName, ready
+    login, logout, userDataUpdate, token, userRole, userPhoto, socialType, userName, ready
   };
 };
 

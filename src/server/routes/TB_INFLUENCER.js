@@ -2,7 +2,6 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const jwt = require('jsonwebtoken');
 const request = require('request');
-// const Promise = require('bluebird');
 const async = require('async');
 const { google } = require('googleapis');
 
@@ -73,7 +72,7 @@ router.get('/', async (req, res) => {
       where: { INF_ID: userId },
       attributes: [
         'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR', 'INF_DETAIL_ADDR', 'INF_EXTR_ADDR', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
-        [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'Simple\' END'), 'INF_BLOG_TYPE']
+        [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'INF_BLOG_TYPE']
       ],
       include: [
         {
@@ -1173,12 +1172,12 @@ router.post('/upload', async (req, res, next) => {
     const uid = 'profile';
 
     const newFileNm = path.normalize(uid + path.extname(file.name));
-    const uploadPath = path.normalize(`${config.attachRoot}/profile/${userId}/`) + newFileNm;
+    const uploadPath = path.normalize(`${config.attachRoot}/profile/influencer/${userId}/`) + newFileNm;
 
 
     await fse.move(file.path, uploadPath, { clobber: true });
 
-    const DRAWING_URL = `/attach/profile/${userId}/${newFileNm}`;
+    const DRAWING_URL = `/attach/profile/influencer/${userId}/${newFileNm}`;
 
     const post = {
       INF_PHOTO: DRAWING_URL

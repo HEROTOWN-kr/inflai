@@ -13,7 +13,7 @@ import StyledImage from '../containers/StyledImage';
 
 function UserMenuPopper(props) {
   const { history, user } = props;
-  const { userName } = useContext(AuthContext);
+  const { userName, userPhoto } = useContext(AuthContext);
 
 
   const [userMenu, setUserMenu] = React.useState(null);
@@ -42,7 +42,8 @@ function UserMenuPopper(props) {
               <StyledImage
                 width="40px"
                 height="40px"
-                src={defaultAccountImage}
+                borderRadius="100%"
+                src={userPhoto || defaultAccountImage}
                 className="navbarProfileImage"
               />
             </div>

@@ -15,11 +15,10 @@ function Profile(props) {
 
   async function getUserInfo() {
     try {
-      const url = userRole === '1' ? '/api/TB_INFLUENCER/' : '/api/TB_INFLUENCER/';
+      const url = userRole === '1' ? '/api/TB_ADVERTISER/UserInfo' : '/api/TB_INFLUENCER/';
       const response = await axios.get(url, { params: { token } });
       const { data } = response.data;
       if (data) {
-        console.log(data);
         setUserInfo(data);
       }
     } catch (err) {

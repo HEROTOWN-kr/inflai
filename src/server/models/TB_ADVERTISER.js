@@ -25,6 +25,22 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: true
     },
+    ADV_POST_CODE: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    ADV_ROAD_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    ADV_DETAIL_ADDR: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
+    ADV_EXTR_ADDR: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     ADV_PHOTO: {
       type: DataTypes.STRING(100),
       allowNull: true
@@ -55,6 +71,14 @@ module.exports = function (sequelize, DataTypes) {
     },
     ADV_SUB_AIM: {
       type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    ADV_BLOG_TYPE: {
+      type: DataTypes.STRING(1),
+      allowNull: true
+    },
+    ADV_MESSAGE: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     ADV_FULL_REG: {
