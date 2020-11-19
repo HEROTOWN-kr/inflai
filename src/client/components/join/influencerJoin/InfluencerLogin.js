@@ -19,9 +19,9 @@ function InfluencerLogin(props) {
       .then((res) => {
         if (res.status === 200) {
           const {
-            social_type, userToken, userName, regState, userPhone, message
+            social_type, userToken, userName, regState, userPhone, userPhoto, message
           } = res.data;
-          auth.login(userToken, '2', userName, social_type);
+          auth.login(userToken, '2', userName, social_type, userPhoto);
           if (userPhone) {
             history.push('/');
           } else {

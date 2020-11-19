@@ -15,7 +15,8 @@ const Influenser = require('../models').TB_INFLUENCER;
 const {
   getIdFromToken,
   createToken,
-  hashData
+  hashData,
+  getGoogleData
 } = require('../config/common');
 
 const saltRounds = 10;
@@ -412,7 +413,7 @@ router.get('/UserInfo', (req, res) => {
 
   Advertiser.findOne({
     where: { ADV_ID: userId },
-    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS', 'ADV_POST_CODE', 'ADV_ROAD_ADDR', 'ADV_DETAIL_ADDR', 'ADV_EXTR_ADDR', 'ADV_PHOTO',
+    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS', 'ADV_POST_CODE', 'ADV_ROAD_ADDR', 'ADV_DETAIL_ADDR', 'ADV_EXTR_ADDR', 'ADV_PHOTO', 'ADV_MESSAGE',
       [Sequelize.literal('CASE ADV_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'ADV_BLOG_TYPE']
     ]
   }).then((result) => {
@@ -502,143 +503,171 @@ router.get('/test2', (req, res) => {
   });
 });
 
-router.get('/loginGoogle', (req, res) => {
-  const { token, type, social_type } = req.query;
-  const userInfo = jwt.decode(token);
+router.get('/loginGoogle', async (req, res) => {
+  try {
+    const data = req.query;
+    const { code } = data;
+    const googleData = await getGoogleData(code);
+    const {
+      name, email, id, refresh_token, picture
+    } = googleData;
 
-  Advertiser.findOne({ where: { ADV_REG_ID: userInfo.sub } }).then((result) => {
-    if (!result) {
-      Advertiser.create({
-        ADV_NAME: userInfo.name,
-        ADV_EMAIL: userInfo.email,
-        ADV_REG_ID: userInfo.sub
-      }).then((result2) => {
-        res.json({
-          code: 200,
-          userToken: createToken(result2.dataValues.ADV_ID),
-          userName: result2.dataValues.ADV_NAME,
-          userId: result2.ADV_ID,
-          social_type
-        });
-      });
-    } else {
-      res.json({
-        code: 200,
-        userToken: createToken(result.dataValues.ADV_ID),
-        userName: result.dataValues.ADV_NAME,
-        userId: result.ADV_ID,
-        userPhone: result.ADV_TEL,
-        social_type
-      });
-    }
-  }).error((err) => {
-    res.send('error has occured');
-  });
-});
+    const advertiserData = await Advertiser.findOne({ where: { ADV_REG_ID: id } });
 
-router.get('/loginFacebook', (req, res) => {
-  const {
-    id, email, name, type, social_type
-  } = req.query;
-
-  Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-    if (!result) {
-      Advertiser.create({
+    if (!advertiserData) {
+      const newAdvertiser = await Advertiser.create({
         ADV_NAME: name,
         ADV_EMAIL: email,
-        ADV_REG_ID: id
-      }).then((result2) => {
-        res.json({
-          code: 200,
-          userToken: createToken(result2.dataValues.ADV_ID),
-          userName: result2.dataValues.ADV_NAME,
-          userId: result2.ADV_ID,
-          social_type
-        });
+        ADV_PHOTO: picture || null,
+        ADV_REG_ID: id,
+        ADV_BLOG_TYPE: '2',
+      });
+      const { ADV_ID, ADV_NAME, ADV_PHOTO } = newAdvertiser;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: null,
+        userPhoto: ADV_PHOTO,
+        social_type: 'google'
       });
     } else {
-      res.json({
-        code: 200,
-        userToken: createToken(result.dataValues.ADV_ID),
-        userName: result.dataValues.ADV_NAME,
-        userId: result.ADV_ID,
-        userPhone: result.ADV_TEL,
-        social_type
+      const {
+        ADV_ID, ADV_NAME, ADV_TEL, ADV_PHOTO
+      } = advertiserData;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: ADV_TEL,
+        userPhoto: ADV_PHOTO,
+        social_type: 'google'
       });
     }
-  }).error((err) => {
-    res.send('error has occured');
-  });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
-router.get('/loginNaver', (req, res) => {
-  const {
-    id, email, name, type, social_type
-  } = req.query;
+router.get('/loginFacebook', async (req, res) => {
+  try {
+    const {
+      id, email, name, social_type, photo
+    } = req.query;
 
-  Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-    if (!result) {
-      Advertiser.create({
+    const userFacebook = await Advertiser.findOne({ where: { ADV_REG_ID: id } });
+
+    if (!userFacebook) {
+      const newUser = await Advertiser.create({
         ADV_NAME: name,
         ADV_EMAIL: email,
-        ADV_REG_ID: id
-      }).then((result2) => {
-        res.json({
-          code: 200,
-          userToken: createToken(result2.dataValues.ADV_ID),
-          userName: result2.dataValues.ADV_NAME,
-          userId: result2.ADV_ID,
-          social_type
-        });
+        ADV_REG_ID: id,
+        ADV_PHOTO: photo,
+        ADV_BLOG_TYPE: '1',
+      });
+      const { ADV_ID, ADV_NAME, ADV_PHOTO } = newUser;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: null,
+        userPhoto: ADV_PHOTO,
+        social_type
       });
     } else {
-      res.json({
-        code: 200,
-        userToken: createToken(result.dataValues.ADV_ID),
-        userName: result.dataValues.ADV_NAME,
-        userId: result.ADV_ID,
-        userPhone: result.ADV_TEL,
+      const {
+        ADV_ID, ADV_NAME, ADV_TEL, ADV_PHOTO
+      } = userFacebook;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: ADV_TEL,
+        userPhoto: ADV_PHOTO,
         social_type
       });
     }
-  }).error((err) => {
-    res.send('error has occured');
-  });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
-router.get('/loginKakao', (req, res) => {
-  const {
-    id, email, name, type, social_type
-  } = req.query;
+router.get('/loginNaver', async (req, res) => {
+  try {
+    const {
+      id, email, name, social_type, profile_image
+    } = req.query;
 
-  Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-    if (!result) {
-      Advertiser.create({
+    const userNaver = await Advertiser.findOne({ where: { ADV_REG_ID: id } });
+
+    if (!userNaver) {
+      const newUser = await Advertiser.create({
         ADV_NAME: name,
         ADV_EMAIL: email,
-        ADV_REG_ID: id
-      }).then((result2) => {
-        res.json({
-          code: 200,
-          userToken: createToken(result2.dataValues.ADV_ID),
-          userName: result2.dataValues.ADV_NAME,
-          userId: result2.ADV_ID,
-          social_type
-        });
+        ADV_REG_ID: id,
+        ADV_PHOTO: profile_image || null,
+        ADV_BLOG_TYPE: '3'
+      });
+      const { ADV_ID, ADV_NAME, ADV_PHOTO } = newUser;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: null,
+        userPhoto: ADV_PHOTO,
+        social_type
       });
     } else {
-      res.json({
-        code: 200,
-        userToken: createToken(result.dataValues.ADV_ID),
-        userName: result.dataValues.ADV_NAME,
-        userId: result.ADV_ID,
-        userPhone: result.ADV_TEL,
+      const {
+        ADV_ID, ADV_NAME, ADV_TEL, ADV_PHOTO
+      } = userNaver;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: ADV_TEL,
+        userPhoto: ADV_PHOTO,
         social_type
       });
     }
-  }).error((err) => {
-    res.send('error has occured');
-  });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/loginKakao', async (req, res) => {
+  try {
+    const {
+      id, email, name, social_type, photo
+    } = req.query;
+
+    const advertiserData = await Advertiser.findOne({ where: { ADV_REG_ID: id } });
+
+    if (!advertiserData) {
+      const newData = await Advertiser.create({
+        ADV_NAME: name,
+        ADV_EMAIL: email,
+        ADV_PHOTO: photo || null,
+        ADV_REG_ID: id,
+        ADV_BLOG_TYPE: '4'
+      });
+      const { ADV_ID, ADV_NAME, ADV_PHOTO } = newData;
+      res.status(200).json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: null,
+        userPhoto: ADV_PHOTO,
+        social_type
+      });
+    } else {
+      const {
+        ADV_ID, ADV_NAME, ADV_TEL, ADV_PHOTO
+      } = advertiserData;
+      res.json({
+        userToken: createToken(ADV_ID),
+        userName: ADV_NAME,
+        userPhone: ADV_TEL,
+        userPhoto: ADV_PHOTO,
+        social_type
+      });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.get('/loginTwitch', (req, res) => {
@@ -727,15 +756,19 @@ router.post('/signup', async (req, res) => {
         ADV_EMAIL: email,
         ADV_NAME: name,
         ADV_PASS: hashedPass,
+        ADV_BLOG_TYPE: '5'
       };
       const newUser = await Advertiser.create(params);
-      const { ADV_ID, ADV_EMAIL, ADV_NAME } = newUser;
+      const {
+        ADV_ID, ADV_EMAIL, ADV_NAME, ADV_PHOTO
+      } = newUser;
 
       res.status(200).json({
         userId: ADV_ID,
         userToken: createToken(ADV_ID),
         userName: ADV_NAME,
         userPhone: '',
+        userPhoto: ADV_PHOTO,
         social_type: 'noSocial'
       });
     }
@@ -749,7 +782,7 @@ router.post('/update', async (req, res) => {
     const data = req.body;
     const {
       id, token, nickName, registerNumber, phone, companyName, postcode, roadAddress,
-      detailAddress, extraAddress
+      detailAddress, extraAddress, message
     } = data;
     const userId = id || getIdFromToken(token).sub;
 
@@ -763,6 +796,7 @@ router.post('/update', async (req, res) => {
     if (roadAddress) post.ADV_ROAD_ADDR = roadAddress;
     if (detailAddress) post.ADV_DETAIL_ADDR = detailAddress;
     if (extraAddress) post.ADV_EXTR_ADDR = extraAddress;
+    if (message) post.ADV_MESSAGE = message;
 
     await Advertiser.update(post, { where: { ADV_ID: userId } });
 

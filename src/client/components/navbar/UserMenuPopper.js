@@ -43,6 +43,7 @@ function UserMenuPopper(props) {
                 width="40px"
                 height="40px"
                 borderRadius="100%"
+                border="3px solid #fff"
                 src={userPhoto || defaultAccountImage}
                 className="navbarProfileImage"
               />

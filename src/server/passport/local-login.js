@@ -28,6 +28,9 @@ module.exports = new PassportLocalStrategy({
     return Advertiser.findOne({
       where: { ADV_EMAIL: userData.email }
     }).then((user) => {
+      const {
+        ADV_ID, ADV_PASS, ADV_NAME, ADV_FULL_REG, ADV_TEL, ADV_PHOTO
+      } = user.dataValues;
       if (!user) {
         const error = new Error('이메일이나 비밀번호는 일치하지 않습니다');
         error.name = 'IncorrectCredentialsError';
@@ -35,7 +38,7 @@ module.exports = new PassportLocalStrategy({
         return done(error);
       }
 
-      return Advertiser.options.instanceMethods.validPassword(userData.password, user.dataValues.ADV_PASS, (passwordErr, isMatch) => {
+      return Advertiser.options.instanceMethods.validPassword(userData.password, ADV_PASS, (passwordErr, isMatch) => {
         if (passwordErr) { return done(passwordErr); }
 
         if (!isMatch) {
@@ -46,16 +49,17 @@ module.exports = new PassportLocalStrategy({
         }
 
         const payload = {
-          sub: user.dataValues.ADV_ID
+          sub: ADV_ID
         };
 
         // create a token string
         const token = jwt.sign(payload, config.jwtSecret);
         const data = {
-          userId: user.dataValues.ADV_ID,
-          name: user.dataValues.ADV_NAME,
-          regState: user.dataValues.ADV_FULL_REG,
-          userPhone: user.dataValues.ADV_TEL
+          userId: ADV_ID,
+          name: ADV_NAME,
+          regState: ADV_FULL_REG,
+          userPhone: ADV_TEL,
+          userPhoto: ADV_PHOTO,
         };
 
         return done(null, token, data);
@@ -66,6 +70,9 @@ module.exports = new PassportLocalStrategy({
     return Influenser.findOne({
       where: { INF_EMAIL: userData.email, INF_BLOG_TYPE: '5' }
     }).then((user) => {
+      const {
+        INF_ID, INF_PASS, INF_NAME, INF_TEL, INF_PHOTO
+      } = user.dataValues;
       if (!user) {
         const error = new Error('입력하신 정보가 틀립니다');
         error.name = 'IncorrectCredentialsError';
@@ -73,7 +80,7 @@ module.exports = new PassportLocalStrategy({
         return done(error);
       }
 
-      return Influenser.options.instanceMethods.validPassword(userData.password, user.dataValues.INF_PASS, (passwordErr, isMatch) => {
+      return Influenser.options.instanceMethods.validPassword(userData.password, INF_PASS, (passwordErr, isMatch) => {
         if (passwordErr) { return done(passwordErr); }
 
         if (!isMatch) {
@@ -84,15 +91,16 @@ module.exports = new PassportLocalStrategy({
         }
 
         const payload = {
-          sub: user.dataValues.INF_ID
+          sub: INF_ID
         };
 
         // create a token string
         const token = jwt.sign(payload, config.jwtSecret);
         const data = {
-          userId: user.dataValues.INF_ID,
-          name: user.dataValues.INF_NAME,
-          userPhone: user.dataValues.INF_TEL
+          userId: INF_ID,
+          name: INF_NAME,
+          userPhone: INF_TEL,
+          userPhoto: INF_PHOTO,
         };
 
         return done(null, token, data);

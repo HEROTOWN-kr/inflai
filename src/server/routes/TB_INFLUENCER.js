@@ -71,7 +71,7 @@ router.get('/', async (req, res) => {
     const options = {
       where: { INF_ID: userId },
       attributes: [
-        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR', 'INF_DETAIL_ADDR', 'INF_EXTR_ADDR', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO',
+        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR', 'INF_DETAIL_ADDR', 'INF_EXTR_ADDR', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO', 'INF_MESSAGE',
         [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'INF_BLOG_TYPE']
       ],
       include: [
@@ -209,34 +209,6 @@ router.get('/getInstaAccounts', (req, res) => {
         }
       });
     }
-
-
-    /* request.get(pagesUrl, (err, response, body) => {
-      if (!err && response.statusCode == 200) {
-        const pages = JSON.parse(body).data;
-        async.map(pages, (item, callback) => {
-          const instaAccUrl = `https://graph.facebook.com/v6.0/${item.id}?fields=instagram_business_account&access_token=${INF_TOKEN}`;
-          request.get(instaAccUrl, (error, response, body) => {
-            if (!error && response.statusCode == 200) {
-              const parsedBody = JSON.parse(body);
-              callback(null, parsedBody);
-            } else {
-              callback(error || response.statusCode);
-            }
-          });
-        }, (err, results) => {
-          if (err) {
-            console.log(err);
-          } else {
-            res.json({
-              code: 200,
-              // data: JSON.parse(body).data,
-              data: results,
-            });
-          }
-        });
-      }
-    }); */
   }).error((err) => {
     res.send('error has occured');
   });
@@ -553,7 +525,7 @@ router.post('/facebookLogin', async (req, res) => {
 
     if (userExist) {
       const {
-        INF_ID, INF_NAME, INF_BLOG_TYPE, INF_TEL
+        INF_ID, INF_NAME, INF_BLOG_TYPE, INF_TEL, INF_PHOTO
       } = userExist;
       await Influencer.update({ INF_TOKEN: longToken }, { where: { INF_REG_ID: facebookUserId } });
 
@@ -563,6 +535,7 @@ router.post('/facebookLogin', async (req, res) => {
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userPhone: INF_TEL,
+        userPhoto: INF_PHOTO,
         social_type: getBlogType(INF_BLOG_TYPE)
       });
     } else {
@@ -583,12 +556,12 @@ router.post('/facebookLogin', async (req, res) => {
             INF_REG_ID: facebookUserId,
             INF_NAME: name,
             INF_EMAIL: email,
-            // INF_PHOTO: picture.data.url || '',
+            INF_PHOTO: picture.data && picture.data.url ? picture.data.url : null,
             INF_BLOG_TYPE: '1'
           });
 
           const {
-            INF_ID, INF_NAME, INF_BLOG_TYPE
+            INF_ID, INF_NAME, INF_BLOG_TYPE, INF_PHOTO
           } = newUserData;
 
           const instagramData = await getInstagramData(instagramId, longToken);
@@ -637,6 +610,7 @@ router.post('/facebookLogin', async (req, res) => {
             userToken: createToken(INF_ID),
             userName: INF_NAME,
             userPhone: '',
+            userPhoto: INF_PHOTO,
             social_type: getBlogType(INF_BLOG_TYPE)
           });
         }
@@ -665,12 +639,12 @@ router.post('/instaLogin', async (req, res) => {
         INF_REG_ID: facebookUserId,
         INF_NAME: name,
         INF_EMAIL: email,
-        // INF_PHOTO: picture.data.url || '',
+        INF_PHOTO: picture.data && picture.data.url ? picture.data.url : '',
         INF_BLOG_TYPE: '1'
       });
 
       const {
-        INF_ID, INF_NAME, INF_BLOG_TYPE
+        INF_ID, INF_NAME, INF_BLOG_TYPE, INF_PHOTO
       } = newUserData;
 
       const instagramData = await getInstagramData(instaId, longToken);
@@ -719,6 +693,7 @@ router.post('/instaLogin', async (req, res) => {
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userPhone: '',
+        userPhoto: INF_PHOTO,
         social_type: getBlogType(INF_BLOG_TYPE)
       });
     }
@@ -815,7 +790,7 @@ router.get('/youtubeSignUp', async (req, res) => {
     const { code } = data;
     const googleData = await getGoogleData(code);
     const {
-      name, email, id, refresh_token
+      name, email, id, refresh_token, picture
     } = googleData;
     const influencerData = await Influencer.findOne({ where: { INF_REG_ID: id } });
 
@@ -823,10 +798,11 @@ router.get('/youtubeSignUp', async (req, res) => {
       const newInfluencer = await Influencer.create({
         INF_NAME: name,
         INF_EMAIL: email,
+        INF_PHOTO: picture || null,
         INF_REG_ID: id,
         INF_BLOG_TYPE: '2',
       });
-      const { INF_ID, INF_NAME } = newInfluencer;
+      const { INF_ID, INF_NAME, INF_PHOTO } = newInfluencer;
       const youtubeChannelData = await YoutubeDataRequest(refresh_token, INF_ID);
       const channelId = youtubeChannelData.id;
       const { viewCount, subscriberCount } = youtubeChannelData.statistics;
@@ -845,11 +821,12 @@ router.get('/youtubeSignUp', async (req, res) => {
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userPhone: null,
+        userPhoto: INF_PHOTO,
         social_type: getBlogType('2')
       });
     } else {
       const {
-        INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL
+        INF_BLOG_TYPE, INF_ID, INF_NAME, INF_TEL, INF_PHOTO
       } = influencerData;
       const youtubeChannelData = await YoutubeDataRequest(refresh_token, INF_ID);
       const { viewCount, subscriberCount } = youtubeChannelData.statistics;
@@ -867,6 +844,7 @@ router.get('/youtubeSignUp', async (req, res) => {
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userPhone: INF_TEL,
+        userPhoto: INF_PHOTO,
         social_type: getBlogType(INF_BLOG_TYPE)
       });
     }
@@ -981,21 +959,28 @@ router.get('/naverLogin', async (req, res) => {
         INF_REG_ID: id,
         INF_BLOG_TYPE: '3'
       });
-      const { INF_ID, INF_NAME } = newData;
+      const {
+        INF_ID, INF_NAME, INF_TEL, INF_PHOTO
+      } = newData;
       res.status(200).json({
         code: 200,
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userId: INF_ID,
+        userPhone: INF_TEL,
+        userPhoto: INF_PHOTO,
         social_type
       });
     } else {
-      const { INF_ID, INF_NAME, INF_TEL } = influencerData;
+      const {
+        INF_ID, INF_NAME, INF_TEL, INF_PHOTO
+      } = influencerData;
       res.status(200).json({
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userId: INF_ID,
         userPhone: INF_TEL,
+        userPhoto: INF_PHOTO,
         social_type
       });
     }
@@ -1007,7 +992,7 @@ router.get('/naverLogin', async (req, res) => {
 router.get('/kakaoLogin', async (req, res) => {
   try {
     const {
-      id, email, name, type, social_type
+      id, email, name, type, social_type, photo
     } = req.query;
 
     const influencerData = await Influencer.findOne({ where: { INF_REG_ID: id } });
@@ -1015,25 +1000,29 @@ router.get('/kakaoLogin', async (req, res) => {
       const newData = await Influencer.create({
         INF_NAME: name,
         INF_EMAIL: email,
+        INF_PHOTO: photo || null,
         INF_REG_ID: id,
         INF_BLOG_TYPE: '4'
       });
-      const { INF_ID, INF_NAME } = newData;
+      const { INF_ID, INF_NAME, INF_PHOTO } = newData;
 
       res.status(200).json({
-        code: 200,
         userToken: createToken(INF_ID),
         userName: INF_NAME,
-        userId: INF_ID,
+        userPhone: null,
+        userPhoto: INF_PHOTO,
         social_type
       });
     } else {
-      const { INF_ID, INF_NAME, INF_TEL } = influencerData;
+      const {
+        INF_ID, INF_NAME, INF_TEL, INF_PHOTO
+      } = influencerData;
       res.status(200).json({
         userToken: createToken(INF_ID),
         userName: INF_NAME,
         userId: INF_ID,
         userPhone: INF_TEL,
+        userPhoto: INF_PHOTO,
         social_type
       });
     }

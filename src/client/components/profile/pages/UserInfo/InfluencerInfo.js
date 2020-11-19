@@ -36,38 +36,48 @@ function ImageActionButton(props) {
 }
 
 function InfluencerInfo(props) {
-  const { userInfo, setUserInfo, getUserInfo } = props;
+  const {
+    userInfo, setUserInfo, getUserInfo, setMessage
+  } = props;
   const [imageUrl, setImageUrl] = useState('');
+  const [noticeCheck, setNoticeCheck] = useState(false);
   const {
     register, handleSubmit, watch, errors, setValue, control, getValues
   } = useForm();
-  const { token } = useContext(AuthContext);
+  const { token, userDataUpdate } = useContext(AuthContext);
 
   useEffect(() => {
     register({ name: 'photo' }, {});
   }, [register]);
 
   useEffect(() => {
-    setValue('nickName', userInfo.INF_NAME);
-    setValue('phone', userInfo.INF_TEL);
-    setValue('country', userInfo.INF_CITY || '0');
-    setValue('postcode', userInfo.INF_POST_CODE);
-    setValue('roadAddress', userInfo.INF_ROAD_ADDR);
-    setValue('detailAddress', userInfo.INF_DETAIL_ADDR);
-    setValue('extraAddress', userInfo.INF_EXTR_ADDR);
-    setValue('region', userInfo.INF_AREA || '0');
-    setValue('product', userInfo.INF_PROD);
+    const {
+      INF_NAME, INF_TEL, INF_POST_CODE, INF_ROAD_ADDR, INF_DETAIL_ADDR,
+      INF_EXTR_ADDR, INF_AREA, INF_PROD, INF_PHOTO, INF_MESSAGE
+    } = userInfo;
+
+    setValue('nickName', INF_NAME);
+    setValue('phone', INF_TEL);
+    setValue('postcode', INF_POST_CODE);
+    setValue('roadAddress', INF_ROAD_ADDR);
+    setValue('detailAddress', INF_DETAIL_ADDR);
+    setValue('extraAddress', INF_EXTR_ADDR);
+    setValue('region', INF_AREA || '0');
+    setValue('product', INF_PROD);
+    setNoticeCheck(INF_MESSAGE === 1);
+
+    userDataUpdate(INF_NAME, INF_PHOTO);
   }, [userInfo]);
 
 
   const updateProfile = async (data) => {
-    const { userInfo, setUserInfo, getUserInfo } = props;
-
     try {
       const apiObj = { ...data, token };
-      await axios.post('/api/TB_INFLUENCER/updateInfo', apiObj);
-      await getUserInfo();
+      apiObj.message = noticeCheck ? 1 : 0;
 
+      await axios.post('/api/TB_INFLUENCER/updateInfo', apiObj);
+
+      console.log(data.photo);
       if (data.photo) {
         const { photo } = data;
         const formData = new FormData();
@@ -75,8 +85,13 @@ function InfluencerInfo(props) {
         formData.append('token', token);
         return axios.post('/api/TB_INFLUENCER/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
+        }).then(async (response) => {
+          await getUserInfo();
+          setMessage({ type: 'success', open: true, text: '신청되었습니다' });
         }).catch(err => alert('photo upload error'));
       }
+      await getUserInfo();
+      setMessage({ type: 'success', open: true, text: '저장되었습니다' });
     } catch (err) {
       alert(err.message);
     }
@@ -93,14 +108,12 @@ function InfluencerInfo(props) {
   async function deletePicture() {
     await axios.post('/api/TB_INFLUENCER/delete', { token }).catch(err => alert('pic delete error'));
     setImageUrl(null);
+    setValue('photo', null);
     getUserInfo();
   }
 
-  function updateData(checked) {
-    const apiObj = { token };
-    apiObj.message = checked ? 1 : 0;
-    setUserInfo({ ...userInfo, INF_MESSAGE: apiObj.message });
-    axios.post('/api/TB_INFLUENCER/updateInfo', apiObj).catch(error => alert(error));
+  function onCheckboxClick(checked) {
+    setNoticeCheck(checked);
   }
 
   return (
@@ -203,7 +216,7 @@ function InfluencerInfo(props) {
                           width="110px"
                           height="110px"
                           borderRadius="100%"
-                          src={imageUrl || userInfo.ADV_PHOTO || defaultAccountImage}
+                          src={imageUrl || userInfo.INF_PHOTO || defaultAccountImage}
                         />
                       </Grid>
                       <Grid item>
@@ -221,7 +234,7 @@ function InfluencerInfo(props) {
                             />
                           </ImageActionButton>
                         </label>
-                        {userInfo.ADV_PHOTO ? (
+                        {userInfo.INF_PHOTO ? (
                           <Box pt={1}>
                             <ImageActionButton onClick={() => deletePicture(token)}>
                                                           이미지 삭제
@@ -242,7 +255,7 @@ function InfluencerInfo(props) {
                   </StyledText>
                 </Grid>
                 <Grid item xs={10}>
-                  <input id="kakaoCheck" type="checkbox" checked={userInfo.ADV_MESSAGE || 0} onChange={e => updateData(e.target.checked)} />
+                  <input id="kakaoCheck" type="checkbox" checked={noticeCheck} onChange={e => onCheckboxClick(e.target.checked)} />
                   <label htmlFor="kakaoCheck">
                     {' 카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.'}
                   </label>
@@ -252,6 +265,21 @@ function InfluencerInfo(props) {
           </Grid>
         </Grid>
         <Grid item xs={12}>
+          <Box pt={4}>
+            <Grid container justify="center">
+              <Grid item xs={3}>
+                <StyledButton
+                  onClick={handleSubmit(updateProfile)}
+                  background={Colors.skyBlue}
+                  hoverBackground="#1c4dbb"
+                >
+                  저장
+                </StyledButton>
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
           <Divider />
         </Grid>
         <Grid item xs={12}>
@@ -259,22 +287,6 @@ function InfluencerInfo(props) {
             <StyledText fontSize="19" fontWeight="600">SNS</StyledText>
           </Box>
           <Sns userInfo={userInfo} getUserInfo={getUserInfo} />
-        </Grid>
-        <Grid item xs={12}>
-          <Divider />
-        </Grid>
-        <Grid item xs={12}>
-          <Grid container justify="center">
-            <Grid item xs={3}>
-              <StyledButton
-                onClick={handleSubmit(updateProfile)}
-                background={Colors.skyBlue}
-                hoverBackground="#1c4dbb"
-              >
-                              저장
-              </StyledButton>
-            </Grid>
-          </Grid>
         </Grid>
       </Grid>
       <Box px={2} />

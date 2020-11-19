@@ -223,10 +223,12 @@ function getGoogleData(code) {
       const oauth2 = google.oauth2('v2');
       oauth2.userinfo.get({ auth: oauth2Client, alt: 'json' }, (err2, response) => {
         if (err2) { reject(err2); }
-        const { name, email, id } = response.data;
+        const {
+          name, email, id, picture
+        } = response.data;
         const { refresh_token } = tokens;
         resolve({
-          name, email, id, refresh_token
+          name, email, id, refresh_token, picture
         });
       });
     });
@@ -502,7 +504,7 @@ function getFacebookLongToken(facebookToken) {
 }
 
 function getFacebookInfo(facebookToken) {
-  const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=picture%7Burl%7D%2Cemail%2Cname&'
+  const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=picture.width(400).height(400)%7Burl%7D%2Cemail%2Cname&'
       + `access_token=${facebookToken}`;
 
   return new Promise(((resolve, reject) => {

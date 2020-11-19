@@ -10,14 +10,15 @@ const useAuth = () => {
   const [userName, setUserName] = useState(null);
   const [userPhoto, setUserPhoto] = useState(null);
 
-  const login = useCallback((jwtToken, role, name, type) => {
+  const login = useCallback((jwtToken, role, name, type, photo) => {
     setToken(jwtToken);
     setUserRole(role);
     setUserName(name);
+    setUserPhoto(photo);
     setSocialType(type);
 
     localStorage.setItem(storageName, JSON.stringify({
-      userRole: role, token: jwtToken, socialType: type, userName: name
+      userRole: role, token: jwtToken, socialType: type, userName: name, userPhoto: photo
     }));
   }, []);
 
@@ -39,7 +40,7 @@ const useAuth = () => {
     const data = JSON.parse(localStorage.getItem(storageName));
 
     if (data && data.token) {
-      login(data.token, data.userRole, data.userName, data.socialType);
+      login(data.token, data.userRole, data.userName, data.socialType, data.userPhoto);
     }
     setReady(true);
   }, [login]);

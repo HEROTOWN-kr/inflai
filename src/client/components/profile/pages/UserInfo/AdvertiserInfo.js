@@ -50,35 +50,44 @@ function FieldInfoComponent(props) {
 }
 
 function AdvertiserInfo(props) {
-  const { userInfo, setUserInfo, getUserInfo } = props;
+  const {
+    userInfo, setUserInfo, getUserInfo, setMessage
+  } = props;
   const {
     register, handleSubmit, watch, errors, setValue, control, getValues
   } = useForm();
   const [imageUrl, setImageUrl] = useState('');
   const { token, userDataUpdate } = useContext(AuthContext);
+  const [noticeCheck, setNoticeCheck] = useState(false);
 
   useEffect(() => {
     register({ name: 'photo' }, {});
   }, [register]);
 
   useEffect(() => {
-    setValue('nickName', userInfo.ADV_NAME);
-    setValue('phone', userInfo.ADV_TEL);
-    setValue('postcode', userInfo.ADV_POST_CODE);
-    setValue('roadAddress', userInfo.ADV_ROAD_ADDR);
-    setValue('detailAddress', userInfo.ADV_DETAIL_ADDR);
-    setValue('extraAddress', userInfo.ADV_EXTR_ADDR);
-    setValue('registerNumber', userInfo.ADV_REG_NUM);
-    setValue('companyName', userInfo.ADV_COM_NAME);
+    const {
+      ADV_NAME, ADV_TEL, ADV_POST_CODE, ADV_ROAD_ADDR, ADV_DETAIL_ADDR,
+      ADV_EXTR_ADDR, ADV_REG_NUM, ADV_COM_NAME, ADV_PHOTO, ADV_MESSAGE
+    } = userInfo;
 
-    userDataUpdate(userInfo.ADV_NAME, userInfo.ADV_PHOTO);
+    setValue('nickName', ADV_NAME);
+    setValue('phone', ADV_TEL);
+    setValue('postcode', ADV_POST_CODE);
+    setValue('roadAddress', ADV_ROAD_ADDR);
+    setValue('detailAddress', ADV_DETAIL_ADDR);
+    setValue('extraAddress', ADV_EXTR_ADDR);
+    setValue('registerNumber', ADV_REG_NUM);
+    setValue('companyName', ADV_COM_NAME);
+    setNoticeCheck(ADV_MESSAGE === 1);
+
+    userDataUpdate(ADV_NAME, ADV_PHOTO);
   }, [userInfo]);
 
   const updateProfile = async (data) => {
-    const { userInfo, setUserInfo, getUserInfo } = props;
-
     try {
       const apiObj = { ...data, token };
+      apiObj.message = noticeCheck ? 1 : 0;
+
       await axios.post('/api/TB_ADVERTISER/update', apiObj);
 
       if (data.photo) {
@@ -90,9 +99,11 @@ function AdvertiserInfo(props) {
           headers: { 'Content-Type': 'multipart/form-data' }
         }).then(async (response) => {
           await getUserInfo();
+          setMessage({ type: 'success', open: true, text: '저장되었습니다' });
         }).catch(err => alert('photo upload error'));
       }
       await getUserInfo();
+      setMessage({ type: 'success', open: true, text: '저장되었습니다' });
     } catch (err) {
       alert(err.message);
     }
@@ -109,14 +120,12 @@ function AdvertiserInfo(props) {
   async function deletePicture() {
     await axios.post('/api/TB_ADVERTISER/delete', { token }).catch(err => alert('pic delete error'));
     setImageUrl(null);
+    setValue('photo', null);
     getUserInfo();
   }
 
-  function updateData(checked) {
-    /* const apiObj = { token };
-    apiObj.message = checked ? 1 : 0;
-    setUserInfo({ ...userInfo, INF_MESSAGE: apiObj.message });
-    axios.post('/api/TB_INFLUENCER/updateInfo', apiObj).catch(error => alert(error)); */
+  function onCheckboxClick(checked) {
+    setNoticeCheck(checked);
   }
 
   return (
@@ -246,8 +255,8 @@ function AdvertiserInfo(props) {
             </Grid>
             <Grid item xs={12}>
               <Box py={2}>
-                <FieldInfoComponent title="주소">
-                  <input id="kakaoCheck" type="checkbox" checked={userInfo.INF_MESSAGE || 0} onChange={e => updateData(e.target.checked)} />
+                <FieldInfoComponent title="카카오수신동의">
+                  <input id="kakaoCheck" type="checkbox" checked={noticeCheck} onChange={e => onCheckboxClick(e.target.checked)} />
                   <label htmlFor="kakaoCheck">
                     {' 카카오톡 통한 캠페인 모집 및 추천, 이벤트 정보 등의 수신에 동의합니다.'}
                   </label>

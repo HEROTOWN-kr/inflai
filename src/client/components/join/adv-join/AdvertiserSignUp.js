@@ -20,10 +20,10 @@ function AdvertiserSignUp({
   function signUp(values) {
     axios.post('/api/TB_ADVERTISER/signup', values).then((res) => {
       const {
-        userToken, userName, userPhone, message
+        userToken, userName, userPhone, message, social_type, userPhoto
       } = res.data;
       if (res.status === 200) {
-        auth.login(userToken, '2', userName);
+        auth.login(userToken, '1', userName, social_type, userPhoto);
         if (userPhone) {
           history.push('/');
         } else {

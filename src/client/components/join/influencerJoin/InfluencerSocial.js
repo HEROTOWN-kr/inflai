@@ -74,9 +74,9 @@ function InfluencerSocial(props) {
         }).then((res) => {
           if (res.status === 200) {
             const {
-              userPhone, social_type, userToken, userName, regState
+              userPhone, social_type, userToken, userName, userPhoto, regState
             } = res.data;
-            auth.login(userToken, '2', userName, social_type);
+            auth.login(userToken, '2', userName, social_type, userPhoto);
             if (userPhone) {
               history.push('/');
             } else {
@@ -101,9 +101,9 @@ function InfluencerSocial(props) {
         }).then((res) => {
           if (res.status === 200) {
             const {
-              userPhone, social_type, userToken, userName, regState
+              userPhone, social_type, userToken, userName, userPhoto, regState
             } = res.data;
-            auth.login(userToken, '2', userName, social_type);
+            auth.login(userToken, '2', userName, social_type, userPhoto);
             if (userPhone) {
               history.push('/');
             } else {
@@ -126,7 +126,6 @@ function InfluencerSocial(props) {
   const responseNaver = (response) => {
     try {
       if (response) {
-        console.log(response);
         const {
           email, id, name, profile_image
         } = response.user;
@@ -141,9 +140,9 @@ function InfluencerSocial(props) {
           }
         }).then((influencerData) => {
           const {
-            social_type, userToken, userName, regState, userPhone
+            social_type, userToken, userName, regState, userPhone, userPhoto
           } = influencerData.data;
-          auth.login(userToken, '2', userName, social_type);
+          auth.login(userToken, '2', userName, social_type, userPhoto);
           if (userPhone) {
             history.push('/');
           } else {
@@ -173,14 +172,15 @@ function InfluencerSocial(props) {
                   id,
                   email: kakao_account.email,
                   name: kakao_account.profile.nickname,
+                  photo: kakao_account.profile.profile_image_url,
                   type: '1',
                   social_type: 'kakao'
                 }
               }).then((influencerData) => {
                 const {
-                  social_type, userToken, userName, regState, userPhone
+                  social_type, userToken, userName, userPhone, userPhoto
                 } = influencerData.data;
-                auth.login(userToken, '2', userName, social_type);
+                auth.login(userToken, '2', userName, social_type, userPhoto);
                 if (userPhone) {
                   history.push('/');
                 } else {

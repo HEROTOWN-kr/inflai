@@ -24,42 +24,45 @@ function SocialNetworks(props) {
   }
 
   function responseGoogle(response) {
-    if (response) {
+    if (!response.error) {
       axios.get('/api/TB_ADVERTISER/loginGoogle', {
         params: {
-          social_type: response.tokenObj.idpId,
-          type: '1',
-          token: response.tokenId
+          code: response.code
         }
       }).then((res) => {
         const {
-          userPhone, social_type, userToken, userName, regState
+          userPhone, social_type, userToken, userName, userPhoto
         } = res.data;
-        auth.login(userToken, '1', userName, social_type);
+        auth.login(userToken, '1', userName, social_type, userPhoto);
         if (userPhone) {
           history.push('/');
         } else {
           history.push('/profile');
         }
+      }).catch((err) => {
+        alert(err.response.data.message);
       });
     }
   }
 
   const responseFacebook = (response) => {
     if (response) {
+      const {
+        userID, email, name, graphDomain, picture
+      } = response;
       axios.get('/api/TB_ADVERTISER/loginFacebook', {
         params: {
-          id: response.userID,
-          email: response.email,
-          name: response.name,
-          type: '1',
-          social_type: response.graphDomain
+          id: userID,
+          email,
+          name,
+          photo: picture.data && picture.data.url ? picture.data.url : null,
+          social_type: graphDomain
         }
       }).then((res) => {
         const {
-          userPhone, social_type, userToken, userName
+          userPhone, social_type, userToken, userName, userPhoto
         } = res.data;
-        auth.login(userToken, '1', userName, social_type);
+        auth.login(userToken, '1', userName, social_type, userPhoto);
         if (userPhone) {
           history.push('/');
         } else {
@@ -70,21 +73,23 @@ function SocialNetworks(props) {
   };
 
   const responseNaver = (response) => {
-    const { email, id, name } = response.user;
+    const {
+      email, id, name, profile_image
+    } = response.user;
     if (response) {
       axios.get('/api/TB_ADVERTISER/loginNaver', {
         params: {
           id,
           email,
           name,
-          type: '1',
+          profile_image,
           social_type: 'naver'
         }
       }).then((res) => {
         const {
-          userPhone, social_type, userToken, userName
+          userPhone, social_type, userToken, userName, userPhoto
         } = res.data;
-        auth.login(userToken, '1', userName, social_type);
+        auth.login(userToken, '1', userName, social_type, userPhoto);
         if (userPhone) {
           history.push('/');
         } else {
@@ -100,19 +105,21 @@ function SocialNetworks(props) {
         window.Kakao.API.request({
           url: '/v2/user/me',
           success(response) {
+            const { id, kakao_account } = response;
             axios.get('/api/TB_ADVERTISER/loginKakao', {
               params: {
-                id: response.id,
-                email: response.kakao_account.email,
-                name: response.kakao_account.profile.nickname,
+                id,
+                email: kakao_account.email,
+                name: kakao_account.profile.nickname,
+                photo: kakao_account.profile.profile_image_url,
                 type: '1',
                 social_type: 'kakao'
               }
             }).then((res) => {
               const {
-                userPhone, social_type, userToken, userName
+                social_type, userToken, userName, userPhone, userPhoto
               } = res.data;
-              auth.login(userToken, '1', userName, social_type);
+              auth.login(userToken, '1', userName, social_type, userPhoto);
               if (userPhone) {
                 history.push('/');
               } else {
@@ -138,6 +145,8 @@ function SocialNetworks(props) {
         <Grid item xs={12}>
           <GoogleLogin
             clientId="997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com" // CLIENTID
+            scope="profile email"
+            responseType="code"
             buttonText="LOGIN WITH GOOGLE"
             onSuccess={responseGoogle}
             onFailure={responseGoogle}
@@ -151,7 +160,7 @@ function SocialNetworks(props) {
             // appId="139193384125564"
             appId={facebookID}
             autoLoad
-            fields="name,email,picture"
+            fields="name,email,picture.width(400).height(400){url}"
             callback={responseFacebook}
             render={renderProps => (
               <SocialButton clicked={renderProps.onClick} icon={FacebookIcon} text="페이스북 로그인" bgColor="#3B5998" textColor="#FFFFFF" />

@@ -223,16 +223,20 @@ router.post('/login', (req, res, next) => {
       });
     }
 
+    const {
+      userId, name, userPhone, regState, userPhoto
+    } = userData;
 
     return res.status(200).json({
       code: 200,
       success: true,
       message: 'You have successfully logged in!',
       userToken: token,
-      userId: userData.userId,
-      userName: userData.name,
-      userPhone: userData.userPhone,
-      regState: userData.regState,
+      userId,
+      userName: name,
+      userPhone,
+      userPhoto,
+      regState,
       social_type: 'noSocial'
     });
   })(req, res, next);

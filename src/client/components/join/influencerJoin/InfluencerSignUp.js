@@ -18,10 +18,10 @@ function InfluencerSignUp(props) {
     try {
       const urlResponse = await axios.post('/api/TB_INFLUENCER/signup', values);
       const {
-        social_type, userToken, userName, regState, userPhone, message
+        social_type, userToken, userName, userPhone, message, userPhoto
       } = urlResponse.data;
       if (urlResponse.status === 200) {
-        auth.login(userToken, '2', userName, social_type);
+        auth.login(userToken, '2', userName, social_type, userPhoto);
         if (userPhone) {
           history.push('/');
         } else {
