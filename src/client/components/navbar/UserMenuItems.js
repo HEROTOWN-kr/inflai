@@ -36,8 +36,8 @@ function UserMenuItems(props) {
         <StyledText overflowHidden fontWeight="bold" fontSize="20" textAlign="center">{userName}</StyledText>
       </Box>
       {userMenu.map(item => (
-        <>
-          <Box py={2} px={4} key={item.text}>
+        <React.Fragment key={item.text}>
+          <Box py={2} px={4}>
             <Link
               to={item.link}
             >
@@ -45,7 +45,7 @@ function UserMenuItems(props) {
             </Link>
           </Box>
           <Divider />
-        </>
+        </React.Fragment>
       ))}
       <Grid container justify="center" className="logout">
         <Grid item>
@@ -54,25 +54,6 @@ function UserMenuItems(props) {
           </Box>
         </Grid>
       </Grid>
-      {/* <StyledText>{userName}</StyledText>
-      <Divider />
-      {userMenu.map(item => (
-        <div key={item.text}>
-          <Link
-            to={item.link}
-          >
-            <div className="pop-item">{item.text}</div>
-          </Link>
-          <Divider />
-        </div>
-      ))}
-      <Grid container justify="center" className="logout">
-        <Grid item>
-          <Box my={2}>
-            <LogOutButton {...props} />
-          </Box>
-        </Grid>
-      </Grid> */}
     </div>
   );
 }

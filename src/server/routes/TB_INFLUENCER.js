@@ -1157,8 +1157,8 @@ router.post('/upload', async (req, res, next) => {
     const { file } = req.files;
     const { token, id } = req.body;
     const userId = id || getIdFromToken(token).sub;
-    // const uid = uniqid();
-    const uid = 'profile';
+    const uid = uniqid();
+    // const uid = 'profile';
 
     const newFileNm = path.normalize(uid + path.extname(file.name));
     const uploadPath = path.normalize(`${config.attachRoot}/profile/influencer/${userId}/`) + newFileNm;
@@ -1190,6 +1190,16 @@ router.post('/delete', async (req, res, next) => {
   try {
     const { token, id } = req.body;
     const userId = id || getIdFromToken(token).sub;
+
+    const InfluencerInfo = await Influencer.findOne({
+      where: { INF_ID: userId },
+      attributes: ['INF_PHOTO']
+    });
+
+    const { INF_PHOTO } = InfluencerInfo;
+    const deletePath = path.normalize(`${config.downDir}${INF_PHOTO}`);
+    await fse.remove(deletePath);
+
     const post = {
       INF_PHOTO: null
     };

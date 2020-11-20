@@ -199,31 +199,41 @@ router.post('/adminCreateAd', (req, res) => {
   });
 });
 
-router.get('/', (req, res) => {
-  const { token } = req.query;
-  const userId = common.getIdFromToken(token).sub;
+router.get('/', async (req, res) => {
+  try {
+    const { token } = req.query;
+    const userId = common.getIdFromToken(token).sub;
 
-  Advertise.findAll({
-    where: { ADV_ID: userId },
-    order: [['AD_ID', 'DESC']],
-    attributes: ['AD_ID', 'AD_PROD_NAME', 'AD_PRICE', 'AD_PROD_PRICE', 'AD_PAID', 'AD_SRCH_END', 'AD_UID', 'AD_INF_NANO', 'AD_INF_MICRO', 'AD_INF_MACRO', 'AD_INF_MEGA', 'AD_INF_CELEB',
-      [Sequelize.literal('AD_INF_NANO + AD_INF_MICRO + AD_INF_MACRO + AD_INF_MEGA + AD_INF_CELEB'), 'INF_SUM'],
-      // [Sequelize.literal('CASE WHEN "AD_PAID" = "Y" THEN "결제완료" ELSE "결제안됨"'), 'AD_PAID']
-    ],
-    include: [
-      {
-        model: Advertiser,
-        attributes: ['ADV_NAME', 'ADV_COM_NAME', 'ADV_EMAIL', 'ADV_TEL']
-      }
-    ]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+    const dbData = await Advertise.findAll({
+      where: { ADV_ID: userId },
+      order: [['AD_ID', 'DESC']],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_ID', 'PHO_FILE'],
+          required: false
+        },
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false
+        },
+      ],
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    const advertises = dbData.map((item) => {
+      const data = item.dataValues;
+      const proportion = Math.round(100 / (data.AD_INF_CNT / data.TB_PARTICIPANTs.length));
+      return { ...data, proportion };
+    });
+
+    res.status(200).json({
+      data: advertises
+    });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
 });
 
 router.get('/getAdInfluencers', (req, res) => {

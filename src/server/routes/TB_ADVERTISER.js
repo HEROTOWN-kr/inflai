@@ -8,8 +8,7 @@ const fse = require('fs-extra');
 const path = require('path');
 const uniqid = require('uniqid');
 
-const config = require('../config');
-const configKey = require('../config/config');
+const config = require('../config/config');
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influenser = require('../models').TB_INFLUENCER;
 const {
@@ -25,9 +24,9 @@ const router = express.Router();
 
 function getOauthClient() {
   const oauth2Client = new google.auth.OAuth2(
-    configKey.google_client_id,
-    configKey.google_client_secret,
-    configKey.google_client_redirect_url
+    config.google_client_id,
+    config.google_client_secret,
+    config.google_client_redirect_url
   );
   return oauth2Client;
 }
@@ -338,8 +337,8 @@ router.get('/Googletest1', (req, res) => {
               request.post('https://oauth2.googleapis.com/token',
                 {
                   form: {
-                    client_id: configKey.google_client_id,
-                    client_secret: configKey.google_client_secret,
+                    client_id: config.google_client_id,
+                    client_secret: config.google_client_secret,
                     refresh_token: tokens.refresh_token,
                     grant_type: 'refresh_token'
                   }
@@ -679,8 +678,6 @@ router.get('/loginTwitch', (req, res) => {
     sub: id
   };
 
-  const token = jwt.sign(payload, config.jwtSecret);
-
 
   if (type === '1') {
     Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
@@ -812,11 +809,11 @@ router.post('/upload', async (req, res, next) => {
     const { file } = req.files;
     const { token, id } = req.body;
     const userId = id || getIdFromToken(token).sub;
-    // const uid = uniqid();
-    const uid = 'profile';
+    const uid = uniqid();
+    // const uid = 'profile';
 
     const newFileNm = path.normalize(uid + path.extname(file.name));
-    const uploadPath = path.normalize(`${configKey.attachRoot}/profile/advertiser/${userId}/`) + newFileNm;
+    const uploadPath = path.normalize(`${config.attachRoot}/profile/advertiser/${userId}/`) + newFileNm;
 
 
     await fse.move(file.path, uploadPath, { clobber: true });
@@ -841,6 +838,16 @@ router.post('/delete', async (req, res) => {
   try {
     const { token, id } = req.body;
     const userId = id || getIdFromToken(token).sub;
+
+    const AdvertiserInfo = await Advertiser.findOne({
+      where: { ADV_ID: userId },
+      attributes: ['ADV_PHOTO']
+    });
+
+    const { ADV_PHOTO } = AdvertiserInfo;
+    const deletePath = path.normalize(`${config.downDir}${ADV_PHOTO}`);
+    await fse.remove(deletePath);
+
     const post = {
       ADV_PHOTO: null
     };

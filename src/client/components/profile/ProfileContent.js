@@ -6,7 +6,7 @@ import WhiteBlock from '../containers/WhiteBlock';
 import NotFound from '../main/NotFound';
 import Rank from './pages/Rank';
 import UserInfo from './pages/UserInfo/UserInfo';
-import CampaignInfo from './pages/CampaignInfo';
+import CampaignInfo from './pages/CampaignInfo/CampaignInfo';
 import Alert from '../containers/Alert';
 
 function ProfileContent(props) {

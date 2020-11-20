@@ -89,6 +89,15 @@ router.post('/delete', async (req, res, next) => {
     const data = req.body;
     const { id } = data;
 
+    const PhotoInfo = await Photo.findOne({
+      where: { PHO_ID: id },
+      attributes: ['PHO_FILE']
+    });
+
+    const { PHO_FILE } = PhotoInfo;
+    const deletePath = path.normalize(`${config.downDir}${PHO_FILE}`);
+    await fse.remove(deletePath);
+
     Photo.destroy({ where: { PHO_ID: id } });
     res.status(200).json({ message: 'success' });
   } catch (e) {

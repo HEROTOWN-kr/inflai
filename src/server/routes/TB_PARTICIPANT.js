@@ -255,7 +255,6 @@ router.get('/getCampaigns', async (req, res) => {
       return { ...adData, proportion, PAR_ID: data.PAR_ID };
     });
 
-
     res.status(200).json({
       data: advertises
     });
