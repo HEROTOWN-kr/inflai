@@ -8,7 +8,7 @@ const path = require('path');
 const mime = require('mime-types');
 const Photo = require('../models').TB_PHOTO_AD;
 const config = require('../config/config');
-
+const { resizeImage } = require('../config/common');
 // 이미지 업로드
 
 router.post('/uploadImage', async (req, res, next) => {
@@ -16,14 +16,18 @@ router.post('/uploadImage', async (req, res, next) => {
     const { file } = req.files;
     const { id } = req.body;
     const uid = uniqid();
-    // const uid = 'profile';
 
-    const newFileNm = path.normalize(uid + path.extname(file.name));
-    const uploadPath = path.normalize(`${config.attachRoot}/campaign/${id}/`) + newFileNm;
+    const currentPath = file.path;
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uid}_400_316${fileExtension}`;
+    const tmpPath = path.normalize(`${config.tmp}${fileName}`);
+    const uploadPath = path.normalize(`${config.attachRoot}/campaign/${id}/${fileName}`);
 
-    await fse.move(file.path, uploadPath, { clobber: true });
+    await resizeImage(currentPath, tmpPath, 400, 316);
+    await fse.move(tmpPath, uploadPath, { clobber: true });
+    await fse.remove(currentPath);
 
-    const DRAWING_URL = `/attach/campaign/${id}/${newFileNm}`;
+    const DRAWING_URL = `/attach/campaign/${id}/${fileName}`;
 
     const post = {
       AD_ID: id,
@@ -32,7 +36,7 @@ router.post('/uploadImage', async (req, res, next) => {
 
     await Photo.create(post);
 
-    return res.status(200).send({ uploaded: true, url: DRAWING_URL });
+    return res.status(200).send({ uploaded: true });
   } catch (err) {
     return res.status(400).json({ uploaded: false, error: { message: err.message } });
   }

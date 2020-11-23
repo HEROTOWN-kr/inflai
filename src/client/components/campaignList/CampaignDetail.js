@@ -62,6 +62,12 @@ function ParticipantList(props) {
     }).catch(err => alert(err.response.data.message));
   }
 
+  function selectParticipant(participantId) {
+    axios.post('/api/TB_PARTICIPANT/change', { adId, participantId }).then((res) => {
+      getParticipants();
+    }).catch(err => alert(err.response.data.message));
+  }
+
   useEffect(() => {
     getParticipants();
   }, []);
@@ -70,35 +76,58 @@ function ParticipantList(props) {
     <>
       {participants.map(item => (
         <Box key={item.PAR_ID} py={2} borderBottom={`1px solid ${Colors.grey7}`}>
-          <Grid container alignItems="center">
-            <Grid item xs={2}>
-              <StyledImage borderRadius="100%" width="90px" height="90px" src={item.INF_PHOTO || defaultAccountImage} />
-            </Grid>
-            <Grid item xs={10}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Grid container alignItems="center" spacing={1}>
-                    <Grid item>
-                      <StyledText fontSize={16} fontWeight="bold">{item.PAR_NAME}</StyledText>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Grid container alignItems="center">
+                <Grid item xs={2}>
+                  <StyledImage borderRadius="100%" width="90px" height="90px" src={item.INF_PHOTO || defaultAccountImage} />
+                </Grid>
+                <Grid item xs={10}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Grid container alignItems="center" spacing={1}>
+                        <Grid item>
+                          <StyledText fontSize={16} fontWeight="bold">{item.PAR_NAME}</StyledText>
+                        </Grid>
+                        {item.PAR_INSTA ? (
+                          <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
+                        ) : null}
+                        {item.PAR_YOUTUBE ? (
+                          <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
+                        ) : null}
+                        {item.PAR_NAVER ? (
+                          <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
+                        ) : null}
+                      </Grid>
                     </Grid>
-                    {item.PAR_INSTA ? (
-                      <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
-                    ) : null}
-                    {item.PAR_YOUTUBE ? (
-                      <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
-                    ) : null}
-                    {item.PAR_NAVER ? (
-                      <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
-                    ) : null}
+                    <Grid item xs={12}>
+                      <StyledText fontSize={15} lineHeight="1.3em">{item.PAR_MESSAGE}</StyledText>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <StyledText fontSize={15}>
+                        {item.PAR_DT}
+                      </StyledText>
+                    </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                  <StyledText fontSize={15} lineHeight="1.3em">{item.PAR_MESSAGE}</StyledText>
-                </Grid>
-                <Grid item xs={12}>
-                  <StyledText fontSize={15}>
-                    {item.PAR_DT}
-                  </StyledText>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container justify="flex-end" spacing={1}>
+                {item.PAR_STATUS === '1' ? (
+                  <Grid item>
+                    <StyledButton
+                      fontSize="12px"
+                      height="25px"
+                      padding="0 10px"
+                      onClick={() => selectParticipant(item.PAR_ID)}
+                    >
+                        리뷰어 선정하기
+                    </StyledButton>
+                  </Grid>
+                ) : null}
+                <Grid item>
+                  <StyledButton fontSize="12px" height="25px" padding="0 10px">신청정보 수정</StyledButton>
                 </Grid>
               </Grid>
             </Grid>

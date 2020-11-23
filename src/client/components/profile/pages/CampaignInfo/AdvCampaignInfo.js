@@ -121,13 +121,6 @@ function AdvCampaignInfo(props) {
           </Grid>
         )}
       </Box>
-      <Box py={4}>
-        <Grid container>
-          <Grid item xs={3}>
-            <Skeleton width="100%" height="200px" />
-          </Grid>
-        </Grid>
-      </Box>
     </Box>
   );
 }

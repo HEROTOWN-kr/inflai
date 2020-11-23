@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken');
 const async = require('async');
 const fs = require('fs');
+const path = require('path');
+const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const request = require('request');
 const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const bcrypt = require('bcryptjs');
+const sharp = require('sharp');
 const config = require('../config');
 const testData = require('../config/testData');
 const configKey = require('./config');
@@ -591,6 +594,20 @@ function standardDeviation(values) {
   return stdDev;
 }
 
+function resizeImage(currentPath, newPathName, width, height) {
+  return new Promise(((resolve, reject) => {
+    sharp(currentPath)
+      .resize(width, height)
+      // .toBuffer({ resolveWithObject: true })
+      .toFile(newPathName)
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  }));
+}
 
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next))
@@ -617,5 +634,6 @@ exports.checkInstagramBusinessAccount = checkInstagramBusinessAccount;
 exports.getInstagramBusinessAccounts = getInstagramBusinessAccounts;
 exports.average = average;
 exports.standardDeviation = standardDeviation;
+exports.resizeImage = resizeImage;
 exports.asyncMiddleware = asyncMiddleware;
 exports.getGoogleData = getGoogleData;

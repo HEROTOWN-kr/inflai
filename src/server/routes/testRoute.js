@@ -1,12 +1,16 @@
 const express = require('express');
 const request = require('request');
 const Sequelize = require('sequelize');
-const async = require('async');
 const fs = require('fs');
+const fse = require('fs-extra');
+const path = require('path');
+const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
-const { getInstagramMediaData, getInstagramData, googleVision } = require('../config/common');
-const common = require('../config/common');
+const {
+  resizeImage, getInstagramInsights, getInstagramMediaData, getInstagramData, googleVision
+} = require('../config/common');
+const config = require('../config/config');
 
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
@@ -19,13 +23,35 @@ const router = express.Router();
 router.get('/test', async (req, res) => {
   try {
     const { instagramId, instagramToken } = req.query;
-    const insights = await common.getInstagramInsights(instagramId, instagramToken);
+    const insights = await getInstagramInsights(instagramId, instagramToken);
     res.status(200).json({
       message: 'success',
       data: insights
     });
   } catch (err) {
     res.status(400).send(err);
+  }
+});
+
+router.post('/testPost', async (req, res) => {
+  try {
+    const { file } = req.files;
+    const currentPath = file.path;
+    const uid = uniqid();
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uid}_400_316${fileExtension}`;
+    const tmpPath = `${config.tmp}${fileName}`;
+    const uploadPath = path.normalize(`${config.attachRoot}/test/${fileName}`);
+
+    const imageData = await resizeImage(currentPath, tmpPath, 400, 316);
+
+    await fse.move(tmpPath, uploadPath, { clobber: true });
+
+    res.status(200).json({
+      message: 'success'
+    });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
   }
 });
 
@@ -671,6 +697,5 @@ router.get('/getDate', async (req, res) => {
     data
   });
 });
-
 
 module.exports = router;

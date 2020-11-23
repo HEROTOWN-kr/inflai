@@ -17,7 +17,7 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     PHO_FILE: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(400),
       allowNull: false
     },
     PHO_DT: {

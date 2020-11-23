@@ -186,7 +186,7 @@ router.get('/getList', async (req, res) => {
 
     const result = await Participant.findAll({
       where: { AD_ID: adId },
-      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE',
+      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
       ],
       include: [
@@ -263,5 +263,25 @@ router.get('/getCampaigns', async (req, res) => {
   }
 });
 
+router.post('/change', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      adId, participantId
+    } = data;
+
+    const post = {
+      PAR_STATUS: '2'
+    };
+
+    await Participant.update(post, {
+      where: { AD_ID: adId, PAR_ID: participantId }
+    });
+
+    res.status(200).json({ message: 'success' });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
 
 module.exports = router;
