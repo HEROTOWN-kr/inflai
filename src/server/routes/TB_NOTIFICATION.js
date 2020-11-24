@@ -274,7 +274,17 @@ router.post('/sendKakaoNotification', (req, res) => {
       }).then((infResult) => {
         if (infResult) {
           async.map(infResult, (item, callback) => {
-            const options = common.createMessageOption(item.INF_TEL, adResult.AD_PROD_NAME, adResult.AD_COMP_NAME, adResult.AD_SPON_ITEM, adResult.AD_DT, adResult.AD_SRCH_END, AD_ID);
+            const props = {
+              phoneNumber: item.INF_TEL,
+              productName: adResult.AD_PROD_NAME,
+              campanyName: adResult.AD_COMP_NAME,
+              bonus: adResult.AD_SPON_ITEM,
+              createdAt: adResult.AD_DT,
+              collectFinishDate: adResult.AD_SRCH_END,
+              adId: AD_ID
+            };
+
+            const options = common.createMessageOption(props);
             request(options, (error, requestResponse, responseBody) => {
               if (!error && requestResponse.statusCode == 200) {
                 callback(null, 'ok');

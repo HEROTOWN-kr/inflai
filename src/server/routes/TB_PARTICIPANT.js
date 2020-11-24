@@ -8,6 +8,7 @@ const Photo = require('../models').TB_PHOTO_AD;
 const router = express.Router();
 const {
   getIdFromToken,
+  createMessageOption
 } = require('../config/common');
 
 router.get('/', async (req, res) => {
@@ -221,12 +222,18 @@ router.get('/getList', async (req, res) => {
 
 router.get('/getCampaigns', async (req, res) => {
   try {
-    const { token } = req.query;
+    const { token, status } = req.query;
 
     const id = getIdFromToken(token).sub;
 
+    const whereProps = {
+      INF_ID: id
+    };
+
+    if (status) whereProps.PAR_STATUS = status;
+
     const dbData = await Participant.findAll({
-      where: { INF_ID: id },
+      where: whereProps,
       attributes: ['PAR_ID'],
       include: [
         {
@@ -277,6 +284,24 @@ router.post('/change', async (req, res) => {
     await Participant.update(post, {
       where: { AD_ID: adId, PAR_ID: participantId }
     });
+
+    const ParticipantInfo = await Participant.findOne({
+      where: { PAR_ID: participantId },
+      attributes: ['PAR_TEL']
+    });
+
+    const { PAR_TEL } = ParticipantInfo;
+    const props = {
+      phoneNumber: PAR_TEL,
+      productName: 'test',
+      campanyName: 'test',
+      bonus: 'bonus',
+      createdAt: '2020/11/30',
+      collectFinishDate: '2020/12/01',
+      adId: '56',
+    };
+
+    const kakaoAlim = await createMessageOption(props);
 
     res.status(200).json({ message: 'success' });
   } catch (err) {

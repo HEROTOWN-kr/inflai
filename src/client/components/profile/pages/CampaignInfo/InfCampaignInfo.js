@@ -3,10 +3,12 @@ import { Box, Grid } from '@material-ui/core';
 import axios from 'axios';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Skeleton } from '@material-ui/lab';
 import { Colors } from '../../../../lib/Сonstants';
 import StyledText from '../../../containers/StyledText';
 import CampaignCard from '../../../campaignList/CampaignCard';
 import AuthContext from '../../../../context/AuthContext';
+import MyPagination from '../../../containers/MyPagination';
 
 function TabComponent(props) {
   const {
@@ -35,25 +37,42 @@ function TabComponent(props) {
 function InfCampaignInfo(props) {
   const { history, match } = props;
   const [tab, setTab] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
+  const [page, setPage] = useState(1);
   const { token } = useContext(AuthContext);
 
-  function getCampaigns() {
+  function getCampaigns(status) {
+    setLoading(true);
+    const params = {
+      token
+    };
+    if (status) params.status = status;
+
     axios.get('/api/TB_PARTICIPANT/getCampaigns', {
-      params: { token }
+      params
     }).then((res) => {
       const { data } = res.data;
       setCampaigns(data);
-      // console.log(data);
+      setLoading(false);
     }).catch(err => alert(err));
   }
 
   useEffect(() => {
-    if (token) getCampaigns();
+    if (token) getCampaigns(null);
   }, [token]);
 
-  const theme = useTheme();
+  useEffect(() => {
+    if (token) {
+      if (tab === 2) {
+        getCampaigns(2);
+      } else {
+        getCampaigns(null);
+      }
+    }
+  }, [tab]);
 
+  const theme = useTheme();
   const isXl = useMediaQuery(theme.breakpoints.up('xl'));
   const is1600 = useMediaQuery('(min-width:1600px)');
   const isLG = useMediaQuery(theme.breakpoints.up('lg'));
@@ -76,6 +95,10 @@ function InfCampaignInfo(props) {
     history.push(`/CampaignList/${AD_ID}`);
   }
 
+  const changePage = (event, value) => {
+    setPage(value);
+  };
+
   return (
     <Box py={4} px={6}>
       <Box borderBottom={`2px solid ${Colors.grey7}`}>
@@ -88,38 +111,83 @@ function InfCampaignInfo(props) {
           </Grid>
         </Grid>
       </Box>
-      <Box mt={4}>
-        { campaigns.length > 0 ? (
-          <Grid container spacing={3}>
-            {campaigns.map((item) => {
-              const {
-                AD_ID, AD_CTG, AD_CTG2, AD_SRCH_END, AD_NAME, AD_SHRT_DISC, TB_PARTICIPANTs, AD_INF_CNT, proportion, TB_PHOTO_ADs,
-              } = item;
-              return (
-                <Grid item key={AD_ID} style={{ width: getCardWidth() }}>
-                  <CampaignCard
-                    image={TB_PHOTO_ADs[0].PHO_FILE}
-                    ctg1={AD_CTG}
-                    ctg2={AD_CTG2}
-                    srchEnd={AD_SRCH_END}
-                    name={AD_NAME}
-                    shrtDisc={AD_SHRT_DISC}
-                    participantsLength={TB_PARTICIPANTs.length}
-                    cnt={AD_INF_CNT}
-                    proportion={proportion}
-                    onClick={() => detailInfo(AD_ID)}
-                  />
-                </Grid>
-              );
-            })}
-          </Grid>
-        ) : (
+      <Box my={4}>
+        {loading ? (
           <Grid container>
-            <Grid item>
-                          신청한 블로그 캠페인이 없습니다.
+            <Grid item style={{ width: getCardWidth() }}>
+              <Box
+                border="1px solid #eaeaea"
+                overflow="hidden"
+                borderRadius="10px"
+                css={{ cursor: 'pointer' }}
+              >
+                <Skeleton variant="rect" width="100%" height={186} />
+                <Box p={3}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <Skeleton variant="text" width="50%" />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Skeleton variant="text" />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Skeleton variant="text" />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Skeleton variant="text" />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Box>
             </Grid>
           </Grid>
+        ) : (
+          <React.Fragment>
+            { campaigns.length > 0 ? (
+              <Grid container spacing={3}>
+                {campaigns.map((item) => {
+                  const {
+                    AD_ID, AD_CTG, AD_CTG2, AD_SRCH_END, AD_NAME, AD_SHRT_DISC, TB_PARTICIPANTs, AD_INF_CNT, proportion, TB_PHOTO_ADs,
+                  } = item;
+                  return (
+                    <Grid item key={AD_ID} style={{ width: getCardWidth() }}>
+                      <CampaignCard
+                        image={TB_PHOTO_ADs[0].PHO_FILE}
+                        ctg1={AD_CTG}
+                        ctg2={AD_CTG2}
+                        srchEnd={AD_SRCH_END}
+                        name={AD_NAME}
+                        shrtDisc={AD_SHRT_DISC}
+                        participantsLength={TB_PARTICIPANTs.length}
+                        cnt={AD_INF_CNT}
+                        proportion={proportion}
+                        onClick={() => detailInfo(AD_ID)}
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            ) : (
+              <Grid container>
+                <Grid item>
+                    신청한 블로그 캠페인이 없습니다.
+                </Grid>
+              </Grid>
+            )}
+          </React.Fragment>
         )}
+      </Box>
+      <Box pt={6}>
+        <Grid container justify="center">
+          <Grid item>
+            <MyPagination
+              itemCount={campaigns.length}
+              page={page}
+              changePage={changePage}
+              perPage={4}
+            />
+          </Grid>
+        </Grid>
       </Box>
     </Box>
   );

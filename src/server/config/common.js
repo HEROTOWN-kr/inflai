@@ -124,15 +124,17 @@ function instaRequest(data, cb) {
   cb(null, sortedArray); */
 }
 
-function createMessageOption(
-  phoneNumber,
-  productName,
-  campanyName,
-  bonus,
-  createdAt,
-  collectFinishDate,
-  adId
-) {
+function createMessageOption(props) {
+  const {
+    phoneNumber,
+    productName,
+    campanyName,
+    bonus,
+    createdAt,
+    collectFinishDate,
+    adId
+  } = props;
+
   const options = {
     method: 'POST',
     url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
@@ -159,23 +161,32 @@ function createMessageOption(
       BTN_URLS1: `https://www.inflai.com/CampaignList/${adId}`,
       BTN_URLS2: `https://www.inflai.com/CampaignList/${adId}`
     }
-    // gzip: true
   };
-  return options;
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
 }
 
-function createMessageOption2(
-  phoneNumber,
-  productName,
-  campanyName,
-  bonus,
-  postingPrice,
-  createdAt,
-  collectFinishDate,
-  influenserNumber,
-  requirements,
-  adId
-) {
+function createMessageOption2(props) {
+  const {
+    phoneNumber,
+    productName,
+    campanyName,
+    bonus,
+    postingPrice,
+    createdAt,
+    collectFinishDate,
+    influenserNumber,
+    requirements,
+    adId
+  } = props;
   const options = {
     method: 'POST',
     url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
@@ -237,7 +248,6 @@ function getGoogleData(code) {
     });
   }));
 }
-
 
 function YoutubeRequest(data, cb) {
   async.map(data, (item, callback) => {

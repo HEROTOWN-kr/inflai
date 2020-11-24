@@ -348,7 +348,7 @@ function CampaignApply(props) {
                               <Grid item>
                                 <StyledImage width="18px" height="18px" src={blogIcon} />
                               </Grid>
-                              <Grid item xs={6}>
+                              <Grid item>
                                 <StyledText overflowHidden>{applyData.naverChannelName || '블로그'}</StyledText>
                               </Grid>
                             </Grid>
