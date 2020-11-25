@@ -1,6 +1,8 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import { Link, Route, Switch } from 'react-router-dom';
+import {
+  Link, Redirect, Route, Switch
+} from 'react-router-dom';
 import Home from '../home/home';
 import Advertiser from '../advertiser/Advertiser';
 import Influencer from '../influencer/Influencer';
@@ -11,8 +13,11 @@ import OnGoing from './status/OnGoing';
 import Complete from './status/Complete';
 import Combined from './status/Combined';
 import InfluencerList from './status/InfluencerList';
+import CampaignCreate from './CampaignCreate';
+import NotFound from '../main/NotFound';
 
 function Campaign(props) {
+  const { match } = props;
   const menuLinks = [
     {
       text: '나의 캠페인',
@@ -31,49 +36,39 @@ function Campaign(props) {
 
   return (
     <React.Fragment>
-      <div className="campaign wraper vertical3">
-        <Grid container justify="center">
-          <Grid item className="main-container">
-            <Grid container spacing={2}>
-              <Grid item md={5}>
-                <Grid container className="campaign-step">
-                  {menuLinks.map(link => (
-                    <Grid item md={4} key={link.text} className="link-container">
-                      <Link
-                        id={link.text}
-                        className="link"
-                        to={props.match.path + link.link}
-                      >
-                        {link.text}
-                      </Link>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Grid>
-              <Grid item xs={12}>
-                <Switch>
-                  <Route
-                    path={`${props.match.path}/ongoing`}
-                    render={props => <OnGoing {...props} />}
-                  />
-                  <Route
-                    path={`${props.match.path}/complete`}
-                    render={props => <Complete {...props} />}
-                  />
-                  <Route
-                    path={`${props.match.path}/combine`}
-                    render={props => <Combined {...props} />}
-                  />
-                  <Route
-                    path={`${props.match.path}/influencers/:id`}
-                    render={props => <InfluencerList {...props} />}
-                  />
-                </Switch>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-      </div>
+      <Switch>
+        <Route
+          path={`${match.path}/Create`}
+          render={renderProps => <CampaignCreate {...renderProps} />}
+        />
+        <Route
+          exact
+          path={`${match.path}/`}
+          render={() => (
+            <Redirect to={`${match.path}/Create`} />
+          )}
+        />
+        <Route
+          component={NotFound}
+        />
+        {/* <Route
+          path={`${match.path}/ongoing`}
+          render={renderProps => <OnGoing {...props} />}
+        />
+        <Route
+          path={`${match.path}/complete`}
+          render={renderProps => <Complete {...props} />}
+        />
+        <Route
+          path={`${match.path}/combine`}
+          render={renderProps => <Combined {...props} />}
+        />
+        <Route
+          path={`${match.path}/influencers/:id`}
+          render={renderProps => <InfluencerList {...props} />}
+        /> */}
+      </Switch>
+
     </React.Fragment>
   );
 }

@@ -76,7 +76,7 @@ function DaumPostCode(props) {
         </Grid>
         <Grid item xs={12}>
           <Grid container spacing={1}>
-            <Grid item xs={10}>
+            <Grid item xs={12}>
               <ReactFormText register={register} errors={errors} name="roadAddress" onChange={event => setValue('roadAddress', event.target.value)} placeholder="도로명주소" inputProps={{ readOnly: true }} />
             </Grid>
             {/* <Grid item xs={5}>
@@ -93,7 +93,7 @@ function DaumPostCode(props) {
         } */}
         <Grid item xs={12}>
           <Grid container spacing={1}>
-            <Grid item xs={4}>
+            <Grid item xs={8}>
               <ReactFormText register={register} errors={errors} name="detailAddress" placeholder="상세주소" />
             </Grid>
             <Grid item xs={4}>

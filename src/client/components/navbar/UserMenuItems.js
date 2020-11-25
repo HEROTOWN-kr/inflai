@@ -18,15 +18,16 @@ function UserMenuItems(props) {
       text: '캠페인 관리',
       link: '/Profile/CampaignInfo'
     },
-    {
-      text: '알림',
-      link: '/Notifications'
-    },
   ];
   if (userRole === '1') {
     userMenu.push({
       text: '마케팅 요청',
       link: '/Product'
+    });
+  } else if (userRole === '2') {
+    userMenu.push({
+      text: '랭킹 정보',
+      link: '/Profile/Rank'
     });
   }
 

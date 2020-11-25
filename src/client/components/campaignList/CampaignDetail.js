@@ -10,6 +10,7 @@ import ReactHtmlParser from 'react-html-parser';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
 import * as Scroll from 'react-scroll';
+import { Skeleton } from '@material-ui/lab';
 import Common from '../../lib/common';
 import { Colors, campaignSteps, AdvertiseTypes } from '../../lib/Сonstants';
 import IconYoutube from '../../img/icon_youtube_url.png';
@@ -74,66 +75,80 @@ function ParticipantList(props) {
 
   return (
     <>
-      {participants.map(item => (
-        <Box key={item.PAR_ID} py={2} borderBottom={`1px solid ${Colors.grey7}`}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Grid container alignItems="center">
-                <Grid item xs={2}>
-                  <StyledImage borderRadius="100%" width="90px" height="90px" src={item.INF_PHOTO || defaultAccountImage} />
-                </Grid>
-                <Grid item xs={10}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <Grid container alignItems="center" spacing={1}>
-                        <Grid item>
-                          <StyledText fontSize={16} fontWeight="bold">{item.PAR_NAME}</StyledText>
+      {
+        participants.length === 0 ? (
+          <Box py={4}>
+            <Grid container justify="center">
+              <Grid item>
+                신청한 리뷰어 없습니다
+              </Grid>
+            </Grid>
+          </Box>
+        ) : (
+          <React.Fragment>
+            {participants.map(item => (
+              <Box key={item.PAR_ID} py={2} borderBottom={`1px solid ${Colors.grey7}`}>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <Grid container alignItems="center">
+                      <Grid item xs={2}>
+                        <StyledImage borderRadius="100%" width="90px" height="90px" src={item.INF_PHOTO || defaultAccountImage} />
+                      </Grid>
+                      <Grid item xs={10}>
+                        <Grid container spacing={2}>
+                          <Grid item xs={12}>
+                            <Grid container alignItems="center" spacing={1}>
+                              <Grid item>
+                                <StyledText fontSize={16} fontWeight="bold">{item.PAR_NAME}</StyledText>
+                              </Grid>
+                              {item.PAR_INSTA ? (
+                                <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
+                              ) : null}
+                              {item.PAR_YOUTUBE ? (
+                                <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
+                              ) : null}
+                              {item.PAR_NAVER ? (
+                                <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
+                              ) : null}
+                            </Grid>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <StyledText fontSize={15} lineHeight="1.3em">{item.PAR_MESSAGE}</StyledText>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <StyledText fontSize={15}>
+                              {item.PAR_DT}
+                            </StyledText>
+                          </Grid>
                         </Grid>
-                        {item.PAR_INSTA ? (
-                          <Grid item><StyledImage width="21px" height="21px" src={IconInsta} /></Grid>
-                        ) : null}
-                        {item.PAR_YOUTUBE ? (
-                          <Grid item><StyledImage width="21px" height="21px" src={IconYoutube} /></Grid>
-                        ) : null}
-                        {item.PAR_NAVER ? (
-                          <Grid item><StyledImage width="21px" height="21px" src={IconBlog} /></Grid>
-                        ) : null}
                       </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                      <StyledText fontSize={15} lineHeight="1.3em">{item.PAR_MESSAGE}</StyledText>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <StyledText fontSize={15}>
-                        {item.PAR_DT}
-                      </StyledText>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Grid container justify="flex-end" spacing={1}>
+                      {item.PAR_STATUS === '1' ? (
+                        <Grid item>
+                          <StyledButton
+                            fontSize="12px"
+                            height="25px"
+                            padding="0 10px"
+                            onClick={() => selectParticipant(item.PAR_ID)}
+                          >
+                                  리뷰어 선정하기
+                          </StyledButton>
+                        </Grid>
+                      ) : null}
+                      <Grid item>
+                        <StyledButton fontSize="12px" height="25px" padding="0 10px">신청정보 수정</StyledButton>
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Grid container justify="flex-end" spacing={1}>
-                {item.PAR_STATUS === '1' ? (
-                  <Grid item>
-                    <StyledButton
-                      fontSize="12px"
-                      height="25px"
-                      padding="0 10px"
-                      onClick={() => selectParticipant(item.PAR_ID)}
-                    >
-                        리뷰어 선정하기
-                    </StyledButton>
-                  </Grid>
-                ) : null}
-                <Grid item>
-                  <StyledButton fontSize="12px" height="25px" padding="0 10px">신청정보 수정</StyledButton>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Box>
-      ))}
+              </Box>
+            ))}
+          </React.Fragment>
+        )
+      }
     </>
   );
 }
@@ -148,9 +163,10 @@ function CampaignDetail(props) {
   });
   const [currentImage, setCurrentImage] = useState('');
   const [isSticky, setSticky] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState(2);
   const testImage = 'https://www.inflai.com/attach/portfolio/33/1yqw1whkavscxke.PNG';
-  const { token } = useContext(AuthContext);
+  const { token, userRole } = useContext(AuthContext);
   const theme = useTheme();
   const Scroller = Scroll.scroller;
   const ElementLink = Scroll.Element;
@@ -195,6 +211,7 @@ function CampaignDetail(props) {
   }
 
   function getDetailData() {
+    setLoading(true);
     const apiObj = {
       id: match.params.id,
     };
@@ -206,11 +223,12 @@ function CampaignDetail(props) {
       console.log(data);
       setProductData(data);
       setCurrentImage(data.TB_PHOTO_ADs[0].PHO_FILE);
+      setLoading(false);
     }).catch(err => alert(err.response.data.message));
   }
 
   function sendRequest() {
-    if (token) {
+    if (token && userRole === '2') {
       // history.push(`/CampaignList/apply/${adId}`);
 
       axios.get('/api/TB_PARTICIPANT/checkParticipant', {
@@ -255,9 +273,22 @@ function CampaignDetail(props) {
       <Grid container>
         <Grid item style={{ width: getWidth() }}>
           <Box py={6} pr={6}>
-            <StyledText fontSize="33">{productData.AD_NAME}</StyledText>
+            {
+              loading ? (
+                <Skeleton variant="text" height={33} />
+              ) : (
+                <StyledText fontSize="33">{productData.AD_NAME}</StyledText>
+              )
+            }
+
             <Box mt={3} mb={5}>
-              <StyledText fontSize="16" color={Colors.grey2}>{ReactHtmlParser(productData.AD_SHRT_DISC)}</StyledText>
+              {
+                loading ? (
+                  <Skeleton variant="text" height={16} />
+                ) : (
+                  <StyledText fontSize="16" color={Colors.grey2}>{ReactHtmlParser(productData.AD_SHRT_DISC)}</StyledText>
+                )
+              }
             </Box>
             <Grid container justify="flex-end">
               <Grid item>
@@ -279,7 +310,12 @@ function CampaignDetail(props) {
                 </Box>
               </Grid>
             </Grid>
-            <StyledImage width="100%" height="435px" src={currentImage || testImage} />
+            {loading ? (
+              <Skeleton variant="rect" width="100%" height={435} />
+            ) : (
+              <StyledImage width="100%" height="435px" src={currentImage || testImage} />
+            )}
+
             <Box mt={1} mb={5}>
               <Grid container spacing={1}>
                 {productData.TB_PHOTO_ADs.map(item => (

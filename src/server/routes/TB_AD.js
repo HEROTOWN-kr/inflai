@@ -1,6 +1,8 @@
 const express = require('express');
 const Sequelize = require('sequelize');
 
+const { Op } = Sequelize;
+
 const uniqid = require('uniqid');
 const fse = require('fs-extra');
 const path = require('path');
@@ -13,7 +15,7 @@ const Notification = require('../models').TB_NOTIFICATION;
 const Participant = require('../models').TB_PARTICIPANT;
 const Payment = require('../models').TB_PAYMENT;
 const Photo = require('../models').TB_PHOTO_AD;
-const { getIdFromToken } = require('../config/common');
+const { getIdFromToken, resizeImage } = require('../config/common');
 const common = require('../config/common');
 
 
@@ -201,11 +203,29 @@ router.post('/adminCreateAd', (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const { token } = req.query;
+    const {
+      token, page, limit, tab
+    } = req.query;
     const userId = common.getIdFromToken(token).sub;
+    const pageInt = parseInt(page, 10);
+    const limitInt = parseInt(limit, 10);
+    const offset = (pageInt - 1) * limitInt;
 
-    const dbData = await Advertise.findAll({
-      where: { ADV_ID: userId },
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const where = {
+      ADV_ID: userId,
+    };
+
+    if (tab === '2') where.AD_SRCH_END = { [Op.gt]: currentDate };
+    if (tab === '3') where.AD_SRCH_END = { [Op.lt]: currentDate };
+
+    const dbData = await Advertise.findAndCountAll({
+      where,
+      distinct: true,
+      offset,
+      limit: limitInt,
       order: [['AD_ID', 'DESC']],
       attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
       include: [
@@ -222,14 +242,17 @@ router.get('/', async (req, res) => {
       ],
     });
 
-    const advertises = dbData.map((item) => {
+    const { rows, count } = dbData;
+
+    const advertises = rows.map((item) => {
       const data = item.dataValues;
       const proportion = Math.round(100 / (data.AD_INF_CNT / data.TB_PARTICIPANTs.length));
       return { ...data, proportion };
     });
 
     res.status(200).json({
-      data: advertises
+      data: advertises,
+      count
     });
   } catch (e) {
     res.status(400).send(e.message);
@@ -453,17 +476,19 @@ router.post('/delete', (req, res) => {
 router.post('/upload', async (req, res, next) => {
   try {
     const file = req.files.upload;
-    // const { token, id } = req.body;
-    // const userId = id || getIdFromToken(token).sub;
     const uid = uniqid();
-    // const uid = 'profile';
 
-    const newFileNm = path.normalize(uid + path.extname(file.name));
-    const uploadPath = path.normalize(`${config.attachRoot}/campaign/detailPage/`) + newFileNm;
+    const currentPath = file.path;
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uid}_660${fileExtension}`;
+    const tmpPath = path.normalize(`${config.tmp}${fileName}`);
+    const uploadPath = path.normalize(`${config.attachRoot}/campaign/detailPage/${fileName}`);
 
-    const DRAWING_URL = `/attach/campaign/detailPage/${newFileNm}`;
+    await resizeImage(currentPath, tmpPath, 660, null);
+    await fse.move(tmpPath, uploadPath, { clobber: true });
+    await fse.remove(currentPath);
 
-    await fse.move(file.path, uploadPath, { clobber: true });
+    const DRAWING_URL = `/attach/campaign/detailPage/${fileName}`;
 
     return res.status(200).send({ uploaded: true, url: DRAWING_URL });
   } catch (err) {

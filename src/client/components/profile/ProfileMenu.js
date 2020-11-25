@@ -8,6 +8,7 @@ import StyledImage from '../containers/StyledImage';
 import defaultAccountImage from '../../img/default_account_image.png';
 import WhiteBlock from '../containers/WhiteBlock';
 import AuthContext from '../../context/AuthContext';
+import StyledButton from '../containers/StyledButton';
 
 function ProfileMenu(props) {
   const { history, match, userInfo } = props;
@@ -72,6 +73,14 @@ function ProfileMenu(props) {
             ))}
           </WhiteBlock>
         </Grid>
+        {
+          userRole === '1' ? (
+            <Grid item xs={12}>
+              <StyledButton borderRadius="7px" onClick={() => history.push('/Campaign')}>캠페인 등록</StyledButton>
+            </Grid>
+          ) : null
+        }
+
       </Grid>
     </Box>
   );

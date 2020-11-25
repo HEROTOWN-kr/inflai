@@ -14,7 +14,11 @@ function CampaignCard(props) {
 
   function calculateDates(date) {
     const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
     const lastDate = new Date(date);
+    if (lastDate < currentDate) {
+      return '마감';
+    }
     const daysLag = Math.ceil(Math.abs(lastDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24));
     return daysLag;
   }

@@ -20,6 +20,7 @@ import InfoYoutube from '../info/InfoYoutube';
 import NotFound from './NotFound';
 import Ranking from '../ranking/Ranking';
 import Profile from '../profile/Profile';
+import CampaignCreate from '../campaign/CampaignCreate';
 
 
 function Main({

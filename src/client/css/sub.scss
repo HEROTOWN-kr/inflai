@@ -2038,7 +2038,9 @@ $colorPink: #fbbaba;
 
 
   .provide-info {
-
+    p {
+      overflow-wrap: break-word;
+    }
   }
   .step-card {
     box-sizing: border-box;
