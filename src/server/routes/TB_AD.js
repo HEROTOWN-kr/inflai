@@ -68,14 +68,15 @@ router.post('/create', async (req, res) => {
   try {
     const data = req.body;
     // const userId = common.getIdFromToken(data.token).sub;
-    const userId = 48;
     const {
       advertiserId, campaignName, delivery, detailAddress, detailInfo,
       discription, email, extraAddress, influencerCount, phone,
       postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
       searchStart, shortDisc, sns, subtype, type, visible, insta,
-      naver, youtube
+      naver, youtube, token
     } = data;
+
+    const userId = token ? common.getIdFromToken(token).sub : 48;
 
     const post = {
       ADV_ID: userId,

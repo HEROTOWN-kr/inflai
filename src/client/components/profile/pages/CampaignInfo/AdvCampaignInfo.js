@@ -9,6 +9,8 @@ import StyledText from '../../../containers/StyledText';
 import AuthContext from '../../../../context/AuthContext';
 import CampaignCard from '../../../campaignList/CampaignCard';
 import MyPagination from '../../../containers/MyPagination';
+import noImage from '../../../../img/logo400_316.png';
+
 
 function TabComponent(props) {
   const {
@@ -153,10 +155,11 @@ function AdvCampaignInfo(props) {
                   const {
                     AD_ID, AD_CTG, AD_CTG2, AD_SRCH_END, AD_NAME, AD_SHRT_DISC, TB_PARTICIPANTs, AD_INF_CNT, proportion, TB_PHOTO_ADs,
                   } = item;
+                  const CardImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : noImage;
                   return (
                     <Grid item key={AD_ID} style={{ width: getCardWidth() }}>
                       <CampaignCard
-                        image={TB_PHOTO_ADs[0].PHO_FILE}
+                        image={CardImage}
                         ctg1={AD_CTG}
                         ctg2={AD_CTG2}
                         srchEnd={AD_SRCH_END}
