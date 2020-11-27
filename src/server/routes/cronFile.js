@@ -45,11 +45,10 @@ async function Update() {
         }
 
         try {
-          const result = await Insta.upsert({
-            INF_ID,
+          const result = await Insta.update({
             INS_TOKEN: INF_TOKEN,
             INS_ACCOUNT_ID: id,
-            INS_NAME: name.normalize('NFC'),
+            INS_NAME: name ? name.normalize('NFC') : null,
             INS_USERNAME: username,
             INS_MEDIA_CNT: media_count,
             INS_FLWR: followers_count,
@@ -57,8 +56,10 @@ async function Update() {
             INS_PROFILE_IMG: profile_picture_url,
             INS_LIKES: likeSum,
             INS_CMNT: commentsSum
+          }, {
+            where: { INF_ID }
           });
-          return { INF_ID, message: result ? 'inserted' : 'updated' };
+          return { INF_ID, message: result ? 'updated' : 'notUpdated' };
         } catch (err) {
           return {
             INF_ID,
@@ -81,3 +82,19 @@ async function Update() {
 }
 
 Update();
+
+
+/*
+const result = await Insta.upsert({
+  INF_ID,
+  INS_TOKEN: INF_TOKEN,
+  INS_ACCOUNT_ID: id,
+  INS_NAME: name.normalize('NFC'),
+  INS_USERNAME: username,
+  INS_MEDIA_CNT: media_count,
+  INS_FLWR: followers_count,
+  INS_FLW: follows_count,
+  INS_PROFILE_IMG: profile_picture_url,
+  INS_LIKES: likeSum,
+  INS_CMNT: commentsSum
+}); */

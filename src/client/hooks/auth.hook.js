@@ -34,6 +34,11 @@ const useAuth = () => {
   const userDataUpdate = useCallback((name, photo) => {
     setUserName(name);
     setUserPhoto(photo);
+
+    const data = JSON.parse(localStorage.getItem(storageName));
+    localStorage.setItem(storageName, JSON.stringify({
+      ...data, userName: name, userPhoto: photo
+    }));
   }, []);
 
   useEffect(() => {

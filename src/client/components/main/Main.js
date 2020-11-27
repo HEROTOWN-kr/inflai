@@ -21,6 +21,7 @@ import NotFound from './NotFound';
 import Ranking from '../ranking/Ranking';
 import Profile from '../profile/Profile';
 import CampaignCreate from '../campaign/CampaignCreate';
+import PrivateRoute from '../containers/PrivateRoute';
 
 
 function Main({
@@ -44,9 +45,10 @@ function Main({
         path="/Product"
         render={props => <Product {...props} user={user} changeUser={changeUser} />}
       />
-      <Route
+      <PrivateRoute
         path="/Campaign"
-        render={props => <Campaign {...props} user={user} />}
+        component={Campaign}
+        // render={props => <Campaign {...props} user={user} />}
       />
       <Route
         path="/Ranking"

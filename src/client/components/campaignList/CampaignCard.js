@@ -26,7 +26,7 @@ function CampaignCard(props) {
   return (
     <Box border="1px solid #eaeaea" overflow="hidden" borderRadius="10px" css={{ cursor: 'pointer' }} onClick={onClick}>
       <StyledImage width="100%" height="auto" src={image || noImage} />
-      <Box p={3}>
+      <Box borderTop="1px solid #eaeaea" p={3}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <StyledText overflowHidden>

@@ -125,10 +125,12 @@ function CampaignCreate(props) {
             }).then(response => ('sucess')).catch(error => ('error'));
           });
           axios.all(uploaders).then(() => {
-            console.log('success with upload');
+            alert('캠페인이 등록되었습니다!!');
+            history.push('/Profile/CampaignInfo');
           });
         } else {
-          console.log('success');
+          alert('캠페인이 등록되었습니다!!');
+          history.push('/Profile/CampaignInfo');
         }
       }).catch((error) => {
         alert(error.response.data);
@@ -400,7 +402,7 @@ function CampaignCreate(props) {
           <Grid container justify="center" spacing={1}>
             <Grid item xs={2}><StyledButton onClick={() => history.push('/')}>취소</StyledButton></Grid>
             <Grid item xs={2}><StyledButton onClick={handleSubmit(onSubmit)}>저장하기</StyledButton></Grid>
-            <Grid item xs={2}><StyledButton onClick={handleSubmit(onSubmit2)}>test</StyledButton></Grid>
+            {/* <Grid item xs={2}><StyledButton onClick={handleSubmit(onSubmit2)}>test</StyledButton></Grid> */}
           </Grid>
         </Grid>
       </Grid>
