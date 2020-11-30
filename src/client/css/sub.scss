@@ -2090,6 +2090,19 @@ $colorPink: #fbbaba;
   }
 }
 
+.membership {
+  .membership-card {
+    transition: transform 0.2s, opacity 0.2s;
+    transition-timing-function: ease-in;
+    &:hover, &.selected {
+      transform: translateY(-15px);
+    }
+    &.notSelected {
+      opacity: 25%;
+    }
+  }
+}
+
 
 @media only screen and (max-width: 1800px) {
   .home{

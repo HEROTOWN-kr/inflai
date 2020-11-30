@@ -21,8 +21,8 @@ function NavbarLinks(props) {
       link: '/'
     }, */
     {
-      text: '파트너',
-      link: '/'
+      text: '멤버십',
+      link: '/Membership'
     },
     {
       text: '캠페인',

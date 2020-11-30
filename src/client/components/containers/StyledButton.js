@@ -26,7 +26,7 @@ function StyledButton(props) {
     className,
     children,
     onClick,
-    disabledObj,
+    disabled,
   } = props;
   const classes = useStyles(props);
 
@@ -36,7 +36,7 @@ function StyledButton(props) {
       fullWidth
       className={`${classes.root} ${className}`}
       onClick={onClick}
-      disabled={disabledObj}
+      disabled={disabled}
     >
       {children}
     </Button>

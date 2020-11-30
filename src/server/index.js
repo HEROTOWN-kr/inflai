@@ -58,6 +58,7 @@ app.use('/TB_YOUTUBE', require('./routes/TB_YOUTUBE'));
 app.use('/TB_INSTA', require('./routes/TB_INSTA'));
 app.use('/TB_NAVER', require('./routes/TB_NAVER'));
 app.use('/TB_PARTICIPANT', require('./routes/TB_PARTICIPANT'));
+app.use('/TB_PLAN', require('./routes/TB_PLAN'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 

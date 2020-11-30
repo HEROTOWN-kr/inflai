@@ -67,7 +67,6 @@ function CampaignAll({
 
   function detailInfo(AD_ID) {
     history.push(`CampaignList/${AD_ID}`);
-    // width="100%" maxWidth="1920px" minWidth="1200px"
   }
 
   return (

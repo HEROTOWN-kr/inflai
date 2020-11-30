@@ -22,6 +22,7 @@ import Ranking from '../ranking/Ranking';
 import Profile from '../profile/Profile';
 import CampaignCreate from '../campaign/CampaignCreate';
 import PrivateRoute from '../containers/PrivateRoute';
+import Membership from '../membership/Membership';
 
 
 function Main({
@@ -85,6 +86,10 @@ function Main({
       <Route
         path="/CampaignList"
         render={props => <CampaignList {...props} />}
+      />
+      <Route
+        path="/Membership"
+        render={props => <Membership {...props} />}
       />
       <Route
         component={NotFound}

@@ -77,7 +77,6 @@ function InfluencerInfo(props) {
 
       await axios.post('/api/TB_INFLUENCER/updateInfo', apiObj);
 
-      console.log(data.photo);
       if (data.photo) {
         const { photo } = data;
         const formData = new FormData();
