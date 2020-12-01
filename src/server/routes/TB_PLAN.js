@@ -3,15 +3,17 @@ const Plan = require('../models').TB_PLAN;
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  Plan.findAll().then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+router.get('/', async (req, res) => {
+  try {
+    const Response = await Plan.findAll();
+    res.status(200).json({
+      data: Response,
     });
-  }).error((err) => {
-    res.send('error has occured', err);
-  });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
 });
 
 module.exports = router;

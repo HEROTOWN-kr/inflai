@@ -19,6 +19,7 @@ function ProfileMenu(props) {
     { text: '캠페인 관리', link: '/CampaignInfo' },
   ];
 
+  if (userRole === '1') links.push({ text: '멤버십 관리', link: '/MembershipInfo' });
   if (userRole === '2') links.push({ text: '랭킹 정보', link: '/Rank' });
 
   return (

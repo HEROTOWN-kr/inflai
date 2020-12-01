@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Grid, Paper } from '@material-ui/core';
 import axios from 'axios';
 import StyledText from '../containers/StyledText';
 import { Colors } from '../../lib/Сonstants';
 import StyledButton from '../containers/StyledButton';
 import PlanSuccessDialog from './PlanSuccessDialog';
+import AuthContext from '../../context/AuthContext';
 
 const myStyles = [
   {
@@ -27,11 +28,18 @@ const myStyles = [
   }
 ];
 
+function formatNumber(num) {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
 
-function Membership() {
+function Membership(props) {
+  const { history } = props;
   const [plans, setPlans] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [selectedData, setSelectedData] = useState({});
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+
+  const { token } = useContext(AuthContext);
 
   function getPlans() {
     axios.get('/api/TB_PLAN/').then((res) => {
@@ -44,12 +52,42 @@ function Membership() {
     getPlans();
   }, []);
 
-  function selectPlan() {
-    alert(selected);
-  }
+  useEffect(() => {
+    const filteredArray = plans.filter(plan => plan.PLN_ID === selected);
+    if (filteredArray.length > 0) {
+      const { PLN_ID, PLN_PRICE_MONTH, PLN_NAME } = filteredArray[0];
+      const pricePerMonth = `${formatNumber(PLN_PRICE_MONTH)}원`;
+      setSelectedData({
+        PLN_ID,
+        planName: PLN_NAME,
+        pricePerMonth,
+        bankName: '기업은행',
+        bankAccount: '123456789',
+        bankHost: 'INFLAI'
+      });
+    }
+  }, [selected]);
 
   function toggleSuccessDialog() {
     setSuccessDialogOpen(!successDialogOpen);
+  }
+
+  function selectPlan(id) {
+    if (id === selected) {
+      setSelected(null);
+    } else {
+      setSelected(id);
+    }
+  }
+
+  function subscribePlan() {
+    axios.post('/api/TB_SUBSCRIPTION/save', {
+      token,
+      PLN_ID: selectedData.PLN_ID
+    }).then((res) => {
+      toggleSuccessDialog();
+      history.push('/Profile/MembershipInfo');
+    }).catch(error => alert(error.response.data.message));
   }
 
   return (
@@ -69,13 +107,13 @@ function Membership() {
                   height: '100%', borderRadius: '15px', overflow: 'hidden', cursor: 'pointer'
                 }}
                 className={`membership-card ${selected ? ` ${selected === item.PLN_ID ? 'selected' : 'notSelected'}` : ''}`}
-                onClick={() => setSelected(item.PLN_ID)}
+                onClick={() => selectPlan(item.PLN_ID)}
               >
                 <Box p={3} style={myStyles[index]}>
                   <StyledText fontSize={21} fontWeight="bold" color={myStyles[index].color}>{item.PLN_NAME}</StyledText>
                   <Box mt={8}>
                     <StyledText fontSize={21} color={myStyles[index].color} textAlign="right">월 부담 비용</StyledText>
-                    <StyledText fontSize={42} color={myStyles[index].color} textAlign="right" fontWeight="bold" lineHeight="2em">{`₩${item.PLN_PRICE_MONTH}`}</StyledText>
+                    <StyledText fontSize={42} color={myStyles[index].color} textAlign="right" fontWeight="bold" lineHeight="2em">{`₩ ${formatNumber(item.PLN_PRICE_MONTH)}`}</StyledText>
                     <StyledText fontSize={21} color={myStyles[index].color} textAlign="right">{`VAT 미포함${item.PLN_DSCNT ? `, ${item.PLN_DSCNT}% 할인적용` : ''}` }</StyledText>
                   </Box>
                 </Box>
@@ -95,7 +133,12 @@ function Membership() {
           <StyledButton disabled={!selected} onClick={toggleSuccessDialog}>구독하기</StyledButton>
         </Grid>
       </Grid>
-      <PlanSuccessDialog open={successDialogOpen} setOpen={toggleSuccessDialog} onConfirm={toggleSuccessDialog} dialogText="test" />
+      <PlanSuccessDialog
+        open={successDialogOpen}
+        handleClose={toggleSuccessDialog}
+        onConfirm={subscribePlan}
+        selectedData={selectedData}
+      />
     </Box>
   );
 }

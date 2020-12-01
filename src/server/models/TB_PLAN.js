@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('TB_PLAN', {
+  const Plan = sequelize.define('TB_PLAN', {
     PLN_ID: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -39,4 +39,10 @@ module.exports = function (sequelize, DataTypes) {
   }, {
     tableName: 'TB_PLAN'
   });
+
+  Plan.associate = function (models) {
+    Plan.hasMany(models.TB_SUBSCRIPTION, { foreignKey: 'PLN_ID', sourceKey: 'PLN_ID' });
+  };
+
+  return Plan;
 };

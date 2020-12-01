@@ -76,7 +76,7 @@ router.post('/create', async (req, res) => {
       naver, youtube, token
     } = data;
 
-    const userId = token ? common.getIdFromToken(token).sub : 48;
+    const userId = token ? getIdFromToken(token).sub : 48;
 
     const post = {
       ADV_ID: userId,
@@ -207,7 +207,7 @@ router.get('/', async (req, res) => {
     const {
       token, page, limit, tab
     } = req.query;
-    const userId = common.getIdFromToken(token).sub;
+    const userId = getIdFromToken(token).sub;
     const pageInt = parseInt(page, 10);
     const limitInt = parseInt(limit, 10);
     const offset = (pageInt - 1) * limitInt;
@@ -262,7 +262,7 @@ router.get('/', async (req, res) => {
 
 router.get('/getAdInfluencers', (req, res) => {
   const { token, adId } = req.query;
-  const userId = common.getIdFromToken(token).sub;
+  const userId = getIdFromToken(token).sub;
 
   Advertise.findOne({
     where: { AD_ID: adId },
@@ -380,7 +380,7 @@ router.get('/detail', async (req, res) => {
 
 router.post('/createAd', (req, res) => {
   const data = req.body;
-  const userId = common.getIdFromToken(data.token).sub;
+  const userId = getIdFromToken(data.token).sub;
 
   const post = {
     ADV_ID: userId,
