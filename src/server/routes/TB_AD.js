@@ -23,11 +23,11 @@ const router = express.Router();
 
 router.get('/getAll', async (req, res) => {
   try {
-    const data = req.query;
-    const offset = (data.page - 1) * 10;
-    const firstRow = 0;
+    const { page } = req.query;
+    const limit = 5;
+    const offset = (page - 1) * limit;
 
-    const dbData = await Advertise.findAndCountAll({
+    const dbData = await Advertise.findAll({
       attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
       ],
@@ -38,27 +38,20 @@ router.get('/getAll', async (req, res) => {
           required: false,
         }
       ],
-      limit: 10,
+      limit,
       offset,
       order: [['AD_ID', 'DESC']]
     });
 
-    const { rows, count } = dbData;
+    const AdvertiseCount = await Advertise.count();
 
-    let icount = count - 1;
-
-    const campaignsRes = rows.map((item, index) => {
+    const campaignsRes = dbData.map((item, index) => {
       const { dataValues } = item;
-      const rownum = count - firstRow - (icount--);
+      const rownum = AdvertiseCount - offset - index;
       return { ...dataValues, rownum };
     });
 
-    res.status(200).json({ data: { campaignsRes, countRes: count } });
-
-    /* let icount = cnt - 1;
-    for (let i = 0; i < list.length; i++) {
-      list[i].dataValues.rownum = cnt - firstRow - (icount--);
-    } */
+    res.status(200).json({ data: { campaignsRes, countRes: AdvertiseCount } });
   } catch (e) {
     res.status(400).send({ message: e.message });
   }

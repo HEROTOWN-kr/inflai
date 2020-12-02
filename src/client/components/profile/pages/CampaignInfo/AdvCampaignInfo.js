@@ -57,7 +57,6 @@ function AdvCampaignInfo(props) {
       const { data } = res.data;
       setCampaigns(data);
       setCount(res.data.count);
-      console.log(res.data.count);
       setLoading(false);
     }).catch(err => alert(err));
   }
