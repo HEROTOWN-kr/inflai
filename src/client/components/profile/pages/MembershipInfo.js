@@ -5,12 +5,13 @@ import WhiteBlock from '../../containers/WhiteBlock';
 import PageTitle from './PageTitle';
 import StyledText from '../../containers/StyledText';
 import AuthContext from '../../../context/AuthContext';
+import { Colors } from '../../../lib/Сonstants';
 
 const cardInfo = [
   { name: '플랜', data: 'PLN_NAME' },
   { name: '시작 날짜', data: 'SUB_START_DT' },
   { name: '마감 날짜', data: 'SUB_END_DT' },
-  { name: '상태', data: 'SUB_STATUS' },
+  // { name: '상태', data: 'SUB_STATUS' },
 ];
 
 function MembershipInfo(props) {
@@ -64,6 +65,19 @@ function MembershipInfo(props) {
                         </Grid>
                       ))
                     }
+                  <Grid item xs={3}>
+                    <Grid container direction="column" alignItems="center">
+                      <Grid item><StyledText fontWeight="bold" lineHeight="1.5em">상태</StyledText></Grid>
+                      <Grid item>
+                        <StyledText
+                          color={sub.SUB_STATUS === '대기' ? Colors.red : Colors.green}
+                          lineHeight="1.5em"
+                        >
+                          {sub.SUB_STATUS || '-'}
+                        </StyledText>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Box>
             ))

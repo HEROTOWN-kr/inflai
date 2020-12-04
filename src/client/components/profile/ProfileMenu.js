@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Box, Grid } from '@material-ui/core';
+import axios from 'axios';
 import { Colors } from '../../lib/Сonstants';
 import MainBlock from '../containers/MainBlock';
 import StyledText from '../containers/StyledText';
@@ -12,7 +13,7 @@ import StyledButton from '../containers/StyledButton';
 
 function ProfileMenu(props) {
   const { history, match, userInfo } = props;
-  const { userRole } = useContext(AuthContext);
+  const { userRole, token } = useContext(AuthContext);
 
   const links = [
     { text: '내정보 관리', link: '/UserInfo' },
@@ -21,6 +22,15 @@ function ProfileMenu(props) {
 
   if (userRole === '1') links.push({ text: '멤버십 관리', link: '/MembershipInfo' });
   if (userRole === '2') links.push({ text: '랭킹 정보', link: '/Rank' });
+
+  function checkSubscription() {
+    axios.get('/api/TB_SUBSCRIPTION/check', {
+      params: { token }
+    }).then((res) => {
+      const { data } = res.data;
+      console.log(data);
+    }).catch(err => alert(err));
+  }
 
   return (
     <Box width={250}>
@@ -77,11 +87,10 @@ function ProfileMenu(props) {
         {
           userRole === '1' ? (
             <Grid item xs={12}>
-              <StyledButton borderRadius="7px" onClick={() => history.push('/Campaign')}>캠페인 등록</StyledButton>
+              <StyledButton borderRadius="7px" onClick={() => checkSubscription()}>캠페인 등록</StyledButton>
             </Grid>
           ) : null
         }
-
       </Grid>
     </Box>
   );

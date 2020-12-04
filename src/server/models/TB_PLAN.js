@@ -19,6 +19,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(100),
       allowNull: true
     },
+    PLN_MONTH: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     PLN_INF_MONTH: {
       type: DataTypes.INTEGER,
       allowNull: false
