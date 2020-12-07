@@ -212,7 +212,7 @@ router.get('/', async (req, res) => {
       ADV_ID: userId,
     };
 
-    if (tab === '2') where.AD_SRCH_END = { [Op.gt]: currentDate };
+    if (tab === '2') where.AD_SRCH_END = { [Op.gte]: currentDate };
     if (tab === '3') where.AD_SRCH_END = { [Op.lt]: currentDate };
 
     const dbData = await Advertise.findAndCountAll({

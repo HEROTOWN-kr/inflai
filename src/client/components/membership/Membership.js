@@ -55,12 +55,16 @@ function Membership(props) {
   useEffect(() => {
     const filteredArray = plans.filter(plan => plan.PLN_ID === selected);
     if (filteredArray.length > 0) {
-      const { PLN_ID, PLN_PRICE_MONTH, PLN_NAME } = filteredArray[0];
+      const {
+        PLN_ID, PLN_PRICE_MONTH, PLN_NAME, PLN_MONTH
+      } = filteredArray[0];
       const pricePerMonth = `${formatNumber(PLN_PRICE_MONTH)}원`;
+      const price = `${formatNumber(PLN_PRICE_MONTH * PLN_MONTH)}원`;
       setSelectedData({
         PLN_ID,
         planName: PLN_NAME,
         pricePerMonth,
+        price,
         bankName: '기업은행',
         bankAccount: '123456789',
         bankHost: 'INFLAI'

@@ -2,6 +2,7 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const Subscription = require('../models').TB_SUBSCRIPTION;
 const Advertiser = require('../models').TB_ADVERTISER;
+const Ad = require('../models').TB_AD;
 const Plan = require('../models').TB_PLAN;
 const { getIdFromToken } = require('../config/common');
 
@@ -11,11 +12,19 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const { token } = req.query;
+    const { token, tab } = req.query;
     const userId = getIdFromToken(token).sub;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const where = { ADV_ID: userId };
+    if (tab === '1') {
+      where.SUB_END_DT = { [Op.gte]: currentDate };
+      where.SUB_STATUS = '2';
+    }
 
     const Response = await Subscription.findAll({
-      where: { ADV_ID: userId },
+      where,
       attributes: [
         'SUB_ID', 'SUB_START_DT', 'SUB_END_DT',
         [Sequelize.literal('CASE SUB_STATUS WHEN \'1\' THEN \'대기\' ELSE \'승인\' END'), 'SUB_STATUS'],
@@ -113,7 +122,7 @@ router.get('/check', async (req, res) => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
-    // if (tab === '2') where.AD_SRCH_END = { [Op.gt]: currentDate };
+    // if (tab === '1') where.AD_SRCH_END = { [Op.gt]: currentDate };
     // if (tab === '3') where.AD_SRCH_END = { [Op.lt]: currentDate };
 
     const Response = await Subscription.findAll({
@@ -137,13 +146,36 @@ router.get('/check', async (req, res) => {
         data: Response,
       });
     } else {
-      res.status(201).json({ message: '진행중 서브스크립션이 없습니다' });
+      res.status(201).json({ data: {}, message: '진행중 서브스크립션이 없습니다' });
     }
   } catch (e) {
     res.status(400).send({
       message: e.message
     });
   }
+});
+
+router.get('/getInfluencers', async (req, res) => {
+  const { token } = req.query;
+  const userId = getIdFromToken(token).sub;
+  /* const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0); */
+
+  const date = new Date();
+
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+  const Response = await Ad.findAll({
+    where: {
+      ADV_ID: userId,
+      AD_DT: { [Op.between]: [firstDay, lastDay] }
+    }
+  });
+  res.status(200).json({
+    data: Response,
+  });
 });
 
 router.post('/save', async (req, res) => {
@@ -185,5 +217,6 @@ router.post('/update', async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;

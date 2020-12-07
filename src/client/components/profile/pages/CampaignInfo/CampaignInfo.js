@@ -10,21 +10,19 @@ import InfCampaignInfo from './InfCampaignInfo';
 function CampaignInfo(props) {
   const { userRole } = useContext(AuthContext);
   return (
-    <div>
-      <WhiteBlock>
-        <PageTitle>
-          <StyledText fontSize="24">
+    <WhiteBlock height="100%">
+      <PageTitle>
+        <StyledText fontSize="24">
             캠페인 관리
-          </StyledText>
-          {/* <button onClick={getCampaigns}>testApi</button> */}
-        </PageTitle>
-        {userRole === '1' ? (
-          <AdvCampaignInfo {...props} />
-        ) : (
-          <InfCampaignInfo {...props} />
-        )}
-      </WhiteBlock>
-    </div>
+        </StyledText>
+        {/* <button onClick={getCampaigns}>testApi</button> */}
+      </PageTitle>
+      {userRole === '1' ? (
+        <AdvCampaignInfo {...props} />
+      ) : (
+        <InfCampaignInfo {...props} />
+      )}
+    </WhiteBlock>
   );
 }
 

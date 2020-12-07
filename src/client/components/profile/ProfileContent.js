@@ -26,9 +26,9 @@ function ProfileContent(props) {
   };
 
   return (
-    <Box width={{
-      xs: 200, md: 600, lg: 975
-    }}
+    <Box
+      width={{ xs: 200, md: 600, lg: 975 }}
+      height="100%"
     >
       <Switch>
         <Route

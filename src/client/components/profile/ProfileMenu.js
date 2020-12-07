@@ -27,8 +27,11 @@ function ProfileMenu(props) {
     axios.get('/api/TB_SUBSCRIPTION/check', {
       params: { token }
     }).then((res) => {
-      const { data } = res.data;
-      console.log(data);
+      if (res.status === 201) {
+        history.push('/Profile/MembershipInfo');
+      } else if (res.status === 200) {
+        history.push('/Campaign');
+      }
     }).catch(err => alert(err));
   }
 

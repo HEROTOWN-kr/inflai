@@ -26,7 +26,8 @@ export default function PlanSuccessDialog(props) {
     },
     {
       title: '송금 금액',
-      data: 'pricePerMonth'
+      // data: 'pricePerMonth'
+      data: 'price'
     },
     {
       title: '가상계좌은행',
