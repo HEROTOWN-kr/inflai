@@ -14,7 +14,8 @@ module.exports = function (sequelize, DataTypes) {
       references: {
         model: 'TB_ADVERTISER',
         key: 'ADV_ID'
-      }
+      },
+      unique: true
     },
     PLN_ID: {
       type: DataTypes.INTEGER,
@@ -22,7 +23,8 @@ module.exports = function (sequelize, DataTypes) {
       references: {
         model: 'TB_PLAN',
         key: 'PLN_ID'
-      }
+      },
+      unique: true
     },
     SUB_START_DT: {
       type: DataTypes.DATE,

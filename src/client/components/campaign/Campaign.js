@@ -15,6 +15,8 @@ import Combined from './status/Combined';
 import InfluencerList from './status/InfluencerList';
 import CampaignCreate from './CampaignCreate';
 import NotFound from '../main/NotFound';
+import ProductCreate from '../product/ProductCreate';
+import ProductAgency from '../product/ProductAgency';
 
 function Campaign(props) {
   const { match } = props;
@@ -42,10 +44,18 @@ function Campaign(props) {
           render={renderProps => <CampaignCreate {...renderProps} />}
         />
         <Route
+          path={`${match.path}/Agency`}
+          render={renderProps => <ProductAgency {...renderProps} />}
+        />
+        <Route
+          path={`${match.path}/type`}
+          render={renderProps => <ProductCreate {...renderProps} />}
+        />
+        <Route
           exact
           path={`${match.path}/`}
           render={() => (
-            <Redirect to={`${match.path}/Create`} />
+            <Redirect to={`${match.path}/type`} />
           )}
         />
         <Route
@@ -68,7 +78,6 @@ function Campaign(props) {
           render={renderProps => <InfluencerList {...props} />}
         /> */}
       </Switch>
-
     </React.Fragment>
   );
 }

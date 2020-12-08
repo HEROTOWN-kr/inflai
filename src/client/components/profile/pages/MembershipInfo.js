@@ -95,12 +95,12 @@ function MembershipInfo(props) {
               <Grid container spacing={1}>
                 {
                   subscribeData.map(sub => (
-                    <Grid item xs={12}>
+                    <Grid item xs={12} key={sub.SUB_ID}>
                       <Box py={4} border="1px solid #e9ecef">
                         <Grid container>
                           {
                               cardInfo.map(item => (
-                                <Grid item xs={3}>
+                                <Grid item xs={3} key={item.name}>
                                   <Grid container direction="column" alignItems="center">
                                     <Grid item><StyledText fontWeight="bold" lineHeight="1.5em">{item.name}</StyledText></Grid>
                                     <Grid item><StyledText lineHeight="1.5em">{sub[item.data] || '-'}</StyledText></Grid>

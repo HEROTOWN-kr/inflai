@@ -100,7 +100,10 @@ function AdvertiserInfo(props) {
         }).then(async (response) => {
           await getUserInfo();
           setMessage({ type: 'success', open: true, text: '저장되었습니다' });
-        }).catch(err => alert('photo upload error'));
+        }).catch((err) => {
+          console.log(err.response);
+          alert('photo upload error');
+        });
       }
       await getUserInfo();
       setMessage({ type: 'success', open: true, text: '저장되었습니다' });

@@ -156,26 +156,47 @@ router.get('/check', async (req, res) => {
 });
 
 router.get('/getInfluencers', async (req, res) => {
-  const { token } = req.query;
-  const userId = getIdFromToken(token).sub;
-  /* const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0); */
+  try {
+    const { token } = req.query;
+    const userId = getIdFromToken(token).sub;
+    /* const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); */
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const firstDayString = `${firstDay.getFullYear()}-${firstDay.getMonth() + 1}-01`;
+    const lastDayString = `${lastDay.getFullYear()}-${lastDay.getMonth() + 1}-${lastDay.getDate()}`;
 
-  const date = new Date();
+    const Response = await Ad.findAll({
+      where: {
+        ADV_ID: userId,
+        AD_DT: { [Op.between]: [firstDayString, lastDayString] }
+      },
+      attributes: ['AD_INF_CNT']
+    });
 
-  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const PlanResponse = await Subscription.findOne({
+      where: {
+        ADV_ID: userId
+      },
+      attributes: ['PLN_ID'],
+      include: [
+        {
+          model: Plan,
+          attributes: ['PLN_INF_MONTH']
+        }
+      ]
+    });
 
-  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const PlnInfMonth = PlanResponse.TB_PLAN.PLN_INF_MONTH;
+    const InfCountUsed = Response.reduce((sum, arg) => sum + (parseInt(arg.AD_INF_CNT, 10) || 0), 0);
 
-  const Response = await Ad.findAll({
-    where: {
-      ADV_ID: userId,
-      AD_DT: { [Op.between]: [firstDay, lastDay] }
-    }
-  });
-  res.status(200).json({
-    data: Response,
-  });
+    res.status(200).json({
+      data: { InfCountUsed, PlnInfMonth },
+    });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 router.post('/save', async (req, res) => {
@@ -186,9 +207,7 @@ router.post('/save', async (req, res) => {
       ADV_ID: advId,
       PLN_ID
     };
-
     const newSubscription = await Subscription.create(post);
-
     res.status(200).json({ data: newSubscription });
   } catch (e) {
     res.status(400).send({

@@ -92,9 +92,25 @@ function CampaignCreate(props) {
     { name: 'youtube', text: '유튜브', dbValue: 'AD_YOUTUBE' },
   ];
 
-  async function getCampaignData() {
-
+  function getCampaignData() {
+    console.log('test');
   }
+
+  function getInfluencersCount() {
+    axios.get('/api/TB_SUBSCRIPTION/getInfluencers', {
+      params: {
+        token,
+      }
+    }).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      alert(err.response.data.message);
+    });
+  }
+
+  useEffect(() => {
+    getInfluencersCount();
+  }, []);
 
   useEffect(() => {
     register({ name: 'image' }, {});

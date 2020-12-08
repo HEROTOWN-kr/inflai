@@ -2,6 +2,8 @@ import React from 'react';
 import { Grid, Paper, Box } from '@material-ui/core';
 
 function ProductCreate(props) {
+  const { history } = props;
+
   return (
     <Box px={{ xs: 3, md: 6 }} py={{ xs: 5, md: 8 }} className="product select-reg-type">
       <Grid container spacing={3} className="title">
@@ -19,8 +21,8 @@ function ProductCreate(props) {
         <Grid item xs={12}>
           <Grid container spacing={4}>
             <Grid item xs={12} sm={6}>
-               <Paper elevation={3}>
-                <div className="content" onClick={() => props.goTo('mix/request')}>
+              <Paper elevation={3}>
+                <div className="content" onClick={() => history.push('/Campaign/Create')}>
                   <Grid container spacing={4}>
                     <Grid item xs={12} className="content-title">다이렉트 마케팅</Grid>
                     <Grid item xs={12} className="content-description">
@@ -33,8 +35,8 @@ function ProductCreate(props) {
               </Paper>
             </Grid>
             <Grid item xs={12} sm={6}>
-               <Paper elevation={3}>
-                <div className="content" onClick={() => props.goTo('agency')}>
+              <Paper elevation={3}>
+                <div className="content" onClick={() => history.push('/Campaign/Agency')}>
                   <Grid container spacing={4}>
                     <Grid item xs={12} className="content-title">마케팅 대행 요청</Grid>
                     <Grid item xs={12} className="content-description">
