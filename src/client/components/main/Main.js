@@ -46,10 +46,14 @@ function Main({
         path="/Product"
         render={props => <Product {...props} user={user} changeUser={changeUser} />}
       />
-      <PrivateRoute
+      {/* <PrivateRoute
         path="/Campaign"
         component={Campaign}
         // render={props => <Campaign {...props} user={user} />}
+      /> */}
+      <Route
+        path="/Campaign"
+        render={props => <Campaign {...props} user={user} />}
       />
       <Route
         path="/Ranking"

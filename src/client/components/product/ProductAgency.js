@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import * as Yup from 'yup';
 import axios from 'axios';
 import {
@@ -16,54 +16,85 @@ import {
   FieldArray
 } from 'formik';
 import Common from '../../lib/common';
+import AuthContext from '../../context/AuthContext';
+
+const category = {
+  aim: [
+    {
+      value: '1',
+      text: '영향력 있는 소수 인플루언서를 통한 인지도 확산'
+    },
+    {
+      value: '2',
+      text: '다수의 리뷰어를 활용한 리뷰 생성'
+    },
+    {
+      value: '3',
+      text: '인플루언서 믹스를 통한 통합 캠페인'
+    },
+    {
+      value: '4',
+      text: '인플루언서를 활용한 판매'
+    },
+    {
+      value: '5',
+      text: '기타 (직접입력)'
+    },
+  ],
+  consult: [
+    {
+      value: '1',
+      text: '유튜브 크리에이터 섭외'
+    },
+    {
+      value: '2',
+      text: '네이버 블로거 섭외'
+    },
+    {
+      value: '3',
+      text: '페이스북 파워 페이지 홍보'
+    },
+    {
+      value: '4',
+      text: '소셜미디어 유료 광고 대행 (인스타그램/페이스북 등)'
+    },
+    {
+      value: '5',
+      text: '통합 디지털 마케팅 대행'
+    }
+  ]
+};
+
+function MyTextField(props) {
+  const { label, name } = props;
+  const [field, meta, helpers] = useField(name);
+
+  return (
+    <React.Fragment>
+      <div className="label-holder">
+        <label htmlFor={label}>{label}</label>
+      </div>
+      <TextField
+        error={meta.touched && meta.error}
+        name={field.name}
+        id={label}
+        placeholder=""
+        value={meta.value}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
+        fullWidth
+        variant="outlined"
+        helperText={meta.touched && meta.error ? (
+          <span className="error-message">{meta.error}</span>
+        ) : null}
+      />
+    </React.Fragment>
+  );
+}
 
 function ProductAgency(props) {
-  const category = {
-    aim: [
-      {
-        value: '1',
-        text: '영향력 있는 소수 인플루언서를 통한 인지도 확산'
-      },
-      {
-        value: '2',
-        text: '다수의 리뷰어를 활용한 리뷰 생성'
-      },
-      {
-        value: '3',
-        text: '인플루언서 믹스를 통한 통합 캠페인'
-      },
-      {
-        value: '4',
-        text: '인플루언서를 활용한 판매'
-      },
-      {
-        value: '5',
-        text: '기타 (직접입력)'
-      },
-    ],
-    consult: [
-      {
-        value: '1',
-        text: '유튜브 크리에이터 섭외'
-      },
-      {
-        value: '2',
-        text: '네이버 블로거 섭외'
-      },
-      {
-        value: '3',
-        text: '페이스북 파워 페이지 홍보'
-      },
-      {
-        value: '4',
-        text: '소셜미디어 유료 광고 대행 (인스타그램/페이스북 등)'
-      },
-      {
-        value: '5',
-        text: '통합 디지털 마케팅 대행'
-      }
-    ]
-  };
+  const { history } = props;
+  const { token } = useContext(AuthContext);
 
   const mySchema = Yup.object().shape({
     companyName: Yup.string()
@@ -89,46 +120,17 @@ function ProductAgency(props) {
   });
 
   function saveProduct(values) {
-    const apiObj = { ...values, token: Common.getUserInfo().token };
+    const apiObj = { ...values, token };
 
-    axios.post('/api/TB_REQ_AD/', apiObj)
-      .then((res) => {
-        if (res.data.code === 200) {
-          // props.history.push(`${props.match.path}/write/${res.data.id}`);
-          props.history.push('/');
-        } else if (res.data.code === 401) {
-          console.log(res);
-        } else {
-          console.log(res);
-        }
-      })
-      .catch(error => (error));
-  }
-
-  function MyTextField(props) {
-    const [field, meta, helpers] = useField(props.name);
-
-    return (
-      <React.Fragment>
-        <div className="label-holder">
-          <label htmlFor={props.label}>{props.label}</label>
-        </div>
-        <TextField
-          error={meta.touched && meta.error}
-          name={field.name}
-          id={props.label}
-          placeholder=""
-          value={meta.value}
-          onChange={field.onChange}
-          onBlur={field.onBlur}
-          fullWidth
-          variant="outlined"
-          helperText={meta.touched && meta.error ? (
-            <span className="error-message">{meta.error}</span>
-          ) : null}
-        />
-      </React.Fragment>
-    );
+    axios.post('/api/TB_REQ_AD/', apiObj).then((res) => {
+      if (res.data.code === 200) {
+        history.push('/');
+      } else if (res.data.code === 401) {
+        console.log(res);
+      } else {
+        console.log(res);
+      }
+    }).catch(error => (error));
   }
 
   return (

@@ -47,6 +47,7 @@ function CampaignCreate(props) {
   const [campaignEditor, setCampaignEditor] = useState({});
   const [images, setImages] = useState([]);
   const [dbImages, setDbImages] = useState([]);
+  const [limits, setLimits] = useState({ InfCountUsed: 0, PlnInfMonth: 0 });
 
   const schema = Yup.object().shape({
     influencerCount: Yup.string()
@@ -102,15 +103,18 @@ function CampaignCreate(props) {
         token,
       }
     }).then((res) => {
-      console.log(res);
+      const { InfCountUsed, PlnInfMonth } = res.data.data;
+      setLimits({ InfCountUsed, PlnInfMonth });
     }).catch((err) => {
       alert(err.response.data.message);
     });
   }
 
   useEffect(() => {
-    getInfluencersCount();
-  }, []);
+    if (token) {
+      getInfluencersCount();
+    }
+  }, [token]);
 
   useEffect(() => {
     register({ name: 'image' }, {});
@@ -151,50 +155,19 @@ function CampaignCreate(props) {
       }).catch((error) => {
         alert(error.response.data);
       });
-
-      /* if (campaignId) {
-        await axios.post('/api/TB_AD/update', { ...obj, campaignId });
-        if (images.length > 0) {
-          const uploaders = images.map((item) => {
-            const formData = new FormData();
-            formData.append('file', item.file);
-            formData.append('id', campaignId);
-            return axios.post('/api/TB_PHOTO_AD/uploadImage', formData, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            }).then(response => ('sucess')).catch(error => ('error'));
-          });
-          axios.all(uploaders).then(() => {
-            goBack();
-          });
-        } else {
-          goBack();
-        }
-      } else {
-        axios.post('/api/TB_AD/create', obj).then((res) => {
-          if (images.length > 0) {
-            const id = res.data.data.AD_ID;
-            const uploaders = images.map((item) => {
-              const formData = new FormData();
-              formData.append('file', item.file);
-              formData.append('id', id);
-              return axios.post('/api/TB_PHOTO_AD/uploadImage', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-              }).then(response => ('sucess')).catch(error => ('error'));
-            });
-            axios.all(uploaders).then(() => {
-              goBack();
-            });
-          } else {
-            goBack();
-          }
-        }).catch((error) => {
-          alert(error.response.data);
-        });
-      } */
     } catch (e) {
       alert(e);
     }
   };
+
+  function saveData() {
+    const infCount = getValues('influencerCount');
+    if (parseInt(limits.InfCountUsed, 10) + parseInt(infCount || 0, 10) > parseInt(limits.PlnInfMonth, 10)) {
+      alert('이번달 리밋은 넘어갑니다!!!');
+      return;
+    }
+    handleSubmit(onSubmit)();
+  }
 
   const onSubmit2 = (data) => {
     console.log(data);
@@ -231,7 +204,14 @@ function CampaignCreate(props) {
           }
         </Grid>
         <Grid item xs={12}>
-          <Box mb={1}><StyledText color="#3f51b5">모집인원</StyledText></Box>
+          <Box mb={1}>
+            <StyledText color="#3f51b5">
+              모집인원
+              <span style={{ color: Colors.orange }}>
+                {` (이번 달 사용한 인플루언서수 ${limits.InfCountUsed}명 / 한 달에 사용 가능 인플루언서수 ${limits.PlnInfMonth}명)`}
+              </span>
+            </StyledText>
+          </Box>
           <ReactFormText register={register} errors={errors} name="influencerCount" />
         </Grid>
         <Grid item xs={12}>
@@ -417,7 +397,7 @@ function CampaignCreate(props) {
         <Grid item xs={12}>
           <Grid container justify="center" spacing={1}>
             <Grid item xs={2}><StyledButton onClick={() => history.push('/')}>취소</StyledButton></Grid>
-            <Grid item xs={2}><StyledButton onClick={handleSubmit(onSubmit)}>저장하기</StyledButton></Grid>
+            <Grid item xs={2}><StyledButton onClick={saveData}>저장하기</StyledButton></Grid>
             {/* <Grid item xs={2}><StyledButton onClick={handleSubmit(onSubmit2)}>test</StyledButton></Grid> */}
           </Grid>
         </Grid>
