@@ -34,29 +34,41 @@ router.post('/', (req, res) => {
   });
 });
 
-router.get('/', (req, res) => {
-  const data = req.query;
-  const offset = (data.page - 1) * 10;
-  RequestAgency.findAndCountAll({
-    attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_TEL', 'REQ_BRAND',
-      [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
-    include: [
-      {
-        model: Advertiser,
-        attributes: ['ADV_NAME']
-      },
-    ],
-    limit: 10,
-    offset,
-    order: [['REQ_DT', 'DESC']]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+router.get('/', async (req, res) => {
+  try {
+    const data = req.query;
+    const offset = (data.page - 1) * 10;
+    const dbData = await RequestAgency.findAll({
+      attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_TEL', 'REQ_BRAND',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
+      include: [
+        {
+          model: Advertiser,
+          attributes: ['ADV_NAME']
+        },
+      ],
+      limit: 10,
+      offset,
+      order: [['REQ_DT', 'DESC']]
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    const RequestsCount = await RequestAgency.count();
+
+    const Requests = dbData.map((item, index) => {
+      const { dataValues } = item;
+      const rownum = RequestsCount - offset - index;
+      return { ...dataValues, rownum };
+    });
+
+    res.status(200).json({
+      data: Requests,
+      RequestsCount
+    });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
 });
 
 router.get('/detail', (req, res) => {

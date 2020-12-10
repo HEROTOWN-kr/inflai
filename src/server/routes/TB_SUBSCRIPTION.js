@@ -210,9 +210,7 @@ router.post('/save', async (req, res) => {
     const newSubscription = await Subscription.create(post);
     res.status(200).json({ data: newSubscription });
   } catch (e) {
-    res.status(400).send({
-      message: e.message
-    });
+    res.status(400)
   }
 });
 

@@ -425,25 +425,39 @@ router.get('/UserInfo', (req, res) => {
   });
 });
 
-router.get('/getAdvertisers', (req, res) => {
-  const data = req.query;
-  const offset = (data.page - 1) * 10;
-  Advertiser.findAndCountAll({
-    attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME',
-      [Sequelize.literal('CASE ADV_TYPE WHEN \'1\' THEN \'일반\' WHEN \'2\' THEN \'에이전시\' ELSE \'소상공인\' END'), 'ADV_TYPE'],
-      [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADV_DT'), '%Y-%m-%d'), 'ADV_DT']
-    ],
-    limit: 10,
-    offset,
-    order: [['ADV_ID', 'DESC']]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+router.get('/getAdvertisers', async (req, res) => {
+  try {
+    const data = req.query;
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
+
+    const dbData = await Advertiser.findAll({
+      attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME', 'ADV_PHOTO',
+        [Sequelize.literal('CASE ADV_TYPE WHEN \'1\' THEN \'일반\' WHEN \'2\' THEN \'에이전시\' ELSE \'소상공인\' END'), 'ADV_TYPE'],
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADV_DT'), '%Y-%m-%d'), 'ADV_DT']
+      ],
+      limit,
+      offset,
+      order: [['ADV_ID', 'DESC']]
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    const AdvertiserCount = await Advertiser.count();
+    const Advertisers = dbData.map((item, index) => {
+      const { dataValues } = item;
+      const rownum = AdvertiserCount - offset - index;
+      return { ...dataValues, rownum };
+    });
+
+    res.status(200).json({
+      data: Advertisers,
+      AdvertiserCount
+    });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
 });
 
 router.get('/naverTest', (req, res) => {

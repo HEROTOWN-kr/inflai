@@ -33,6 +33,18 @@ router.get('/test', async (req, res) => {
   }
 });
 
+router.post('/testParser', async (req, res) => {
+  try {
+    const { data } = req.query;
+    res.status(200).json({
+      message: 'success',
+      data
+    });
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
 router.post('/testPost', async (req, res) => {
   try {
     const { file } = req.files;

@@ -214,24 +214,38 @@ router.get('/getInstaAccounts', (req, res) => {
   });
 });
 
-router.get('/getInfluencers', (req, res) => {
-  const data = req.query;
-  const offset = (data.page - 1) * 10;
-  Influencer.findAndCountAll({
-    attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL',
-      [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Instagram\' WHEN \'2\' THEN \'Youtube\' ELSE \'Naver\' END'), 'INF_BLOG_TYPE'],
-      [Sequelize.fn('DATE_FORMAT', Sequelize.col('INF_DT'), '%Y-%m-%d'), 'INF_DT']],
-    limit: 10,
-    offset,
-    order: [['INF_ID', 'DESC']]
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
+router.get('/getInfluencers', async (req, res) => {
+  try {
+    const data = req.query;
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
+
+    const dbData = await Influencer.findAll({
+      attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL',
+        [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Instagram\' WHEN \'2\' THEN \'Youtube\' ELSE \'Naver\' END'), 'INF_BLOG_TYPE'],
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('INF_DT'), '%Y-%m-%d'), 'INF_DT']],
+      limit,
+      offset,
+      order: [['INF_ID', 'DESC']]
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    const InfluencerCount = await Influencer.count();
+    const Influencers = dbData.map((item, index) => {
+      const { dataValues } = item;
+      const rownum = InfluencerCount - offset - index;
+      return { ...dataValues, rownum };
+    });
+
+    res.status(200).json({
+      data: Influencers,
+      InfluencerCount
+    });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
 });
 
 router.get('/getInstaInfo', (req, res) => {
