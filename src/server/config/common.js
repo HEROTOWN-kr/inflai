@@ -219,12 +219,12 @@ function createMessageOption2(props) {
   return options;
 }
 
-function getGoogleData(code) {
+function getGoogleData(code, redirectUrl) {
   function getOauthClient() {
     const oauth2Client = new google.auth.OAuth2(
       configKey.google_client_id,
       configKey.google_client_secret,
-      configKey.google_client_redirect_url
+      redirectUrl
     );
     return oauth2Client;
   }

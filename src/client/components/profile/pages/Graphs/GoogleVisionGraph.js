@@ -8,13 +8,13 @@ function GoogleVisionGraph(props) {
   const [process, setProcess] = useState(false);
   const { INS_ID } = props;
 
-
   async function getGoogleVisionData(INS_ID) {
     setProcess(true);
-    const isLocal = window.location.host !== 'www.inflai.com';
+    // const isLocal = window.location.host !== 'www.inflai.com';
+    const { host } = window.location;
 
     const googleData = await axios.get('/api/TB_INSTA/getGoogleData', {
-      params: { INS_ID, isLocal }
+      params: { INS_ID, host }
     });
     setDetectData(googleData.data.statistics);
     setProcess(false);

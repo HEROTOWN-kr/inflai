@@ -801,8 +801,10 @@ router.post('/instaUpdate', asyncMiddleware(
 router.get('/youtubeSignUp', async (req, res) => {
   try {
     const data = req.query;
-    const { code } = data;
-    const googleData = await getGoogleData(code);
+    const { code, host } = data;
+    const redirectUrl = host === 'localhost:3000' ? `http://${host}` : `https://${host}`;
+
+    const googleData = await getGoogleData(code, redirectUrl);
     const {
       name, email, id, refresh_token, picture
     } = googleData;

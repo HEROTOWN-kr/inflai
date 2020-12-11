@@ -27,7 +27,8 @@ function SocialNetworks(props) {
     if (!response.error) {
       axios.get('/api/TB_ADVERTISER/loginGoogle', {
         params: {
-          code: response.code
+          code: response.code,
+          host: window.location.host,
         }
       }).then((res) => {
         const {

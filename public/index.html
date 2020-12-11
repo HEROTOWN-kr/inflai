@@ -43,10 +43,10 @@
 
     <script>
         var facebookID;
-        if (window.location.host === 'www.inflai.com') {
-            facebookID = '663450957780119';
-        } else {
+        if (window.location.host === 'localhost:3000') {
             facebookID = '139193384125564';
+        } else {
+            facebookID = '663450957780119';
         }
 
         window.fbAsyncInit = function() {
