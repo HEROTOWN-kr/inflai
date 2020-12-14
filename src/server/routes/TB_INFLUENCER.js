@@ -29,7 +29,8 @@ const {
   getFacebookInfo,
   getInstagramBusinessAccounts,
   getGoogleData,
-  hashData
+  hashData,
+  checkLocalHost
 } = require('../config/common');
 const testData = require('../config/testData');
 
@@ -802,7 +803,8 @@ router.get('/youtubeSignUp', async (req, res) => {
   try {
     const data = req.query;
     const { code, host } = data;
-    const redirectUrl = host === 'localhost:3000' ? `http://${host}` : `https://${host}`;
+    const isLocal = checkLocalHost(host);
+    const redirectUrl = isLocal ? `http://${host}` : `https://${host}`;
 
     const googleData = await getGoogleData(code, redirectUrl);
     const {

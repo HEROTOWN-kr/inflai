@@ -18,7 +18,8 @@ const {
   getInstagramInsights,
   getIdFromToken,
   getFacebookLongToken,
-  getInstagramBusinessAccounts
+  getInstagramBusinessAccounts,
+  checkLocalHost
 } = require('../config/common');
 
 
@@ -132,18 +133,11 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/getGoogleData', async (req, res) => {
-  const { INS_ID, isLocal, host } = req.query;
+  const { INS_ID, host } = req.query;
   const { detectCategory } = category;
+  const isLocal = checkLocalHost(host);
 
-  /* const filePath = isLocal === 'true' ? {
-    keyFileName: 'src/server/config/googleVisionKey.json',
-    imagePath: './src/server/img/image'
-  } : {
-    keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
-    imagePath: '../server/img/image'
-  }; */
-
-  const filePath = host === 'localhost:3000' || 'localhost:3001' ? {
+  const filePath = isLocal ? {
     keyFileName: 'src/server/config/googleVisionKey.json',
     imagePath: './src/server/img/image'
   } : {
@@ -258,18 +252,10 @@ router.get('/getGoogleData', async (req, res) => {
 
 router.get('/getGoogleDataObject', async (req, res) => {
   try {
-    const { INS_ID, isLocal, host } = req.query;
+    const { INS_ID, host } = req.query;
     const { detectCategory } = category;
-
-    /* const filePath = isLocal === 'true' ? {
-      keyFileName: 'src/server/config/googleVisionKey.json',
-      imagePath: './src/server/img/image'
-    } : {
-      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
-      imagePath: '../server/img/image'
-    }; */
-
-    const filePath = host === 'localhost:3000' || 'localhost:3001' ? {
+    const isLocal = checkLocalHost(host);
+    const filePath = isLocal ? {
       keyFileName: 'src/server/config/googleVisionKey.json',
       imagePath: './src/server/img/image'
     } : {

@@ -619,6 +619,11 @@ function resizeImage(currentPath, newPathName, width, height) {
   }));
 }
 
+function checkLocalHost(hostname) {
+  const result = hostname.indexOf('localhost');
+  return result !== -1;
+}
+
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next))
     .catch(next);
@@ -645,5 +650,6 @@ exports.getInstagramBusinessAccounts = getInstagramBusinessAccounts;
 exports.average = average;
 exports.standardDeviation = standardDeviation;
 exports.resizeImage = resizeImage;
+exports.checkLocalHost = checkLocalHost;
 exports.asyncMiddleware = asyncMiddleware;
 exports.getGoogleData = getGoogleData;

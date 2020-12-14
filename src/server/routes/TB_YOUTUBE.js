@@ -5,7 +5,8 @@ const Influencer = require('../models').TB_INFLUENCER;
 const {
   getGoogleData,
   getIdFromToken,
-  YoutubeDataRequest
+  YoutubeDataRequest,
+  checkLocalHost
 } = require('../config/common');
 
 const router = express.Router();
@@ -50,9 +51,11 @@ router.get('/', (req, res) => {
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
-    const { code, token } = data;
+    const { code, token, host } = data;
     const INF_ID = getIdFromToken(token).sub;
-    const googleData = await getGoogleData(code);
+    const isLocal = checkLocalHost(host);
+    const redirectUrl = isLocal ? `http://${host}` : `https://${host}`;
+    const googleData = await getGoogleData(code, redirectUrl);
 
     const {
       name, email, id, refresh_token

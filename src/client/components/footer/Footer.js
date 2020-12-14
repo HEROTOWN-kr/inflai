@@ -1,10 +1,9 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-
-
 import { Link } from 'react-router-dom';
 import { Box } from '@material-ui/core';
 import Logo from '../../img/logo.png';
+
 
 function Footer() {
   return (
