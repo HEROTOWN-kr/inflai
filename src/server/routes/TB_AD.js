@@ -272,7 +272,9 @@ router.get('/getAdInfluencers', (req, res) => {
 
 router.get('/list', async (req, res) => {
   try {
-    const advertises = await Advertise.findAll({
+    const { limit, category, subCategory } = req.query;
+
+    const props = {
       where: { AD_VISIBLE: 1 },
       order: [['AD_ID', 'DESC']],
       attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
@@ -288,7 +290,13 @@ router.get('/list', async (req, res) => {
           required: false,
         },
       ],
-    });
+    };
+
+    if (limit) props.limit = parseInt(limit, 10);
+    if (category) props.where.AD_CTG = parseInt(category, 10);
+    if (subCategory) props.where.AD_CTG2 = parseInt(subCategory, 10);
+
+    const advertises = await Advertise.findAll(props);
 
     const advertisesMaped = advertises.map((item) => {
       const { AD_INF_CNT, TB_PARTICIPANTs } = item.dataValues;
