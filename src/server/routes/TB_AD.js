@@ -447,31 +447,28 @@ router.post('/updateAd', (req, res) => {
   });
 });
 
-router.post('/delete', (req, res) => {
-  const data = req.body;
-  const { id } = data;
+router.post('/delete', async (req, res) => {
+  try {
+    const data = req.body;
+    const { id } = data;
 
-  Photo.destroy({
-    where: { AD_ID: id }
-  }).then((result) => {
-    Notification.destroy({
-      where: { AD_ID: id }
-    }).then((result2) => {
-      Payment.destroy({
-        where: { AD_ID: id }
-      }).then((result3) => {
-        Advertise.destroy({
-          where: { AD_ID: id }
-        }).then((result4) => {
-          if (result4) {
-            res.json({
-              code: 200,
-            });
-          }
-        });
-      });
+    const props = { where: { AD_ID: id } };
+
+    const CampaignPhoto = await Photo.findAll({ where: { AD_ID: id }, attributes: ['PHO_ID', 'PHO_FILE'] });
+    CampaignPhoto.map(async (item) => {
+      const { PHO_FILE } = item;
+      const deletePath = path.normalize(`${config.downDir}${PHO_FILE}`);
+      await fse.remove(deletePath);
     });
-  });
+
+    await Photo.destroy(props);
+    await Participant.destroy(props);
+    await Advertise.destroy(props);
+
+    res.status(200).json({ message: 'success', data: '' });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
 });
 
 // 이미지 업로드
