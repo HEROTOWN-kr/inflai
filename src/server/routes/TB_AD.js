@@ -15,6 +15,7 @@ const Notification = require('../models').TB_NOTIFICATION;
 const Participant = require('../models').TB_PARTICIPANT;
 const Payment = require('../models').TB_PAYMENT;
 const Photo = require('../models').TB_PHOTO_AD;
+const Favorites = require('../models').TB_FAVORITES;
 const { getIdFromToken, resizeImage } = require('../config/common');
 const common = require('../config/common');
 
@@ -317,15 +318,8 @@ router.get('/campaignDetail', async (req, res) => {
   try {
     const data = req.query;
     const { id } = data;
-    const includeArray = [
-      {
-        model: Photo,
-        attributes: ['PHO_ID', 'PHO_FILE'],
-        required: false,
-      }
-    ];
 
-    const advertise = await Advertise.findOne({
+    const params = {
       where: { AD_ID: id },
       attributes: [
         'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START',
@@ -344,10 +338,10 @@ router.get('/campaignDetail', async (req, res) => {
           required: false,
         },
       ]
-    });
+    };
 
-
-    const { AD_INF_CNT, AD_DISC, TB_PARTICIPANTs } = advertise.dataValues;
+    const advertise = await Advertise.findOne(params);
+    const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
     const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
 
     res.status(200).json({ data: { ...advertise.dataValues, proportion } });

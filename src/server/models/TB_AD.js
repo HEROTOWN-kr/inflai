@@ -232,6 +232,7 @@ module.exports = function (sequelize, DataTypes) {
     Ad.hasMany(models.TB_NOTIFICATION, { foreignKey: 'AD_ID', sourceKey: 'AD_ID' });
     Ad.hasMany(models.TB_PARTICIPANT, { foreignKey: 'AD_ID', sourceKey: 'AD_ID' });
     Ad.hasMany(models.TB_PHOTO_AD, { foreignKey: 'AD_ID', sourceKey: 'AD_ID' });
+    Ad.hasMany(models.TB_FAVORITES, { foreignKey: 'AD_ID', sourceKey: 'AD_ID' });
   };
 
   return Ad;
