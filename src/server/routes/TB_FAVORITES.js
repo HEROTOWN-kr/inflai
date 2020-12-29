@@ -88,5 +88,22 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.post('/delete', async (req, res) => {
+  try {
+    const { token, adId } = req.body;
+    const userId = getIdFromToken(token).sub;
+
+    await Favorites.destroy({
+      where: {
+        AD_ID: adId,
+        INF_ID: userId,
+      }
+    });
+
+    res.status(200).json({ message: 'success' });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
 
 module.exports = router;
