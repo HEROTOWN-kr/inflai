@@ -22,7 +22,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     PHO_FILE_BIG: {
       type: DataTypes.STRING(400),
-      allowNull: false
+      allowNull: true
     },
     PHO_DT: {
       type: 'TIMESTAMP',
