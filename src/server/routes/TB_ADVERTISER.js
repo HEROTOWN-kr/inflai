@@ -830,12 +830,12 @@ router.post('/upload', async (req, res, next) => {
     // const uid = 'profile';
 
     const newFileNm = path.normalize(uid + path.extname(file.name));
-    const uploadPath = path.normalize(`${config.attachRoot}/profile/advertiser/${userId}/`) + newFileNm;
+    const uploadPath = path.normalize(`${config.attachRoot}/profile/biz/${userId}/`) + newFileNm;
 
 
     await fse.move(file.path, uploadPath, { clobber: true });
 
-    const DRAWING_URL = `/attach/profile/advertiser/${userId}/${newFileNm}`;
+    const DRAWING_URL = `/attach/profile/biz/${userId}/${newFileNm}`;
 
     const post = {
       ADV_PHOTO: DRAWING_URL

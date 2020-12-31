@@ -19,11 +19,11 @@ router.post('/uploadImage', async (req, res, next) => {
 
     const currentPath = file.path;
     const fileExtension = path.extname(file.name);
-    const fileName = `${uid}_400_316${fileExtension}`;
+    const fileName = `${uid}_820_648${fileExtension}`;
     const tmpPath = path.normalize(`${config.tmp}${fileName}`);
     const uploadPath = path.normalize(`${config.attachRoot}/campaign/${id}/${fileName}`);
 
-    await resizeImage(currentPath, tmpPath, 400, 316);
+    await resizeImage(currentPath, tmpPath, 820, 648);
     await fse.move(tmpPath, uploadPath, { clobber: true });
     await fse.remove(currentPath);
 
