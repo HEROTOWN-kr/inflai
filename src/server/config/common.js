@@ -158,8 +158,8 @@ function createMessageOption(props) {
       FAILED_TYPE: 'N',
       BTN_TYPES: '웹링크',
       BTN_TXTS: '신청링크',
-      BTN_URLS1: `https://www.inflai.com/CampaignList/${adId}`,
-      BTN_URLS2: `https://www.inflai.com/CampaignList/${adId}`
+      BTN_URLS1: `https://influencer.inflai.com/CampaignList/${adId}`,
+      BTN_URLS2: `https://influencer.inflai.com/CampaignList/${adId}`
     }
   };
 
@@ -217,6 +217,48 @@ function createMessageOption2(props) {
     // gzip: true
   };
   return options;
+}
+
+function createMessageOption3(props) {
+  const {
+    phoneNumber,
+    campanyName,
+    influencerName,
+    adId
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: '안녕하세요. 인플라이입니다.\n\n'
+          + `${influencerName}님!\n`
+          + '인플라이에 신청하신 캠페인에 선정되셨습니다!\n'
+          + `${campanyName}선정내역 확인하세요!\n\n`
+          + '**해당 메시지는 고객님께서 캠페인 공고 수신에 동의 해 주셔서 발송되었습니다.\n',
+      TEMPLATE_CODE: 'KM1',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '캠페인링크',
+      BTN_URLS1: `https://www.inflai.com/CampaignList/${adId}`,
+      BTN_URLS2: `https://www.inflai.com/CampaignList/${adId}`
+    }
+    // gzip: true
+  };
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
 }
 
 function getGoogleData(code, redirectUrl) {
@@ -629,6 +671,11 @@ const asyncMiddleware = fn => (req, res, next) => {
     .catch(next);
 };
 
+const countryCodes = {
+
+};
+
+
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
 exports.hashData = hashData;
@@ -636,6 +683,7 @@ exports.instaRequest = instaRequest;
 exports.mailSendData = mailSendData;
 exports.createMessageOption = createMessageOption;
 exports.createMessageOption2 = createMessageOption2;
+exports.createMessageOption3 = createMessageOption3;
 exports.YoutubeRequest = YoutubeRequest;
 exports.YoutubeDataRequest = YoutubeDataRequest;
 exports.getInstagramData = getInstagramData;

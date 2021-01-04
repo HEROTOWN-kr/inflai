@@ -274,9 +274,11 @@ router.get('/getAdInfluencers', (req, res) => {
 router.get('/list', async (req, res) => {
   try {
     const { limit, category, subCategory } = req.query;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
 
     const props = {
-      where: { AD_VISIBLE: 1 },
+      where: { AD_VISIBLE: 1, AD_SRCH_END: { [Op.gte]: currentDate } },
       order: [['AD_ID', 'DESC']],
       attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
       include: [

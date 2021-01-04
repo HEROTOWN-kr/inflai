@@ -8,7 +8,8 @@ const Photo = require('../models').TB_PHOTO_AD;
 const router = express.Router();
 const {
   getIdFromToken,
-  createMessageOption
+  createMessageOption,
+  createMessageOption3,
 } = require('../config/common');
 
 router.get('/', async (req, res) => {
@@ -196,6 +197,7 @@ router.get('/getList', async (req, res) => {
           attributes: ['INF_PHOTO']
         },
       ],
+      order: [['PAR_ID', 'DESC']]
     });
 
     const ParticipantsList = result.map((item) => {
@@ -285,23 +287,26 @@ router.post('/change', async (req, res) => {
       where: { AD_ID: adId, PAR_ID: participantId }
     });
 
-    const ParticipantInfo = await Participant.findOne({
-      where: { PAR_ID: participantId },
-      attributes: ['PAR_TEL']
+    const AdInfo = await Advertise.findOne({
+      where: { AD_ID: adId },
+      attributes: ['AD_NAME']
     });
 
-    const { PAR_TEL } = ParticipantInfo;
+    const ParticipantInfo = await Participant.findOne({
+      where: { PAR_ID: participantId },
+      attributes: ['PAR_NAME', 'PAR_TEL']
+    });
+
+    const { PAR_NAME, PAR_TEL } = ParticipantInfo;
+    const { AD_NAME } = AdInfo;
     const props = {
       phoneNumber: PAR_TEL,
-      productName: 'test',
-      campanyName: 'test',
-      bonus: 'bonus',
-      createdAt: '2020/11/30',
-      collectFinishDate: '2020/12/01',
-      adId: '56',
+      campanyName: AD_NAME,
+      influencerName: PAR_NAME,
+      adId,
     };
 
-    const kakaoAlim = await createMessageOption(props);
+    const kakaoAlim = await createMessageOption3(props);
 
     res.status(200).json({ message: 'success' });
   } catch (err) {
