@@ -22,11 +22,28 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const { instagramId, instagramToken } = req.query;
-    const insights = await getInstagramInsights(instagramId, instagramToken);
+    const scoreInfo = await Insta.findAll({ attributes: ['INS_ID', 'INS_SCORE'] });
+    const sortedScore = scoreInfo.sort((a, b) => b.INS_SCORE - a.INS_SCORE);
+    let rank = 1;
+
+    const rankArray = sortedScore.map((item, index) => {
+      if (index > 0 && item.INS_SCORE < sortedScore[index - 1].INS_SCORE) {
+        rank += 1;
+      }
+      return { ...item.dataValues, rank };
+    });
+
+    const PromiseArray = rankArray.map(item => new Promise(((resolve, reject) => {
+      Insta.update({ INS_RANK: item.rank }, { where: { INS_ID: item.INS_ID } }).then((result) => {
+        resolve('success');
+      });
+    })));
+
+    const updateRes = await Promise.all(PromiseArray);
+
     res.status(200).json({
       message: 'success',
-      data: insights
+      data: updateRes
     });
   } catch (err) {
     res.status(400).send(err);

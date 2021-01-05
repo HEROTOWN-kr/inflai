@@ -820,6 +820,7 @@ router.get('/statsMap', async (req, res) => {
       res.json({
         code: 200,
         data: [],
+        data2: [],
       });
     }
   } catch (err) {
@@ -833,8 +834,8 @@ router.get('/statsMap', async (req, res) => {
 router.get('/rankingInfo', async (req, res) => {
   try {
     const data = req.query;
-    const { token } = data;
-    const id = getIdFromToken(token).sub;
+    const { token, instaId } = data;
+    const id = instaId || getIdFromToken(token).sub;
 
     const options = {
       where: { INF_ID: id },

@@ -2,6 +2,7 @@ const express = require('express');
 const Sequelize = require('sequelize');
 const Participant = require('../models').TB_PARTICIPANT;
 const Influencer = require('../models').TB_INFLUENCER;
+const Insta = require('../models').TB_INSTA;
 const Advertise = require('../models').TB_AD;
 const Photo = require('../models').TB_PHOTO_AD;
 
@@ -194,7 +195,7 @@ router.get('/getList', async (req, res) => {
       include: [
         {
           model: Influencer,
-          attributes: ['INF_PHOTO']
+          attributes: ['INF_ID', 'INF_PHOTO']
         },
       ],
       order: [['PAR_ID', 'DESC']]
@@ -204,18 +205,36 @@ router.get('/getList', async (req, res) => {
       const {
         INF_ID, INF_NAME, INF_EMAIL, INF_PHOTO
       } = item.TB_INFLUENCER.dataValues;
+
       return {
         ...item.dataValues,
+        INF_ID,
         INF_NAME,
         INF_EMAIL,
         INF_PHOTO
       };
     });
 
-    // const { INF_ID, INF_NAME, INF_EMAIL } = ParticipantsList.TB_INFLUENCER.dataValues;
+    const PromiseArray = ParticipantsList.map(item => new Promise(((resolve, reject) => {
+      const { INF_ID, PAR_INSTA } = item;
+      if (PAR_INSTA === 1) {
+        Insta.findOne({
+          where: { INF_ID },
+          attributes: ['INS_ID']
+        }).then((resp) => {
+          resolve({
+            ...item, INS_ID: resp ? resp.INS_ID : null
+          });
+        });
+      } else {
+        resolve(item);
+      }
+    })));
+
+    const ParticipantFinal = await Promise.all(PromiseArray);
 
     res.status(200).json({
-      data: ParticipantsList
+      data: ParticipantFinal
     });
   } catch (err) {
     res.status(400).send(err.message);

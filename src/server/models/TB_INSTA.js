@@ -66,6 +66,15 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(3000),
       allowNull: true
     },
+    INS_SCORE: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '0'
+    },
+    INS_RANK: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     INS_TYPES: {
       type: DataTypes.STRING(2000),
       allowNull: true

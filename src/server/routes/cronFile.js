@@ -3,6 +3,13 @@ const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
 const Admin = require('../models').TB_ADMIN;
 
+function calculatePoints(likeCount, commentsCount, followers, follows) {
+  const likesScore = likeCount * 10;
+  const commentsScore = commentsCount * 100;
+  const score = (followers + follows + likesScore + commentsScore) / 4;
+  return Math.floor(score);
+}
+
 async function Update() {
   // const InstaCount = await Instagram.count();
   // console.log(InstaCount);
@@ -40,9 +47,12 @@ async function Update() {
         const {
           INF_ID, INF_TOKEN, likeSum, commentsSum, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
         } = iData;
+
         if (error) {
           return { INF_ID, message: 'not updated' };
         }
+
+        const score = calculatePoints(likeSum, commentsSum, followers_count, follows_count);
 
         try {
           const result = await Insta.update({
@@ -55,7 +65,8 @@ async function Update() {
             INS_FLW: follows_count,
             INS_PROFILE_IMG: profile_picture_url,
             INS_LIKES: likeSum,
-            INS_CMNT: commentsSum
+            INS_CMNT: commentsSum,
+            INS_SCORE: score
           }, {
             where: { INF_ID }
           });
@@ -71,7 +82,28 @@ async function Update() {
       })
     );
 
-    console.log(updatedArray);
+    const scoreInfo = await Insta.findAll({ attributes: ['INS_ID', 'INS_SCORE'] });
+    const sortedScore = scoreInfo.sort((a, b) => b.INS_SCORE - a.INS_SCORE);
+    let rank = 1;
+
+    const rankArray = sortedScore.map((item, index) => {
+      if (index > 0 && item.INS_SCORE < sortedScore[index - 1].INS_SCORE) {
+        rank += 1;
+      }
+      return { ...item.dataValues, rank };
+    });
+
+    const PromiseArray = rankArray.map(item => new Promise(((resolve, reject) => {
+      Insta.update({ INS_RANK: item.rank }, { where: { INS_ID: item.INS_ID } }).then((result) => {
+        resolve('success');
+      });
+    })));
+
+    const updateRes = await Promise.all(PromiseArray);
+
+
+    console.log(updateRes);
+
 
     Admin.update({ ADM_UPDATE_DT: timestamp }, {
       where: { ADM_ID: 1 }

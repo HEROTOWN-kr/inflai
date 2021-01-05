@@ -241,12 +241,12 @@ function createMessageOption3(props) {
           + '인플라이에 신청하신 캠페인에 선정되셨습니다!\n'
           + `${campanyName}선정내역 확인하세요!\n\n`
           + '**해당 메시지는 고객님께서 캠페인 공고 수신에 동의 해 주셔서 발송되었습니다.\n',
-      TEMPLATE_CODE: 'KM1',
+      TEMPLATE_CODE: 'KM3',
       FAILED_TYPE: 'N',
       BTN_TYPES: '웹링크',
       BTN_TXTS: '캠페인링크',
-      BTN_URLS1: `https://www.inflai.com/CampaignList/${adId}`,
-      BTN_URLS2: `https://www.inflai.com/CampaignList/${adId}`
+      BTN_URLS1: `https://influencer.inflai.com/Campaign/detail/${adId}`,
+      BTN_URLS2: `https://influencer.inflai.com/Campaign/detail/${adId}`
     }
     // gzip: true
   };
