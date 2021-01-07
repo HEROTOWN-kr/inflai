@@ -45,7 +45,7 @@ module.exports = function (sequelize, DataTypes) {
   });
 
   Plan.associate = function (models) {
-    Plan.hasOne(models.TB_SUBSCRIPTION, { foreignKey: 'PLN_ID', sourceKey: 'PLN_ID' });
+    Plan.hasMany(models.TB_SUBSCRIPTION, { foreignKey: 'PLN_ID', sourceKey: 'PLN_ID' });
   };
 
   return Plan;

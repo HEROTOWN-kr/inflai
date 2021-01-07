@@ -87,6 +87,35 @@ router.post('/upload', (req, res, next) => {
   });
 });
 
+router.get('/', async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    const CampaignPhoto = await Photo.findAll({ where: { AD_ID: id } });
+
+    res.status(200).json({
+      data: CampaignPhoto,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: err.message
+    });
+  }
+});
+
+router.post('/setMain', async (req, res, next) => {
+  try {
+    const { id, adId } = req.body;
+
+    await Photo.update({ PHO_IS_MAIN: 0 }, { where: { AD_ID: adId } });
+    await Photo.update({ PHO_IS_MAIN: 1 }, { where: { PHO_ID: id } });
+
+    return res.status(200).send({ message: 'updated' });
+  } catch (err) {
+    return res.status(400).json({ uploaded: false, error: { message: err.message } });
+  }
+});
+
 // 삭제
 router.post('/delete', async (req, res, next) => {
   try {

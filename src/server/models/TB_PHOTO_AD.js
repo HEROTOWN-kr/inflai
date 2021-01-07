@@ -24,6 +24,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(400),
       allowNull: true
     },
+    PHO_IS_MAIN: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '0'
+    },
     PHO_DT: {
       type: 'TIMESTAMP',
       allowNull: false,

@@ -107,6 +107,104 @@ router.post('/create', async (req, res) => {
   }
 });
 
+router.post('/create', async (req, res) => {
+  try {
+    const data = req.body;
+    // const userId = common.getIdFromToken(data.token).sub;
+    const {
+      advertiserId, campaignName, delivery, detailAddress, detailInfo,
+      discription, email, extraAddress, influencerCount, phone,
+      postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
+      searchStart, shortDisc, sns, subtype, type, visible, insta,
+      naver, youtube, token
+    } = data;
+
+    const userId = token ? getIdFromToken(token).sub : 48;
+
+    const post = {
+      ADV_ID: userId,
+      AD_INF_CNT: influencerCount,
+      AD_SRCH_START: searchStart,
+      AD_SRCH_END: searchFinish,
+      AD_DELIVERY: delivery,
+      AD_VISIBLE: visible,
+      AD_CTG: type,
+      AD_CTG2: subtype,
+      AD_POST_CODE: postcode,
+      AD_ROAD_ADDR: roadAddress,
+      AD_DETAIL_ADDR: detailAddress,
+      AD_EXTR_ADDR: extraAddress,
+      AD_TEL: phone,
+      AD_EMAIL: email,
+      AD_NAME: campaignName,
+      AD_SHRT_DISC: shortDisc,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_DISC: discription,
+      AD_INSTA: insta,
+      AD_YOUTUBE: youtube,
+      AD_NAVER: naver,
+    };
+
+    if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideInfo) post.AD_PROVIDE = provideInfo;
+
+    const newAdvertise = await Advertise.create(post);
+
+    res.status(200).json({ data: newAdvertise });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/createBiz', async (req, res) => {
+  try {
+    const data = req.body;
+
+    const {
+      advertiserId, campaignName, delivery, detailAddress, detailInfo,
+      discription, email, extraAddress, influencerCount, phone,
+      postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
+      searchStart, shortDisc, sns, subtype, type, visible, insta,
+      naver, youtube, token
+    } = data;
+
+    const userId = getIdFromToken(token).sub;
+
+    const post = {
+      ADV_ID: userId,
+      AD_INF_CNT: influencerCount,
+      AD_SRCH_START: searchStart,
+      AD_SRCH_END: searchFinish,
+      AD_DELIVERY: delivery,
+      AD_VISIBLE: '0',
+      AD_CTG: type,
+      AD_CTG2: subtype,
+      AD_POST_CODE: postcode,
+      AD_ROAD_ADDR: roadAddress,
+      AD_DETAIL_ADDR: detailAddress,
+      AD_EXTR_ADDR: extraAddress,
+      AD_TEL: phone,
+      AD_EMAIL: email,
+      AD_NAME: campaignName,
+      AD_SHRT_DISC: shortDisc,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_DISC: discription,
+      AD_INSTA: insta,
+      AD_YOUTUBE: youtube,
+      AD_NAVER: naver,
+    };
+
+    if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideInfo) post.AD_PROVIDE = provideInfo;
+
+    const newAdvertise = await Advertise.create(post);
+
+    res.status(200).json({ data: newAdvertise });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
 router.post('/update', async (req, res) => {
   try {
     const data = req.body;
@@ -284,8 +382,9 @@ router.get('/list', async (req, res) => {
       include: [
         {
           model: Photo,
-          attributes: ['PHO_ID', 'PHO_FILE'],
-          required: false
+          where: { PHO_IS_MAIN: 1 },
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
+          required: false,
         },
         {
           model: Participant,
@@ -302,10 +401,11 @@ router.get('/list', async (req, res) => {
     const advertises = await Advertise.findAll(props);
 
     const advertisesMaped = advertises.map((item) => {
-      const { AD_INF_CNT, TB_PARTICIPANTs } = item.dataValues;
+      const { AD_INF_CNT, TB_PARTICIPANTs, TB_PHOTO_ADs } = item.dataValues;
+      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : null;
       const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
       return {
-        ...item.dataValues, proportion
+        ...item.dataValues, proportion, mainImage
       };
     });
 
@@ -319,7 +419,7 @@ router.get('/list', async (req, res) => {
 router.get('/campaignDetail', async (req, res) => {
   try {
     const data = req.query;
-    const { id } = data;
+    const { id, token } = data;
 
     const params = {
       where: { AD_ID: id },
@@ -342,11 +442,28 @@ router.get('/campaignDetail', async (req, res) => {
       ]
     };
 
-    const advertise = await Advertise.findOne(params);
-    const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
-    const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+    if (token) {
+      const userId = getIdFromToken(token).sub;
+      const adResponse = await Advertise.findOne({
+        where: { AD_ID: id },
+        attributes: ['ADV_ID']
+      });
+      const { ADV_ID } = adResponse;
+      if (ADV_ID === userId) {
+        const advertise = await Advertise.findOne(params);
+        const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
+        const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+        res.status(200).json({ data: { ...advertise.dataValues, proportion } });
+      } else {
+        res.status(201).json({ message: '회원이 등록된 캠페인이 아닙니다!' });
+      }
+    } else {
+      const advertise = await Advertise.findOne(params);
+      const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
+      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
 
-    res.status(200).json({ data: { ...advertise.dataValues, proportion } });
+      res.status(200).json({ data: { ...advertise.dataValues, proportion } });
+    }
   } catch (e) {
     res.status(400).send({ message: e.message });
   }

@@ -122,9 +122,6 @@ router.get('/check', async (req, res) => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
-    // if (tab === '1') where.AD_SRCH_END = { [Op.gt]: currentDate };
-    // if (tab === '3') where.AD_SRCH_END = { [Op.lt]: currentDate };
-
     const Response = await Subscription.findAll({
       where: {
         ADV_ID: userId,
@@ -203,14 +200,32 @@ router.post('/save', async (req, res) => {
   try {
     const { token, PLN_ID } = req.body;
     const advId = getIdFromToken(token).sub;
-    const post = {
-      ADV_ID: advId,
-      PLN_ID
-    };
-    const newSubscription = await Subscription.create(post);
-    res.status(200).json({ data: newSubscription });
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const currentSubscription = await Subscription.findOne({
+      where: {
+        ADV_ID: advId,
+        [Op.or]: [
+          { SUB_END_DT: { [Op.gte]: currentDate } },
+          { SUB_END_DT: null },
+        ],
+      }
+    });
+
+    if (currentSubscription) {
+      res.status(201).json({ message: '등록된 구독이 있습니다!' });
+    } else {
+      const post = {
+        ADV_ID: advId,
+        PLN_ID
+      };
+      const newSubscription = await Subscription.create(post);
+      res.status(200).json({ data: newSubscription });
+    }
   } catch (e) {
-    res.status(400)
+    res.status(400);
   }
 });
 

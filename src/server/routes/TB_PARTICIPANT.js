@@ -185,10 +185,13 @@ router.get('/checkParticipant', async (req, res) => {
 
 router.get('/getList', async (req, res) => {
   try {
-    const { adId } = req.query;
+    const { adId, onlySelected } = req.query;
+
+    const where = { AD_ID: adId };
+    if (onlySelected) where.PAR_STATUS = '2';
 
     const result = await Participant.findAll({
-      where: { AD_ID: adId },
+      where,
       attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
       ],
@@ -298,36 +301,52 @@ router.post('/change', async (req, res) => {
       adId, participantId
     } = data;
 
-    const post = {
-      PAR_STATUS: '2'
-    };
-
-    await Participant.update(post, {
-      where: { AD_ID: adId, PAR_ID: participantId }
-    });
-
-    const AdInfo = await Advertise.findOne({
+    const AdResponse = await Advertise.findOne({
       where: { AD_ID: adId },
-      attributes: ['AD_NAME']
+      attributes: ['AD_INF_CNT']
     });
 
-    const ParticipantInfo = await Participant.findOne({
-      where: { PAR_ID: participantId },
-      attributes: ['PAR_NAME', 'PAR_TEL']
+    const ParResponse = await Participant.findAndCountAll({
+      where: { AD_ID: adId, PAR_STATUS: '2' },
+      attributes: ['PAR_ID']
     });
 
-    const { PAR_NAME, PAR_TEL } = ParticipantInfo;
-    const { AD_NAME } = AdInfo;
-    const props = {
-      phoneNumber: PAR_TEL,
-      campanyName: AD_NAME,
-      influencerName: PAR_NAME,
-      adId,
-    };
+    const { count } = ParResponse;
+    const { AD_INF_CNT } = AdResponse;
 
-    const kakaoAlim = await createMessageOption3(props);
+    if (count >= parseInt(AD_INF_CNT, 10)) {
+      res.status(201).send({ message: '이미 다 모집되었습니다!' });
+    } else {
+      const post = { PAR_STATUS: '2' };
 
-    res.status(200).json({ message: 'success' });
+      await Participant.update(post, {
+        where: { AD_ID: adId, PAR_ID: participantId }
+      });
+
+      const ParticipantInfo = await Participant.findOne({
+        where: { PAR_ID: participantId },
+        attributes: ['PAR_NAME', 'PAR_TEL'],
+        include: [
+          {
+            model: Advertise,
+            attributes: ['AD_NAME']
+          },
+        ]
+      });
+
+      const { PAR_NAME, PAR_TEL, TB_AD } = ParticipantInfo;
+      const { AD_NAME } = TB_AD;
+      const props = {
+        phoneNumber: PAR_TEL,
+        campanyName: AD_NAME,
+        influencerName: PAR_NAME,
+        adId,
+      };
+
+      await createMessageOption3(props);
+
+      res.status(200).json({ message: 'success' });
+    }
   } catch (err) {
     res.status(400).send({ message: err.message });
   }
