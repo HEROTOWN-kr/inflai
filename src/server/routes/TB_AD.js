@@ -188,7 +188,7 @@ router.post('/createBiz', async (req, res) => {
       AD_NAME: campaignName,
       AD_SHRT_DISC: shortDisc,
       AD_SEARCH_KEY: searchKeyword,
-      AD_DISC: discription,
+      // AD_DISC: discription,
       AD_INSTA: insta,
       AD_YOUTUBE: youtube,
       AD_NAVER: naver,

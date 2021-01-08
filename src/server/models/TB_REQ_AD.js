@@ -10,7 +10,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     ADV_ID: {
       type: DataTypes.INTEGER(11),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'TB_ADVERTISER',
         key: 'ADV_ID'
@@ -34,6 +34,14 @@ module.exports = function (sequelize, DataTypes) {
     },
     REQ_BRAND: {
       type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    REQ_INDUSTRY: {
+      type: DataTypes.STRING(45),
+      allowNull: false
+    },
+    REQ_VISIT: {
+      type: DataTypes.STRING(1),
       allowNull: false
     },
     REQ_AIM: {

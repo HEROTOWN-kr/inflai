@@ -274,11 +274,14 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
+    const data = req.query;
     const {
       orderBy, direction, searchWord
-    } = req.query;
+    } = data;
 
-    const firstRow = 0;
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
 
     const options = {
       where: {},
@@ -302,7 +305,20 @@ router.get('/', async (req, res) => {
           where: {}
         },
       ],
+      limit,
+      offset,
       order: [[orderBy, direction]]
+    };
+
+    const CountOptions = {
+      where: {},
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_NAME'],
+          where: {}
+        },
+      ],
     };
 
     if (searchWord) {
@@ -314,66 +330,34 @@ router.get('/', async (req, res) => {
           { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
         ],
       };
+      CountOptions.where = {
+        [Op.or]: [
+          { INS_NAME: { [Op.like]: `%${searchWord}%` } },
+          { INS_USERNAME: { [Op.like]: `%${searchWord}%` } },
+          { INS_TYPES: { [Op.like]: `%${searchWord}%` } },
+          { '$TB_INFLUENCER.INF_NAME$': { [Op.like]: `%${searchWord}%` } }
+        ],
+      };
     }
 
-    const InstaBlogers = await Instagram.findAll(options);
-    const InstaCount = await Instagram.count();
+    const dbData = await Instagram.findAll(options);
+    const InstaCount = await Instagram.count(CountOptions);
 
-    let iCount = InstaCount - 1;
+    /* let iCount = InstaCount - 1;
 
-    for (let i = 0; i < InstaBlogers.length; i++) {
-      InstaBlogers[i].dataValues.rownum = InstaCount - firstRow - (iCount--);
-    }
-
-    res.json({
-      code: 200,
-      data: { list: InstaBlogers, cnt: InstaCount },
-    });
-
-    /* try {
-      const blogersArray = InstaBlogers.map((item, index) => {
-        // const rownum = InstaCount - firstRow - (iCount - index);
-        const rownum = { a: 5 };
-        const obj = Object.assign(item, rownum);
-        return obj;
-      /!*  const x = '';
-        return new Promise(((resolve, reject) => {
-          const rownum = InstaCount - firstRow - (iCount - index);
-          resolve({ ...item, rownum });
-        })); *!/
-      });
-
-      res.json({
-        code: 200,
-        data: blogersArray,
-      });
-    } catch (err) {
-      res.json({
-        code: 400,
-        data: err.message,
-      });
+    for (let i = 0; i < dbData.length; i++) {
+      dbData[i].dataValues.rownum = InstaCount - offset - (iCount--);
     } */
 
+    const InstagramAccounts = dbData.map((item, index) => {
+      const { dataValues } = item;
+      const rownum = offset + index + 1;
+      return { ...dataValues, rownum };
+    });
 
-    /* Instagram.findAll(options).then((result) => {
-      list = result;
-      Instagram.count().then((cnt) => {
-        let icount = cnt - 1;
-
-        for (let i = 0; i < list.length; i++) {
-          list[i].dataValues.rownum = cnt - firstRow - (icount--);
-        }
-
-        res.json({
-          code: 200,
-          data: { list, cnt },
-        });
-      }).error((err2) => {
-        res.send('error has occured');
-      });
-    }).error((err) => {
-      res.send('error has occured');
-    }); */
+    res.status(200).json({
+      data: { list: InstagramAccounts, cnt: InstaCount },
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }

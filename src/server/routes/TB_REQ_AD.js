@@ -9,15 +9,17 @@ const router = express.Router();
 
 router.post('/', (req, res) => {
   const data = req.body;
-  const userId = common.getIdFromToken(data.token).sub;
+  // const userId = common.getIdFromToken(data.token).sub;
 
   const post = {
-    ADV_ID: userId,
+    // ADV_ID: userId,
     REQ_COMP_NAME: data.companyName,
     REQ_NAME: data.name,
     REQ_EMAIL: data.email,
     REQ_TEL: data.phone,
-    REQ_BRAND: data.productName,
+    // REQ_BRAND: data.productName,
+    REQ_INDUSTRY: data.industry,
+    REQ_VISIT: data.visit,
     REQ_AIM: JSON.stringify(data.campaignAim),
     REQ_BUDJET: data.capital,
     REQ_CONSULT: JSON.stringify(data.consult)
@@ -39,7 +41,8 @@ router.get('/', async (req, res) => {
     const data = req.query;
     const offset = (data.page - 1) * 10;
     const dbData = await RequestAgency.findAll({
-      attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_TEL', 'REQ_BRAND',
+      attributes: ['REQ_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_TEL', 'REQ_BRAND', 'REQ_INDUSTRY',
+        [Sequelize.literal('CASE REQ_VISIT WHEN \'1\' THEN \'인스타그램 광고\' WHEN \'2\' THEN \'dm메세지\' WHEN \'3\' THEN \'지인추천\' ELSE \'검색\' END'), 'REQ_VISIT'],
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
       include: [
         {
@@ -76,7 +79,8 @@ router.get('/detail', (req, res) => {
   const { id } = data;
 
   RequestAgency.findOne({
-    attributes: ['REQ_ID', 'ADV_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_EMAIL', 'REQ_TEL', 'REQ_BRAND', 'REQ_AIM', 'REQ_ANOTHER_AIM', 'REQ_BUDJET', 'REQ_CONSULT', 'REQ_OTHER',
+    attributes: ['REQ_ID', 'ADV_ID', 'REQ_COMP_NAME', 'REQ_NAME', 'REQ_EMAIL', 'REQ_TEL', 'REQ_BRAND', 'REQ_AIM', 'REQ_ANOTHER_AIM', 'REQ_BUDJET', 'REQ_CONSULT', 'REQ_OTHER', 'REQ_INDUSTRY',
+      [Sequelize.literal('CASE REQ_VISIT WHEN \'1\' THEN \'인스타그램 광고\' WHEN \'2\' THEN \'dm메세지\' WHEN \'3\' THEN \'지인추천\' ELSE \'검색\' END'), 'REQ_VISIT'],
       [Sequelize.fn('DATE_FORMAT', Sequelize.col('REQ_DT'), '%Y-%m-%d'), 'REQ_DT']],
     where: { REQ_ID: id },
     include: [
