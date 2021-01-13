@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const Participant = require('../models').TB_PARTICIPANT;
 const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
+const Naver = require('../models').TB_NAVER;
 const Advertise = require('../models').TB_AD;
 const Photo = require('../models').TB_PHOTO_AD;
 
@@ -219,7 +220,7 @@ router.get('/getList', async (req, res) => {
     });
 
     const PromiseArray = ParticipantsList.map(item => new Promise(((resolve, reject) => {
-      const { INF_ID, PAR_INSTA } = item;
+      const { INF_ID, PAR_INSTA, PAR_NAVER } = item;
       if (PAR_INSTA === 1) {
         Insta.findOne({
           where: { INF_ID },
@@ -227,6 +228,15 @@ router.get('/getList', async (req, res) => {
         }).then((resp) => {
           resolve({
             ...item, INS_ID: resp ? resp.INS_ID : null
+          });
+        });
+      } else if (PAR_NAVER === 1) {
+        Naver.findOne({
+          where: { INF_ID },
+          attributes: ['NAV_ID']
+        }).then((resp) => {
+          resolve({
+            ...item, NAV_ID: resp ? resp.NAV_ID : null
           });
         });
       } else {

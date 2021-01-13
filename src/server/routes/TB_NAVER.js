@@ -1,6 +1,8 @@
 const express = require('express');
 const Sequelize = require('sequelize');
 const Naver = require('../models').TB_NAVER;
+const Participant = require('../models').TB_PARTICIPANT;
+const Influencer = require('../models').TB_INFLUENCER;
 
 const {
   getGoogleData,
@@ -10,41 +12,41 @@ const {
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  let list;
-  const firstRow = 0;
-
-  const options = {
-    where: {},
-    attributes: ['YOU_ID', 'INF_ID', 'YOU_SUBS', 'YOU_VIEWS'],
-    include: [
-      {
-        model: Influencer,
-        attributes: ['INF_NAME']
-      },
-    ],
-    order: [['YOU_SUBS', 'DESC']]
-  };
-
-  Youtube.findAll(options).then((result) => {
-    list = result;
-    Youtube.count().then((cnt) => {
-      let icount = cnt - 1;
-
-      for (let i = 0; i < list.length; i++) {
-        list[i].dataValues.rownum = cnt - firstRow - (icount--);
-      }
-
-      res.json({
-        code: 200,
-        data: { list, cnt },
-      });
-    }).error((err2) => {
-      res.send('error has occured');
+router.get('/getInfo', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const dbData = await Participant.findOne({
+      where: { PAR_ID: id },
+      attributes: ['PAR_ID', 'PAR_NAME', 'PAR_EMAIL', 'PAR_TEL', 'PAR_POST_CODE',
+        'PAR_ROAD_ADDR', 'PAR_DETAIL_ADDR', 'PAR_EXTR_ADDR'],
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_ID'],
+          include: [
+            {
+              model: Naver,
+              attributes: ['NAV_ID', 'NAV_URL']
+            }
+          ],
+        }
+      ],
     });
-  }).error((err) => {
-    res.send('error has occured');
-  });
+
+    const {
+      TB_INFLUENCER, PAR_NAME, PAR_EMAIL, PAR_TEL, PAR_POST_CODE, PAR_ROAD_ADDR, PAR_DETAIL_ADDR, PAR_EXTR_ADDR
+    } = dbData;
+    const { TB_NAVER } = TB_INFLUENCER || {};
+    const { NAV_ID, NAV_URL } = TB_NAVER || {};
+
+    res.status(200).json({
+      data: {
+        PAR_NAME, PAR_EMAIL, PAR_TEL, PAR_POST_CODE, PAR_ROAD_ADDR, PAR_DETAIL_ADDR, PAR_EXTR_ADDR, NAV_ID, NAV_URL
+      }
+    });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
 });
 
 router.post('/add', async (req, res) => {
