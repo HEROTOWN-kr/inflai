@@ -187,9 +187,10 @@ router.get('/getInfluencers', async (req, res) => {
 
     const PlnInfMonth = PlanResponse.TB_PLAN.PLN_INF_MONTH;
     const InfCountUsed = Response.reduce((sum, arg) => sum + (parseInt(arg.AD_INF_CNT, 10) || 0), 0);
+    const InfCountLeft = PlnInfMonth - InfCountUsed;
 
     res.status(200).json({
-      data: { InfCountUsed, PlnInfMonth },
+      data: { InfCountUsed, PlnInfMonth, InfCountLeft },
     });
   } catch (e) {
     res.status(400).send({ message: e.message });

@@ -14,8 +14,12 @@ const { resizeImage } = require('../config/common');
 router.post('/uploadImage', async (req, res, next) => {
   try {
     const { file } = req.files;
-    const { id } = req.body;
+    const { id, isMain } = req.body;
     const uid = uniqid();
+
+    if (isMain === '1') {
+      await Photo.update({ PHO_IS_MAIN: 0 }, { where: { AD_ID: id, PHO_IS_MAIN: 1 } });
+    }
 
     const currentPath = file.path;
     const fileExtension = path.extname(file.name);
@@ -31,7 +35,8 @@ router.post('/uploadImage', async (req, res, next) => {
 
     const post = {
       AD_ID: id,
-      PHO_FILE: DRAWING_URL
+      PHO_FILE: DRAWING_URL,
+      PHO_IS_MAIN: isMain
     };
 
     await Photo.create(post);
@@ -53,7 +58,7 @@ router.post('/upload', (req, res, next) => {
   const newFileNm = path.normalize(uid + path.extname(file.name));
   const uploadPath = path.normalize(`${config.attachRoot}/portfolio/${id}/`) + newFileNm;
   const post = {
-    AD_ID: id
+    AD_ID: id,
   };
 
   /* post.PRF_FILE_NM = file.name;

@@ -107,46 +107,93 @@ router.post('/create', async (req, res) => {
   }
 });
 
-router.post('/create', async (req, res) => {
+router.get('/getAdDataBiz', async (req, res) => {
+  try {
+    const { adId, token } = req.query;
+    const userId = getIdFromToken(token).sub;
+
+    const advertiseData = await Advertise.findOne({
+      where: { AD_ID: adId, ADV_ID: userId },
+      include: [
+        {
+          model: Photo,
+          required: false,
+        }
+      ]
+    });
+
+    if (!advertiseData) {
+      res.status(201).json({ message: '정보 없습니다' });
+    } else {
+      res.status(200).json({ data: advertiseData });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/getAdDataAdmin', async (req, res) => {
+  try {
+    const { adId } = req.query;
+
+    const advertiseData = await Advertise.findOne({
+      where: { AD_ID: adId },
+      include: [
+        {
+          model: Photo,
+          required: false,
+        }
+      ]
+    });
+
+    if (!advertiseData) {
+      res.status(201).json({ message: '정보 없습니다' });
+    } else {
+      res.status(200).json({ data: advertiseData });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.post('/createBiz', async (req, res) => {
   try {
     const data = req.body;
-    // const userId = common.getIdFromToken(data.token).sub;
+
     const {
-      advertiserId, campaignName, delivery, detailAddress, detailInfo,
-      discription, email, extraAddress, influencerCount, phone,
-      postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
-      searchStart, shortDisc, sns, subtype, type, visible, insta,
-      naver, youtube, token
+      campaignName, delivery, email, influencerCount, phone,
+      searchFinish, searchKeyword, searchStart,
+      shortDisc, sns, subtype, type,
+      detailAddress, postcode, extraAddress,
+      roadAddress, provideInfo, detailInfo, discription, token
     } = data;
 
-    const userId = token ? getIdFromToken(token).sub : 48;
+    const userId = getIdFromToken(token).sub;
 
     const post = {
       ADV_ID: userId,
+      AD_VISIBLE: '0',
       AD_INF_CNT: influencerCount,
       AD_SRCH_START: searchStart,
       AD_SRCH_END: searchFinish,
       AD_DELIVERY: delivery,
-      AD_VISIBLE: visible,
       AD_CTG: type,
       AD_CTG2: subtype,
-      AD_POST_CODE: postcode,
-      AD_ROAD_ADDR: roadAddress,
-      AD_DETAIL_ADDR: detailAddress,
-      AD_EXTR_ADDR: extraAddress,
       AD_TEL: phone,
       AD_EMAIL: email,
       AD_NAME: campaignName,
       AD_SHRT_DISC: shortDisc,
-      AD_SEARCH_KEY: searchKeyword,
       AD_DISC: discription,
-      AD_INSTA: insta,
-      AD_YOUTUBE: youtube,
-      AD_NAVER: naver,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_TYPE: sns
     };
 
     if (detailInfo) post.AD_DETAIL = detailInfo;
     if (provideInfo) post.AD_PROVIDE = provideInfo;
+    if (postcode) post.AD_POST_CODE = postcode;
+    if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
+    if (detailAddress) post.AD_DETAIL_ADDR = detailAddress;
+    if (extraAddress) post.AD_EXTR_ADDR = extraAddress;
 
     const newAdvertise = await Advertise.create(post);
 
@@ -156,50 +203,139 @@ router.post('/create', async (req, res) => {
   }
 });
 
-router.post('/createBiz', async (req, res) => {
+router.post('/createAdmin', async (req, res) => {
   try {
     const data = req.body;
 
     const {
-      advertiserId, campaignName, delivery, detailAddress, detailInfo,
-      discription, email, extraAddress, influencerCount, phone,
-      postcode, provideInfo, roadAddress, searchFinish, searchKeyword,
-      searchStart, shortDisc, sns, subtype, type, visible, insta,
-      naver, youtube, token
+      campaignName, delivery, email, influencerCount, phone, visible,
+      searchFinish, searchKeyword, searchStart,
+      shortDisc, sns, subtype, type,
+      detailAddress, postcode, extraAddress,
+      roadAddress, provideInfo, detailInfo, discription
+    } = data;
+
+    const post = {
+      ADV_ID: 48,
+      AD_VISIBLE: visible,
+      AD_INF_CNT: influencerCount,
+      AD_SRCH_START: searchStart,
+      AD_SRCH_END: searchFinish,
+      AD_DELIVERY: delivery,
+      AD_CTG: type,
+      AD_CTG2: subtype,
+      AD_TEL: phone,
+      AD_EMAIL: email,
+      AD_NAME: campaignName,
+      AD_SHRT_DISC: shortDisc,
+      AD_DISC: discription,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_TYPE: sns
+    };
+
+    if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideInfo) post.AD_PROVIDE = provideInfo;
+    if (postcode) post.AD_POST_CODE = postcode;
+    if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
+    if (detailAddress) post.AD_DETAIL_ADDR = detailAddress;
+    if (extraAddress) post.AD_EXTR_ADDR = extraAddress;
+
+    const newAdvertise = await Advertise.create(post);
+
+    res.status(200).json({ data: newAdvertise });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/updateBiz', async (req, res) => {
+  try {
+    const data = req.body;
+
+    const {
+      campaignName, delivery, email, influencerCount, phone,
+      searchFinish, searchKeyword, searchStart,
+      shortDisc, discription, sns, subtype, type,
+      detailAddress, postcode, extraAddress,
+      roadAddress, provideInfo, detailInfo, token, adId
     } = data;
 
     const userId = getIdFromToken(token).sub;
 
     const post = {
-      ADV_ID: userId,
       AD_INF_CNT: influencerCount,
       AD_SRCH_START: searchStart,
       AD_SRCH_END: searchFinish,
       AD_DELIVERY: delivery,
-      AD_VISIBLE: '0',
       AD_CTG: type,
       AD_CTG2: subtype,
-      AD_POST_CODE: postcode,
-      AD_ROAD_ADDR: roadAddress,
-      AD_DETAIL_ADDR: detailAddress,
-      AD_EXTR_ADDR: extraAddress,
       AD_TEL: phone,
       AD_EMAIL: email,
       AD_NAME: campaignName,
       AD_SHRT_DISC: shortDisc,
+      AD_DISC: discription,
       AD_SEARCH_KEY: searchKeyword,
-      // AD_DISC: discription,
-      AD_INSTA: insta,
-      AD_YOUTUBE: youtube,
-      AD_NAVER: naver,
+      AD_TYPE: sns
     };
 
     if (detailInfo) post.AD_DETAIL = detailInfo;
     if (provideInfo) post.AD_PROVIDE = provideInfo;
+    if (postcode) post.AD_POST_CODE = postcode;
+    if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
+    if (detailAddress) post.AD_DETAIL_ADDR = detailAddress;
+    if (extraAddress) post.AD_EXTR_ADDR = extraAddress;
 
-    const newAdvertise = await Advertise.create(post);
+    await Advertise.update(post, {
+      where: { AD_ID: adId, ADV_ID: userId }
+    });
 
-    res.status(200).json({ data: newAdvertise });
+    res.status(200).json({ message: 'success' });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/updateAdmin', async (req, res) => {
+  try {
+    const data = req.body;
+
+    const {
+      campaignName, delivery, email, influencerCount, phone,
+      searchFinish, searchKeyword, searchStart,
+      shortDisc, discription, sns, subtype, type,
+      detailAddress, postcode, extraAddress,
+      roadAddress, provideInfo, detailInfo, visible, adId
+    } = data;
+
+    const post = {
+      AD_VISIBLE: visible,
+      AD_INF_CNT: influencerCount,
+      AD_SRCH_START: searchStart,
+      AD_SRCH_END: searchFinish,
+      AD_DELIVERY: delivery,
+      AD_CTG: type,
+      AD_CTG2: subtype,
+      AD_TEL: phone,
+      AD_EMAIL: email,
+      AD_NAME: campaignName,
+      AD_SHRT_DISC: shortDisc,
+      AD_DISC: discription,
+      AD_SEARCH_KEY: searchKeyword,
+      AD_TYPE: sns
+    };
+
+    if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideInfo) post.AD_PROVIDE = provideInfo;
+    if (postcode) post.AD_POST_CODE = postcode;
+    if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
+    if (detailAddress) post.AD_DETAIL_ADDR = detailAddress;
+    if (extraAddress) post.AD_EXTR_ADDR = extraAddress;
+
+    await Advertise.update(post, {
+      where: { AD_ID: adId }
+    });
+
+    res.status(200).json({ message: 'success' });
   } catch (err) {
     res.status(400).send({ message: err.message });
   }
@@ -424,7 +560,7 @@ router.get('/campaignDetail', async (req, res) => {
     const params = {
       where: { AD_ID: id },
       attributes: [
-        'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START',
+        'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_TYPE',
         'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
         'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
         'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_EMAIL'
