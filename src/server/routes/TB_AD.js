@@ -710,6 +710,7 @@ router.post('/delete', async (req, res) => {
       await fse.remove(deletePath);
     });
 
+    await Favorites.destroy(props);
     await Photo.destroy(props);
     await Participant.destroy(props);
     await Advertise.destroy(props);

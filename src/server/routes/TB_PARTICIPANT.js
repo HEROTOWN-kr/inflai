@@ -304,6 +304,35 @@ router.get('/getCampaigns', async (req, res) => {
   }
 });
 
+router.get('/getInfo', async (req, res) => {
+  try {
+    const { id } = req.query;
+    const dbData = await Participant.findOne({
+      where: { PAR_ID: id },
+      attributes: ['PAR_ID', 'PAR_NAME', 'PAR_EMAIL', 'PAR_TEL', 'PAR_POST_CODE',
+        'PAR_ROAD_ADDR', 'PAR_DETAIL_ADDR', 'PAR_EXTR_ADDR'],
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_ID'],
+        }
+      ],
+    });
+
+    const {
+      TB_INFLUENCER, PAR_NAME, PAR_EMAIL, PAR_TEL, PAR_POST_CODE, PAR_ROAD_ADDR, PAR_DETAIL_ADDR, PAR_EXTR_ADDR
+    } = dbData;
+
+    res.status(200).json({
+      data: {
+        PAR_NAME, PAR_EMAIL, PAR_TEL, PAR_POST_CODE, PAR_ROAD_ADDR, PAR_DETAIL_ADDR, PAR_EXTR_ADDR
+      }
+    });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+});
+
 router.post('/change', async (req, res) => {
   try {
     const data = req.body;

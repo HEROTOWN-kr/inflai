@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
 router.get('/list', async (req, res) => {
   try {
     const { page } = req.query;
-    const limit = 5;
+    const limit = 10;
     const offset = (page - 1) * limit;
 
     const dbData = await Subscription.findAll({
@@ -67,7 +67,10 @@ router.get('/list', async (req, res) => {
           attributes: ['ADV_NAME'],
           required: false,
         },
-      ]
+      ],
+      limit,
+      offset,
+      order: [['SUB_ID', 'DESC']]
     });
 
     const Count = await Subscription.count();
