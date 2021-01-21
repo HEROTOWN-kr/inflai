@@ -226,6 +226,23 @@ router.get('/getInfluencers', async (req, res) => {
       attributes: ['INF_ID', 'INF_NAME', 'INF_TEL', 'INF_EMAIL',
         [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\'  WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'INF_BLOG_TYPE'],
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('INF_DT'), '%Y-%m-%d'), 'INF_DT']],
+      include: [
+        {
+          model: Instagram,
+          attributes: ['INS_ID'],
+          required: false,
+        },
+        {
+          model: Youtube,
+          attributes: ['YOU_ID'],
+          required: false,
+        },
+        {
+          model: Naver,
+          attributes: ['NAV_ID'],
+          required: false,
+        }
+      ],
       limit,
       offset,
       order: [['INF_ID', 'DESC']]
@@ -234,10 +251,16 @@ router.get('/getInfluencers', async (req, res) => {
     const InfluencerCount = await Influencer.count();
     const Influencers = dbData.map((item, index) => {
       const { dataValues } = item;
-      const rownum = InfluencerCount - offset - index;
-      return { ...dataValues, rownum };
-    });
+      const {
+        TB_INSTum, TB_YOUTUBE, TB_NAVER, ...rest
+      } = dataValues;
+      if (TB_INSTum) rest.INS_ID = TB_INSTum.INS_ID;
+      if (TB_YOUTUBE) rest.YOU_ID = TB_YOUTUBE.YOU_ID;
+      if (TB_NAVER) rest.NAV_ID = TB_NAVER.NAV_ID;
 
+      const rownum = InfluencerCount - offset - index;
+      return { ...rest, rownum };
+    });
     res.status(200).json({
       data: Influencers,
       InfluencerCount

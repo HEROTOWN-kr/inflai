@@ -5,6 +5,7 @@ const Advertiser = require('../models').TB_ADVERTISER;
 const Ad = require('../models').TB_AD;
 const Plan = require('../models').TB_PLAN;
 const { getIdFromToken } = require('../config/common');
+const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
 
 const { Op } = Sequelize;
 
@@ -64,7 +65,7 @@ router.get('/list', async (req, res) => {
         },
         {
           model: Advertiser,
-          attributes: ['ADV_NAME'],
+          attributes: ['ADV_ID', 'ADV_NAME'],
           required: false,
         },
       ],
@@ -205,28 +206,62 @@ router.post('/save', async (req, res) => {
     const { token, PLN_ID } = req.body;
     const advId = getIdFromToken(token).sub;
 
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    const currentSubscription = await Subscription.findOne({
-      where: {
-        ADV_ID: advId,
-        [Op.or]: [
-          { SUB_END_DT: { [Op.gte]: currentDate } },
-          { SUB_END_DT: null },
-        ],
-      }
+    const advertiserData = await Advertiser.findOne({
+      where: { ADV_ID: advId },
+      attributes: ['ADV_NAME', 'ADV_TEL'],
     });
 
-    if (currentSubscription) {
-      res.status(201).json({ message: '등록된 구독이 있습니다!' });
+    const { ADV_NAME, ADV_TEL } = advertiserData;
+
+    if (ADV_TEL && ADV_NAME) {
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      const currentSubscription = await Subscription.findOne({
+        where: {
+          ADV_ID: advId,
+          [Op.or]: [
+            { SUB_END_DT: { [Op.gte]: currentDate } },
+            { SUB_END_DT: null },
+          ],
+        }
+      });
+
+      if (currentSubscription) {
+        res.status(201).json({ message: '이미 등록 된 구독이 있습니다!' });
+      } else {
+        const post = {
+          ADV_ID: advId,
+          PLN_ID
+        };
+        const newSubscription = await Subscription.create(post);
+
+
+        const planData = await Plan.findOne({
+          where: { PLN_ID },
+          attributes: ['PLN_NAME', 'PLN_MONTH', 'PLN_PRICE_MONTH'],
+        });
+
+
+        const { PLN_NAME, PLN_MONTH, PLN_PRICE_MONTH } = planData;
+        const price = Math.round(PLN_PRICE_MONTH * PLN_MONTH * 1.1);
+        const bankAccount = 'IBK기업은행 935-012238-01016';
+        const accountHolder = '(주)대가들이사는마을';
+        const kakaoMessageProps = {
+          phoneNumber: ADV_TEL,
+          advertiserName: ADV_NAME,
+          planName: PLN_NAME,
+          planMonth: PLN_MONTH,
+          price,
+          bankAccount,
+          accountHolder,
+        };
+        await membershipSubscribe(kakaoMessageProps);
+
+        res.status(200).json({ data: newSubscription });
+      }
     } else {
-      const post = {
-        ADV_ID: advId,
-        PLN_ID
-      };
-      const newSubscription = await Subscription.create(post);
-      res.status(200).json({ data: newSubscription });
+      res.status(202).json({ message: '회원의 정보가 필요합니다' });
     }
   } catch (e) {
     res.status(400);
@@ -238,15 +273,56 @@ router.post('/update', async (req, res) => {
     const {
       id, status, startDate, endDate
     } = req.body;
+
+    const date1 = new Date(startDate);
+    const date2 = new Date(endDate);
+    date1.setHours(9, 0, 0, 0);
+    date2.setHours(9, 0, 0, 0);
+
     const post = {
-      SUB_START_DT: startDate,
-      SUB_END_DT: endDate,
+      SUB_START_DT: date1,
+      SUB_END_DT: date2,
       SUB_STATUS: status
     };
 
-    const newSubscription = await Subscription.update(post, { where: { SUB_ID: id } });
+    await Subscription.update(post, { where: { SUB_ID: id } });
 
-    res.status(200).json({ data: newSubscription });
+    if (status === '2') {
+      const subscibtionData = await Subscription.findOne({
+        where: { SUB_ID: id },
+        include: [
+          {
+            model: Advertiser,
+            attributes: ['ADV_NAME', 'ADV_TEL'],
+          },
+          {
+            model: Plan,
+            attributes: ['PLN_MONTH', 'PLN_INF_MONTH'],
+          }
+        ]
+      });
+
+      const {
+        TB_ADVERTISER, TB_PLAN, SUB_START_DT, SUB_END_DT
+      } = subscibtionData;
+
+      const { ADV_TEL, ADV_NAME } = TB_ADVERTISER;
+      const { PLN_MONTH, PLN_INF_MONTH } = TB_PLAN;
+
+      const kakaoMessageProps = {
+        phoneNumber: ADV_TEL,
+        advertiserName: ADV_NAME,
+        startDate: SUB_START_DT,
+        endDate: SUB_END_DT,
+        influencerCount: PLN_MONTH * PLN_INF_MONTH,
+      };
+
+      await membershipApprove(kakaoMessageProps);
+
+      res.status(200).json({ message: 'success' });
+    } else {
+      res.status(200).json({ message: 'success' });
+    }
   } catch (e) {
     res.status(400).send({
       message: e.message

@@ -10,43 +10,51 @@ const vision = require('@google-cloud/vision');
 const {
   resizeImage, getInstagramInsights, getInstagramMediaData, getInstagramData, googleVision
 } = require('../config/common');
+
+const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
 const config = require('../config/config');
 
 const Advertiser = require('../models').TB_ADVERTISER;
 const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
 const Admin = require('../models').TB_ADMIN;
+const Plan = require('../models').TB_PLAN;
 const test = require('./test');
 
 const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const scoreInfo = await Insta.findAll({ attributes: ['INS_ID', 'INS_SCORE'] });
-    const sortedScore = scoreInfo.sort((a, b) => b.INS_SCORE - a.INS_SCORE);
-    let rank = 1;
+    const { ADV_ID } = req.query;
 
-    const rankArray = sortedScore.map((item, index) => {
-      if (index > 0 && item.INS_SCORE < sortedScore[index - 1].INS_SCORE) {
-        rank += 1;
-      }
-      return { ...item.dataValues, rank };
+    const advertiserData = await Advertiser.findOne({
+      where: { ADV_ID },
+      attributes: ['ADV_NAME', 'ADV_TEL'],
     });
 
-    const PromiseArray = rankArray.map(item => new Promise(((resolve, reject) => {
-      Insta.update({ INS_RANK: item.rank }, { where: { INS_ID: item.INS_ID } }).then((result) => {
-        resolve('success');
+    const { ADV_NAME, ADV_TEL } = advertiserData;
+
+    if (ADV_TEL && ADV_NAME) {
+      const kakaoMessageProps = {
+        phoneNumber: ADV_TEL,
+        advertiserName: ADV_NAME,
+        startDate: '2021-02-01',
+        endDate: '2021-03-01',
+        influencerCount: '100',
+      };
+
+      await membershipApprove(kakaoMessageProps);
+
+      res.status(200).json({
+        message: 'success',
       });
-    })));
-
-    const updateRes = await Promise.all(PromiseArray);
-
-    res.status(200).json({
-      message: 'success',
-      data: updateRes
-    });
+    } else {
+      res.status(200).json({
+        message: 'success',
+      });
+    }
   } catch (err) {
-    res.status(400).send(err);
+    res.status(400).send(err.message);
   }
 });
 

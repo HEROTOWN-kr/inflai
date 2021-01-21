@@ -877,7 +877,7 @@ router.post('/add', async (req, res) => {
     if (instaId) {
       const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instaId } });
       if (instaAccountExist) {
-        res.status(409).send('중복된 인스타그램 계정입니다');
+        res.status(409).send({ message: '중복된 인스타그램 계정입니다' });
       } else {
         const instagramData = await getInstagramData(instaId, longToken);
         const mediaData = await getInstagramMediaData(instaId, longToken);
@@ -907,7 +907,7 @@ router.post('/add', async (req, res) => {
           INS_ACCOUNT_ID: instaId,
           INS_FLW: follows_count,
           INS_FLWR: followers_count,
-          INS_NAME: name.normalize(),
+          INS_NAME: name ? name.normalize('NFC') : null,
           INS_USERNAME: username,
           INS_MEDIA_CNT: media_count,
           INS_PROFILE_IMG: profile_picture_url,
