@@ -722,7 +722,7 @@ router.post('/delete', async (req, res) => {
 });
 
 // 이미지 업로드
-router.post('/upload', async (req, res, next) => {
+router.post('/upload', async (req, res) => {
   try {
     const file = req.files.upload;
     const uid = uniqid();

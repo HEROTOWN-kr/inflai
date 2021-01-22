@@ -8,7 +8,7 @@ const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const {
-  resizeImage, getInstagramInsights, getInstagramMediaData, getInstagramData, googleVision
+  hashData, resizeImage, getInstagramInsights, getInstagramMediaData, getInstagramData, googleVision
 } = require('../config/common');
 
 const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
@@ -25,34 +25,12 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const { ADV_ID } = req.query;
+    const password = '^^sun0618';
+    const hashedPass = await hashData(password);
 
-    const advertiserData = await Advertiser.findOne({
-      where: { ADV_ID },
-      attributes: ['ADV_NAME', 'ADV_TEL'],
+    res.status(200).json({
+      message: hashedPass,
     });
-
-    const { ADV_NAME, ADV_TEL } = advertiserData;
-
-    if (ADV_TEL && ADV_NAME) {
-      const kakaoMessageProps = {
-        phoneNumber: ADV_TEL,
-        advertiserName: ADV_NAME,
-        startDate: '2021-02-01',
-        endDate: '2021-03-01',
-        influencerCount: '100',
-      };
-
-      await membershipApprove(kakaoMessageProps);
-
-      res.status(200).json({
-        message: 'success',
-      });
-    } else {
-      res.status(200).json({
-        message: 'success',
-      });
-    }
   } catch (err) {
     res.status(400).send(err.message);
   }
