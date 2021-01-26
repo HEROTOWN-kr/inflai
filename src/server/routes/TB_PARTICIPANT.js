@@ -193,7 +193,7 @@ router.get('/getList', async (req, res) => {
 
     const result = await Participant.findAll({
       where,
-      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS',
+      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS', 'PAR_REVIEW',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
       ],
       include: [
@@ -268,7 +268,7 @@ router.get('/getCampaigns', async (req, res) => {
 
     const dbData = await Participant.findAll({
       where: whereProps,
-      attributes: ['PAR_ID'],
+      attributes: ['PAR_ID', 'PAR_REVIEW'],
       include: [
         {
           model: Advertise,
@@ -290,10 +290,12 @@ router.get('/getCampaigns', async (req, res) => {
     });
 
     const advertises = dbData.map((item) => {
-      const data = item.dataValues;
-      const adData = data.TB_AD.dataValues;
+      const { PAR_ID, PAR_REVIEW, TB_AD } = item.dataValues;
+      const adData = TB_AD.dataValues;
       const proportion = Math.round(100 / (adData.AD_INF_CNT / adData.TB_PARTICIPANTs.length));
-      return { ...adData, proportion, PAR_ID: data.PAR_ID };
+      return {
+        ...adData, proportion, PAR_ID, PAR_REVIEW
+      };
     });
 
     res.status(200).json({
@@ -386,6 +388,27 @@ router.post('/change', async (req, res) => {
 
       res.status(200).json({ message: 'success' });
     }
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/writeReview', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      adId, token, url
+    } = data;
+
+    const userId = getIdFromToken(token).sub;
+
+    const post = { PAR_REVIEW: url };
+
+    await Participant.update(post, {
+      where: { AD_ID: adId, INF_ID: userId }
+    });
+
+    res.status(200).json({ message: 'success' });
   } catch (err) {
     res.status(400).send({ message: err.message });
   }

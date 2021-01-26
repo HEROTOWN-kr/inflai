@@ -25,12 +25,7 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const password = '^^sun0618';
-    const hashedPass = await hashData(password);
 
-    res.status(200).json({
-      message: hashedPass,
-    });
   } catch (err) {
     res.status(400).send(err.message);
   }
