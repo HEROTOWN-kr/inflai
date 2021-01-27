@@ -186,13 +186,18 @@ router.get('/checkParticipant', async (req, res) => {
 
 router.get('/getList', async (req, res) => {
   try {
-    const { adId, onlySelected } = req.query;
+    const data = req.query;
+    const { adId, onlySelected } = data;
+
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
 
     const where = { AD_ID: adId };
     if (onlySelected) where.PAR_STATUS = '2';
 
-    const result = await Participant.findAll({
-      where,
+    const options = {
+      where: { AD_ID: adId },
       attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS', 'PAR_REVIEW',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
       ],
@@ -202,8 +207,20 @@ router.get('/getList', async (req, res) => {
           attributes: ['INF_ID', 'INF_PHOTO']
         },
       ],
+      limit,
+      offset,
       order: [['PAR_ID', 'DESC']]
-    });
+    };
+
+    const CountOptions = { where: { AD_ID: adId } };
+
+    if (onlySelected) {
+      options.where.PAR_STATUS = '2';
+      CountOptions.where.PAR_STATUS = '2';
+    }
+
+    const result = await Participant.findAll(options);
+    const ParticipantCount = await Participant.count(CountOptions);
 
     const ParticipantsList = result.map((item) => {
       const {
@@ -247,7 +264,8 @@ router.get('/getList', async (req, res) => {
     const ParticipantFinal = await Promise.all(PromiseArray);
 
     res.status(200).json({
-      data: ParticipantFinal
+      data: ParticipantFinal,
+      count: ParticipantCount
     });
   } catch (err) {
     res.status(400).send(err.message);
