@@ -87,5 +87,65 @@ function membershipApprove(props) {
   }));
 }
 
+function campaignCreated(props) {
+  const {
+    phoneNumber,
+    influencerName,
+    campaignName1,
+    campaignName2,
+    campaignName3,
+    campaignStartDate1,
+    campaignStartDate2,
+    campaignStartDate3,
+    campaignEndDate1,
+    campaignEndDate2,
+    campaignEndDate3
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: `${influencerName}님!\n`
+        + '놓치면 후회하는\n'
+        + '인플라이 캠페인이 등록되었습니다♥\n\n'
+        + `*캠페인명: 1. ${campaignName1}\n`
+        + `*캠페인 신청 일자: ${campaignStartDate1}\n`
+        + `*블로거 신청 마감: ${campaignEndDate1}\n\n`
+        + `*캠페인명: 2. ${campaignName2}\n`
+        + `*캠페인 신청 일자: ${campaignStartDate2}\n`
+        + `*블로거 신청 마감: ${campaignEndDate2}\n\n`
+        + `*캠페인명: 3. ${campaignName3}\n`
+        + `*캠페인 신청 일자: ${campaignStartDate3}\n`
+        + `*블로거 신청 마감: ${campaignEndDate3}\n\n\n`
+        + '똑똑한 인플루언서 체험단\n'
+        + '인플라이｜inflAi',
+      TEMPLATE_CODE: 'KM8',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '바로가기',
+      BTN_URLS1: 'https://influencer.inflai.com',
+      BTN_URLS2: 'https://influencer.inflai.com'
+    }
+    // gzip: true
+  };
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
+}
+
 exports.membershipSubscribe = membershipSubscribe;
 exports.membershipApprove = membershipApprove;
+exports.campaignCreated = campaignCreated;

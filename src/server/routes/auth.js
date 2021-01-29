@@ -237,7 +237,7 @@ router.post('/login', (req, res, next) => {
       userPhone,
       userPhoto,
       regState,
-      social_type: 'noSocial'
+      social_type: '일반'
     });
   })(req, res, next);
 });

@@ -7,6 +7,7 @@ const uniqid = require('uniqid');
 const fse = require('fs-extra');
 const path = require('path');
 const config = require('../config/config');
+const { campaignCreated } = require('../config/kakaoMessage');
 
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
@@ -19,17 +20,74 @@ const Favorites = require('../models').TB_FAVORITES;
 const { getIdFromToken, resizeImage } = require('../config/common');
 const common = require('../config/common');
 
-
 const router = express.Router();
+
+router.get('/', async (req, res) => {
+  try {
+    const {
+      token, page, limit, tab
+    } = req.query;
+    const userId = getIdFromToken(token).sub;
+    const pageInt = parseInt(page, 10);
+    const limitInt = parseInt(limit, 10);
+    const offset = (pageInt - 1) * limitInt;
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const where = {
+      ADV_ID: userId,
+    };
+
+    if (tab === '2') where.AD_SRCH_END = { [Op.gte]: currentDate };
+    if (tab === '3') where.AD_SRCH_END = { [Op.lt]: currentDate };
+
+    const dbData = await Advertise.findAndCountAll({
+      where,
+      distinct: true,
+      offset,
+      limit: limitInt,
+      order: [['AD_ID', 'DESC']],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_ID', 'PHO_FILE'],
+          required: false
+        },
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false
+        },
+      ],
+    });
+
+    const { rows, count } = dbData;
+
+    const advertises = rows.map((item) => {
+      const data = item.dataValues;
+      const proportion = Math.round(100 / (data.AD_INF_CNT / data.TB_PARTICIPANTs.length));
+      return { ...data, proportion };
+    });
+
+    res.status(200).json({
+      data: advertises,
+      count
+    });
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+});
 
 router.get('/getAll', async (req, res) => {
   try {
     const { page } = req.query;
-    const limit = 5;
+    const limit = parseInt(req.query.limit, 10);
     const offset = (page - 1) * limit;
 
     const dbData = await Advertise.findAll({
-      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2',
+      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2', 'AD_SRCH_START', 'AD_SRCH_END',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
       ],
       include: [
@@ -53,6 +111,244 @@ router.get('/getAll', async (req, res) => {
     });
 
     res.status(200).json({ data: { campaignsRes, countRes: AdvertiseCount } });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/getAdDataBiz', async (req, res) => {
+  try {
+    const { adId, token } = req.query;
+    const userId = getIdFromToken(token).sub;
+
+    const advertiseData = await Advertise.findOne({
+      where: { AD_ID: adId, ADV_ID: userId },
+      include: [
+        {
+          model: Photo,
+          required: false,
+        }
+      ]
+    });
+
+    if (!advertiseData) {
+      res.status(201).json({ message: '정보 없습니다' });
+    } else {
+      res.status(200).json({ data: advertiseData });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/getAdDataAdmin', async (req, res) => {
+  try {
+    const { adId } = req.query;
+
+    const advertiseData = await Advertise.findOne({
+      where: { AD_ID: adId },
+      include: [
+        {
+          model: Photo,
+          required: false,
+        }
+      ]
+    });
+
+    if (!advertiseData) {
+      res.status(201).json({ message: '정보 없습니다' });
+    } else {
+      res.status(200).json({ data: advertiseData });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/getAdInfluencers', (req, res) => {
+  const { token, adId } = req.query;
+  const userId = getIdFromToken(token).sub;
+
+  Advertise.findOne({
+    where: { AD_ID: adId },
+    attributes: ['AD_ID', 'ADV_ID', 'AD_PROD_NAME', 'AD_INF_NANO', 'AD_INF_MICRO', 'AD_INF_MACRO', 'AD_INF_MEGA', 'AD_INF_CELEB'],
+  }).then((result) => {
+    res.json({
+      code: 200,
+      data: result,
+    });
+  }).error((err) => {
+    res.send('error has occured');
+  });
+});
+
+router.get('/list', async (req, res) => {
+  try {
+    const { limit, category, subCategory } = req.query;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const props = {
+      where: { AD_VISIBLE: 1, AD_SRCH_END: { [Op.gte]: currentDate } },
+      order: [['AD_ID', 'DESC']],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+      include: [
+        {
+          model: Photo,
+          where: { PHO_IS_MAIN: 1 },
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
+          required: false,
+        },
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false,
+        },
+      ],
+    };
+
+    if (limit) props.limit = parseInt(limit, 10);
+    if (category) props.where.AD_CTG = parseInt(category, 10);
+    if (subCategory) props.where.AD_CTG2 = parseInt(subCategory, 10);
+
+    const advertises = await Advertise.findAll(props);
+
+    const advertisesMaped = advertises.map((item) => {
+      const { AD_INF_CNT, TB_PARTICIPANTs, TB_PHOTO_ADs } = item.dataValues;
+      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : null;
+      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+      return {
+        ...item.dataValues, proportion, mainImage
+      };
+    });
+
+
+    res.status(200).json({ data: advertisesMaped });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/campaignDetail', async (req, res) => {
+  try {
+    const data = req.query;
+    const { id, token } = data;
+
+    const params = {
+      where: { AD_ID: id },
+      attributes: [
+        'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_TYPE',
+        'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
+        'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
+        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_EMAIL'
+      ],
+      include: [
+        {
+          model: Photo,
+          attributes: ['PHO_ID', 'PHO_FILE'],
+          required: false,
+        },
+        {
+          model: Participant,
+          required: false,
+        },
+      ]
+    };
+
+    if (token) {
+      const userId = getIdFromToken(token).sub;
+      const adResponse = await Advertise.findOne({
+        where: { AD_ID: id },
+        attributes: ['ADV_ID']
+      });
+      const { ADV_ID } = adResponse;
+      if (ADV_ID === userId) {
+        const advertise = await Advertise.findOne(params);
+        const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
+        const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+        res.status(200).json({ data: { ...advertise.dataValues, proportion } });
+      } else {
+        res.status(201).json({ message: '회원이 등록된 캠페인이 아닙니다!' });
+      }
+    } else {
+      const advertise = await Advertise.findOne(params);
+      const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
+      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+
+      res.status(200).json({ data: { ...advertise.dataValues, proportion } });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/detail', async (req, res) => {
+  try {
+    const data = req.query;
+    const { id } = data;
+
+    const advertiseData = await Advertise.findOne({
+      where: { AD_ID: id },
+      include: [
+        {
+          model: Photo,
+          required: false,
+        }
+      ]
+    });
+
+    res.status(200).json({
+      data: advertiseData
+    });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/notify', async (req, res) => {
+  try {
+    const { ids } = req.query;
+
+    const advertiseData = await Advertise.findAll({
+      where: { AD_ID: ids },
+      attributes: ['AD_ID', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_NAME'],
+    });
+
+    const campaignData = {
+      campaignName1: advertiseData[0].AD_NAME,
+      campaignName2: advertiseData[1].AD_NAME,
+      campaignName3: advertiseData[2].AD_NAME,
+      campaignStartDate1: advertiseData[0].AD_SRCH_START,
+      campaignStartDate2: advertiseData[1].AD_SRCH_START,
+      campaignStartDate3: advertiseData[2].AD_SRCH_START,
+      campaignEndDate1: advertiseData[0].AD_SRCH_END,
+      campaignEndDate2: advertiseData[1].AD_SRCH_END,
+      campaignEndDate3: advertiseData[2].AD_SRCH_END,
+    };
+
+    const influencerData = await Influencer.findAll({
+      // where: { INF_TEL: { [Op.like]: '010%' } },
+      where: { INF_ID: 108 },
+      attributes: ['INF_ID', 'INF_NAME', 'INF_TEL'],
+    });
+
+    const PromiseArray = influencerData.map(item => new Promise((async (resolve, reject) => {
+      const { INF_NAME, INF_TEL } = item;
+
+      const kakaoMessageProps = {
+        phoneNumber: INF_TEL,
+        influencerName: INF_NAME,
+        ...campaignData
+      };
+      await campaignCreated(kakaoMessageProps);
+      resolve('success');
+    })));
+
+    await Promise.all(PromiseArray);
+
+    res.status(200).json({
+      data: influencerData
+    });
   } catch (e) {
     res.status(400).send({ message: e.message });
   }
@@ -104,55 +400,6 @@ router.post('/create', async (req, res) => {
     res.status(200).json({ data: newAdvertise });
   } catch (err) {
     res.status(400).send({ message: err.message });
-  }
-});
-
-router.get('/getAdDataBiz', async (req, res) => {
-  try {
-    const { adId, token } = req.query;
-    const userId = getIdFromToken(token).sub;
-
-    const advertiseData = await Advertise.findOne({
-      where: { AD_ID: adId, ADV_ID: userId },
-      include: [
-        {
-          model: Photo,
-          required: false,
-        }
-      ]
-    });
-
-    if (!advertiseData) {
-      res.status(201).json({ message: '정보 없습니다' });
-    } else {
-      res.status(200).json({ data: advertiseData });
-    }
-  } catch (e) {
-    res.status(400).send({ message: e.message });
-  }
-});
-
-router.get('/getAdDataAdmin', async (req, res) => {
-  try {
-    const { adId } = req.query;
-
-    const advertiseData = await Advertise.findOne({
-      where: { AD_ID: adId },
-      include: [
-        {
-          model: Photo,
-          required: false,
-        }
-      ]
-    });
-
-    if (!advertiseData) {
-      res.status(201).json({ message: '정보 없습니다' });
-    } else {
-      res.status(200).json({ data: advertiseData });
-    }
-  } catch (e) {
-    res.status(400).send({ message: e.message });
   }
 });
 
@@ -428,204 +675,6 @@ router.post('/adminCreateAd', (req, res) => {
       id: result.dataValues.AD_ID,
     });
   });
-});
-
-router.get('/', async (req, res) => {
-  try {
-    const {
-      token, page, limit, tab
-    } = req.query;
-    const userId = getIdFromToken(token).sub;
-    const pageInt = parseInt(page, 10);
-    const limitInt = parseInt(limit, 10);
-    const offset = (pageInt - 1) * limitInt;
-
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    const where = {
-      ADV_ID: userId,
-    };
-
-    if (tab === '2') where.AD_SRCH_END = { [Op.gte]: currentDate };
-    if (tab === '3') where.AD_SRCH_END = { [Op.lt]: currentDate };
-
-    const dbData = await Advertise.findAndCountAll({
-      where,
-      distinct: true,
-      offset,
-      limit: limitInt,
-      order: [['AD_ID', 'DESC']],
-      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
-      include: [
-        {
-          model: Photo,
-          attributes: ['PHO_ID', 'PHO_FILE'],
-          required: false
-        },
-        {
-          model: Participant,
-          attributes: ['PAR_ID'],
-          required: false
-        },
-      ],
-    });
-
-    const { rows, count } = dbData;
-
-    const advertises = rows.map((item) => {
-      const data = item.dataValues;
-      const proportion = Math.round(100 / (data.AD_INF_CNT / data.TB_PARTICIPANTs.length));
-      return { ...data, proportion };
-    });
-
-    res.status(200).json({
-      data: advertises,
-      count
-    });
-  } catch (e) {
-    res.status(400).send(e.message);
-  }
-});
-
-router.get('/getAdInfluencers', (req, res) => {
-  const { token, adId } = req.query;
-  const userId = getIdFromToken(token).sub;
-
-  Advertise.findOne({
-    where: { AD_ID: adId },
-    attributes: ['AD_ID', 'ADV_ID', 'AD_PROD_NAME', 'AD_INF_NANO', 'AD_INF_MICRO', 'AD_INF_MACRO', 'AD_INF_MEGA', 'AD_INF_CELEB'],
-  }).then((result) => {
-    res.json({
-      code: 200,
-      data: result,
-    });
-  }).error((err) => {
-    res.send('error has occured');
-  });
-});
-
-router.get('/list', async (req, res) => {
-  try {
-    const { limit, category, subCategory } = req.query;
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    const props = {
-      where: { AD_VISIBLE: 1, AD_SRCH_END: { [Op.gte]: currentDate } },
-      order: [['AD_ID', 'DESC']],
-      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
-      include: [
-        {
-          model: Photo,
-          where: { PHO_IS_MAIN: 1 },
-          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
-          required: false,
-        },
-        {
-          model: Participant,
-          attributes: ['PAR_ID'],
-          required: false,
-        },
-      ],
-    };
-
-    if (limit) props.limit = parseInt(limit, 10);
-    if (category) props.where.AD_CTG = parseInt(category, 10);
-    if (subCategory) props.where.AD_CTG2 = parseInt(subCategory, 10);
-
-    const advertises = await Advertise.findAll(props);
-
-    const advertisesMaped = advertises.map((item) => {
-      const { AD_INF_CNT, TB_PARTICIPANTs, TB_PHOTO_ADs } = item.dataValues;
-      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : null;
-      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
-      return {
-        ...item.dataValues, proportion, mainImage
-      };
-    });
-
-
-    res.status(200).json({ data: advertisesMaped });
-  } catch (e) {
-    res.status(400).send({ message: e.message });
-  }
-});
-
-router.get('/campaignDetail', async (req, res) => {
-  try {
-    const data = req.query;
-    const { id, token } = data;
-
-    const params = {
-      where: { AD_ID: id },
-      attributes: [
-        'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_TYPE',
-        'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
-        'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
-        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_EMAIL'
-      ],
-      include: [
-        {
-          model: Photo,
-          attributes: ['PHO_ID', 'PHO_FILE'],
-          required: false,
-        },
-        {
-          model: Participant,
-          required: false,
-        },
-      ]
-    };
-
-    if (token) {
-      const userId = getIdFromToken(token).sub;
-      const adResponse = await Advertise.findOne({
-        where: { AD_ID: id },
-        attributes: ['ADV_ID']
-      });
-      const { ADV_ID } = adResponse;
-      if (ADV_ID === userId) {
-        const advertise = await Advertise.findOne(params);
-        const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
-        const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
-        res.status(200).json({ data: { ...advertise.dataValues, proportion } });
-      } else {
-        res.status(201).json({ message: '회원이 등록된 캠페인이 아닙니다!' });
-      }
-    } else {
-      const advertise = await Advertise.findOne(params);
-      const { AD_INF_CNT, TB_PARTICIPANTs } = advertise.dataValues;
-      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
-
-      res.status(200).json({ data: { ...advertise.dataValues, proportion } });
-    }
-  } catch (e) {
-    res.status(400).send({ message: e.message });
-  }
-});
-
-router.get('/detail', async (req, res) => {
-  try {
-    const data = req.query;
-    const { id } = data;
-
-    const advertiseData = await Advertise.findOne({
-      where: { AD_ID: id },
-      include: [
-        {
-          model: Photo,
-          required: false,
-        }
-      ]
-    });
-
-    res.status(200).json({
-      data: advertiseData
-    });
-  } catch (e) {
-    res.status(400).send({ message: e.message });
-  }
 });
 
 router.post('/createAd', (req, res) => {

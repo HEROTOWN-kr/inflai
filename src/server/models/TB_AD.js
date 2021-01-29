@@ -101,7 +101,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     AD_DETAIL: {
-      type: DataTypes.STRING(2000),
+      type: DataTypes.STRING(3000),
       allowNull: true
     },
     AD_PROVIDE: {

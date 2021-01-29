@@ -783,7 +783,7 @@ router.post('/signup', async (req, res) => {
         userName: ADV_NAME,
         userPhone: '',
         userPhoto: ADV_PHOTO,
-        social_type: 'noSocial'
+        social_type: '일반'
       });
     }
   } catch (e) {

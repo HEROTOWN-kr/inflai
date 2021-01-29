@@ -81,6 +81,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(500),
       allowNull: true
     },
+    PAR_RATING: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '0'
+    },
     PAR_DT: {
       type: 'TIMESTAMP',
       allowNull: false,

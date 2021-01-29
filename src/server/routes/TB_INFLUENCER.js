@@ -58,7 +58,7 @@ function getBlogType(blogType) {
       break;
     }
     case '5': {
-      social = 'noSocial';
+      social = '일반';
       break;
     }
   }

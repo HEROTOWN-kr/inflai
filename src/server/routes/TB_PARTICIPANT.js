@@ -131,29 +131,40 @@ router.post('/save', async (req, res) => {
 
     const id = getIdFromToken(token).sub;
 
-    const createParams = {
-      INF_ID: id,
-      AD_ID: adId,
-      PAR_INSTA: insta ? 1 : 0,
-      PAR_YOUTUBE: youtube ? 1 : 0,
-      PAR_NAVER: naver ? 1 : 0,
-      PAR_NAME: name,
-      PAR_MESSAGE: message,
-      PAR_TEL: phone,
-      PAR_EMAIL: email,
-    };
-
-    if (receiverName) createParams.PAR_RECEIVER = receiverName;
-    if (postcode) createParams.PAR_POST_CODE = postcode;
-    if (roadAddress) createParams.PAR_ROAD_ADDR = roadAddress;
-    if (detailAddress) createParams.PAR_DETAIL_ADDR = detailAddress;
-    if (extraAddress) createParams.PAR_EXTR_ADDR = extraAddress;
-
-    await Participant.create(createParams);
-
-    res.status(200).json({
-      data: 'success',
+    const ParticipantData = await Participant.findOne({
+      where: { AD_ID: adId, INF_ID: id },
+      attributes: ['PAR_ID']
     });
+
+    if (ParticipantData) {
+      res.status(201).json({
+        message: '이미 신청하셨습니다!',
+      });
+    } else {
+      const createParams = {
+        INF_ID: id,
+        AD_ID: adId,
+        PAR_INSTA: insta ? 1 : 0,
+        PAR_YOUTUBE: youtube ? 1 : 0,
+        PAR_NAVER: naver ? 1 : 0,
+        PAR_NAME: name,
+        PAR_MESSAGE: message,
+        PAR_TEL: phone,
+        PAR_EMAIL: email,
+      };
+
+      if (receiverName) createParams.PAR_RECEIVER = receiverName;
+      if (postcode) createParams.PAR_POST_CODE = postcode;
+      if (roadAddress) createParams.PAR_ROAD_ADDR = roadAddress;
+      if (detailAddress) createParams.PAR_DETAIL_ADDR = detailAddress;
+      if (extraAddress) createParams.PAR_EXTR_ADDR = extraAddress;
+
+      await Participant.create(createParams);
+
+      res.status(200).json({
+        data: 'success',
+      });
+    }
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -198,7 +209,7 @@ router.get('/getList', async (req, res) => {
 
     const options = {
       where: { AD_ID: adId },
-      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS', 'PAR_REVIEW',
+      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS', 'PAR_REVIEW', 'PAR_RATING',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
       ],
       include: [
@@ -424,6 +435,22 @@ router.post('/writeReview', async (req, res) => {
 
     await Participant.update(post, {
       where: { AD_ID: adId, INF_ID: userId }
+    });
+
+    res.status(200).json({ message: 'success' });
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/ratingUpdate', async (req, res) => {
+  try {
+    const { id, ratingValue } = req.body;
+
+    const post = { PAR_RATING: ratingValue };
+
+    await Participant.update(post, {
+      where: { PAR_ID: id }
     });
 
     res.status(200).json({ message: 'success' });

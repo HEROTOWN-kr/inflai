@@ -70,39 +70,6 @@ function youtubeTest() {
   });
 }
 
-function kakaoTest() {
-  const myUrl = 'http://api.apistore.co.kr/kko/1/msg/herotown';
-
-  const options = {
-    method: 'POST',
-    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-    url: myUrl,
-    headers: {
-      'x-waple-authorization': 'b4ed715d8ed0ae6cf6bedabf40559903fb5b8fba',
-    },
-    form: {
-      PHONE: '01026763937',
-      CALLBACK: '01026763937',
-      MSG: '새로운 캠페인이 등록되었습니다!',
-      TEMPLATE_CODE: 'API2020',
-      FAILED_TYPE: 'SMS',
-      BTN_TYPES: '',
-      BTN_TXTS: '',
-      BTN_URLS1: ''
-    }
-  };
-
-  request(options, (error, requestResponse, responseBody) => {
-    if (!error && requestResponse.statusCode == 200) {
-      console.log(requestResponse);
-    } else if (requestResponse != null) {
-      console.log(`error = ${requestResponse.statusCode}`);
-      console.log(`error = ${error}`);
-      console.log(options);
-    }
-  });
-}
-
 function copyData(clb) {
   const attributes = ['INF_ID', 'INF_EMAIL', 'INF_TOKEN', 'INF_INST_ID'];
   const filter = {
