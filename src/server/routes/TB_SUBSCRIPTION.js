@@ -156,6 +156,35 @@ router.get('/check', async (req, res) => {
   }
 });
 
+router.get('/checkMembership', async (req, res) => {
+  try {
+    const { token } = req.query;
+    const userId = getIdFromToken(token).sub;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const Response = await Subscription.findAll({
+      where: {
+        ADV_ID: userId,
+      },
+      attributes: [
+        'SUB_ID'
+      ],
+    });
+    if (Response.length > 0) {
+      res.status(200).json({
+        data: Response,
+      });
+    } else {
+      res.status(201).json({ data: {}, message: '진행중 서브스크립션이 없습니다' });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
 router.get('/getInfluencers', async (req, res) => {
   try {
     const { token } = req.query;

@@ -191,7 +191,7 @@ router.get('/list', async (req, res) => {
     const props = {
       where: { AD_VISIBLE: 1, AD_SRCH_END: { [Op.gte]: currentDate } },
       order: [['AD_ID', 'DESC']],
-      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT', 'AD_TYPE'],
       include: [
         {
           model: Photo,
@@ -327,8 +327,8 @@ router.get('/notify', async (req, res) => {
     };
 
     const influencerData = await Influencer.findAll({
-      // where: { INF_TEL: { [Op.like]: '010%' } },
-      where: { INF_ID: 108 },
+      where: { INF_TEL: { [Op.like]: '010%' } },
+      // where: { INF_ID: 108 },
       attributes: ['INF_ID', 'INF_NAME', 'INF_TEL'],
     });
 
