@@ -364,6 +364,65 @@ router.get('/getInfo', async (req, res) => {
   }
 });
 
+router.get('/getListInsta', async (req, res) => {
+  try {
+    const data = req.query;
+    const { adId } = data;
+
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
+
+    const options = {
+      where: { AD_ID: adId },
+      attributes: ['PAR_ID', 'INF_ID', 'PAR_INSTA', 'PAR_YOUTUBE', 'PAR_NAVER', 'PAR_NAME', 'PAR_MESSAGE', 'PAR_STATUS', 'PAR_REVIEW', 'PAR_RATING',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
+      ],
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_ID', 'INF_PHOTO', 'INF_NAME', 'INF_EMAIL'],
+          include: [
+            {
+              model: Insta,
+              attributes: ['INS_ID', 'INS_USERNAME', 'INS_FLWR', 'INS_LIKES', 'INS_CMNT', 'INS_SCORE', 'INS_RANK'],
+              required: false
+            },
+          ],
+        },
+      ],
+      limit,
+      offset,
+      order: [['PAR_ID', 'DESC']]
+    };
+
+    const CountOptions = { where: { AD_ID: adId } };
+
+    const result = await Participant.findAll(options);
+
+    const ParticipantCount = await Participant.count(CountOptions);
+
+    const ParticipantsList = result.map((item) => {
+      const { TB_INFLUENCER, ...ParData } = item.dataValues;
+      const { TB_INSTum, ...InfData } = TB_INFLUENCER ? TB_INFLUENCER.dataValues : {};
+      const { ...InsData } = TB_INSTum ? TB_INSTum.dataValues : {};
+
+      return {
+        ...ParData,
+        ...InfData,
+        ...InsData
+      };
+    });
+
+    res.status(200).json({
+      data: ParticipantsList,
+      count: ParticipantCount
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 router.post('/change', async (req, res) => {
   try {
     const data = req.body;
