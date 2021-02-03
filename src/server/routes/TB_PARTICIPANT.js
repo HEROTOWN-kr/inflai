@@ -6,6 +6,7 @@ const Insta = require('../models').TB_INSTA;
 const Naver = require('../models').TB_NAVER;
 const Advertise = require('../models').TB_AD;
 const Photo = require('../models').TB_PHOTO_AD;
+const Favorites = require('../models').TB_FAVORITES;
 
 const router = express.Router();
 const {
@@ -367,7 +368,9 @@ router.get('/getInfo', async (req, res) => {
 router.get('/getListInsta', async (req, res) => {
   try {
     const data = req.query;
-    const { adId } = data;
+    const { orderBy, direction, adId } = data;
+
+    const orderColumn = `\`TB_INFLUENCER->TB_INSTum\`.\`${orderBy}\``;
 
     const page = parseInt(data.page, 10);
     const limit = parseInt(data.limit, 10);
@@ -381,19 +384,21 @@ router.get('/getListInsta', async (req, res) => {
       include: [
         {
           model: Influencer,
+          as: 'TB_INFLUENCER',
           attributes: ['INF_ID', 'INF_PHOTO', 'INF_NAME', 'INF_EMAIL'],
           include: [
             {
               model: Insta,
+              as: 'TB_INSTum',
               attributes: ['INS_ID', 'INS_USERNAME', 'INS_FLWR', 'INS_LIKES', 'INS_CMNT', 'INS_SCORE', 'INS_RANK'],
-              required: false
+              required: false,
             },
           ],
         },
       ],
       limit,
       offset,
-      order: [['PAR_ID', 'DESC']]
+      order: [[Sequelize.literal(orderColumn), direction]]
     };
 
     const CountOptions = { where: { AD_ID: adId } };
@@ -402,17 +407,82 @@ router.get('/getListInsta', async (req, res) => {
 
     const ParticipantCount = await Participant.count(CountOptions);
 
-    const ParticipantsList = result.map((item) => {
+    const ParticipantsList = result.map((item, index) => {
       const { TB_INFLUENCER, ...ParData } = item.dataValues;
       const { TB_INSTum, ...InfData } = TB_INFLUENCER ? TB_INFLUENCER.dataValues : {};
       const { ...InsData } = TB_INSTum ? TB_INSTum.dataValues : {};
+      const rownum = ParticipantCount - offset - index;
 
       return {
         ...ParData,
         ...InfData,
-        ...InsData
+        ...InsData,
+        rownum
       };
     });
+
+
+    res.status(200).json({
+      // data: result
+      data: ParticipantsList,
+      count: ParticipantCount
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.get('/getListBlog', async (req, res) => {
+  try {
+    const data = req.query;
+    const { adId } = data;
+
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
+
+    const options = {
+      where: { AD_ID: adId },
+      attributes: ['PAR_ID', 'PAR_NAME',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
+      ],
+      include: [
+        {
+          model: Influencer,
+          attributes: ['INF_ID'],
+          include: [
+            {
+              model: Naver,
+              attributes: ['NAV_ID', 'NAV_URL'],
+              required: false,
+            },
+          ],
+        },
+      ],
+      limit,
+      offset
+    };
+
+    const CountOptions = { where: { AD_ID: adId } };
+
+    const result = await Participant.findAll(options);
+
+    const ParticipantCount = await Participant.count(CountOptions);
+
+    const ParticipantsList = result.map((item, index) => {
+      const { TB_INFLUENCER, ...ParData } = item.dataValues;
+      const { TB_NAVER, ...InfData } = TB_INFLUENCER ? TB_INFLUENCER.dataValues : {};
+      const { ...InsData } = TB_NAVER ? TB_NAVER.dataValues : {};
+      const rownum = ParticipantCount - offset - index;
+
+      return {
+        ...ParData,
+        ...InfData,
+        ...InsData,
+        rownum
+      };
+    });
+
 
     res.status(200).json({
       data: ParticipantsList,

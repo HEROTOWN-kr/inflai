@@ -5,7 +5,8 @@ module.exports = function (sequelize, DataTypes) {
     PLN_ID: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     PLN_NAME: {
       type: DataTypes.STRING(45),
@@ -34,6 +35,11 @@ module.exports = function (sequelize, DataTypes) {
     PLN_DSCNT: {
       type: DataTypes.STRING(3),
       allowNull: true
+    },
+    PLN_VISIBLE: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: '0'
     },
     PLN_DT: {
       type: DataTypes.DATE,

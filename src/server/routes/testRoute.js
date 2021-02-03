@@ -23,9 +23,66 @@ const test = require('./test');
 
 const router = express.Router();
 
+const testPlans = [
+  {
+    PLN_ID: 1,
+    PLN_NAME: '1개월 이용',
+    PLN_DETAIL: '1개월 무료 플랜입니다',
+    PLN_DETAIL2: '•1개월 간 총 5명의 인플루언서를 인공지능으로 선택할수 있습니다.',
+    PLN_MONTH: 1,
+    PLN_INF_MONTH: 5,
+    PLN_PRICE_MONTH: 0,
+    PLN_DSCNT: null
+  },
+  {
+    PLN_ID: 2,
+    PLN_NAME: '2개월 이용',
+    PLN_DETAIL: '2개월 플랜입니다',
+    PLN_DETAIL2: '•2개월 간 총 30명의 인플루언서를 인공지능으로 선택할수 있습니다.',
+    PLN_MONTH: 2,
+    PLN_INF_MONTH: 15,
+    PLN_PRICE_MONTH: 30000,
+    PLN_DSCNT: null
+  },
+  {
+    PLN_ID: 3,
+    PLN_NAME: '3개월 이용',
+    PLN_DETAIL: '3개월 플랜입니다',
+    PLN_DETAIL2: '•3개월 간 총 300명의 인플루언서를 인공지능으로 선택할수 있습니다.',
+    PLN_MONTH: 3,
+    PLN_INF_MONTH: 100,
+    PLN_PRICE_MONTH: 100000,
+    PLN_DSCNT: null
+  },
+  {
+    PLN_ID: 4,
+    PLN_NAME: '4개월 이용',
+    PLN_DETAIL: '4개월 플랜입니다',
+    PLN_DETAIL2: '•4개월 간 총 2000명의 인플루언서를 인공지능으로 선택할수 있습니다.',
+    PLN_MONTH: 4,
+    PLN_INF_MONTH: 500,
+    PLN_PRICE_MONTH: 150000,
+    PLN_DSCNT: null
+  },
+];
+
 router.get('/test', async (req, res) => {
   try {
+    const PromiseArray = testPlans.map(item => new Promise((async (resolve, reject) => {
+      const {
+        PLN_NAME, PLN_DETAIL, PLN_DETAIL2, PLN_MONTH, PLN_INF_MONTH, PLN_PRICE_MONTH, PLN_DSCNT
+      } = item;
 
+      const postObj = {
+        PLN_NAME, PLN_DETAIL, PLN_DETAIL2, PLN_MONTH, PLN_INF_MONTH, PLN_PRICE_MONTH, PLN_DSCNT
+      };
+      Plan.create(postObj).then((result) => {
+        resolve('success');
+      });
+    })));
+
+    await Promise.all(PromiseArray);
+    res.status(200).json({ data: 'success' });
   } catch (err) {
     res.status(400).send(err.message);
   }

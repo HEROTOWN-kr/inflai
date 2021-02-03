@@ -87,7 +87,7 @@ router.get('/getAll', async (req, res) => {
     const offset = (page - 1) * limit;
 
     const dbData = await Advertise.findAll({
-      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2', 'AD_SRCH_START', 'AD_SRCH_END',
+      attributes: ['AD_ID', 'AD_NAME', 'AD_CTG', 'AD_CTG2', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_TYPE',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('AD_DT'), '%Y-%m-%d'), 'AD_DT']
       ],
       include: [
