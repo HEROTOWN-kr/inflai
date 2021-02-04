@@ -44,6 +44,14 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.DATEONLY,
       allowNull: true
     },
+    AD_SEL_START: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    AD_SEL_END: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
     AD_DELIVERY: {
       type: DataTypes.INTEGER(1),
       allowNull: true

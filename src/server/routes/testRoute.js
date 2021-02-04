@@ -14,7 +14,9 @@ const {
 const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
 const config = require('../config/config');
 
+const { Op } = Sequelize;
 const Advertiser = require('../models').TB_ADVERTISER;
+const Advertise = require('../models').TB_AD;
 const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
 const Admin = require('../models').TB_ADMIN;
@@ -23,66 +25,57 @@ const test = require('./test');
 
 const router = express.Router();
 
-const testPlans = [
-  {
-    PLN_ID: 1,
-    PLN_NAME: '1개월 이용',
-    PLN_DETAIL: '1개월 무료 플랜입니다',
-    PLN_DETAIL2: '•1개월 간 총 5명의 인플루언서를 인공지능으로 선택할수 있습니다.',
-    PLN_MONTH: 1,
-    PLN_INF_MONTH: 5,
-    PLN_PRICE_MONTH: 0,
-    PLN_DSCNT: null
-  },
-  {
-    PLN_ID: 2,
-    PLN_NAME: '2개월 이용',
-    PLN_DETAIL: '2개월 플랜입니다',
-    PLN_DETAIL2: '•2개월 간 총 30명의 인플루언서를 인공지능으로 선택할수 있습니다.',
-    PLN_MONTH: 2,
-    PLN_INF_MONTH: 15,
-    PLN_PRICE_MONTH: 30000,
-    PLN_DSCNT: null
-  },
-  {
-    PLN_ID: 3,
-    PLN_NAME: '3개월 이용',
-    PLN_DETAIL: '3개월 플랜입니다',
-    PLN_DETAIL2: '•3개월 간 총 300명의 인플루언서를 인공지능으로 선택할수 있습니다.',
-    PLN_MONTH: 3,
-    PLN_INF_MONTH: 100,
-    PLN_PRICE_MONTH: 100000,
-    PLN_DSCNT: null
-  },
-  {
-    PLN_ID: 4,
-    PLN_NAME: '4개월 이용',
-    PLN_DETAIL: '4개월 플랜입니다',
-    PLN_DETAIL2: '•4개월 간 총 2000명의 인플루언서를 인공지능으로 선택할수 있습니다.',
-    PLN_MONTH: 4,
-    PLN_INF_MONTH: 500,
-    PLN_PRICE_MONTH: 150000,
-    PLN_DSCNT: null
-  },
-];
-
 router.get('/test', async (req, res) => {
   try {
-    const PromiseArray = testPlans.map(item => new Promise((async (resolve, reject) => {
-      const {
-        PLN_NAME, PLN_DETAIL, PLN_DETAIL2, PLN_MONTH, PLN_INF_MONTH, PLN_PRICE_MONTH, PLN_DSCNT
-      } = item;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
 
-      const postObj = {
-        PLN_NAME, PLN_DETAIL, PLN_DETAIL2, PLN_MONTH, PLN_INF_MONTH, PLN_PRICE_MONTH, PLN_DSCNT
+    /* const where = {
+      // AD_ID: 166,
+      AD_SRCH_END: { [Op.gte]: currentDate },
+    }; */
+
+    const Campaigns = await Advertise.findAll({
+      attributes: ['AD_ID', 'AD_SRCH_END']
+    });
+
+
+    /* const { AD_SRCH_END, AD_ID } = Campaigns[0];
+    const AD_SEL_START = new Date(AD_SRCH_END);
+    const AD_SEL_END = new Date(AD_SRCH_END);
+    AD_SEL_START.setDate(AD_SEL_START.getDate() + 1);
+    AD_SEL_END.setDate(AD_SEL_END.getDate() + 7);
+
+    const post = {
+      AD_SEL_START,
+      AD_SEL_END
+    };
+
+    const result = await Advertise.update(post, {
+      where: { AD_ID }
+    }); */
+
+    const PromiseArray = Campaigns.map(item => new Promise((async (resolve, reject) => {
+      const { AD_SRCH_END, AD_ID } = item;
+      const AD_SEL_START = new Date(AD_SRCH_END);
+      const AD_SEL_END = new Date(AD_SRCH_END);
+      AD_SEL_START.setDate(AD_SEL_START.getDate() + 1);
+      AD_SEL_END.setDate(AD_SEL_END.getDate() + 7);
+
+      const post = {
+        AD_SEL_START,
+        AD_SEL_END
       };
-      Plan.create(postObj).then((result) => {
+
+      Advertise.update(post, {
+        where: { AD_ID }
+      }).then((result) => {
         resolve('success');
       });
     })));
 
-    await Promise.all(PromiseArray);
-    res.status(200).json({ data: 'success' });
+    const PromiseResult = await Promise.all(PromiseArray);
+    res.status(200).json({ data: PromiseResult });
   } catch (err) {
     res.status(400).send(err.message);
   }

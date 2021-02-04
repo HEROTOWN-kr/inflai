@@ -48,7 +48,7 @@ router.get('/', async (req, res) => {
       offset,
       limit: limitInt,
       order: [['AD_ID', 'DESC']],
-      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
+      attributes: ['AD_ID', 'AD_TYPE', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT'],
       include: [
         {
           model: Photo,
@@ -409,7 +409,7 @@ router.post('/createBiz', async (req, res) => {
 
     const {
       campaignName, delivery, email, influencerCount, phone,
-      searchFinish, searchKeyword, searchStart,
+      searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, sns, subtype, type,
       detailAddress, postcode, extraAddress,
       roadAddress, provideInfo, detailInfo, discription, token
@@ -423,6 +423,8 @@ router.post('/createBiz', async (req, res) => {
       AD_INF_CNT: influencerCount,
       AD_SRCH_START: searchStart,
       AD_SRCH_END: searchFinish,
+      AD_SEL_START: selectStart,
+      AD_SEL_END: selectFinish,
       AD_DELIVERY: delivery,
       AD_CTG: type,
       AD_CTG2: subtype,
@@ -456,7 +458,7 @@ router.post('/createAdmin', async (req, res) => {
 
     const {
       campaignName, delivery, email, influencerCount, phone, visible,
-      searchFinish, searchKeyword, searchStart,
+      searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, sns, subtype, type,
       detailAddress, postcode, extraAddress,
       roadAddress, provideInfo, detailInfo, discription
@@ -468,6 +470,8 @@ router.post('/createAdmin', async (req, res) => {
       AD_INF_CNT: influencerCount,
       AD_SRCH_START: searchStart,
       AD_SRCH_END: searchFinish,
+      AD_SEL_START: selectStart,
+      AD_SEL_END: selectFinish,
       AD_DELIVERY: delivery,
       AD_CTG: type,
       AD_CTG2: subtype,
@@ -501,7 +505,7 @@ router.post('/updateBiz', async (req, res) => {
 
     const {
       campaignName, delivery, email, influencerCount, phone,
-      searchFinish, searchKeyword, searchStart,
+      searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, discription, sns, subtype, type,
       detailAddress, postcode, extraAddress,
       roadAddress, provideInfo, detailInfo, token, adId
@@ -513,6 +517,8 @@ router.post('/updateBiz', async (req, res) => {
       AD_INF_CNT: influencerCount,
       AD_SRCH_START: searchStart,
       AD_SRCH_END: searchFinish,
+      AD_SEL_START: selectStart,
+      AD_SEL_END: selectFinish,
       AD_DELIVERY: delivery,
       AD_CTG: type,
       AD_CTG2: subtype,
@@ -548,7 +554,7 @@ router.post('/updateAdmin', async (req, res) => {
 
     const {
       campaignName, delivery, email, influencerCount, phone,
-      searchFinish, searchKeyword, searchStart,
+      searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, discription, sns, subtype, type,
       detailAddress, postcode, extraAddress,
       roadAddress, provideInfo, detailInfo, visible, adId
@@ -559,6 +565,8 @@ router.post('/updateAdmin', async (req, res) => {
       AD_INF_CNT: influencerCount,
       AD_SRCH_START: searchStart,
       AD_SRCH_END: searchFinish,
+      AD_SEL_START: selectStart,
+      AD_SEL_END: selectFinish,
       AD_DELIVERY: delivery,
       AD_CTG: type,
       AD_CTG2: subtype,
