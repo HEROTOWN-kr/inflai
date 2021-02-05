@@ -74,7 +74,7 @@ module.exports = new PassportLocalStrategy({
         INF_ID, INF_PASS, INF_NAME, INF_TEL, INF_PHOTO
       } = user.dataValues;
       if (!user) {
-        const error = new Error('입력하신 정보가 틀립니다');
+        const error = new Error('이메일이나 비밀번호는 일치하지 않습니다');
         error.name = 'IncorrectCredentialsError';
 
         return done(error);
@@ -84,7 +84,7 @@ module.exports = new PassportLocalStrategy({
         if (passwordErr) { return done(passwordErr); }
 
         if (!isMatch) {
-          const error = new Error('입력하신 정보가 틀립니다');
+          const error = new Error('이메일이나 비밀번호는 일치하지 않습니다');
           error.name = 'IncorrectCredentialsError';
 
           return done(error);

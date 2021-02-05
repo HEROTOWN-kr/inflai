@@ -27,55 +27,10 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+    const password = 'iss1124';
+    const hashedPass = await hashData(password);
 
-    /* const where = {
-      // AD_ID: 166,
-      AD_SRCH_END: { [Op.gte]: currentDate },
-    }; */
-
-    const Campaigns = await Advertise.findAll({
-      attributes: ['AD_ID', 'AD_SRCH_END']
-    });
-
-
-    /* const { AD_SRCH_END, AD_ID } = Campaigns[0];
-    const AD_SEL_START = new Date(AD_SRCH_END);
-    const AD_SEL_END = new Date(AD_SRCH_END);
-    AD_SEL_START.setDate(AD_SEL_START.getDate() + 1);
-    AD_SEL_END.setDate(AD_SEL_END.getDate() + 7);
-
-    const post = {
-      AD_SEL_START,
-      AD_SEL_END
-    };
-
-    const result = await Advertise.update(post, {
-      where: { AD_ID }
-    }); */
-
-    const PromiseArray = Campaigns.map(item => new Promise((async (resolve, reject) => {
-      const { AD_SRCH_END, AD_ID } = item;
-      const AD_SEL_START = new Date(AD_SRCH_END);
-      const AD_SEL_END = new Date(AD_SRCH_END);
-      AD_SEL_START.setDate(AD_SEL_START.getDate() + 1);
-      AD_SEL_END.setDate(AD_SEL_END.getDate() + 7);
-
-      const post = {
-        AD_SEL_START,
-        AD_SEL_END
-      };
-
-      Advertise.update(post, {
-        where: { AD_ID }
-      }).then((result) => {
-        resolve('success');
-      });
-    })));
-
-    const PromiseResult = await Promise.all(PromiseArray);
-    res.status(200).json({ data: PromiseResult });
+    res.status(200).json({ data: hashedPass });
   } catch (err) {
     res.status(400).send(err.message);
   }

@@ -184,12 +184,14 @@ router.get('/getAdInfluencers', (req, res) => {
 
 router.get('/list', async (req, res) => {
   try {
-    const { limit, category, subCategory } = req.query;
+    const {
+      limit, category, subCategory, select
+    } = req.query;
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
     const props = {
-      where: { AD_VISIBLE: 1, AD_SRCH_END: { [Op.gte]: currentDate } },
+      where: { AD_VISIBLE: 1 },
       order: [['AD_ID', 'DESC']],
       attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT', 'AD_TYPE'],
       include: [
@@ -207,6 +209,12 @@ router.get('/list', async (req, res) => {
       ],
     };
 
+    if (select) {
+      props.where.AD_SEL_START = { [Op.lte]: currentDate };
+      props.where.AD_SEL_END = { [Op.gte]: currentDate };
+    } else {
+      props.where.AD_SRCH_END = { [Op.gte]: currentDate };
+    }
     if (limit) props.limit = parseInt(limit, 10);
     if (category) props.where.AD_CTG = parseInt(category, 10);
     if (subCategory) props.where.AD_CTG2 = parseInt(subCategory, 10);
@@ -224,6 +232,67 @@ router.get('/list', async (req, res) => {
 
 
     res.status(200).json({ data: advertisesMaped });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/listHome', async (req, res) => {
+  try {
+    const {
+      offset, limit, category, subCategory
+    } = req.query;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const props = {
+      where: { AD_VISIBLE: 1, AD_SEL_END: { [Op.gte]: currentDate } },
+      order: [['AD_ID', 'DESC']],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT', 'AD_TYPE'],
+      include: [
+        {
+          model: Photo,
+          where: { PHO_IS_MAIN: 1 },
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
+          required: false,
+        },
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false,
+        },
+      ],
+    };
+
+    const countProps = {
+      where: { AD_VISIBLE: 1, AD_SEL_END: { [Op.gte]: currentDate } },
+    };
+
+    if (limit) props.limit = parseInt(limit, 10);
+    if (offset) props.offset = parseInt(limit, 10);
+    if (category) {
+      props.where.AD_CTG = parseInt(category, 10);
+      countProps.where.AD_CTG = parseInt(category, 10);
+    }
+    if (subCategory) {
+      props.where.AD_CTG2 = parseInt(subCategory, 10);
+      countProps.where.AD_CTG2 = parseInt(subCategory, 10);
+    }
+
+    const advertises = await Advertise.findAll(props);
+    const count = await Advertise.count(countProps);
+
+    const advertisesMaped = advertises.map((item) => {
+      const { AD_INF_CNT, TB_PARTICIPANTs, TB_PHOTO_ADs } = item.dataValues;
+      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : null;
+      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+      return {
+        ...item.dataValues, proportion, mainImage
+      };
+    });
+
+
+    res.status(200).json({ data: advertisesMaped, count });
   } catch (e) {
     res.status(400).send({ message: e.message });
   }
