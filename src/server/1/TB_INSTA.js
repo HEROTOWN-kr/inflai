@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
         key: 'INF_ID'
       }
     },
+    INS_FB_ID: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     INS_TOKEN: {
       type: DataTypes.STRING(300),
       allowNull: true
@@ -66,11 +70,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     INS_SCORE: {
-      type: DataTypes.STRING(45),
-      allowNull: true
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '0'
     },
     INS_RANK: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     INS_TYPES: {

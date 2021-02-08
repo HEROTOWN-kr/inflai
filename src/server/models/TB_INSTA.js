@@ -17,6 +17,10 @@ module.exports = function (sequelize, DataTypes) {
         key: 'INF_ID'
       }
     },
+    INS_FB_ID: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     INS_TOKEN: {
       type: DataTypes.STRING(300),
       allowNull: true

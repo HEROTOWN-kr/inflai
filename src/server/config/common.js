@@ -559,7 +559,7 @@ function getFacebookLongToken(facebookToken) {
 }
 
 function getFacebookInfo(facebookToken) {
-  const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=picture.width(400).height(400)%7Burl%7D%2Cemail%2Cname&'
+  const myInfoUrl = 'https://graph.facebook.com/v6.0/me?fields=picture.width(400).height(400)%7Burl%7D%2Cemail%2Cname%2Cid&'
       + `access_token=${facebookToken}`;
 
   return new Promise(((resolve, reject) => {

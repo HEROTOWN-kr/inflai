@@ -8,7 +8,7 @@ const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const {
-  hashData, resizeImage, getInstagramInsights, getInstagramMediaData, getInstagramData, googleVision
+  hashData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision
 } = require('../config/common');
 
 const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
@@ -27,10 +27,45 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const password = 'iss1124';
-    const hashedPass = await hashData(password);
+    const InfAcc = await Insta.findAll({
+      attributes: ['INS_ID', 'INF_ID', 'INS_ACCOUNT_ID', 'INS_TOKEN']
+    });
 
-    res.status(200).json({ data: hashedPass });
+    const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const {
+          INS_ID, INF_ID, INS_ACCOUNT_ID, INS_TOKEN
+        } = item;
+
+        const FbInfo = await getFacebookInfo(INS_TOKEN);
+        resolve({ INS_ID, INF_ID, INS_FB_ID: FbInfo.id });
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const FbData = await Promise.all(PromiseArray);
+
+    const PromiseUpdate = FbData.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const { INS_ID, INF_ID, INS_FB_ID } = item;
+
+        if (INS_ID) {
+          await Insta.update({ INS_FB_ID }, {
+            where: { INS_ID }
+          });
+          resolve('updated');
+        } else {
+          resolve('not updated');
+        }
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const UpdateResult = await Promise.all(PromiseUpdate);
+
+    res.status(200).json({ data: UpdateResult });
   } catch (err) {
     res.status(400).send(err.message);
   }
