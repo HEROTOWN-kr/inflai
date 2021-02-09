@@ -21,11 +21,109 @@ const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
 const Admin = require('../models').TB_ADMIN;
 const Plan = require('../models').TB_PLAN;
+const NavInf = require('../models').TB_NAVER_INF;
+const KakInf = require('../models').TB_KAKAO_INF;
 const test = require('./test');
 
 const router = express.Router();
 
 router.get('/test', async (req, res) => {
+  try {
+    const InfAcc = await Influencer.findAll({
+      attributes: ['INF_ID', 'INF_REG_ID'],
+      where: { INF_BLOG_TYPE: '4' }
+    });
+
+    const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const {
+          INF_ID, INF_REG_ID
+        } = item;
+
+        await KakInf.create({
+          INF_ID,
+          KAK_ACC_ID: INF_REG_ID,
+        });
+
+        resolve('success');
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const FbData = await Promise.all(PromiseArray);
+
+    res.status(200).json({ data: FbData });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.get('/updateKakaoId', async (req, res) => {
+  try {
+    const InfAcc = await Influencer.findAll({
+      attributes: ['INF_ID', 'INF_REG_ID'],
+      where: { INF_BLOG_TYPE: '4' }
+    });
+
+    const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const {
+          INF_ID, INF_REG_ID
+        } = item;
+
+        await KakInf.create({
+          INF_ID,
+          KAK_ACC_ID: INF_REG_ID,
+        });
+
+        resolve('success');
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const FbData = await Promise.all(PromiseArray);
+
+    res.status(200).json({ data: FbData });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.get('/updateNaverId', async (req, res) => {
+  try {
+    const InfAcc = await Influencer.findAll({
+      attributes: ['INF_ID', 'INF_REG_ID'],
+      where: { INF_BLOG_TYPE: '3' }
+    });
+
+    const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const {
+          INF_ID, INF_REG_ID
+        } = item;
+
+        await NavInf.create({
+          INF_ID,
+          NIF_ACC_ID: INF_REG_ID,
+        });
+
+        resolve('success');
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const FbData = await Promise.all(PromiseArray);
+
+    res.status(200).json({ data: FbData });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+router.get('/updateFbId', async (req, res) => {
   try {
     const InfAcc = await Insta.findAll({
       attributes: ['INS_ID', 'INF_ID', 'INS_ACCOUNT_ID', 'INS_TOKEN']
