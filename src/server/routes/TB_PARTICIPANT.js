@@ -15,6 +15,8 @@ const {
   createMessageOption3,
 } = require('../config/common');
 
+const { participantSelected } = require('../config/kakaoMessage');
+
 router.get('/', async (req, res) => {
   try {
     const {
@@ -539,10 +541,9 @@ router.post('/change', async (req, res) => {
         phoneNumber: PAR_TEL,
         campanyName: AD_NAME,
         influencerName: PAR_NAME,
-        adId,
       };
 
-      await createMessageOption3(props);
+      await participantSelected(props);
 
       res.status(200).json({ message: 'success' });
     }

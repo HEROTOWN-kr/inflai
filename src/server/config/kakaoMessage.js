@@ -146,6 +146,55 @@ function campaignCreated(props) {
   }));
 }
 
+function participantSelected(props) {
+  const {
+    phoneNumber,
+    campanyName,
+    influencerName,
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: '안녕하세요. 인플라이입니다.\n\n'
+          + `${influencerName}님!\n`
+          + '인플라이에 신청하신 캠페인에 선정되셨습니다!\n'
+          + `${campanyName} 캠페인정보를 확인하세요!\n\n`
+          + '◆ 체험 시 유의사항 ◆\n'
+          + '① 캠페인정보에서 가이드라인을 꼭 확인해주세요\n'
+          + '② 포스팅기한은 1주일을 꼭 지켜주세요\n'
+          + '(제품: 수령 후 1주일 / 방문: 체험 후 1주일)\n'
+          + '③ 아래위치에 후기등록을 완료해주세요!\n'
+          + '[인플라이 로그인] → [캠페인 관리] → [선정된 캠페인] → [후기 등록]\n\n'
+          + '**해당 메시지는 고객님께서 캠페인 공고 수신에 동의 해 주셔서 발송되었습니다.\n',
+      TEMPLATE_CODE: 'KM10',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '바로 가기',
+      BTN_URLS1: 'https://influencer.inflai.com/Profile/CampaignInfo',
+      BTN_URLS2: 'https://influencer.inflai.com/Profile/CampaignInfo'
+    }
+    // gzip: true
+  };
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
+}
+
 exports.membershipSubscribe = membershipSubscribe;
 exports.membershipApprove = membershipApprove;
 exports.campaignCreated = campaignCreated;
+exports.participantSelected = participantSelected;

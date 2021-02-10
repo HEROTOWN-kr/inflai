@@ -61,6 +61,9 @@ function getBlogType(blogType) {
       social = '일반';
       break;
     }
+    default: {
+      social = 'no social';
+    }
   }
   return social;
 }
@@ -653,6 +656,73 @@ router.post('/facebookLogin', async (req, res) => {
           });
         }
       }
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/facebookLoginNew', async (req, res) => {
+  try {
+    const data = req.body;
+    const { facebookToken, facebookUserId } = data;
+
+    const longToken = await getFacebookLongToken(facebookToken);
+
+    const userExist = await Instagram.findOne({ where: { INS_FB_ID: facebookUserId } });
+
+    if (userExist) {
+      const { INF_ID } = userExist;
+      await Instagram.update({ INS_TOKEN: longToken }, { where: { INS_FB_ID: facebookUserId } });
+
+      const InfData = await Influencer.findOne({ where: { INF_ID } });
+      const { INF_NAME, INF_PHOTO } = InfData;
+
+      res.status(200).json({
+        userToken: createToken(INF_ID),
+        userName: INF_NAME,
+        userPhoto: INF_PHOTO,
+        social_type: 'facebook'
+      });
+    } else {
+      const instaAccounts = await getInstagramBusinessAccounts(longToken);
+      if (instaAccounts.length === 0) {
+        res.status(400).json({ message: '페이스북 페이지에 연결된 인스타그램 계정이 없습니다' });
+      } else if (instaAccounts.length > 1) {
+        res.status(202).json({ data: instaAccounts });
+      } else {
+        const instagramId = instaAccounts[0].id;
+        const instaAccountExist = await Instagram.findOne({ where: { INS_ACCOUNT_ID: instagramId } });
+
+        if (instaAccountExist) {
+          res.status(400).json({ message: '중복된 인스타그램 계정입니다' });
+        } else {
+          res.status(201).json({
+            data: instaAccounts[0]
+          });
+        }
+      }
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/facebookSignUp', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      accessToken, fbId, instagramInfo, email, name, phone
+    } = data;
+
+    const longToken = await getFacebookLongToken(accessToken);
+
+    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      res.status(200).json({ message: '중복된 이메일입니다' });
     }
   } catch (err) {
     res.status(400).json({ message: err.message });

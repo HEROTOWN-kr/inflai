@@ -169,6 +169,53 @@ router.get('/updateFbId', async (req, res) => {
   }
 });
 
+router.get('/updateFbIdOne', async (req, res) => {
+  try {
+    const InfAcc = await Insta.findAll({
+      where: { INS_ID: [32, 33, 36, 45, 48, 103, 182, 243] },
+      attributes: ['INS_ID', 'INF_ID', 'INS_ACCOUNT_ID', 'INS_TOKEN']
+    });
+
+    const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const {
+          INS_ID, INF_ID, INS_ACCOUNT_ID, INS_TOKEN
+        } = item;
+
+        const FbInfo = await getFacebookInfo(INS_TOKEN);
+        resolve({ INS_ID, INF_ID, INS_FB_ID: FbInfo.id });
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const FbData = await Promise.all(PromiseArray);
+
+    /* const PromiseUpdate = FbData.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const { INS_ID, INF_ID, INS_FB_ID } = item;
+
+        if (INS_ID) {
+          await Insta.update({ INS_FB_ID }, {
+            where: { INS_ID }
+          });
+          resolve('updated');
+        } else {
+          resolve('not updated');
+        }
+      } catch (e) {
+        resolve({ message: e.message });
+      }
+    })));
+
+    const UpdateResult = await Promise.all(PromiseUpdate); */
+
+    res.status(200).json({ data: FbData });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 router.post('/testParser', async (req, res) => {
   try {
     const { data } = req.query;
