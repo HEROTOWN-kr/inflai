@@ -16,14 +16,14 @@ function mailTest() {
     secure: true, // use SSL
     // secure: false, // use SSL
     auth: {
-      user: 'andriantsoy@naver.com',
-      pass: 'tshega93'
+      user: 'myfna@naver.com',
+      pass: 'N_emc2021!'
     }
   });
 
   const mailOptions = {
     to: 'andriantsoy@gmail.com',
-    from: 'andriantsoy@naver.com',
+    from: 'myfna@naver.com',
     subject: '인디언즈 비밀번호 재설정 안내',
     text: 'testing message'
   };
@@ -193,7 +193,6 @@ function getYoutubeData(clb) {
       }, (err, asyncResult) => clb(asyncResult)); */
   });
 }
-
 
 
 exports.copyData = copyData;

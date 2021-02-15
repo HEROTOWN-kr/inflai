@@ -26,7 +26,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     INF_PHOTO: {
-      type: DataTypes.STRING(300),
+      type: DataTypes.STRING(1000),
       allowNull: true
     },
     INF_REG_ID: {
@@ -93,6 +93,11 @@ module.exports = function (sequelize, DataTypes) {
     INF_BLOG_URL: {
       type: DataTypes.STRING(1000),
       allowNull: true
+    },
+    INF_ACTIVATED: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: '0'
     },
     INF_DT: {
       type: 'TIMESTAMP',

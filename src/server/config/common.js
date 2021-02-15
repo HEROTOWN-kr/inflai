@@ -10,6 +10,7 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 const bcrypt = require('bcryptjs');
 const sharp = require('sharp');
+const crypto = require('crypto');
 const config = require('../config');
 const testData = require('../config/testData');
 const configKey = require('./config');
@@ -41,26 +42,35 @@ function hashData(string) {
   }));
 }
 
-function mailSendData() {
+function mailSendData(receiver, content) {
   const transporter = nodemailer.createTransport({
     host: 'smtp.naver.com',
     port: 465,
     secure: true, // use SSL
     // secure: false, // use SSL
     auth: {
-      user: 'andriantsoy@naver.com',
-      pass: 'tshega93'
+      user: 'myfna@naver.com',
+      pass: 'N_emc2021!'
     }
   });
 
   const mailOptions = {
-    to: '',
-    from: 'andriantsoy@naver.com',
-    subject: '인플라이 테스트 메세지',
-    text: '인플라이 테스트 메세지'
+    to: receiver,
+    from: 'myfna@naver.com',
+    subject: '회원가입 인증 링크',
+    // text: '인플라이 가입해주셔서 환영합니다! 다음 링크로 이동하시면 회원가입이 완료될겁니다.',
+    text: content,
   };
 
-  return { transporter, mailOptions };
+  return new Promise(((resolve, reject) => {
+    transporter.sendMail(mailOptions, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('success');
+      }
+    });
+  }));
 }
 
 function instaRequest(data, cb) {
@@ -676,6 +686,33 @@ const countryCodes = {
 };
 
 
+function encrypt(text) {
+  const ENCRYPTION_KEY = 'SgVkYp2s5v8y/B?E(H+MbQeThWmZq4t6'; // Must be 256 bits (32 characters)
+  const IV_LENGTH = 16; // For AES, this is always 16
+
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  let encrypted = cipher.update(text);
+
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+
+  return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
+}
+
+function decrypt(text) {
+  const ENCRYPTION_KEY = 'SgVkYp2s5v8y/B?E(H+MbQeThWmZq4t6';// Must be 256 bits (32 characters)
+  const textParts = text.split(':');
+  const iv = Buffer.from(textParts.shift(), 'hex');
+  const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  let decrypted = decipher.update(encryptedText);
+
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+
+  return decrypted.toString();
+}
+
+
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
 exports.hashData = hashData;
@@ -701,3 +738,5 @@ exports.resizeImage = resizeImage;
 exports.checkLocalHost = checkLocalHost;
 exports.asyncMiddleware = asyncMiddleware;
 exports.getGoogleData = getGoogleData;
+exports.encrypt = encrypt;
+exports.decrypt = decrypt;

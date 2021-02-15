@@ -8,7 +8,7 @@ const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const {
-  hashData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision
+  hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, encrypt, decrypt
 } = require('../config/common');
 
 const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
@@ -29,31 +29,10 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    const InfAcc = await Influencer.findAll({
-      attributes: ['INF_ID', 'INF_REG_ID'],
-      where: { INF_BLOG_TYPE: '4' }
-    });
+    // await mailSendData();
+    const testEnc = encrypt('3112');
 
-    const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
-      try {
-        const {
-          INF_ID, INF_REG_ID
-        } = item;
-
-        await KakInf.create({
-          INF_ID,
-          KAK_ACC_ID: INF_REG_ID,
-        });
-
-        resolve('success');
-      } catch (e) {
-        resolve({ message: e.message });
-      }
-    })));
-
-    const FbData = await Promise.all(PromiseArray);
-
-    res.status(200).json({ data: FbData });
+    res.status(200).json({ data: testEnc });
   } catch (err) {
     res.status(400).send(err.message);
   }

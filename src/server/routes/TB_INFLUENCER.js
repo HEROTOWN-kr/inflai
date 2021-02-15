@@ -30,7 +30,8 @@ const {
   getInstagramBusinessAccounts,
   getGoogleData,
   hashData,
-  checkLocalHost
+  checkLocalHost,
+  decrypt
 } = require('../config/common');
 const testData = require('../config/testData');
 
@@ -676,14 +677,18 @@ router.post('/facebookLoginNew', async (req, res) => {
       await Instagram.update({ INS_TOKEN: longToken }, { where: { INS_FB_ID: facebookUserId } });
 
       const InfData = await Influencer.findOne({ where: { INF_ID } });
-      const { INF_NAME, INF_PHOTO } = InfData;
+      const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
 
-      res.status(200).json({
-        userToken: createToken(INF_ID),
-        userName: INF_NAME,
-        userPhoto: INF_PHOTO,
-        social_type: 'facebook'
-      });
+      if (INF_ACTIVATED === 0) {
+        res.status(400).json({ message: '이메일 인증 되지 않습니다' });
+      } else {
+        res.status(200).json({
+          userToken: createToken(INF_ID),
+          userName: INF_NAME,
+          userPhoto: INF_PHOTO,
+          social_type: 'facebook'
+        });
+      }
     } else {
       const instaAccounts = await getInstagramBusinessAccounts(longToken);
       if (instaAccounts.length === 0) {
@@ -715,15 +720,81 @@ router.post('/facebookSignUp', async (req, res) => {
       accessToken, fbId, instagramInfo, email, name, phone
     } = data;
 
-    const longToken = await getFacebookLongToken(accessToken);
-
     const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
 
     if (userExist) {
       res.status(201).json({ message: '중복된 이메일입니다' });
     } else {
-      res.status(200).json({ message: '중복된 이메일입니다' });
+      const { id, profile_picture_url, username } = instagramInfo;
+      const longToken = await getFacebookLongToken(accessToken);
+
+      const instagramData = await getInstagramData(id, longToken);
+      const {
+        follows_count, followers_count, media_count
+      } = instagramData;
+      const mediaData = await getInstagramMediaData(id, longToken);
+      const statistics = mediaData.reduce((acc, el) => ({
+        likeSum: (acc.likeSum || 0) + el.like_count,
+        commentsSum: (acc.commentsSum || 0) + el.comments_count,
+      }), {});
+
+      let ageStats;
+      let genderLocalStats;
+
+      try {
+        const insights = await getInstagramInsights(id, longToken);
+        ageStats = insights[0].values[0].value;
+        genderLocalStats = insights[1].values[0].value;
+      } catch (err) {
+        console.log(err);
+      }
+
+      const newUserData = await Influencer.create({
+        INF_NAME: name,
+        INF_EMAIL: email,
+        INF_TEL: phone,
+        INF_PHOTO: profile_picture_url || null,
+        INF_BLOG_TYPE: '1'
+      });
+
+      const { INF_ID } = newUserData;
+
+      const createParams = {
+        INF_ID,
+        INS_TOKEN: longToken,
+        INS_FB_ID: fbId,
+        INS_ACCOUNT_ID: id,
+        INS_FLW: follows_count,
+        INS_FLWR: followers_count,
+        INS_NAME: instagramData.name,
+        INS_USERNAME: username,
+        INS_MEDIA_CNT: media_count,
+        INS_PROFILE_IMG: profile_picture_url,
+        INS_LIKES: statistics.likeSum,
+        INS_CMNT: statistics.commentsSum
+      };
+
+      if (ageStats) createParams.INS_STAT_AGE_GENDER = JSON.stringify(ageStats);
+      if (genderLocalStats) createParams.INS_STATE_LOC = JSON.stringify(genderLocalStats);
+
+      await Instagram.create(createParams);
+
+      res.status(200).json({ message: '가입 가능' });
     }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/activate', async (req, res) => {
+  try {
+    const data = req.body;
+    const { hash } = data;
+
+    const INF_ID = parseInt(decrypt(hash), 10);
+    await Influencer.update({ INF_ACTIVATED: 1 }, { where: { INF_ID } });
+
+    res.status(200).json({ message: INF_ID });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
