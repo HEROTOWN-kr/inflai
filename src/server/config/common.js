@@ -42,21 +42,21 @@ function hashData(string) {
   }));
 }
 
-function mailSendData(receiver, content) {
+function mailSendData({ receiver, content }) {
   const transporter = nodemailer.createTransport({
     host: 'smtp.naver.com',
     port: 465,
     secure: true, // use SSL
     // secure: false, // use SSL
     auth: {
-      user: 'myfna@naver.com',
-      pass: 'N_emc2021!'
+      user: 'inflai@naver.com',
+      pass: 'N_emc2021'
     }
   });
 
   const mailOptions = {
     to: receiver,
-    from: 'myfna@naver.com',
+    from: 'inflai@naver.com',
     subject: '회원가입 인증 링크',
     // text: '인플라이 가입해주셔서 환영합니다! 다음 링크로 이동하시면 회원가입이 완료될겁니다.',
     text: content,

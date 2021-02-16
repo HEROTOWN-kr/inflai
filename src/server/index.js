@@ -32,9 +32,11 @@ app.use(passport.initialize());
 // load passport strategies
 const localSignupStrategy = require('./passport/local-signup');
 const localLoginStrategy = require('./passport/local-login');
+const InfLoginStrategy = require('./passport/local-login-inf');
 
 passport.use('local-signup', localSignupStrategy);
 passport.use('local-login', localLoginStrategy);
+passport.use('local-login-inf', InfLoginStrategy);
 
 passport.authenticate('jwt', { session: false });
 

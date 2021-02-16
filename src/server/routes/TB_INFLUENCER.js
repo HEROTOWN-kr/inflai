@@ -16,6 +16,8 @@ const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
 const Youtube = require('../models').TB_YOUTUBE;
 const Naver = require('../models').TB_NAVER;
+const NaverInf = require('../models').TB_NAVER_INF;
+const Kakao = require('../models').TB_KAKAO_INF;
 const Notification = require('../models').TB_NOTIFICATION;
 const {
   getInstagramMediaData,
@@ -31,7 +33,9 @@ const {
   getGoogleData,
   hashData,
   checkLocalHost,
-  decrypt
+  decrypt,
+  encrypt,
+  mailSendData
 } = require('../config/common');
 const testData = require('../config/testData');
 
@@ -481,6 +485,47 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+router.post('/signupNew', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      email, name, password, phone
+    } = data;
+
+    const userExist = await Influencer.findOne({
+      where: { INF_EMAIL: email }
+    });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      const hashedPass = await hashData(password);
+      const params = {
+        INF_EMAIL: email,
+        INF_NAME: name,
+        INF_TEL: phone,
+        INF_PASS: hashedPass,
+        INF_BLOG_TYPE: '5'
+      };
+
+      const newUserData = await Influencer.create(params);
+
+      const { INF_ID, INF_EMAIL } = newUserData;
+
+      const encryptedId = encrypt(INF_ID.toString());
+
+      await mailSendData({
+        receiver: INF_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3002/Activate/${encryptedId}`
+      });
+      res.status(200).json({ message: '가입 가능' });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
 router.post('/instaSignUp', (req, res) => {
   const data = req.body;
   const { facebookToken, facebookUserId } = data;
@@ -680,7 +725,7 @@ router.post('/facebookLoginNew', async (req, res) => {
       const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
 
       if (INF_ACTIVATED === 0) {
-        res.status(400).json({ message: '이메일 인증 되지 않습니다' });
+        res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
       } else {
         res.status(200).json({
           userToken: createToken(INF_ID),
@@ -757,7 +802,7 @@ router.post('/facebookSignUp', async (req, res) => {
         INF_BLOG_TYPE: '1'
       });
 
-      const { INF_ID } = newUserData;
+      const { INF_ID, INF_EMAIL } = newUserData;
 
       const createParams = {
         INF_ID,
@@ -778,6 +823,14 @@ router.post('/facebookSignUp', async (req, res) => {
       if (genderLocalStats) createParams.INS_STATE_LOC = JSON.stringify(genderLocalStats);
 
       await Instagram.create(createParams);
+
+      const encryptedId = encrypt(INF_ID.toString());
+
+      await mailSendData({
+        receiver: INF_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3002/Activate/${encryptedId}`
+      });
 
       res.status(200).json({ message: '가입 가능' });
     }
@@ -1171,6 +1224,86 @@ router.get('/naverLogin', async (req, res) => {
   }
 });
 
+router.get('/naverLoginNew', async (req, res) => {
+  try {
+    const data = req.query;
+    const {
+      email, id, name, profile_image, social_type
+    } = data;
+
+    const userExist = await NaverInf.findOne({ where: { NIF_ACC_ID: id } });
+
+    if (userExist) {
+      const { INF_ID } = userExist;
+      const InfData = await Influencer.findOne({ where: { INF_ID } });
+      const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
+
+      if (INF_ACTIVATED === 0) {
+        res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
+      } else {
+        res.status(200).json({
+          userToken: createToken(INF_ID),
+          userName: INF_NAME,
+          userPhoto: INF_PHOTO,
+          social_type: 'naver'
+        });
+      }
+    } else {
+      res.status(201).json({
+        navData: { id, profile_image }
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/naverSignUp', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      navData, email, name, phone
+    } = data;
+
+    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      const { id, profile_image } = navData;
+
+      const newUserData = await Influencer.create({
+        INF_NAME: name,
+        INF_EMAIL: email,
+        INF_TEL: phone,
+        INF_PHOTO: profile_image || null,
+        INF_BLOG_TYPE: '3'
+      });
+
+      const { INF_ID, INF_EMAIL } = newUserData;
+
+      const createParams = {
+        INF_ID,
+        NIF_ACC_ID: id
+      };
+
+      await NaverInf.create(createParams);
+
+      const encryptedId = encrypt(INF_ID.toString());
+
+      await mailSendData({
+        receiver: INF_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3002/Activate/${encryptedId}`
+      });
+
+      res.status(200).json({ message: '가입 가능' });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 router.get('/kakaoLogin', async (req, res) => {
   try {
     const {
@@ -1210,6 +1343,83 @@ router.get('/kakaoLogin', async (req, res) => {
     }
   } catch (err) {
     res.status(400).send({ message: err.message });
+  }
+});
+
+router.get('/kakaoLoginNew', async (req, res) => {
+  try {
+    const { id, photo } = req.query;
+
+    const userExist = await Kakao.findOne({ where: { KAK_ACC_ID: id } });
+
+    if (userExist) {
+      const { INF_ID } = userExist;
+      const InfData = await Influencer.findOne({ where: { INF_ID } });
+      const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
+
+      if (INF_ACTIVATED === 0) {
+        res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
+      } else {
+        res.status(200).json({
+          userToken: createToken(INF_ID),
+          userName: INF_NAME,
+          userPhoto: INF_PHOTO,
+          social_type: 'kakao'
+        });
+      }
+    } else {
+      res.status(201).json({
+        kakaoData: { id, photo }
+      });
+    }
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/kakaoSignUp', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      kakaoData, email, name, phone
+    } = data;
+
+    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      const { id, photo } = kakaoData;
+
+      const newUserData = await Influencer.create({
+        INF_NAME: name,
+        INF_EMAIL: email,
+        INF_TEL: phone,
+        INF_PHOTO: photo || null,
+        INF_BLOG_TYPE: '4'
+      });
+
+      const { INF_ID, INF_EMAIL } = newUserData;
+
+      const createParams = {
+        INF_ID,
+        KAK_ACC_ID: id
+      };
+
+      await Kakao.create(createParams);
+
+      const encryptedId = encrypt(INF_ID.toString());
+
+      await mailSendData({
+        receiver: INF_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3002/Activate/${encryptedId}`
+      });
+
+      res.status(200).json({ message: '가입 가능' });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
