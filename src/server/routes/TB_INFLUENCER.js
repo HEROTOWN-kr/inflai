@@ -9,7 +9,6 @@ const uniqid = require('uniqid');
 const fse = require('fs-extra');
 const path = require('path');
 
-const { asyncMiddleware } = require('../config/common');
 const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
@@ -280,6 +279,79 @@ router.get('/getInfluencers', async (req, res) => {
   }
 });
 
+router.get('/findId', async (req, res) => {
+  try {
+    const { phone, name } = req.query;
+
+    const dbData = await Influencer.findOne({
+      where: { INF_TEL: phone, INF_NAME: name },
+      attributes: ['INF_EMAIL']
+    });
+
+    if (!dbData) {
+      res.status(201).json({ message: '해당 사용자가 없습니다' });
+    } else {
+      const { INF_EMAIL } = dbData;
+
+      res.status(200).json({
+        data: INF_EMAIL
+      });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
+router.get('/resetPassLink', async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    const dbData = await Influencer.findOne({
+      where: { INF_EMAIL: email },
+      attributes: ['INF_ID']
+    });
+
+    if (!dbData) {
+      res.status(201).json({ message: '해당 사용자가 없습니다' });
+    } else {
+      const { INF_ID } = dbData;
+
+      const encryptedId = encrypt(INF_ID.toString());
+
+      await mailSendData({
+        receiver: email,
+        content: '다음 링크로 이동하시면 비밀번호 병경하실 수 있습니다. \n'
+            + `http://localhost:3002/Reset/${encryptedId}`,
+        subject: '비밀번호 병경링크'
+      });
+
+      res.status(200).json({ message: 'success' });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
+router.post('/resetPass', async (req, res) => {
+  try {
+    const { hash, password } = req.body;
+
+    const INF_ID = parseInt(decrypt(hash), 10);
+    const hashedPass = await hashData(password);
+    await Influencer.update({ INF_PASS: hashedPass }, { where: { INF_ID } });
+
+    res.status(200).json({ message: 'success' });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
 router.get('/getInstaInfo', (req, res) => {
   const { token } = req.query;
   const userId = getIdFromToken(token).sub;
@@ -517,7 +589,8 @@ router.post('/signupNew', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`
+            + `http://localhost:3002/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
       });
       res.status(200).json({ message: '가입 가능' });
     }
@@ -829,7 +902,8 @@ router.post('/facebookSignUp', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`
+            + `http://localhost:3002/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
       });
 
       res.status(200).json({ message: '가입 가능' });
@@ -933,88 +1007,6 @@ router.post('/instaLogin', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-
-router.post('/instaUpdate', asyncMiddleware(
-  async (req, res) => {
-    const data = req.body;
-    const {
-      id, instaAccount, blogUrl, nickName, phone, country, region, product
-    } = data;
-
-    const post = {
-      INF_NAME: nickName,
-      INF_TEL: phone,
-      INF_CITY: country,
-      INF_AREA: region,
-      INF_PROD: product
-    };
-    if (instaAccount) post.INF_INST_ID = instaAccount;
-    if (blogUrl) post.INF_BLOG_URL = blogUrl;
-
-
-    Influencer.update(post, { where: { INF_ID: id } });
-
-    const InfluencerData = await Influencer.findOne({ where: { INF_ID: id } });
-    const {
-      INF_ID, INF_NAME, INF_TEL, INF_BLOG_TYPE, INF_TOKEN
-    } = InfluencerData;
-    const successResponse = {
-      code: 200,
-      userId: INF_ID,
-      userToken: createToken(INF_ID),
-      userName: INF_NAME,
-      userPhone: INF_TEL,
-      social_type: getBlogType(INF_BLOG_TYPE)
-    };
-
-    if (instaAccount) {
-      try {
-        const instagramData = await getInstagramData(instaAccount, INF_TOKEN);
-        const {
-          follows_count, followers_count, media_count, username, name, profile_picture_url
-        } = instagramData;
-        const instaAccountExist = await Instagram.findOne({ where: { INF_ID: id } });
-        if (instaAccountExist) {
-          Instagram.update({
-            INS_TOKEN: INF_TOKEN,
-            INS_ACCOUNT_ID: instaAccount,
-            INS_FLW: follows_count,
-            INS_FLWR: followers_count,
-            INS_NAME: name,
-            INS_USERNAME: username,
-            INS_MEDIA_CNT: media_count,
-            INS_PROFILE_IMG: profile_picture_url
-          }, {
-            where: { INF_ID: id }
-          }).then((result4) => {
-            res.json(successResponse);
-          });
-        } else {
-          Instagram.create({
-            INF_ID: id,
-            INS_TOKEN: INF_TOKEN,
-            INS_ACCOUNT_ID: instaAccount,
-            INS_FLW: follows_count,
-            INS_FLWR: followers_count,
-            INS_NAME: name,
-            INS_USERNAME: username,
-            INS_MEDIA_CNT: media_count,
-            INS_PROFILE_IMG: profile_picture_url
-          }).then((result5) => {
-            res.json(successResponse);
-          });
-        }
-      } catch (err) {
-        res.json({
-          code: 400,
-          error: err
-        });
-      }
-    } else {
-      res.json(successResponse);
-    }
-  }
-));
 
 router.get('/youtubeSignUp', async (req, res) => {
   try {
@@ -1294,7 +1286,8 @@ router.post('/naverSignUp', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`
+            + `http://localhost:3002/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
       });
 
       res.status(200).json({ message: '가입 가능' });
@@ -1413,7 +1406,8 @@ router.post('/kakaoSignUp', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`
+            + `http://localhost:3002/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
       });
 
       res.status(200).json({ message: '가입 가능' });

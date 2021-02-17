@@ -18,6 +18,11 @@ const { Op } = Sequelize;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Advertise = require('../models').TB_AD;
 const Influencer = require('../models').TB_INFLUENCER;
+const Participant = require('../models').TB_PARTICIPANT;
+const Favorites = require('../models').TB_FAVORITES;
+const Notification = require('../models').TB_NOTIFICATION;
+const Youtube = require('../models').TB_YOUTUBE;
+const Naver = require('../models').TB_NAVER;
 const Insta = require('../models').TB_INSTA;
 const Admin = require('../models').TB_ADMIN;
 const Plan = require('../models').TB_PLAN;
@@ -29,14 +34,130 @@ const router = express.Router();
 
 router.get('/test', async (req, res) => {
   try {
-    // await mailSendData();
-    const testEnc = encrypt('3112');
+    const { email } = req.query;
 
-    res.status(200).json({ data: testEnc });
+    const dbData = await Influencer.findAll({
+      attributes: ['INF_ID', 'INF_EMAIL', 'INF_PASS', 'INF_BLOG_TYPE'],
+      where: { INF_EMAIL: email },
+      include: [
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false
+        },
+        {
+          model: Favorites,
+          attributes: ['FAV_ID'],
+          required: false
+        },
+        {
+          model: Insta,
+          attributes: ['INS_ID'],
+          required: false
+        },
+        {
+          model: Youtube,
+          attributes: ['YOU_ID'],
+          required: false
+        },
+        {
+          model: Naver,
+          attributes: ['NAV_ID'],
+          required: false
+        },
+        {
+          model: Notification,
+          attributes: ['NOTI_ID'],
+          required: false
+        },
+        {
+          model: NavInf,
+          attributes: ['NIF_ID'],
+          required: false
+        },
+        {
+          model: KakInf,
+          attributes: ['KAK_ID'],
+          required: false
+        },
+      ]
+    });
+
+    res.status(200).json({ data: dbData });
   } catch (err) {
     res.status(400).send(err.message);
   }
 });
+
+router.get('/test2', async (req, res) => {
+  try {
+    const { fromId, toId } = req.query;
+
+    const dbDataFrom = await Influencer.findAll({
+      attributes: ['INF_ID', 'INF_EMAIL', 'INF_PASS', 'INF_BLOG_TYPE'],
+      where: { INF_ID: fromId },
+      include: [
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false
+        },
+        {
+          model: Favorites,
+          attributes: ['FAV_ID'],
+          required: false
+        },
+        {
+          model: Insta,
+          attributes: ['INS_ID'],
+          required: false
+        },
+        {
+          model: Youtube,
+          attributes: ['YOU_ID'],
+          required: false
+        },
+        {
+          model: Naver,
+          attributes: ['NAV_ID'],
+          required: false
+        },
+        {
+          model: Notification,
+          attributes: ['NOTI_ID'],
+          required: false
+        },
+        {
+          model: NavInf,
+          attributes: ['NIF_ID'],
+          required: false
+        },
+        {
+          model: KakInf,
+          attributes: ['KAK_ID'],
+          required: false
+        },
+      ]
+    });
+
+    const {
+      TB_PARTICIPANTs, TB_FAVORITEs, TB_YOUTUBE, TB_NAVER_INF, TB_KAKAO_INF
+    } = dbDataFrom;
+
+    if (TB_PARTICIPANTs.length > 0) {
+      const parArray = TB_PARTICIPANTs.map(item => item.PAR_ID);
+      await Participant.update({ PAR_ID: toId },
+        {
+          where: { PAR_ID: parArray }
+        });
+    }
+
+    res.status(200).json({ data: dbDataFrom });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 
 router.get('/updateKakaoId', async (req, res) => {
   try {

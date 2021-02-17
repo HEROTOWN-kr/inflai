@@ -42,7 +42,7 @@ function hashData(string) {
   }));
 }
 
-function mailSendData({ receiver, content }) {
+function mailSendData({ receiver, content, subject }) {
   const transporter = nodemailer.createTransport({
     host: 'smtp.naver.com',
     port: 465,
@@ -56,8 +56,11 @@ function mailSendData({ receiver, content }) {
 
   const mailOptions = {
     to: receiver,
-    from: 'inflai@naver.com',
-    subject: '회원가입 인증 링크',
+    from: {
+      name: '인플라이｜inflAi',
+      address: 'inflai@naver.com'
+    },
+    subject,
     // text: '인플라이 가입해주셔서 환영합니다! 다음 링크로 이동하시면 회원가입이 완료될겁니다.',
     text: content,
   };
