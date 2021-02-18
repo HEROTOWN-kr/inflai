@@ -322,9 +322,9 @@ router.get('/resetPassLink', async (req, res) => {
 
       await mailSendData({
         receiver: email,
-        content: '다음 링크로 이동하시면 비밀번호 병경하실 수 있습니다. \n'
-            + `http://localhost:3002/Reset/${encryptedId}`,
-        subject: '비밀번호 병경링크'
+        content: '다음 링크로 이동하시면 비밀번호 변경하실 수 있습니다. \n'
+            + `https://influencer.inflai.com/Reset/${encryptedId}`,
+        subject: '비밀번호 변경링크'
       });
 
       res.status(200).json({ message: 'success' });
@@ -589,7 +589,7 @@ router.post('/signupNew', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`,
+            + `https://influencer.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
       res.status(200).json({ message: '가입 가능' });
@@ -902,7 +902,7 @@ router.post('/facebookSignUp', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`,
+            + `https://influencer.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
 
@@ -1286,7 +1286,7 @@ router.post('/naverSignUp', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`,
+            + `https://influencer.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
 
@@ -1294,6 +1294,25 @@ router.post('/naverSignUp', async (req, res) => {
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+});
+
+router.get('/naverAdd', async (req, res) => {
+  try {
+    const data = req.query;
+    const {
+      email, id, name, profile_image, social_type, token
+    } = data;
+
+    const userExist = await NaverInf.findOne({ where: { NIF_ACC_ID: id } });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 네이버 계정입니다' });
+    } else {
+      res.status(200).json({ message: '중복된 네이버 계정입니다' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -1406,7 +1425,7 @@ router.post('/kakaoSignUp', async (req, res) => {
       await mailSendData({
         receiver: INF_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3002/Activate/${encryptedId}`,
+            + `https://influencer.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
 

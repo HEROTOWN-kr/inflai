@@ -903,6 +903,7 @@ router.post('/add', async (req, res) => {
 
         const createParams = {
           INF_ID: id,
+          INS_FB_ID: facebookUserId,
           INS_TOKEN: longToken,
           INS_ACCOUNT_ID: instaId,
           INS_FLW: follows_count,

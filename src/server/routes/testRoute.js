@@ -93,7 +93,7 @@ router.get('/test2', async (req, res) => {
   try {
     const { fromId, toId } = req.query;
 
-    const dbDataFrom = await Influencer.findAll({
+    const dbDataFrom = await Influencer.findOne({
       attributes: ['INF_ID', 'INF_EMAIL', 'INF_PASS', 'INF_BLOG_TYPE'],
       where: { INF_ID: fromId },
       include: [
@@ -141,23 +141,45 @@ router.get('/test2', async (req, res) => {
     });
 
     const {
-      TB_PARTICIPANTs, TB_FAVORITEs, TB_YOUTUBE, TB_NAVER_INF, TB_KAKAO_INF
+      INF_PASS, TB_PARTICIPANTs, TB_FAVORITEs, TB_YOUTUBE, TB_NAVER_INF, TB_KAKAO_INF
     } = dbDataFrom;
 
-    if (TB_PARTICIPANTs.length > 0) {
+    if (TB_PARTICIPANTs && TB_PARTICIPANTs.length > 0) {
       const parArray = TB_PARTICIPANTs.map(item => item.PAR_ID);
-      await Participant.update({ PAR_ID: toId },
-        {
-          where: { PAR_ID: parArray }
-        });
+      /* await Participant.update({ INF_ID: toId }, {
+        where: { PAR_ID: parArray }
+      }); */
     }
 
-    res.status(200).json({ data: dbDataFrom });
+    if (TB_NAVER_INF && TB_NAVER_INF.NIF_ID) {
+      const { NIF_ID } = TB_NAVER_INF;
+
+      await NavInf.update({ INF_ID: toId }, { where: { NIF_ID } });
+    }
+
+    if (TB_KAKAO_INF && TB_KAKAO_INF.KAK_ID) {
+      const { KAK_ID } = TB_KAKAO_INF;
+
+      await KakInf.update({ INF_ID: toId }, { where: { KAK_ID } });
+    }
+
+    res.status(200).json({ data: '' });
   } catch (err) {
     res.status(400).send(err.message);
   }
 });
 
+router.get('/updateAll', async (req, res) => {
+  try {
+    await Influencer.update({ INF_ACTIVATED: 1 }, {
+      where: { INF_ACTIVATED: 0 }
+    });
+
+    res.status(200).json({ data: 'success' });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 
 router.get('/updateKakaoId', async (req, res) => {
   try {
