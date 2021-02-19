@@ -60,6 +60,7 @@ app.use('/TB_YOUTUBE', require('./routes/TB_YOUTUBE'));
 app.use('/TB_INSTA', require('./routes/TB_INSTA'));
 app.use('/TB_NAVER', require('./routes/TB_NAVER'));
 app.use('/TB_NAVER_INF', require('./routes/TB_NAVER_INF'));
+app.use('/TB_KAKAO_INF', require('./routes/TB_KAKAO_INF'));
 app.use('/TB_PARTICIPANT', require('./routes/TB_PARTICIPANT'));
 app.use('/TB_PLAN', require('./routes/TB_PLAN'));
 app.use('/TB_SUBSCRIPTION', require('./routes/TB_SUBSCRIPTION'));

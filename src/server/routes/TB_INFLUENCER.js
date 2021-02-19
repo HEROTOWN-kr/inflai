@@ -352,6 +352,55 @@ router.post('/resetPass', async (req, res) => {
   }
 });
 
+router.get('/getPass', async (req, res) => {
+  const { token } = req.query;
+  const userId = getIdFromToken(token).sub;
+  const dbData = await Influencer.findOne({
+    where: { INF_ID: userId },
+    attributes: ['INF_PASS']
+  });
+  const { INF_PASS } = dbData;
+
+  res.status(200).json({ data: INF_PASS ? 'exist' : null });
+});
+
+router.post('/updatePass', async (req, res) => {
+  try {
+    const { currentPassword, password, token } = req.body;
+    const userId = getIdFromToken(token).sub;
+
+    if (currentPassword) {
+      const dbData = await Influencer.findOne({
+        where: { INF_ID: userId },
+        attributes: ['INF_PASS']
+      });
+      const { INF_PASS } = dbData;
+
+      Influencer.options.instanceMethods.validPassword(currentPassword, INF_PASS, async (passwordErr, isMatch) => {
+        if (passwordErr) {
+          res.status(400).send({
+            message: passwordErr.message
+          });
+        } else if (!isMatch) {
+          res.status(201).json({ message: '기존 비밀번호는 일치하지 않습니다' });
+        } else {
+          const hashedCurrentPass = await hashData(password);
+          await Influencer.update({ INF_PASS: hashedCurrentPass }, { where: { INF_ID: userId } });
+          res.status(200).json({ message: '수정되었습니다' });
+        }
+      });
+    } else {
+      const hashedPass = await hashData(password);
+      await Influencer.update({ INF_PASS: hashedPass }, { where: { INF_ID: userId } });
+      res.status(200).json({ message: '수정되었습니다' });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
 router.get('/getInstaInfo', (req, res) => {
   const { token } = req.query;
   const userId = getIdFromToken(token).sub;
@@ -1294,25 +1343,6 @@ router.post('/naverSignUp', async (req, res) => {
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-});
-
-router.get('/naverAdd', async (req, res) => {
-  try {
-    const data = req.query;
-    const {
-      email, id, name, profile_image, social_type, token
-    } = data;
-
-    const userExist = await NaverInf.findOne({ where: { NIF_ACC_ID: id } });
-
-    if (userExist) {
-      res.status(201).json({ message: '중복된 네이버 계정입니다' });
-    } else {
-      res.status(200).json({ message: '중복된 네이버 계정입니다' });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
   }
 });
 

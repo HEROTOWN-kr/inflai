@@ -185,7 +185,10 @@ router.get('/updateKakaoId', async (req, res) => {
   try {
     const InfAcc = await Influencer.findAll({
       attributes: ['INF_ID', 'INF_REG_ID'],
-      where: { INF_BLOG_TYPE: '4' }
+      where: {
+        INF_BLOG_TYPE: '4',
+        INF_ID: { [Op.between]: [3069, 3141] }
+      }
     });
 
     const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
@@ -217,7 +220,10 @@ router.get('/updateNaverId', async (req, res) => {
   try {
     const InfAcc = await Influencer.findAll({
       attributes: ['INF_ID', 'INF_REG_ID'],
-      where: { INF_BLOG_TYPE: '3' }
+      where: {
+        INF_BLOG_TYPE: '3',
+        INF_ID: { [Op.between]: [3074, 3144] }
+      }
     });
 
     const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
@@ -226,12 +232,15 @@ router.get('/updateNaverId', async (req, res) => {
           INF_ID, INF_REG_ID
         } = item;
 
-        await NavInf.create({
-          INF_ID,
-          NIF_ACC_ID: INF_REG_ID,
-        });
-
-        resolve('success');
+        if (INF_REG_ID) {
+          await NavInf.create({
+            INF_ID,
+            NIF_ACC_ID: INF_REG_ID,
+          });
+          resolve('success');
+        } else {
+          resolve('not updated');
+        }
       } catch (e) {
         resolve({ message: e.message });
       }

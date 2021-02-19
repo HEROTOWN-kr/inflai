@@ -1,6 +1,6 @@
 const express = require('express');
 const Sequelize = require('sequelize');
-const NavInf = require('../models').TB_NAVER_INF;
+const KakInf = require('../models').TB_KAKAO_INF;
 const Influencer = require('../models').TB_INFLUENCER;
 const { getIdFromToken } = require('../config/common');
 
@@ -11,10 +11,10 @@ router.get('/getInfo', async (req, res) => {
     const { token } = req.query;
     const userId = getIdFromToken(token).sub;
 
-    const dbData = await NavInf.findOne({
+    const dbData = await KakInf.findOne({
       where: { INF_ID: userId },
-      attributes: ['NIF_ID',
-        [Sequelize.fn('DATE_FORMAT', Sequelize.col('NIF_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'NIF_DT'],
+      attributes: ['KAK_ID',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('KAK_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'KAK_DT'],
       ],
     });
 
@@ -26,19 +26,19 @@ router.get('/getInfo', async (req, res) => {
   }
 });
 
-router.post('/naverAdd', async (req, res) => {
+router.post('/kakaoAdd', async (req, res) => {
   try {
     const data = req.body;
     const { id, token } = data;
     const userId = getIdFromToken(token).sub;
 
-    const userExist = await NavInf.findOne({ where: { NIF_ACC_ID: id } });
+    const userExist = await KakInf.findOne({ where: { KAK_ACC_ID: id } });
 
     if (userExist) {
       res.status(201).json({ message: '중복된 네이버 계정입니다' });
     } else {
-      const post = { INF_ID: userId, NIF_ACC_ID: id };
-      const newUser = await NavInf.create(post);
+      const post = { INF_ID: userId, KAK_ACC_ID: id };
+      const newUser = await KakInf.create(post);
 
       res.status(200).json({ data: newUser });
     }
@@ -47,7 +47,7 @@ router.post('/naverAdd', async (req, res) => {
   }
 });
 
-router.post('/naverDelete', async (req, res) => {
+router.post('/kakaoDelete', async (req, res) => {
   try {
     const data = req.body;
     const { token } = data;
@@ -63,7 +63,7 @@ router.post('/naverDelete', async (req, res) => {
     if (!INF_PASS) {
       res.status(201).json({ message: '비밀번호 만들어주세요' });
     } else {
-      await NavInf.destroy({ where: { INF_ID: userId, } });
+      await KakInf.destroy({ where: { INF_ID: userId, } });
       res.status(200).json({ message: 'success' });
     }
   } catch (err) {
