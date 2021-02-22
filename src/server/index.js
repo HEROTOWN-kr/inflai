@@ -33,10 +33,12 @@ app.use(passport.initialize());
 const localSignupStrategy = require('./passport/local-signup');
 const localLoginStrategy = require('./passport/local-login');
 const InfLoginStrategy = require('./passport/local-login-inf');
+const AdvLoginStrategy = require('./passport/local-login-adv');
 
 passport.use('local-signup', localSignupStrategy);
 passport.use('local-login', localLoginStrategy);
 passport.use('local-login-inf', InfLoginStrategy);
+passport.use('local-login-adv', AdvLoginStrategy);
 
 passport.authenticate('jwt', { session: false });
 
@@ -60,7 +62,9 @@ app.use('/TB_YOUTUBE', require('./routes/TB_YOUTUBE'));
 app.use('/TB_INSTA', require('./routes/TB_INSTA'));
 app.use('/TB_NAVER', require('./routes/TB_NAVER'));
 app.use('/TB_NAVER_INF', require('./routes/TB_NAVER_INF'));
+app.use('/TB_NAVER_ADV', require('./routes/TB_NAVER_ADV'));
 app.use('/TB_KAKAO_INF', require('./routes/TB_KAKAO_INF'));
+app.use('/TB_KAKAO_ADV', require('./routes/TB_KAKAO_ADV'));
 app.use('/TB_PARTICIPANT', require('./routes/TB_PARTICIPANT'));
 app.use('/TB_PLAN', require('./routes/TB_PLAN'));
 app.use('/TB_SUBSCRIPTION', require('./routes/TB_SUBSCRIPTION'));

@@ -86,6 +86,11 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 'N'
     },
+    ADV_ACTIVATED: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: '0'
+    },
     ADV_DT: {
       type: 'TIMESTAMP',
       allowNull: true,

@@ -28,6 +28,8 @@ const Admin = require('../models').TB_ADMIN;
 const Plan = require('../models').TB_PLAN;
 const NavInf = require('../models').TB_NAVER_INF;
 const KakInf = require('../models').TB_KAKAO_INF;
+const KakAdv = require('../models').TB_KAKAO_ADV;
+const NavAdv = require('../models').TB_NAVER_ADV;
 const test = require('./test');
 
 const router = express.Router();
@@ -183,23 +185,22 @@ router.get('/updateAll', async (req, res) => {
 
 router.get('/updateKakaoId', async (req, res) => {
   try {
-    const InfAcc = await Influencer.findAll({
-      attributes: ['INF_ID', 'INF_REG_ID'],
+    const InfAcc = await Advertiser.findAll({
+      attributes: ['ADV_ID', 'ADV_REG_ID'],
       where: {
-        INF_BLOG_TYPE: '4',
-        INF_ID: { [Op.between]: [3069, 3141] }
+        ADV_BLOG_TYPE: '4',
       }
     });
 
     const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
       try {
         const {
-          INF_ID, INF_REG_ID
+          ADV_ID, ADV_REG_ID
         } = item;
 
-        await KakInf.create({
-          INF_ID,
-          KAK_ACC_ID: INF_REG_ID,
+        await KakAdv.create({
+          ADV_ID,
+          KAD_ACC_ID: ADV_REG_ID,
         });
 
         resolve('success');
@@ -218,24 +219,24 @@ router.get('/updateKakaoId', async (req, res) => {
 
 router.get('/updateNaverId', async (req, res) => {
   try {
-    const InfAcc = await Influencer.findAll({
-      attributes: ['INF_ID', 'INF_REG_ID'],
+    const InfAcc = await Advertiser.findAll({
+      attributes: ['ADV_ID', 'ADV_REG_ID'],
       where: {
-        INF_BLOG_TYPE: '3',
-        INF_ID: { [Op.between]: [3074, 3144] }
+        ADV_BLOG_TYPE: '3',
+        // INF_ID: { [Op.between]: [3074, 3144] }
       }
     });
 
     const PromiseArray = InfAcc.map(item => new Promise((async (resolve, reject) => {
       try {
         const {
-          INF_ID, INF_REG_ID
+          ADV_ID, ADV_REG_ID
         } = item;
 
-        if (INF_REG_ID) {
-          await NavInf.create({
-            INF_ID,
-            NIF_ACC_ID: INF_REG_ID,
+        if (ADV_REG_ID) {
+          await NavAdv.create({
+            ADV_ID,
+            NAD_ACC_ID: ADV_REG_ID,
           });
           resolve('success');
         } else {

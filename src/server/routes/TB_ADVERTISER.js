@@ -10,13 +10,17 @@ const uniqid = require('uniqid');
 
 const config = require('../config/config');
 const Advertiser = require('../models').TB_ADVERTISER;
-const Influenser = require('../models').TB_INFLUENCER;
+const Kakao = require('../models').TB_KAKAO_ADV;
+const NaverAdv = require('../models').TB_NAVER_ADV;
 const {
   getIdFromToken,
   createToken,
   hashData,
   getGoogleData,
-  checkLocalHost
+  checkLocalHost,
+  encrypt,
+  decrypt,
+  mailSendData
 } = require('../config/common');
 
 const saltRounds = 10;
@@ -305,84 +309,6 @@ router.get('/Googletest3', (req, res) => {
   res.redirect(url);
 });
 
-router.get('/Googletest1', (req, res) => {
-  const data = req.query;
-  const { code } = data;
-
-  const oauth2Client = getOauthClient();
-
-  oauth2Client.getToken(code, (err, tokens) => {
-    // Now tokens contains an access_token and an optional refresh_token. Save them.
-    if (!err) {
-      oauth2Client.setCredentials(tokens);
-
-      const youtube = google.youtube('v3');
-      const oauth2 = google.oauth2('v2');
-
-      oauth2.userinfo.get(
-        {
-          auth: oauth2Client,
-          alt: 'json',
-        }, (err, response) => {
-          if (err) {
-            console.log(`The API returned an error: ${err}`);
-          } else {
-            Influenser.create({
-              INF_NAME: response.data.name,
-              INF_EMAIL: response.data.email,
-              INF_REG_ID: response.data.id,
-              INF_REF_TOKEN: tokens.refresh_token,
-            }).then((result) => {
-              // res.redirect('http://localhost:3000');
-
-              request.post('https://oauth2.googleapis.com/token',
-                {
-                  form: {
-                    client_id: config.google_client_id,
-                    client_secret: config.google_client_secret,
-                    refresh_token: tokens.refresh_token,
-                    grant_type: 'refresh_token'
-                  }
-                },
-                (error, requestResponse, responseBody) => {
-                  if (!error && requestResponse.statusCode == 200) {
-                    res.json({
-                      code: 200,
-                      data: JSON.parse(responseBody)
-                    });
-                  } else if (requestResponse != null) {
-                    console.log(`error = ${requestResponse.statusCode}`);
-                    console.log(`error = ${error}`);
-                  }
-                });
-            });
-          }
-        }
-      );
-
-      // session["tokens"] = tokens;
-    } else {
-      // res.redirect('http://localhost:3000');
-    }
-  });
-
-
-  // const { tokens } = oauth2Client.getToken(code);
-
-  /* oauth2Client.setCredentials(tokens);
-
-
-  oauth2Client.on('tokens', (token) => {
-    if (token.refresh_token) {
-      // store the refresh_token in my database!
-      console.log(token.refresh_token);
-    }
-    console.log(token.access_token);
-  }); */
-
-  // res.redirect('http://localhost:3000');
-});
-
 router.get('/', (req, res) => {
   const { token, id, col } = req.query;
   const userId = id || getIdFromToken(token).sub;
@@ -645,6 +571,87 @@ router.get('/loginNaver', async (req, res) => {
   }
 });
 
+router.get('/naverLoginNew', async (req, res) => {
+  try {
+    const data = req.query;
+    const {
+      email, id, name, profile_image, social_type
+    } = data;
+
+    const userExist = await NaverAdv.findOne({ where: { NAD_ACC_ID: id } });
+
+    if (userExist) {
+      const { ADV_ID } = userExist;
+      const InfData = await Advertiser.findOne({ where: { ADV_ID } });
+      const { ADV_NAME, ADV_PHOTO, ADV_ACTIVATED } = InfData;
+
+      if (ADV_ACTIVATED === 0) {
+        res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
+      } else {
+        res.status(200).json({
+          userToken: createToken(ADV_ID),
+          userName: ADV_NAME,
+          userPhoto: ADV_PHOTO,
+          social_type: 'naver'
+        });
+      }
+    } else {
+      res.status(201).json({
+        navData: { id, profile_image }
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.post('/naverSignUp', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      navData, email, name, phone
+    } = data;
+
+    const userExist = await Advertiser.findOne({ where: { ADV_EMAIL: email } });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      const { id, profile_image } = navData;
+
+      const newUserData = await Advertiser.create({
+        ADV_NAME: name,
+        ADV_EMAIL: email,
+        ADV_TEL: phone,
+        ADV_PHOTO: profile_image || null,
+        ADV_BLOG_TYPE: '3'
+      });
+
+      const { ADV_ID, ADV_EMAIL } = newUserData;
+
+      const createParams = {
+        ADV_ID,
+        NAD_ACC_ID: id
+      };
+
+      await NaverAdv.create(createParams);
+
+      const encryptedId = encrypt(ADV_ID.toString());
+
+      await mailSendData({
+        receiver: ADV_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3003/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
+      });
+
+      res.status(200).json({ message: '가입 가능' });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 router.get('/loginKakao', async (req, res) => {
   try {
     const {
@@ -686,69 +693,216 @@ router.get('/loginKakao', async (req, res) => {
   }
 });
 
-router.get('/loginTwitch', (req, res) => {
-  const {
-    id, email, name, type, social_type
-  } = req.query;
+router.get('/kakaoLoginNew', async (req, res) => {
+  try {
+    const { id, photo } = req.query;
 
-  const payload = {
-    sub: id
-  };
+    const userExist = await Kakao.findOne({ where: { KAD_ACC_ID: id } });
 
+    if (userExist) {
+      const { ADV_ID } = userExist;
+      const AdvData = await Advertiser.findOne({ where: { ADV_ID } });
+      const { ADV_NAME, ADV_PHOTO, ADV_ACTIVATED } = AdvData;
 
-  if (type === '1') {
-    Advertiser.findOne({ where: { ADV_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Advertiser.create({
-          ADV_NAME: name,
-          ADV_EMAIL: email,
-          ADV_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: createToken(result.dataValues.ADV_ID),
-            userName: result.dataValues.ADV_NAME,
-            regState: result.dataValues.ADV_FULL_REG,
-            social_type
-          });
-        });
+      if (ADV_ACTIVATED === 0) {
+        res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
       } else {
-        res.json({
-          code: 200,
-          userToken: createToken(result.dataValues.ADV_ID),
-          userName: result.dataValues.ADV_NAME,
-          regState: result.dataValues.ADV_FULL_REG,
-          social_type
+        res.status(200).json({
+          userToken: createToken(ADV_ID),
+          userName: ADV_NAME,
+          userPhoto: ADV_PHOTO,
+          social_type: 'kakao'
         });
       }
-    }).error((err) => {
-      res.send('error has occured');
+    } else {
+      res.status(201).json({
+        kakaoData: { id, photo }
+      });
+    }
+  } catch (err) {
+    res.status(400).send({ message: err.message });
+  }
+});
+
+router.post('/kakaoSignUp', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      kakaoData, email, name, phone
+    } = data;
+
+    const userExist = await Advertiser.findOne({ where: { ADV_EMAIL: email } });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      const { id, photo } = kakaoData;
+
+      const newUserData = await Advertiser.create({
+        ADV_NAME: name,
+        ADV_EMAIL: email,
+        ADV_TEL: phone,
+        ADV_PHOTO: photo || null,
+        ADV_BLOG_TYPE: '4'
+      });
+
+      const { ADV_ID, ADV_EMAIL } = newUserData;
+
+      const createParams = {
+        ADV_ID,
+        KAD_ACC_ID: id
+      };
+
+      await Kakao.create(createParams);
+
+      const encryptedId = encrypt(ADV_ID.toString());
+
+      await mailSendData({
+        receiver: ADV_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3003/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
+      });
+
+      res.status(200).json({ message: '가입 가능' });
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/activate', async (req, res) => {
+  try {
+    const data = req.body;
+    const { hash } = data;
+
+    const ADV_ID = parseInt(decrypt(hash), 10);
+    await Advertiser.update({ ADV_ACTIVATED: 1 }, { where: { ADV_ID } });
+
+    res.status(200).json({ message: ADV_ID });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.get('/findId', async (req, res) => {
+  try {
+    const { phone, name } = req.query;
+
+    const dbData = await Advertiser.findOne({
+      where: { ADV_TEL: phone, ADV_NAME: name },
+      attributes: ['ADV_EMAIL']
     });
-  } else {
-    Influenser.findOne({ where: { INF_REG_ID: id } }).then((result) => {
-      if (!result) {
-        Influenser.create({
-          INF_NAME: name,
-          INF_EMAIL: email,
-          INF_REG_ID: id
-        }).then((result) => {
-          res.json({
-            code: 200,
-            userToken: createToken(result.dataValues.INF_ID),
-            userName: result.dataValues.INF_NAME,
-            social_type
+
+    if (!dbData) {
+      res.status(201).json({ message: '해당 사용자가 없습니다' });
+    } else {
+      const { ADV_EMAIL } = dbData;
+
+      res.status(200).json({
+        data: ADV_EMAIL
+      });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
+router.get('/resetPassLink', async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    const dbData = await Advertiser.findOne({
+      where: { ADV_EMAIL: email },
+      attributes: ['ADV_ID']
+    });
+
+    if (!dbData) {
+      res.status(201).json({ message: '해당 사용자가 없습니다' });
+    } else {
+      const { ADV_ID } = dbData;
+
+      const encryptedId = encrypt(ADV_ID.toString());
+
+      await mailSendData({
+        receiver: email,
+        content: '다음 링크로 이동하시면 비밀번호 변경하실 수 있습니다. \n'
+            + `http://localhost:3003/Reset/${encryptedId}`,
+        subject: '비밀번호 변경링크'
+      });
+
+      res.status(200).json({ message: 'success' });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
+router.post('/resetPass', async (req, res) => {
+  try {
+    const { hash, password } = req.body;
+
+    const ADV_ID = parseInt(decrypt(hash), 10);
+    const hashedPass = await hashData(password);
+    await Advertiser.update({ ADV_PASS: hashedPass }, { where: { ADV_ID } });
+
+    res.status(200).json({ message: 'success' });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
+});
+
+router.get('/getPass', async (req, res) => {
+  const { token } = req.query;
+  const userId = getIdFromToken(token).sub;
+  const dbData = await Advertiser.findOne({
+    where: { ADV_ID: userId },
+    attributes: ['ADV_PASS']
+  });
+  const { ADV_PASS } = dbData;
+
+  res.status(200).json({ data: ADV_PASS ? 'exist' : null });
+});
+
+router.post('/updatePass', async (req, res) => {
+  try {
+    const { currentPassword, password, token } = req.body;
+    const userId = getIdFromToken(token).sub;
+
+    if (currentPassword) {
+      const dbData = await Advertiser.findOne({
+        where: { ADV_ID: userId },
+        attributes: ['ADV_PASS']
+      });
+      const { ADV_PASS } = dbData;
+
+      Advertiser.options.instanceMethods.validPassword(currentPassword, ADV_PASS, async (passwordErr, isMatch) => {
+        if (passwordErr) {
+          res.status(400).send({
+            message: passwordErr.message
           });
-        });
-      } else {
-        res.json({
-          code: 200,
-          userToken: createToken(result.dataValues.INF_ID),
-          userName: result.dataValues.INF_NAME,
-          social_type
-        });
-      }
-    }).error((err) => {
-      res.send('error has occured');
+        } else if (!isMatch) {
+          res.status(201).json({ message: '기존 비밀번호는 일치하지 않습니다' });
+        } else {
+          const hashedCurrentPass = await hashData(password);
+          await Advertiser.update({ ADV_PASS: hashedCurrentPass }, { where: { ADV_ID: userId } });
+          res.status(200).json({ message: '수정되었습니다' });
+        }
+      });
+    } else {
+      const hashedPass = await hashData(password);
+      await Advertiser.update({ ADV_PASS: hashedPass }, { where: { ADV_ID: userId } });
+      res.status(200).json({ message: '수정되었습니다' });
+    }
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
     });
   }
 });
@@ -785,6 +939,48 @@ router.post('/signup', async (req, res) => {
         userPhoto: ADV_PHOTO,
         social_type: '일반'
       });
+    }
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
+router.post('/signupNew', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      email, name, password, phone
+    } = data;
+
+    const userExist = await Advertiser.findOne({
+      where: { ADV_EMAIL: email }
+    });
+
+    if (userExist) {
+      res.status(201).json({ message: '중복된 이메일입니다' });
+    } else {
+      const hashedPass = await hashData(password);
+      const params = {
+        ADV_EMAIL: email,
+        ADV_NAME: name,
+        ADV_TEL: phone,
+        ADV_PASS: hashedPass,
+        ADV_BLOG_TYPE: '5'
+      };
+
+      const newUserData = await Advertiser.create(params);
+
+      const { ADV_ID, ADV_EMAIL } = newUserData;
+
+      const encryptedId = encrypt(ADV_ID.toString());
+
+      await mailSendData({
+        receiver: ADV_EMAIL,
+        content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
+            + `http://localhost:3003/Activate/${encryptedId}`,
+        subject: '회원가입 인증 링크'
+      });
+      res.status(200).json({ message: '가입 가능' });
     }
   } catch (e) {
     res.status(400).send({ message: e.message });
