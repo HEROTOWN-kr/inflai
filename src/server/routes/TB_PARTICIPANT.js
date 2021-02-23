@@ -445,7 +445,7 @@ router.get('/getListBlog', async (req, res) => {
 
     const options = {
       where: { AD_ID: adId },
-      attributes: ['PAR_ID', 'PAR_NAME',
+      attributes: ['PAR_ID', 'PAR_NAME', 'PAR_STATUS',
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAR_DT'), '%Y-%m-%d %H:%i:%S'), 'PAR_DT']
       ],
       include: [
@@ -462,7 +462,8 @@ router.get('/getListBlog', async (req, res) => {
         },
       ],
       limit,
-      offset
+      offset,
+      order: [['PAR_ID', 'DESC']],
     };
 
     const CountOptions = { where: { AD_ID: adId } };

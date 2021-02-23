@@ -641,7 +641,7 @@ router.post('/naverSignUp', async (req, res) => {
       await mailSendData({
         receiver: ADV_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3003/Activate/${encryptedId}`,
+            + `https://biz.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
 
@@ -760,7 +760,7 @@ router.post('/kakaoSignUp', async (req, res) => {
       await mailSendData({
         receiver: ADV_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3003/Activate/${encryptedId}`,
+            + `https://biz.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
 
@@ -829,7 +829,7 @@ router.get('/resetPassLink', async (req, res) => {
       await mailSendData({
         receiver: email,
         content: '다음 링크로 이동하시면 비밀번호 변경하실 수 있습니다. \n'
-            + `http://localhost:3003/Reset/${encryptedId}`,
+            + `https://biz.inflai.com/Reset/${encryptedId}`,
         subject: '비밀번호 변경링크'
       });
 
@@ -977,7 +977,7 @@ router.post('/signupNew', async (req, res) => {
       await mailSendData({
         receiver: ADV_EMAIL,
         content: '환영합니다! 지금부터 인플라이에서 즐거운 인플루언서 활동을 즐겨보세요♥ 다음 링크로 이동하시면 회원가입이 완료됩니다. \n'
-            + `http://localhost:3003/Activate/${encryptedId}`,
+            + `https://biz.inflai.com/Activate/${encryptedId}`,
         subject: '회원가입 인증 링크'
       });
       res.status(200).json({ message: '가입 가능' });
