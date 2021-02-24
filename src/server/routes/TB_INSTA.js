@@ -667,6 +667,7 @@ router.get('/statsAge', async (req, res) => {
         }
         return acc;
       }, {});
+      const maxAge = Object.keys(ageStatsFiltered).reduce((a, b) => (ageStatsFiltered[a] > ageStatsFiltered[b] ? a : b));
       const ordered = {};
       Object.keys(ageStatsFiltered).sort().forEach((key) => {
         ordered[key] = ageStatsFiltered[key];
@@ -677,9 +678,11 @@ router.get('/statsAge', async (req, res) => {
         return acc;
       }, { interval: [], age: [] });
 
+
       res.json({
         code: 200,
         data: orderedFilter,
+        maxAge
       });
     } else {
       res.json({
@@ -738,10 +741,12 @@ router.get('/statsGender', async (req, res) => {
       } = ageStatsFiltered;
 
       const male = Math.round(100 / (sum / M));
+      const maxGender = M > F ? '남성' : '여성';
 
       res.json({
         code: 200,
         data: male,
+        maxGender
       });
     } else {
       res.json({
@@ -782,6 +787,9 @@ router.get('/statsMap', async (req, res) => {
     if (INS_STATE_LOC) {
       const ageStats = JSON.parse(INS_STATE_LOC);
 
+      const maxKey = Object.keys(ageStats).reduce((a, b) => (ageStats[a] > ageStats[b] ? a : b));
+      const maxLoc = isoCountries[maxKey];
+
       const ageStatsArray = Object.keys(ageStats).map((key, index) => ({ country: key, count: ageStats[key] }));
       const sortedStats = ageStatsArray.sort((a, b) => b.count - a.count);
       const results = sortedStats.reduce((acc, item, index) => {
@@ -799,6 +807,7 @@ router.get('/statsMap', async (req, res) => {
         code: 200,
         data: results,
         data2: results2,
+        maxLoc
       });
     } else {
       res.json({
