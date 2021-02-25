@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const request = require('request');
 const async = require('async');
 const { google } = require('googleapis');
-
 const uniqid = require('uniqid');
 const fse = require('fs-extra');
 const path = require('path');
@@ -12,6 +11,8 @@ const path = require('path');
 const config = require('../config/config');
 const configKey = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
+const Participant = require('../models').TB_PARTICIPANT;
+const Advertise = require('../models').TB_AD;
 const Instagram = require('../models').TB_INSTA;
 const Youtube = require('../models').TB_YOUTUBE;
 const Naver = require('../models').TB_NAVER;
@@ -36,9 +37,8 @@ const {
   encrypt,
   mailSendData
 } = require('../config/common');
-const testData = require('../config/testData');
 
-
+const { Op } = Sequelize;
 const router = express.Router();
 
 
@@ -353,15 +353,21 @@ router.post('/resetPass', async (req, res) => {
 });
 
 router.get('/getPass', async (req, res) => {
-  const { token } = req.query;
-  const userId = getIdFromToken(token).sub;
-  const dbData = await Influencer.findOne({
-    where: { INF_ID: userId },
-    attributes: ['INF_PASS']
-  });
-  const { INF_PASS } = dbData;
+  try {
+    const { token } = req.query;
+    const userId = getIdFromToken(token).sub;
+    const dbData = await Influencer.findOne({
+      where: { INF_ID: userId },
+      attributes: ['INF_PASS']
+    });
+    const { INF_PASS } = dbData;
 
-  res.status(200).json({ data: INF_PASS ? 'exist' : null });
+    res.status(200).json({ data: INF_PASS ? 'exist' : null });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message
+    });
+  }
 });
 
 router.post('/updatePass', async (req, res) => {
@@ -1651,5 +1657,70 @@ router.post('/delete', async (req, res, next) => {
     });
   }
 });
+
+router.post('/userDelete', async (req, res, next) => {
+  try {
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    const InfluencerInfo = await Influencer.findOne({
+      where: { INF_ID: userId },
+      attributes: ['INF_ID'],
+      include: [
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false,
+          include: [
+            {
+              model: Advertise,
+              attributes: ['AD_ID'],
+              where: { AD_SEL_END: { [Op.gte]: currentDate } }
+            }
+          ]
+        },
+        {
+          model: Instagram,
+          attributes: ['INS_ID'],
+          required: false,
+        },
+        {
+          model: Naver,
+          attributes: ['NAV_ID'],
+          required: false,
+        },
+        {
+          model: Youtube,
+          attributes: ['YOU_ID'],
+          required: false,
+        },
+        {
+          model: NaverInf,
+          attributes: ['NIF_ID'],
+          required: false,
+        },
+        {
+          model: Kakao,
+          attributes: ['KAK_ID'],
+          required: false,
+        },
+      ]
+    });
+
+    const { TB_PARTICIPANTs } = InfluencerInfo;
+
+    if (TB_PARTICIPANTs.length > 0) {
+      return res.status(201).json({ message: '진행중 캠페인이 있습니다!' });
+    }
+
+
+    return res.status(200).json({ data: InfluencerInfo });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+});
+
 
 module.exports = router;

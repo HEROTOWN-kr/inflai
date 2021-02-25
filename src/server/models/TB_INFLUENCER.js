@@ -99,6 +99,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: '0'
     },
+    INF_END_DT: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
     INF_DT: {
       type: 'TIMESTAMP',
       allowNull: false,

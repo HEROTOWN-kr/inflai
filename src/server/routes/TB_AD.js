@@ -298,6 +298,52 @@ router.get('/listHome', async (req, res) => {
   }
 });
 
+router.get('/search', async (req, res) => {
+  try {
+    const { searchWord } = req.query;
+
+    const props = {
+      where: {
+        AD_VISIBLE: 1,
+        [Op.or]: [
+          { AD_NAME: { [Op.like]: `%${searchWord}%` } },
+          { AD_SHRT_DISC: { [Op.like]: `%${searchWord}%` } },
+        ],
+      },
+      order: [['AD_ID', 'DESC']],
+      attributes: ['AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC', 'AD_INF_CNT', 'AD_TYPE'],
+      include: [
+        {
+          model: Photo,
+          where: { PHO_IS_MAIN: 1 },
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
+          required: false,
+        },
+        {
+          model: Participant,
+          attributes: ['PAR_ID'],
+          required: false,
+        },
+      ],
+    };
+
+    const advertises = await Advertise.findAll(props);
+
+    const advertisesMaped = advertises.map((item) => {
+      const { AD_INF_CNT, TB_PARTICIPANTs, TB_PHOTO_ADs } = item.dataValues;
+      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : null;
+      const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
+      return {
+        ...item.dataValues, proportion, mainImage
+      };
+    });
+
+    res.status(200).json({ data: advertisesMaped });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
+
 router.get('/campaignDetail', async (req, res) => {
   try {
     const data = req.query;
