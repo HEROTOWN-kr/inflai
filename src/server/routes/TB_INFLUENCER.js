@@ -18,6 +18,7 @@ const Youtube = require('../models').TB_YOUTUBE;
 const Naver = require('../models').TB_NAVER;
 const NaverInf = require('../models').TB_NAVER_INF;
 const Kakao = require('../models').TB_KAKAO_INF;
+const Favorites = require('../models').TB_FAVORITES;
 const Notification = require('../models').TB_NOTIFICATION;
 const {
   getInstagramMediaData,
@@ -620,7 +621,7 @@ router.post('/signupNew', async (req, res) => {
     } = data;
 
     const userExist = await Influencer.findOne({
-      where: { INF_EMAIL: email }
+      where: { INF_EMAIL: email, INF_END_DT: null }
     });
 
     if (userExist) {
@@ -893,7 +894,7 @@ router.post('/facebookSignUp', async (req, res) => {
       accessToken, fbId, instagramInfo, email, name, phone
     } = data;
 
-    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
+    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email, INF_END_DT: null } });
 
     if (userExist) {
       res.status(201).json({ message: '중복된 이메일입니다' });
@@ -1312,7 +1313,7 @@ router.post('/naverSignUp', async (req, res) => {
       navData, email, name, phone
     } = data;
 
-    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
+    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email, INF_END_DT: null } });
 
     if (userExist) {
       res.status(201).json({ message: '중복된 이메일입니다' });
@@ -1432,7 +1433,7 @@ router.post('/kakaoSignUp', async (req, res) => {
       kakaoData, email, name, phone
     } = data;
 
-    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email } });
+    const userExist = await Influencer.findOne({ where: { INF_EMAIL: email, INF_END_DT: null } });
 
     if (userExist) {
       res.status(201).json({ message: '중복된 이메일입니다' });
@@ -1687,6 +1688,11 @@ router.post('/userDelete', async (req, res, next) => {
           required: false,
         },
         {
+          model: Favorites,
+          attributes: ['FAV_ID'],
+          required: false,
+        },
+        {
           model: Naver,
           attributes: ['NAV_ID'],
           required: false,
@@ -1709,12 +1715,27 @@ router.post('/userDelete', async (req, res, next) => {
       ]
     });
 
-    const { TB_PARTICIPANTs } = InfluencerInfo;
+    const {
+      TB_PARTICIPANTs, TB_INSTum, TB_FAVORITEs, TB_NAVER, TB_YOUTUBE, TB_NAVER_INF, TB_KAKAO_INF
+    } = InfluencerInfo;
+    const { INS_ID } = TB_INSTum || {};
+    const { NAV_ID } = TB_NAVER || {};
+    const { YOU_ID } = TB_YOUTUBE || {};
+    const { NIF_ID } = TB_NAVER_INF || {};
+    const { KAK_ID } = TB_KAKAO_INF || {};
 
     if (TB_PARTICIPANTs.length > 0) {
-      return res.status(201).json({ message: '진행중 캠페인이 있습니다!' });
+      return res.status(400).json({ message: '진행중 캠페인이 있습니다!' });
     }
 
+    if (TB_FAVORITEs.length > 0) await Favorites.destroy({ where: { INF_ID: userId } });
+    if (INS_ID) await Instagram.destroy({ where: { INF_ID: userId } });
+    if (NAV_ID) await Naver.destroy({ where: { INF_ID: userId } });
+    if (YOU_ID) await Youtube.destroy({ where: { INF_ID: userId } });
+    if (NIF_ID) await NaverInf.destroy({ where: { INF_ID: userId } });
+    if (KAK_ID) await Kakao.destroy({ where: { INF_ID: userId } });
+
+    await Influencer.update({ INF_END_DT: currentDate }, { where: { INF_ID: userId } });
 
     return res.status(200).json({ data: InfluencerInfo });
   } catch (err) {

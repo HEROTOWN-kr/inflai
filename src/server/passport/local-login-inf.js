@@ -19,7 +19,7 @@ module.exports = new PassportLocalStrategy({
   };
 
   return Influenser.findOne({
-    where: { INF_EMAIL: userData.email }
+    where: { INF_EMAIL: userData.email, INF_END_DT: null }
   }).then((user) => {
     if (!user) {
       const error = new Error('해당 사용자가 없습니다');
