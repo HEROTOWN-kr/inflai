@@ -257,43 +257,47 @@ router.post('/save', async (req, res) => {
       });
 
       if (currentSubscription) {
-        res.status(201).json({ message: '이미 등록 된 구독이 있습니다!' });
-      } else {
-        const post = {
-          ADV_ID: advId,
-          PLN_ID
-        };
-        const newSubscription = await Subscription.create(post);
-
-
-        const planData = await Plan.findOne({
-          where: { PLN_ID },
-          attributes: ['PLN_NAME', 'PLN_MONTH', 'PLN_PRICE_MONTH'],
-        });
-
-
-        const { PLN_NAME, PLN_MONTH, PLN_PRICE_MONTH } = planData;
-        const price = Math.round(PLN_PRICE_MONTH * PLN_MONTH * 1.1);
-        const bankAccount = 'IBK기업은행 935-012238-01016';
-        const accountHolder = '(주)대가들이사는마을';
-        const kakaoMessageProps = {
-          phoneNumber: ADV_TEL,
-          advertiserName: ADV_NAME,
-          planName: PLN_NAME,
-          planMonth: PLN_MONTH,
-          price,
-          bankAccount,
-          accountHolder,
-        };
-        await membershipSubscribe(kakaoMessageProps);
-
-        res.status(200).json({ data: newSubscription });
+        return res.status(201).json({ message: '이미 등록 된 구독이 있습니다!' });
       }
-    } else {
-      res.status(202).json({ message: '회원의 정보가 필요합니다' });
+
+      const planData = await Plan.findOne({
+        where: { PLN_ID },
+        attributes: ['PLN_NAME', 'PLN_MONTH', 'PLN_PRICE_MONTH'],
+      });
+
+      const { PLN_NAME, PLN_MONTH, PLN_PRICE_MONTH } = planData;
+
+      const FinishDate = new Date(currentDate);
+      FinishDate.setMonth(FinishDate.getMonth() + PLN_MONTH);
+
+      const post = {
+        ADV_ID: advId,
+        PLN_ID,
+        SUB_START_DT: currentDate,
+        SUB_END_DT: FinishDate
+      };
+      const newSubscription = await Subscription.create(post);
+
+
+      const price = Math.round(PLN_PRICE_MONTH * PLN_MONTH * 1.1);
+      const bankAccount = 'IBK기업은행 935-012238-01016';
+      const accountHolder = '(주)대가들이사는마을';
+      const kakaoMessageProps = {
+        phoneNumber: ADV_TEL,
+        advertiserName: ADV_NAME,
+        planName: PLN_NAME,
+        planMonth: PLN_MONTH,
+        price,
+        bankAccount,
+        accountHolder,
+      };
+      await membershipSubscribe(kakaoMessageProps);
+
+      return res.status(200).json({ data: newSubscription });
     }
+    return res.status(202).json({ message: '회원의 정보가 필요합니다' });
   } catch (e) {
-    res.status(400);
+    return res.status(400);
   }
 });
 

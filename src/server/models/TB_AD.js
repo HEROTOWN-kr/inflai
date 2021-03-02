@@ -116,6 +116,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(2000),
       allowNull: true
     },
+    AD_MONEY: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     AD_MESSAGE: {
       type: DataTypes.STRING(45),
       allowNull: true,

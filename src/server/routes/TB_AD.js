@@ -355,7 +355,7 @@ router.get('/campaignDetail', async (req, res) => {
         'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_TYPE',
         'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
         'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
-        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_EMAIL'
+        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_MONEY', 'AD_EMAIL'
       ],
       include: [
         {
@@ -442,7 +442,7 @@ router.get('/notify', async (req, res) => {
     };
 
     const influencerData = await Influencer.findAll({
-      where: { INF_TEL: { [Op.like]: '010%' } },
+      where: { INF_TEL: { [Op.like]: '010%' }, INF_END_DT: null },
       // where: { INF_ID: 108 },
       attributes: ['INF_ID', 'INF_NAME', 'INF_TEL'],
     });
@@ -527,7 +527,7 @@ router.post('/createBiz', async (req, res) => {
       searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, sns, subtype, type,
       detailAddress, postcode, extraAddress,
-      roadAddress, provideInfo, detailInfo, discription, token
+      roadAddress, provideInfo, provideMoney, detailInfo, discription, token
     } = data;
 
     const userId = getIdFromToken(token).sub;
@@ -553,6 +553,7 @@ router.post('/createBiz', async (req, res) => {
     };
 
     if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideMoney) post.AD_MONEY = provideMoney;
     if (provideInfo) post.AD_PROVIDE = provideInfo;
     if (postcode) post.AD_POST_CODE = postcode;
     if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
