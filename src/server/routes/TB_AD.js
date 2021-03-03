@@ -577,7 +577,7 @@ router.post('/createAdmin', async (req, res) => {
       searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, sns, subtype, type,
       detailAddress, postcode, extraAddress,
-      roadAddress, provideInfo, detailInfo, discription
+      roadAddress, provideInfo, provideMoney, detailInfo, discription
     } = data;
 
     const post = {
@@ -601,6 +601,7 @@ router.post('/createAdmin', async (req, res) => {
     };
 
     if (detailInfo) post.AD_DETAIL = detailInfo;
+    if (provideMoney) post.AD_MONEY = provideMoney;
     if (provideInfo) post.AD_PROVIDE = provideInfo;
     if (postcode) post.AD_POST_CODE = postcode;
     if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
@@ -673,7 +674,7 @@ router.post('/updateAdmin', async (req, res) => {
       searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, discription, sns, subtype, type,
       detailAddress, postcode, extraAddress,
-      roadAddress, provideInfo, detailInfo, visible, adId
+      roadAddress, provideInfo, provideMoney, detailInfo, visible, adId
     } = data;
 
     const post = {
@@ -697,6 +698,7 @@ router.post('/updateAdmin', async (req, res) => {
 
     if (detailInfo) post.AD_DETAIL = detailInfo;
     if (provideInfo) post.AD_PROVIDE = provideInfo;
+    if (provideMoney) post.AD_MONEY = provideMoney;
     if (postcode) post.AD_POST_CODE = postcode;
     if (roadAddress) post.AD_ROAD_ADDR = roadAddress;
     if (detailAddress) post.AD_DETAIL_ADDR = detailAddress;

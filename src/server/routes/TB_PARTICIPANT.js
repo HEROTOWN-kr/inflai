@@ -413,7 +413,8 @@ router.get('/getListInsta', async (req, res) => {
       const { TB_INFLUENCER, ...ParData } = item.dataValues;
       const { TB_INSTum, ...InfData } = TB_INFLUENCER ? TB_INFLUENCER.dataValues : {};
       const { ...InsData } = TB_INSTum ? TB_INSTum.dataValues : {};
-      const rownum = ParticipantCount - offset - index;
+      // const rownum = ParticipantCount - offset - index;
+      const rownum = offset + index + 1;
 
       return {
         ...ParData,
