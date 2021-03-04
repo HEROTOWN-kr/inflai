@@ -852,25 +852,41 @@ router.get('/rankingInfo', async (req, res) => {
 
     const InstaData = await Instagram.findOne(options);
     const {
-      INS_TOKEN, INS_ACCOUNT_ID
+      INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT
     } = InstaData;
 
     const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
     const { biography, website } = detailInstaData;
+    const resData = { ...InstaData.dataValues, biography, website };
 
-    res.json({
-      code: 200,
-      data: {
-        ...InstaData.dataValues,
-        biography,
-        website
-      },
-    });
+    if (INS_FLWR && INS_CMNT) {
+      const percentRatio = (INS_CMNT / INS_FLWR) * 100;
+      if (percentRatio < 5) {
+        resData.ability = '저조';
+      } else if (percentRatio >= 5 && percentRatio < 10) {
+        resData.ability = '보통';
+      } else if (percentRatio >= 10 && percentRatio < 15) {
+        resData.ability = '우수';
+      } else {
+        resData.ability = '훌륭';
+      }
+
+      if (INS_FLWR < 1000) {
+        resData.influencerType = 'Nano Influencer';
+      } else if (INS_FLWR >= 1000 && INS_FLWR < 20000) {
+        resData.influencerType = 'Micro Influencer';
+      } else if (INS_FLWR >= 1000 && INS_FLWR < 20000) {
+        resData.influencerType = 'Professional';
+      } else if (INS_FLWR >= 1000 && INS_FLWR < 20000) {
+        resData.influencerType = 'Macro Influencer';
+      } else {
+        resData.influencerType = 'Celebrity';
+      }
+    }
+
+    return res.status(200).json({ data: resData });
   } catch (err) {
-    res.json({
-      code: 400,
-      data: err.message,
-    });
+    res.status(400).send({ data: err.message });
   }
 });
 
