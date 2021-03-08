@@ -11,7 +11,7 @@ const {
   hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, encrypt, decrypt
 } = require('../config/common');
 
-const { membershipSubscribe, membershipApprove } = require('../config/kakaoMessage');
+const { membershipSubscribe, membershipApprove, campaignApproved } = require('../config/kakaoMessage');
 const config = require('../config/config');
 
 const { Op } = Sequelize;
@@ -91,81 +91,18 @@ router.get('/test', async (req, res) => {
   }
 });
 
-router.get('/test2', async (req, res) => {
+router.get('/kakaoMessageTest', async (req, res) => {
   try {
-    const { fromId, toId } = req.query;
+    const props = {
+      phoneNumber: '01026763937',
+      campanyName: 'test campaign',
+      campaignId: 224,
+      advertiserName: 'Andrian',
+    };
 
-    const dbDataFrom = await Influencer.findOne({
-      attributes: ['INF_ID', 'INF_EMAIL', 'INF_PASS', 'INF_BLOG_TYPE'],
-      where: { INF_ID: fromId },
-      include: [
-        {
-          model: Participant,
-          attributes: ['PAR_ID'],
-          required: false
-        },
-        {
-          model: Favorites,
-          attributes: ['FAV_ID'],
-          required: false
-        },
-        {
-          model: Insta,
-          attributes: ['INS_ID'],
-          required: false
-        },
-        {
-          model: Youtube,
-          attributes: ['YOU_ID'],
-          required: false
-        },
-        {
-          model: Naver,
-          attributes: ['NAV_ID'],
-          required: false
-        },
-        {
-          model: Notification,
-          attributes: ['NOTI_ID'],
-          required: false
-        },
-        {
-          model: NavInf,
-          attributes: ['NIF_ID'],
-          required: false
-        },
-        {
-          model: KakInf,
-          attributes: ['KAK_ID'],
-          required: false
-        },
-      ]
-    });
+    await campaignApproved(props);
 
-    const {
-      INF_PASS, TB_PARTICIPANTs, TB_FAVORITEs, TB_YOUTUBE, TB_NAVER_INF, TB_KAKAO_INF
-    } = dbDataFrom;
-
-    if (TB_PARTICIPANTs && TB_PARTICIPANTs.length > 0) {
-      const parArray = TB_PARTICIPANTs.map(item => item.PAR_ID);
-      /* await Participant.update({ INF_ID: toId }, {
-        where: { PAR_ID: parArray }
-      }); */
-    }
-
-    if (TB_NAVER_INF && TB_NAVER_INF.NIF_ID) {
-      const { NIF_ID } = TB_NAVER_INF;
-
-      await NavInf.update({ INF_ID: toId }, { where: { NIF_ID } });
-    }
-
-    if (TB_KAKAO_INF && TB_KAKAO_INF.KAK_ID) {
-      const { KAK_ID } = TB_KAKAO_INF;
-
-      await KakInf.update({ INF_ID: toId }, { where: { KAK_ID } });
-    }
-
-    res.status(200).json({ data: '' });
+    res.status(200).json({ data: 'success' });
   } catch (err) {
     res.status(400).send(err.message);
   }

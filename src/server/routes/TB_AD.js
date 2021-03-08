@@ -674,7 +674,7 @@ router.post('/updateAdmin', async (req, res) => {
       searchFinish, searchKeyword, searchStart, selectStart, selectFinish,
       shortDisc, discription, sns, subtype, type,
       detailAddress, postcode, extraAddress,
-      roadAddress, provideInfo, provideMoney, detailInfo, visible, adId
+      roadAddress, provideInfo, provideMoney, detailInfo, visible, adId, visibilityChanged
     } = data;
 
     const post = {
@@ -707,6 +707,28 @@ router.post('/updateAdmin', async (req, res) => {
     await Advertise.update(post, {
       where: { AD_ID: adId }
     });
+
+    if (visibilityChanged) {
+      const dbData = await Advertise.findOne({
+        where: { AD_ID: adId },
+        include: [
+          {
+            model: Advertiser,
+            attributes: ['ADV_ID', 'ADV_TEL', 'ADV_NAME']
+          }
+        ]
+      });
+
+      const { TB_ADVERTISER } = dbData;
+      const { ADV_ID, ADV_TEL, ADV_NAME } = TB_ADVERTISER;
+
+      const props = {
+        phoneNumber: ADV_TEL,
+        campanyName: campaignName,
+        campaignId: adId,
+        advertiserName: ADV_NAME,
+      };
+    }
 
     res.status(200).json({ message: 'success' });
   } catch (err) {

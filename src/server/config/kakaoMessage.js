@@ -194,7 +194,54 @@ function participantSelected(props) {
   }));
 }
 
+function campaignApproved(props) {
+  const {
+    phoneNumber,
+    campanyName,
+    campaignId,
+    advertiserName,
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: '안녕하세요. 인플라이입니다.\n\n'
+          + `${advertiserName}님!\n`
+          + `${campanyName} 캠페인정보를 확인하세요!\n\n`
+          + '기쁜 소식 안내드립니다. 광고주님이 신청하신 캠페인이 승인되어 노출 중입니다. \n'
+          + '인플루언서 모집캠페인 모집기간은 최소 1주일이며 마감일이 지나면 반드시 3일 이내 신청자들 중 선정자를 뽑아주셔야 하고 상품(서비스)배송 해주셔야 합니다\n'
+          + '선정하신 인플루언서분들에게만 광고주분의 전화번호가 안내가 되며 인플루언서들이 궁금한 내용은 전화나 카톡등으로 물어볼 겁니다\n'
+          + '질문이 올 경우 최대한 자세히 답해 주시면 좀더 좋은 퀄리티의 게시물이 생성됩니다. \n'
+          + '해당 인플루언서의 연락처는 택배 및 게시물등 소통용으로만 사용할 수 있으며 그 외 사용목적일 경우 법에 따라 처벌 될 수 있습니다.',
+      TEMPLATE_CODE: 'KM13',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '바로 가기',
+      BTN_URLS1: `https://biz.inflai.com/Campaign/detail/${campaignId}`,
+      BTN_URLS2: `https://biz.inflai.com/Campaign/detail/${campaignId}`
+    }
+    // gzip: true
+  };
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
+}
+
 exports.membershipSubscribe = membershipSubscribe;
 exports.membershipApprove = membershipApprove;
 exports.campaignCreated = campaignCreated;
 exports.participantSelected = participantSelected;
+exports.campaignApproved = campaignApproved;

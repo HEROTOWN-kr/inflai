@@ -56,12 +56,11 @@ router.get('/list', async (req, res) => {
     const dbData = await Subscription.findAll({
       attributes: [
         'SUB_ID', 'SUB_START_DT', 'SUB_END_DT', 'SUB_STATUS',
-        // [Sequelize.literal('CASE SUB_STATUS WHEN \'1\' THEN \'대기\' ELSE \'승인\' END'), 'SUB_STATUS'],
       ],
       include: [
         {
           model: Plan,
-          attributes: ['PLN_NAME', 'PLN_MONTH']
+          attributes: ['PLN_NAME', 'PLN_MONTH', 'PLN_PRICE_MONTH']
         },
         {
           model: Advertiser,
@@ -189,18 +188,23 @@ router.get('/getInfluencers', async (req, res) => {
   try {
     const { token } = req.query;
     const userId = getIdFromToken(token).sub;
-    /* const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0); */
     const date = new Date();
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    const firstDayString = `${firstDay.getFullYear()}-${firstDay.getMonth() + 1}-01`;
-    const lastDayString = `${lastDay.getFullYear()}-${lastDay.getMonth() + 1}-${lastDay.getDate()}`;
+
+    const checkSubscription = await Subscription.findOne({
+      where: {
+        ADV_ID: userId,
+        SUB_STATUS: '2',
+        SUB_END_DT: { [Op.gte]: date }
+      },
+      attributes: ['SUB_ID', 'SUB_START_DT', 'SUB_END_DT'],
+    });
+
+    const { SUB_START_DT, SUB_END_DT } = checkSubscription;
 
     const Response = await Ad.findAll({
       where: {
         ADV_ID: userId,
-        AD_DT: { [Op.between]: [firstDayString, lastDayString] }
+        AD_DT: { [Op.between]: [SUB_START_DT, SUB_END_DT] }
       },
       attributes: ['AD_INF_CNT']
     });
@@ -274,24 +278,27 @@ router.post('/save', async (req, res) => {
         ADV_ID: advId,
         PLN_ID,
         SUB_START_DT: currentDate,
-        SUB_END_DT: FinishDate
+        SUB_END_DT: FinishDate,
+        SUB_STATUS: PLN_PRICE_MONTH === 0 ? '2' : '1'
       };
+
       const newSubscription = await Subscription.create(post);
 
-
-      const price = Math.round(PLN_PRICE_MONTH * PLN_MONTH * 1.1);
-      const bankAccount = 'IBK기업은행 935-012238-01016';
-      const accountHolder = '(주)대가들이사는마을';
-      const kakaoMessageProps = {
-        phoneNumber: ADV_TEL,
-        advertiserName: ADV_NAME,
-        planName: PLN_NAME,
-        planMonth: PLN_MONTH,
-        price,
-        bankAccount,
-        accountHolder,
-      };
-      await membershipSubscribe(kakaoMessageProps);
+      if (PLN_PRICE_MONTH !== 0) {
+        const price = Math.round(PLN_PRICE_MONTH * PLN_MONTH * 1.1);
+        const bankAccount = 'IBK기업은행 935-012238-01016';
+        const accountHolder = '(주)대가들이사는마을';
+        const kakaoMessageProps = {
+          phoneNumber: ADV_TEL,
+          advertiserName: ADV_NAME,
+          planName: PLN_NAME,
+          planMonth: PLN_MONTH,
+          price,
+          bankAccount,
+          accountHolder,
+        };
+        await membershipSubscribe(kakaoMessageProps);
+      }
 
       return res.status(200).json({ data: newSubscription });
     }
