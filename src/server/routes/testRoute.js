@@ -11,7 +11,7 @@ const {
   hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, encrypt, decrypt
 } = require('../config/common');
 
-const { membershipSubscribe, membershipApprove, campaignApproved } = require('../config/kakaoMessage');
+const { campaignApplied } = require('../config/kakaoMessage');
 const config = require('../config/config');
 
 const { Op } = Sequelize;
@@ -95,12 +95,12 @@ router.get('/kakaoMessageTest', async (req, res) => {
   try {
     const props = {
       phoneNumber: '01026763937',
-      campanyName: 'test campaign',
+      campaignName: 'TEST',
       campaignId: 224,
-      advertiserName: 'Andrian',
+      advertiserName: 'ANDRIAN',
     };
 
-    await campaignApproved(props);
+    await campaignApplied(props);
 
     res.status(200).json({ data: 'success' });
   } catch (err) {

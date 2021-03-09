@@ -5,6 +5,7 @@ const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
 const Naver = require('../models').TB_NAVER;
 const Advertise = require('../models').TB_AD;
+const Advertiser = require('../models').TB_ADVERTISER;
 const Photo = require('../models').TB_PHOTO_AD;
 const Favorites = require('../models').TB_FAVORITES;
 
@@ -15,7 +16,7 @@ const {
   createMessageOption3,
 } = require('../config/common');
 
-const { participantSelected } = require('../config/kakaoMessage');
+const { participantSelected, participantSelectedV2 } = require('../config/kakaoMessage');
 
 router.get('/', async (req, res) => {
   try {
@@ -532,20 +533,28 @@ router.post('/change', async (req, res) => {
         include: [
           {
             model: Advertise,
-            attributes: ['AD_NAME']
+            attributes: ['AD_NAME'],
+            include: [
+              {
+                model: Advertiser,
+                attributes: ['ADV_TEL'],
+              }
+            ]
           },
         ]
       });
 
       const { PAR_NAME, PAR_TEL, TB_AD } = ParticipantInfo;
-      const { AD_NAME } = TB_AD;
+      const { AD_NAME, TB_ADVERTISER } = TB_AD;
+      const { ADV_TEL } = TB_ADVERTISER;
       const props = {
         phoneNumber: PAR_TEL,
         campanyName: AD_NAME,
         influencerName: PAR_NAME,
+        advertiserPhone: ADV_TEL,
       };
 
-      await participantSelected(props);
+      await participantSelectedV2(props);
 
       res.status(200).json({ message: 'success' });
     }

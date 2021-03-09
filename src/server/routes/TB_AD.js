@@ -7,7 +7,9 @@ const uniqid = require('uniqid');
 const fse = require('fs-extra');
 const path = require('path');
 const config = require('../config/config');
-const { campaignCreated } = require('../config/kakaoMessage');
+const {
+  campaignCreated, campaignApproved, campaignApplied, campaignApproveRequest
+} = require('../config/kakaoMessage');
 
 const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
@@ -562,6 +564,37 @@ router.post('/createBiz', async (req, res) => {
 
     const newAdvertise = await Advertise.create(post);
 
+    const dbInfo = await Advertiser.findOne({
+      where: { ADV_ID: userId, },
+      attributes: ['ADV_NAME', 'ADV_TEL']
+    });
+
+    const { AD_ID, AD_DT } = newAdvertise;
+    const { ADV_NAME, ADV_TEL } = dbInfo;
+
+    const props = {
+      phoneNumber: ADV_TEL,
+      campaignName,
+      campaignId: AD_ID,
+      advertiserName: ADV_NAME,
+    };
+
+    const today = new Date();
+    const Year = today.getFullYear();
+    const Month = (`0${today.getMonth() + 1}`).slice(-2);
+    const Day = (`0${today.getDate()}`).slice(-2);
+
+    const adminProps = {
+      phoneNumber: '01026763937',
+      campaignName,
+      adminName: 'Andrian',
+      advertiserName: ADV_NAME,
+      createdDate: `${Year}-${Month}-${Day}`
+    };
+
+    await campaignApplied(props);
+    await campaignApproveRequest(adminProps);
+
     res.status(200).json({ data: newAdvertise });
   } catch (err) {
     res.status(400).send({ message: err.message });
@@ -720,7 +753,7 @@ router.post('/updateAdmin', async (req, res) => {
       });
 
       const { TB_ADVERTISER } = dbData;
-      const { ADV_ID, ADV_TEL, ADV_NAME } = TB_ADVERTISER;
+      const { ADV_TEL, ADV_NAME } = TB_ADVERTISER;
 
       const props = {
         phoneNumber: ADV_TEL,
@@ -728,6 +761,8 @@ router.post('/updateAdmin', async (req, res) => {
         campaignId: adId,
         advertiserName: ADV_NAME,
       };
+
+      await campaignApproved(props);
     }
 
     res.status(200).json({ message: 'success' });

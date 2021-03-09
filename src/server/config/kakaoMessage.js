@@ -194,6 +194,107 @@ function participantSelected(props) {
   }));
 }
 
+function participantSelectedV2(props) {
+  const {
+    phoneNumber,
+    campanyName,
+    influencerName,
+    advertiserPhone
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: '안녕하세요. 인플라이입니다.\n\n'
+          + `${influencerName}님!\n`
+          + '인공지능 인플루언서 플랫폼 인플라이[INFLAi]에 신청하신 캠페인에 선정되셨습니다!\n'
+          + '해당 캠페인은 광고주가 직접 올린 캠페인으로 궁금사항은 광고주분이랑 직접 소통하셔야 합니다.\n'
+          + `${campanyName} 캠페인정보를 확인하세요!\n\n`
+          + '◆ 체험 시 유의사항 ◆\n'
+          + '① 캠페인에 선정되신 분들께만 가는 알림입니다. 선정되신 분들의 정보(이름,전화번호,주소)는 상품발송 및 상품관련된 소통내용등으로 쓰이게 됩니다\n'
+          + '② 캠페인정보에서 가이드라인을 꼭 확인해주세요\n'
+          + '③ 포스팅기한은 1주일을 꼭 지켜주세요\n'
+          + '(제품: 수령 후 1주일 / 방문: 체험 후 1주일)\n'
+          + '④ 아래위치에 후기등록을 완료해주세요!\n'
+          + '[인플라이 로그인] → [캠페인 관리] → [선정된 캠페인] → [후기 등록]\n'
+          + '후기등록하면 광고주분이 해당 캠페인의 만족도를 표시하고 여러분의 누적등급이 표시되니 꼭 등록해주세요\n'
+          + '⑤ 위의 정보등이 부족하거나 궁금한 사항이 있으면 광고주랑 직접 소통하시면 됩니다\n'
+          + `⑥ 해당 캠페인광고주님 전화번호는 ${advertiserPhone} 입니다. 궁금사항은 직접 소통해주세요.\n`
+          + '해당 광고주의 연락처는 택배 및 게시물등 소통용으로만 사용할 수 있으며 그 외 사용목적일 경우 법에 따라 처벌 될 수 있습니다.',
+      TEMPLATE_CODE: 'KM11',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '바로 가기',
+      BTN_URLS1: 'https://influencer.inflai.com/Profile/CampaignInfo',
+      BTN_URLS2: 'https://influencer.inflai.com/Profile/CampaignInfo'
+    }
+    // gzip: true
+  };
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
+}
+
+function campaignApplied(props) {
+  const {
+    phoneNumber,
+    campaignName,
+    campaignId,
+    advertiserName,
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: '안녕하세요. 인플라이입니다.\n\n'
+          + `${advertiserName}님!\n`
+          + `${campaignName} 캠페인정보를 확인하세요!\n\n`
+          + '인공지능 인플루언서 플랫폼 인플라이에 캠페인등록 신청해주셔서 감사합니다\n'
+          + '24시간 이내 (근무일기준) 빠른 승인(반려)처리를 해서 노출하도록 하겠습니다\n'
+          + '마감일이 지나면 3일 이내 반드시 신청자들 중 선정자를 뽑아주셔야 하고 상품(서비스)배송 해주셔야 합니다.\n'
+          + '선정하신 인플루언서분들에게만 광고주분의 전화번호가 안내가 되며 인플루언서들이 궁금한 내용은 전화나 카톡등으로 물어볼 겁니다.\n'
+          + '최대한 자세히 답을 달아주세요.\n'
+          + '해당 인플루언서의 연락처는 택배 및 게시물등 소통용으로만 사용할 수 있으며 그 외 사용목적일 경우 법에 따라 처벌 될 수 있습니다.',
+      TEMPLATE_CODE: 'KM12',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '바로 가기',
+      BTN_URLS1: `https://biz.inflai.com/Campaign/detail/${campaignId}`,
+      BTN_URLS2: `https://biz.inflai.com/Campaign/detail/${campaignId}`
+    }
+    // gzip: true
+  };
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
+}
+
 function campaignApproved(props) {
   const {
     phoneNumber,
@@ -240,8 +341,56 @@ function campaignApproved(props) {
   }));
 }
 
+function campaignApproveRequest(props) {
+  const {
+    phoneNumber,
+    campaignName,
+    adminName,
+    advertiserName,
+    createdDate,
+  } = props;
+  const options = {
+    method: 'POST',
+    url: 'http://api.apistore.co.kr/kko/1.6/msg/herotown',
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+    headers: {
+      'x-waple-authorization': 'MTMwOTAtMTU5MTE2NTg4NjcyOC0xMmRiOGQzYi1mOTY0LTRiNTAtOWI4ZC0zYmY5NjQ3YjUwZjg='
+    },
+    form: {
+      PHONE: phoneNumber,
+      CALLBACK: '01023270875',
+      MSG: '안녕하세요. 인플라이입니다.\n\n'
+      + `${adminName}님!\n`
+      + `${advertiserName}님이\n`
+      + `${createdDate} 에\n`
+      + `${campaignName} 캠페인을 등록했습니다.\n\n`
+      + 'Admin 페이지에서 확인하시고, 승인해주세요.',
+      TEMPLATE_CODE: 'KM17',
+      FAILED_TYPE: 'N',
+      BTN_TYPES: '웹링크',
+      BTN_TXTS: '바로 가기',
+      BTN_URLS1: 'https://admin.inflai.com/Campaign/List',
+      BTN_URLS2: 'https://admin.inflai.com/Campaign/List'
+    }
+    // gzip: true
+  };
+
+  return new Promise(((resolve, reject) => {
+    request(options, (error, requestResponse, responseBody) => {
+      if (!error && requestResponse.statusCode == 200) {
+        resolve(responseBody);
+      } else if (requestResponse != null) {
+        reject(error);
+      }
+    });
+  }));
+}
+
 exports.membershipSubscribe = membershipSubscribe;
 exports.membershipApprove = membershipApprove;
 exports.campaignCreated = campaignCreated;
 exports.participantSelected = participantSelected;
 exports.campaignApproved = campaignApproved;
+exports.campaignApproveRequest = campaignApproveRequest;
+exports.campaignApplied = campaignApplied;
+exports.participantSelectedV2 = participantSelectedV2;
