@@ -800,7 +800,7 @@ router.get('/statsMap', async (req, res) => {
       }, { country: [], count: [], color: [] });
 
       const results2 = sortedStats.map(item => ({
-        id: item.country, name: isoCountries[item.country], value: item.count, color: '#FF835D'
+        id: item.country, name: isoCountries[item.country], value: item.count, color: '#ff5252'
       }));
 
       res.json({

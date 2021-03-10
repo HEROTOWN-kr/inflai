@@ -2,10 +2,8 @@ import React from 'react';
 import { Button } from '@material-ui/core';
 import axios from 'axios';
 
-function Payment({
-  item_data,
-  getCampaign
-}) {
+function Payment(props) {
+  const { item_data, getCampaign } = props;
   const userCode = 'imp16565297';
 
   const dataKCP = {
