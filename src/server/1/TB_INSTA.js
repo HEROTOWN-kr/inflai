@@ -82,6 +82,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(3000),
       allowNull: true
     },
+    INS_STATUS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '1'
+    },
     INS_IS_FAKE: {
       type: DataTypes.STRING(45),
       allowNull: true

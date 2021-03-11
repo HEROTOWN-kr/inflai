@@ -852,12 +852,19 @@ router.get('/rankingInfo', async (req, res) => {
 
     const InstaData = await Instagram.findOne(options);
     const {
-      INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT
+      INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT, INS_STATUS
     } = InstaData;
 
-    const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
-    const { biography, website } = detailInstaData;
-    const resData = { ...InstaData.dataValues, biography, website };
+    const resData = { ...InstaData.dataValues };
+
+    if (INS_STATUS) {
+      const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+      const { biography, website } = detailInstaData;
+      resData.biography = biography;
+      resData.website = website;
+    }
+
+    // const resData = { ...InstaData.dataValues, biography, website };
 
     if (INS_FLWR && INS_CMNT) {
       const percentRatio = (INS_CMNT / INS_FLWR) * 100;

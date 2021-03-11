@@ -3,10 +3,16 @@ const Influencer = require('../models').TB_INFLUENCER;
 const Insta = require('../models').TB_INSTA;
 const Admin = require('../models').TB_ADMIN;
 
-function calculatePoints(likeCount, commentsCount, followers, follows) {
-  const likesScore = likeCount * 10;
-  const commentsScore = commentsCount * 100;
-  const score = (followers + follows + likesScore + commentsScore) / 4;
+function calculatePoints(likeCount, commentsCount, followers, follows, media_count) {
+  // const likesScore = likeCount * 10;
+  // const commentsScore = commentsCount * 100;
+  // const score = (followers + follows + likesScore + commentsScore) / 4;
+
+  // const likesScore = Math.floor(likeCount / 100);
+  // const commentsScore = Math.floor(commentsCount / 10);
+  const likeToComment = (commentsCount / likeCount) * 100;
+  const roundLikeToComment = likeToComment.toFixed(1);
+  const score = (followers * roundLikeToComment) / 100 + media_count;
   return Math.floor(score);
 }
 
@@ -49,10 +55,11 @@ async function Update() {
         } = iData;
 
         if (error) {
+          await Insta.update({ INS_STATUS: 0 }, { where: { INF_ID } });
           return { INF_ID, message: 'not updated' };
         }
 
-        const score = calculatePoints(likeSum, commentsSum, followers_count, follows_count);
+        const score = calculatePoints(likeSum, commentsSum, followers_count, follows_count, media_count);
 
         try {
           const result = await Insta.update({

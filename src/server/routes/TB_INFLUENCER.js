@@ -86,7 +86,7 @@ router.get('/', async (req, res) => {
       include: [
         {
           model: Instagram,
-          attributes: ['INS_ID', 'INS_USERNAME',
+          attributes: ['INS_ID', 'INS_USERNAME', 'INS_STATUS',
             [Sequelize.fn('DATE_FORMAT', Sequelize.col('INS_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'INS_DT'],
 
           ],
@@ -459,7 +459,7 @@ router.get('/getApplicant', async (req, res) => {
       include: [
         {
           model: Instagram,
-          attributes: ['INS_ID', 'INS_USERNAME',
+          attributes: ['INS_ID', 'INS_USERNAME', 'INS_STATUS',
             [Sequelize.fn('DATE_FORMAT', Sequelize.col('INS_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'INS_DT'],
           ],
           required: false,
@@ -483,16 +483,20 @@ router.get('/getApplicant', async (req, res) => {
 
     const result = await Influencer.findOne(options);
     const data = result.dataValues;
+    const { TB_INSTum, TB_YOUTUBE, TB_NAVER } = result;
+    const { INS_USERNAME, INS_STATUS } = TB_INSTum || {};
+    const { YOU_NAME } = TB_YOUTUBE || {};
+    const { NAV_URL } = TB_NAVER || {};
 
-    const instaUserName = data.TB_INSTum && data.TB_INSTum.INS_USERNAME ? data.TB_INSTum.INS_USERNAME : '';
-    const youtubeChannelName = data.TB_YOUTUBE && data.TB_YOUTUBE.YOU_NAME ? data.TB_YOUTUBE.YOU_NAME : '';
-    const naverChannelName = data.TB_NAVER && data.TB_NAVER.NAV_URL ? data.TB_NAVER.NAV_URL : '';
+    const instaUserName = INS_USERNAME || '';
+    const youtubeChannelName = YOU_NAME || '';
+    const naverChannelName = NAV_URL || '';
     // const { INF_PHOTO } = data;
     // if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
     res.json({
       code: 200,
       data: {
-        ...data, instaUserName, youtubeChannelName, naverChannelName
+        ...data, instaUserName, youtubeChannelName, naverChannelName, INS_STATUS
       }
     });
   } catch (err) {
