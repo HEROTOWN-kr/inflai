@@ -55,7 +55,16 @@ async function Update() {
         } = iData;
 
         if (error) {
-          await Insta.update({ INS_STATUS: 0 }, { where: { INF_ID } });
+          const InstaData = Insta.findOne({
+            where: { INF_ID },
+            attributes: ['INS_LIKES', 'INS_CMNT', 'INS_MEDIA_CNT', 'INS_FLW', 'INS_FLWR'],
+          });
+          const {
+            INS_LIKES, INS_CMNT, INS_MEDIA_CNT, INS_FLW, INS_FLWR
+          } = InstaData;
+          const score = calculatePoints(INS_LIKES, INS_CMNT, INS_FLWR, INS_FLW, INS_MEDIA_CNT);
+
+          await Insta.update({ INS_SCORE: score, INS_STATUS: 0 }, { where: { INF_ID } });
           return { INF_ID, message: 'not updated' };
         }
 

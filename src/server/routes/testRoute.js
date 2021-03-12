@@ -8,7 +8,7 @@ const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const {
-  hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, encrypt, decrypt
+  hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, getInstagramInsights, encrypt, decrypt
 } = require('../config/common');
 
 const { campaignApplied } = require('../config/kakaoMessage');
@@ -33,6 +33,19 @@ const NavAdv = require('../models').TB_NAVER_ADV;
 const test = require('./test');
 
 const router = express.Router();
+
+function calculatePoints(likeCount, commentsCount, followers, follows, media_count) {
+  // const likesScore = likeCount * 10;
+  // const commentsScore = commentsCount * 100;
+  // const score = (followers + follows + likesScore + commentsScore) / 4;
+
+  // const likesScore = Math.floor(likeCount / 100);
+  // const commentsScore = Math.floor(commentsCount / 10);
+  const likeToComment = (commentsCount / likeCount) * 100;
+  const roundLikeToComment = likeToComment.toFixed(4);
+  const score = (followers * roundLikeToComment) / 100 + media_count;
+  return Math.floor(score);
+}
 
 router.get('/test', async (req, res) => {
   try {
@@ -285,32 +298,148 @@ router.get('/updateFbIdOne', async (req, res) => {
   }
 });
 
-router.post('/instaTest', async (req, res) => {
+router.get('/instaTest', async (req, res) => {
   try {
-    const { data } = req.body;
+    const { INS_ID } = req.query;
+    const InstaData = await Insta.findOne({
+      where: { INS_ID },
+      attributes: ['INS_ACCOUNT_ID', 'INS_TOKEN', 'INS_USERNAME'],
+    });
+    const { INS_ACCOUNT_ID, INS_TOKEN, INS_USERNAME } = InstaData;
 
+    const Insights = await getInstagramInsights(INS_ACCOUNT_ID, INS_TOKEN);
+
+    const post = {};
+
+    if (Insights.length > 0) {
+      const genderAgeArray = Insights.filter(item => item.name === 'audience_gender_age');
+      const countryArray = Insights.filter(item => item.name === 'audience_country');
+      if (genderAgeArray.length > 0 && genderAgeArray[0].values && genderAgeArray[0].values.length > 0) {
+        post.INS_STAT_AGE_GENDER = JSON.stringify(genderAgeArray[0].values[0].value);
+      }
+      if (countryArray.length > 0 && countryArray[0].values && countryArray[0].values.length > 0) {
+        post.INS_STATE_LOC = JSON.stringify(countryArray[0].values[0].value);
+      }
+    }
+
+    if (Object.keys(post).length > 0) {
+      await Insta.update(post, { where: { INS_ID } });
+    }
 
     res.status(200).json({
-      message: 'success',
+      name: INS_USERNAME,
+      data: Insights,
     });
   } catch (err) {
     res.status(400).send(err);
   }
 });
 
-router.post('/testPost', async (req, res) => {
+router.post('/cronFileTest', async (req, res) => {
   try {
-    const { file } = req.files;
-    const currentPath = file.path;
-    const uid = uniqid();
-    const fileExtension = path.extname(file.name);
-    const fileName = `${uid}_400_316${fileExtension}`;
-    const tmpPath = `${config.tmp}${fileName}`;
-    const uploadPath = path.normalize(`${config.attachRoot}/test/${fileName}`);
+    const date = new Date();
+    const timestamp = date.getTime();
 
-    const imageData = await resizeImage(currentPath, tmpPath, 400, 316);
+    const instaInfo = await Insta.findAll();
 
-    await fse.move(tmpPath, uploadPath, { clobber: true });
+    const instaData = await Promise.all(
+      instaInfo.map(async (iData) => {
+        const { INF_ID, INS_ACCOUNT_ID, INS_TOKEN } = iData;
+        // const { INF_ID, INF_INST_ID, INF_TOKEN } = iData;
+        try {
+          const accountData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+          const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+
+          const statistics = mediaData.reduce((acc, el) => ({
+            likeSum: (acc.likeSum || 0) + el.like_count,
+            commentsSum: (acc.commentsSum || 0) + el.comments_count,
+          }), {});
+
+          return {
+            INF_ID, INS_TOKEN, ...accountData, ...statistics
+          };
+        } catch (error) {
+          return { INF_ID, error };
+        }
+      })
+    );
+
+    const updatedArray = await Promise.all(
+      instaData.map(async (iData) => {
+        const {
+          INF_ID, INF_TOKEN, likeSum, commentsSum, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
+        } = iData;
+
+        if (error) {
+          const InstaData = await Insta.findOne({
+            where: { INF_ID },
+            attributes: ['INS_LIKES', 'INS_CMNT', 'INS_MEDIA_CNT', 'INS_FLW', 'INS_FLWR'],
+          });
+          const {
+            INS_LIKES, INS_CMNT, INS_MEDIA_CNT, INS_FLW, INS_FLWR
+          } = InstaData;
+          const score = calculatePoints(INS_LIKES, INS_CMNT, INS_FLWR, INS_FLW, INS_MEDIA_CNT);
+
+          await Insta.update({ INS_SCORE: score, INS_STATUS: 0 }, { where: { INF_ID } });
+          return { INF_ID, message: 'not updated' };
+        }
+
+        const score = calculatePoints(likeSum, commentsSum, followers_count, follows_count, media_count);
+
+        try {
+          const result = await Insta.update({
+            INS_TOKEN: INF_TOKEN,
+            INS_ACCOUNT_ID: id,
+            INS_NAME: name ? name.normalize('NFC') : null,
+            INS_USERNAME: username,
+            INS_MEDIA_CNT: media_count,
+            INS_FLWR: followers_count,
+            INS_FLW: follows_count,
+            INS_PROFILE_IMG: profile_picture_url,
+            INS_LIKES: likeSum,
+            INS_CMNT: commentsSum,
+            INS_SCORE: score
+          }, {
+            where: { INF_ID }
+          });
+          return { INF_ID, message: result ? 'updated' : 'notUpdated' };
+        } catch (err) {
+          return {
+            INF_ID,
+            name,
+            message: err.message,
+            query: err.sql
+          };
+        }
+      })
+    );
+
+    const scoreInfo = await Insta.findAll({ attributes: ['INS_ID', 'INS_SCORE'] });
+    const sortedScore = scoreInfo.sort((a, b) => b.INS_SCORE - a.INS_SCORE);
+    let rank = 1;
+
+    const rankArray = sortedScore.map((item, index) => {
+      if (index > 0 && item.INS_SCORE < sortedScore[index - 1].INS_SCORE) {
+        rank += 1;
+      }
+      return { ...item.dataValues, rank };
+    });
+
+    const PromiseArray = rankArray.map(item => new Promise(((resolve, reject) => {
+      Insta.update({ INS_RANK: item.rank }, { where: { INS_ID: item.INS_ID } }).then((result) => {
+        resolve('success');
+      });
+    })));
+
+    const updateRes = await Promise.all(PromiseArray);
+
+
+    console.log(updateRes);
+
+
+    Admin.update({ ADM_UPDATE_DT: timestamp }, {
+      where: { ADM_ID: 1 }
+    });
 
     res.status(200).json({
       message: 'success'

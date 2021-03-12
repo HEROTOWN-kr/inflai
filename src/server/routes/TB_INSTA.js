@@ -1013,6 +1013,30 @@ router.post('/add', async (req, res) => {
   }
 });
 
+router.post('/reconnect', async (req, res) => {
+  try {
+    const data = req.body;
+    const {
+      facebookToken, token
+    } = data;
+    const id = getIdFromToken(token).sub;
+    const longToken = await getFacebookLongToken(facebookToken);
+
+    const instaAccountData = await Instagram.findOne({ where: { INF_ID: id } });
+
+    const { INS_ACCOUNT_ID } = instaAccountData;
+    const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, longToken);
+
+    if (!mediaData) {
+      return res.status(201).json({ message: '계정 해제해서 다시 연결해주세요' });
+    }
+    await Instagram.update({ INS_TOKEN: longToken, INS_STATUS: 1 }, { where: { INF_ID: id } });
+    return res.status(200).json({ message: 'success' });
+  } catch (err) {
+    return res.status(400).json({ message: '계정 해제해서 다시 연결해주세요' });
+  }
+});
+
 router.post('/delete', async (req, res) => {
   try {
     const data = req.body;

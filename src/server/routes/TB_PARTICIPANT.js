@@ -393,7 +393,7 @@ router.get('/getListInsta', async (req, res) => {
             {
               model: Insta,
               as: 'TB_INSTum',
-              attributes: ['INS_ID', 'INS_USERNAME', 'INS_FLWR', 'INS_LIKES', 'INS_CMNT', 'INS_SCORE', 'INS_RANK'],
+              attributes: ['INS_ID', 'INS_USERNAME', 'INS_FLWR', 'INS_LIKES', 'INS_CMNT', 'INS_SCORE', 'INS_RANK', 'INS_MEDIA_CNT'],
               required: false,
             },
           ],
