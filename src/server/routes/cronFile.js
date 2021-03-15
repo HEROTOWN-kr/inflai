@@ -12,7 +12,7 @@ function calculatePoints(likeCount, commentsCount, followers, follows, media_cou
   // const commentsScore = Math.floor(commentsCount / 10);
   const likeToComment = (commentsCount / likeCount) * 100;
   const roundLikeToComment = likeToComment.toFixed(1);
-  const score = (followers * roundLikeToComment) / 100 + media_count;
+  const score = (followers * roundLikeToComment) / 100;
   return Math.floor(score);
 }
 
@@ -55,7 +55,7 @@ async function Update() {
         } = iData;
 
         if (error) {
-          const InstaData = Insta.findOne({
+          const InstaData = await Insta.findOne({
             where: { INF_ID },
             attributes: ['INS_LIKES', 'INS_CMNT', 'INS_MEDIA_CNT', 'INS_FLW', 'INS_FLWR'],
           });

@@ -7,6 +7,7 @@ const path = require('path');
 const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
+const AWS = require('aws-sdk');
 const {
   hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, getInstagramInsights, encrypt, decrypt
 } = require('../config/common');
@@ -42,8 +43,8 @@ function calculatePoints(likeCount, commentsCount, followers, follows, media_cou
   // const likesScore = Math.floor(likeCount / 100);
   // const commentsScore = Math.floor(commentsCount / 10);
   const likeToComment = (commentsCount / likeCount) * 100;
-  const roundLikeToComment = likeToComment.toFixed(4);
-  const score = (followers * roundLikeToComment) / 100 + media_count;
+  const roundLikeToComment = likeToComment.toFixed(1);
+  const score = (followers * roundLikeToComment) / 100;
   return Math.floor(score);
 }
 
@@ -364,7 +365,7 @@ router.post('/cronFileTest', async (req, res) => {
       })
     );
 
-    const updatedArray = await Promise.all(
+    await Promise.all(
       instaData.map(async (iData) => {
         const {
           INF_ID, INF_TOKEN, likeSum, commentsSum, followers_count, follows_count, media_count, username, profile_picture_url, name, id, error
@@ -413,33 +414,6 @@ router.post('/cronFileTest', async (req, res) => {
         }
       })
     );
-
-    const scoreInfo = await Insta.findAll({ attributes: ['INS_ID', 'INS_SCORE'] });
-    const sortedScore = scoreInfo.sort((a, b) => b.INS_SCORE - a.INS_SCORE);
-    let rank = 1;
-
-    const rankArray = sortedScore.map((item, index) => {
-      if (index > 0 && item.INS_SCORE < sortedScore[index - 1].INS_SCORE) {
-        rank += 1;
-      }
-      return { ...item.dataValues, rank };
-    });
-
-    const PromiseArray = rankArray.map(item => new Promise(((resolve, reject) => {
-      Insta.update({ INS_RANK: item.rank }, { where: { INS_ID: item.INS_ID } }).then((result) => {
-        resolve('success');
-      });
-    })));
-
-    const updateRes = await Promise.all(PromiseArray);
-
-
-    console.log(updateRes);
-
-
-    Admin.update({ ADM_UPDATE_DT: timestamp }, {
-      where: { ADM_ID: 1 }
-    });
 
     res.status(200).json({
       message: 'success'
@@ -1075,21 +1049,34 @@ router.get('/updateTest', async (req, res) => {
   }
 });
 
-router.get('/getDate', async (req, res) => {
-  const data = await Admin.findOne({
-    where: { ADM_ID: 1 },
-    attributes: [
-      'ADM_UPDATE_DT',
-      [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADM_UPDATE_DT'), '%Y.%m.%d %H:%i:%s'), 'ADM_UPDATE_DT2'],
-      // [Sequelize.fn('DATE_ADD', Sequelize.col('ADM_UPDATE_DT'), 'INTERVAL 9 HOUR')],
-      // [Sequelize.fn('FROM_UNIXTIME', Sequelize.col('ADM_UPDATE_DT'))],
-    ],
-  });
+router.post('/bucketUpload', async (req, res) => {
+  try {
+    const s3 = new AWS.S3({
+      accessKeyId: 'AKIASPJQFWQCK6NKSMJ4',
+      secretAccessKey: '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'
+    });
 
-  res.json({
-    code: 200,
-    data
-  });
+    const file = req.files.upload;
+    const fileName = file.name;
+
+    fs.readFile(fileName, (err, data) => {
+      if (err) throw err;
+      const params = {
+        Bucket: 'testBucket', // pass your bucket name
+        Key: 'contacts.csv', // file will be saved as testBucket/contacts.csv
+        Body: JSON.stringify(data, null, 2)
+      };
+      s3.upload(params, (s3Err, data) => {
+        if (s3Err) throw s3Err;
+        console.log(`File uploaded successfully at ${data.Location}`);
+      });
+    });
+
+
+    return res.status(200).json({ message: 'success' });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
 });
 
 module.exports = router;
