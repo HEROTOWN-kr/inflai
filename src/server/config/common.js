@@ -3,6 +3,7 @@ const async = require('async');
 const fs = require('fs');
 const path = require('path');
 const uniqid = require('uniqid');
+const AWS = require('aws-sdk');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const request = require('request');
@@ -688,7 +689,6 @@ const countryCodes = {
 
 };
 
-
 function encrypt(text) {
   const ENCRYPTION_KEY = 'SgVkYp2s5v8y/B?E(H+MbQeThWmZq4t6'; // Must be 256 bits (32 characters)
   const IV_LENGTH = 16; // For AES, this is always 16
@@ -715,6 +715,37 @@ function decrypt(text) {
   return decrypted.toString();
 }
 
+function readFile(currentPath) {
+  return new Promise(((resolve, reject) => {
+    fs.readFile(currentPath, (err, data) => {
+      if (err) reject(err);
+      resolve(data);
+    });
+  }));
+}
+
+function s3Upload(name, type, data) {
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIASPJQFWQCK6NKSMJ4',
+    secretAccessKey: 'hyfZPN+WfkemO6Fq/vwzr3kAB8DwQ+STFQfxH2UN'
+  });
+
+  const params = {
+    ACL: 'public-read',
+    Bucket: 'inflai-aws-bucket', // pass your bucket name
+    Key: name, // file will be saved as testBucket/contacts.csv
+    ContentType: type,
+    // Body: JSON.stringify(data, null, 2)
+    Body: data
+  };
+
+  return new Promise(((resolve, reject) => {
+    s3.upload(params, (s3Err, s3Data) => {
+      if (s3Err) reject(s3Err);
+      resolve(s3Data);
+    });
+  }));
+}
 
 exports.getIdFromToken = getIdFromToken;
 exports.createToken = createToken;
@@ -743,3 +774,5 @@ exports.asyncMiddleware = asyncMiddleware;
 exports.getGoogleData = getGoogleData;
 exports.encrypt = encrypt;
 exports.decrypt = decrypt;
+exports.readFile = readFile;
+exports.s3Upload = s3Upload;

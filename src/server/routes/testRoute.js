@@ -9,7 +9,18 @@ const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const AWS = require('aws-sdk');
 const {
-  hashData, mailSendData, resizeImage, getFacebookInfo, getInstagramMediaData, getInstagramData, googleVision, getInstagramInsights, encrypt, decrypt
+  hashData,
+  mailSendData,
+  resizeImage,
+  getFacebookInfo,
+  getInstagramMediaData,
+  getInstagramData,
+  googleVision,
+  getInstagramInsights,
+  encrypt,
+  decrypt,
+  readFile,
+  s3Upload
 } = require('../config/common');
 
 const { campaignApplied } = require('../config/kakaoMessage');
@@ -1051,29 +1062,19 @@ router.get('/updateTest', async (req, res) => {
 
 router.post('/bucketUpload', async (req, res) => {
   try {
-    const s3 = new AWS.S3({
-      accessKeyId: 'AKIASPJQFWQCK6NKSMJ4',
-      secretAccessKey: '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'
-    });
-
     const file = req.files.upload;
-    const fileName = file.name;
+    const currentPath = file.path;
+    const fileName = `testFolder/${file.name}`;
+    /*
+      const fileExtension = path.extname(file.name);
+      const fileName = `${fileExtension}`;
+      const tmpPath = path.normalize(`${config.tmp}${fileName}`);
+    */
 
-    fs.readFile(fileName, (err, data) => {
-      if (err) throw err;
-      const params = {
-        Bucket: 'testBucket', // pass your bucket name
-        Key: 'contacts.csv', // file will be saved as testBucket/contacts.csv
-        Body: JSON.stringify(data, null, 2)
-      };
-      s3.upload(params, (s3Err, data) => {
-        if (s3Err) throw s3Err;
-        console.log(`File uploaded successfully at ${data.Location}`);
-      });
-    });
-
-
-    return res.status(200).json({ message: 'success' });
+    const fileData = await readFile(currentPath);
+    const s3Data = await s3Upload(fileName, file.type, fileData);
+    await fse.remove(currentPath);
+    return res.status(200).json({ data: s3Data });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }
