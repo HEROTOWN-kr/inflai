@@ -42,6 +42,7 @@ const NavInf = require('../models').TB_NAVER_INF;
 const KakInf = require('../models').TB_KAKAO_INF;
 const KakAdv = require('../models').TB_KAKAO_ADV;
 const NavAdv = require('../models').TB_NAVER_ADV;
+const Photos = require('../models').TB_PHOTO_AD;
 const test = require('./test');
 
 const router = express.Router();
@@ -1062,19 +1063,34 @@ router.get('/updateTest', async (req, res) => {
 
 router.post('/bucketUpload', async (req, res) => {
   try {
-    const file = req.files.upload;
-    const currentPath = file.path;
-    const fileName = `testFolder/${file.name}`;
-    /*
-      const fileExtension = path.extname(file.name);
-      const fileName = `${fileExtension}`;
-      const tmpPath = path.normalize(`${config.tmp}${fileName}`);
-    */
+    const dbPhotos = await Photos.findAll({
+      attributes: ['PHO_ID', 'PHO_FILE']
+    });
 
-    const fileData = await readFile(currentPath);
-    const s3Data = await s3Upload(fileName, file.type, fileData);
-    await fse.remove(currentPath);
-    return res.status(200).json({ data: s3Data });
+    const PhotoPromises = dbPhotos.map(item => new Promise((async (resolve, reject) => {
+      const { PHO_ID, PHO_FILE } = item;
+      const photoKey = PHO_FILE.replace('/attach/', '');
+      const photoUrl = `https://inflai-aws-bucket.s3.ap-northeast-2.amazonaws.com/${photoKey}`;
+
+      try {
+        const post = {
+          PHO_FILE_URL: photoUrl,
+          PHO_FILE_KEY: photoKey
+        };
+        await Photos.update(post, { where: { PHO_ID } });
+        resolve({
+          result: 'updated', PHO_ID, photoKey, photoUrl
+        });
+      } catch (err) {
+        resolve({
+          result: 'not updated', PHO_ID, photoKey, photoUrl
+        });
+      }
+    })));
+
+    const allPromises = await Promise.all(PhotoPromises);
+
+    return res.status(200).json({ data: allPromises });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }

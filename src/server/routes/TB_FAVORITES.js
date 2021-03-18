@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
           include: [
             {
               model: Photo,
-              attributes: ['PHO_ID', 'PHO_FILE'],
+              attributes: ['PHO_ID', 'PHO_FILE', 'PHO_FILE_URL'],
               required: false
             },
             {

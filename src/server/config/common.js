@@ -16,6 +16,11 @@ const config = require('../config');
 const testData = require('../config/testData');
 const configKey = require('./config');
 
+const s3 = new AWS.S3({
+  accessKeyId: 'AKIASPJQFWQCK6NKSMJ4',
+  secretAccessKey: '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'
+});
+
 
 function getIdFromToken(token) {
   const id = jwt.verify(token, config.jwtSecret);
@@ -725,11 +730,6 @@ function readFile(currentPath) {
 }
 
 function s3Upload(name, type, data) {
-  const s3 = new AWS.S3({
-    accessKeyId: 'AKIASPJQFWQCK6NKSMJ4',
-    secretAccessKey: 'hyfZPN+WfkemO6Fq/vwzr3kAB8DwQ+STFQfxH2UN'
-  });
-
   const params = {
     ACL: 'public-read',
     Bucket: 'inflai-aws-bucket', // pass your bucket name
@@ -741,6 +741,20 @@ function s3Upload(name, type, data) {
 
   return new Promise(((resolve, reject) => {
     s3.upload(params, (s3Err, s3Data) => {
+      if (s3Err) reject(s3Err);
+      resolve(s3Data);
+    });
+  }));
+}
+
+function s3DeleteObject(name) {
+  const params = {
+    Bucket: 'inflai-aws-bucket', // pass your bucket name
+    Key: name, // file will be saved as testBucket/contacts.csv
+  };
+
+  return new Promise(((resolve, reject) => {
+    s3.deleteObject(params, (s3Err, s3Data) => {
       if (s3Err) reject(s3Err);
       resolve(s3Data);
     });
@@ -776,3 +790,4 @@ exports.encrypt = encrypt;
 exports.decrypt = decrypt;
 exports.readFile = readFile;
 exports.s3Upload = s3Upload;
+exports.s3DeleteObject = s3DeleteObject;

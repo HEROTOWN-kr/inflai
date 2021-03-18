@@ -19,7 +19,9 @@ const Participant = require('../models').TB_PARTICIPANT;
 const Payment = require('../models').TB_PAYMENT;
 const Photo = require('../models').TB_PHOTO_AD;
 const Favorites = require('../models').TB_FAVORITES;
-const { getIdFromToken, resizeImage } = require('../config/common');
+const {
+  getIdFromToken, resizeImage, s3DeleteObject, readFile, s3Upload
+} = require('../config/common');
 const common = require('../config/common');
 
 const router = express.Router();
@@ -54,7 +56,7 @@ router.get('/', async (req, res) => {
       include: [
         {
           model: Photo,
-          attributes: ['PHO_ID', 'PHO_FILE'],
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_FILE_URL'],
           required: false
         },
         {
@@ -95,7 +97,7 @@ router.get('/getAll', async (req, res) => {
       include: [
         {
           model: Photo,
-          attributes: ['PHO_FILE'],
+          attributes: ['PHO_FILE', 'PHO_FILE_URL'],
           required: false,
         }
       ],
@@ -200,7 +202,7 @@ router.get('/list', async (req, res) => {
         {
           model: Photo,
           where: { PHO_IS_MAIN: 1 },
-          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN', 'PHO_FILE_URL'],
           required: false,
         },
         {
@@ -225,7 +227,7 @@ router.get('/list', async (req, res) => {
 
     const advertisesMaped = advertises.map((item) => {
       const { AD_INF_CNT, TB_PARTICIPANTs, TB_PHOTO_ADs } = item.dataValues;
-      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE : null;
+      const mainImage = TB_PHOTO_ADs[0] ? TB_PHOTO_ADs[0].PHO_FILE_URL : null;
       const proportion = Math.round(100 / (AD_INF_CNT / TB_PARTICIPANTs.length));
       return {
         ...item.dataValues, proportion, mainImage
@@ -255,7 +257,7 @@ router.get('/listHome', async (req, res) => {
         {
           model: Photo,
           where: { PHO_IS_MAIN: 1 },
-          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN'],
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_IS_MAIN', 'PHO_FILE_URL'],
           required: false,
         },
         {
@@ -362,7 +364,7 @@ router.get('/campaignDetail', async (req, res) => {
       include: [
         {
           model: Photo,
-          attributes: ['PHO_ID', 'PHO_FILE'],
+          attributes: ['PHO_ID', 'PHO_FILE', 'PHO_FILE_URL'],
           required: false,
         },
         {
@@ -593,7 +595,7 @@ router.post('/createBiz', async (req, res) => {
     };
 
     await campaignApplied(props);
-    await campaignApproveRequest(adminProps);
+    // await campaignApproveRequest(adminProps);
 
     res.status(200).json({ data: newAdvertise });
   } catch (err) {
@@ -953,6 +955,38 @@ router.post('/delete', async (req, res) => {
   }
 });
 
+router.post('/deleteAWS', async (req, res) => {
+  try {
+    const data = req.body;
+    const { id } = data;
+
+    const props = { where: { AD_ID: id } };
+
+    const CampaignPhoto = await Photo.findAll({ where: { AD_ID: id }, attributes: ['PHO_ID', 'PHO_FILE_KEY'] });
+
+    const PromiseArray = CampaignPhoto.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const { PHO_FILE_KEY } = item;
+        await s3DeleteObject(PHO_FILE_KEY);
+        resolve('success');
+      } catch (e) {
+        resolve('failed');
+      }
+    })));
+    await Promise.all(PromiseArray);
+
+    await Favorites.destroy(props);
+    await Photo.destroy(props);
+    await Participant.destroy(props);
+    await Advertise.destroy(props);
+
+    return res.status(200).json({ message: 'success', data: '' });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
+
+
 // 이미지 업로드
 router.post('/upload', async (req, res) => {
   try {
@@ -972,6 +1006,32 @@ router.post('/upload', async (req, res) => {
     const DRAWING_URL = `/attach/campaign/detailPage/${fileName}`;
 
     return res.status(200).send({ uploaded: true, url: DRAWING_URL });
+  } catch (err) {
+    return res.status(400).json({ uploaded: false, error: { message: err.message } });
+  }
+});
+
+router.post('/uploadAWS', async (req, res) => {
+  try {
+    const file = req.files.upload;
+    const uid = uniqid();
+
+    const currentPath = file.path;
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uid}_660${fileExtension}`;
+    const tmpPath = path.normalize(`${config.tmp}${fileName}`);
+    const uploadPath = `campaign/detailPage/${fileName}`;
+
+    await resizeImage(currentPath, tmpPath, 660, null);
+    const fileData = await readFile(tmpPath);
+    const s3Data = await s3Upload(uploadPath, file.type, fileData);
+
+    await fse.remove(currentPath);
+    await fse.remove(tmpPath);
+
+    const { Location } = s3Data;
+
+    return res.status(200).send({ uploaded: true, url: Location });
   } catch (err) {
     return res.status(400).json({ uploaded: false, error: { message: err.message } });
   }

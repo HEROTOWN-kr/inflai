@@ -18,9 +18,13 @@ module.exports = function (sequelize, DataTypes) {
     },
     PHO_FILE: {
       type: DataTypes.STRING(400),
-      allowNull: false
+      allowNull: true
     },
-    PHO_FILE_BIG: {
+    PHO_FILE_URL: {
+      type: DataTypes.STRING(400),
+      allowNull: true
+    },
+    PHO_FILE_KEY: {
       type: DataTypes.STRING(400),
       allowNull: true
     },
