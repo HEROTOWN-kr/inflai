@@ -36,7 +36,11 @@ const {
   checkLocalHost,
   decrypt,
   encrypt,
-  mailSendData
+  mailSendData,
+  s3DeleteObject,
+  resizeImage,
+  readFile,
+  s3Upload
 } = require('../config/common');
 
 const { Op } = Sequelize;
@@ -80,7 +84,7 @@ router.get('/', async (req, res) => {
     const options = {
       where: { INF_ID: userId },
       attributes: [
-        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR', 'INF_DETAIL_ADDR', 'INF_EXTR_ADDR', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO', 'INF_MESSAGE',
+        'INF_NAME', 'INF_EMAIL', 'INF_TEL', 'INF_POST_CODE', 'INF_ROAD_ADDR', 'INF_DETAIL_ADDR', 'INF_EXTR_ADDR', 'INF_CITY', 'INF_AREA', 'INF_PROD', 'INF_CITY', 'INF_AREA', 'INF_PHOTO_URL', 'INF_MESSAGE',
         [Sequelize.literal('CASE INF_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'INF_BLOG_TYPE']
       ],
       include: [
@@ -119,8 +123,6 @@ router.get('/', async (req, res) => {
 
     const result = await Influencer.findOne(options);
     const data = result.dataValues;
-    // const { INF_PHOTO } = data;
-    // if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
     res.json({ code: 200, data });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -855,7 +857,7 @@ router.post('/facebookLoginNew', async (req, res) => {
       await Instagram.update({ INS_TOKEN: longToken }, { where: { INS_FB_ID: facebookUserId } });
 
       const InfData = await Influencer.findOne({ where: { INF_ID } });
-      const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
+      const { INF_NAME, INF_PHOTO_URL, INF_ACTIVATED } = InfData;
 
       if (INF_ACTIVATED === 0) {
         res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
@@ -863,7 +865,7 @@ router.post('/facebookLoginNew', async (req, res) => {
         res.status(200).json({
           userToken: createToken(INF_ID),
           userName: INF_NAME,
-          userPhoto: INF_PHOTO,
+          userPhoto: INF_PHOTO_URL,
           social_type: 'facebook'
         });
       }
@@ -931,7 +933,7 @@ router.post('/facebookSignUp', async (req, res) => {
         INF_NAME: name,
         INF_EMAIL: email,
         INF_TEL: phone,
-        INF_PHOTO: profile_picture_url || null,
+        INF_PHOTO_URL: profile_picture_url || null,
         INF_BLOG_TYPE: '1'
       });
 
@@ -1288,7 +1290,7 @@ router.get('/naverLoginNew', async (req, res) => {
     if (userExist) {
       const { INF_ID } = userExist;
       const InfData = await Influencer.findOne({ where: { INF_ID } });
-      const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
+      const { INF_NAME, INF_PHOTO_URL, INF_ACTIVATED } = InfData;
 
       if (INF_ACTIVATED === 0) {
         res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
@@ -1296,7 +1298,7 @@ router.get('/naverLoginNew', async (req, res) => {
         res.status(200).json({
           userToken: createToken(INF_ID),
           userName: INF_NAME,
-          userPhoto: INF_PHOTO,
+          userPhoto: INF_PHOTO_URL,
           social_type: 'naver'
         });
       }
@@ -1328,7 +1330,7 @@ router.post('/naverSignUp', async (req, res) => {
         INF_NAME: name,
         INF_EMAIL: email,
         INF_TEL: phone,
-        INF_PHOTO: profile_image || null,
+        INF_PHOTO_URL: profile_image || null,
         INF_BLOG_TYPE: '3'
       });
 
@@ -1408,7 +1410,7 @@ router.get('/kakaoLoginNew', async (req, res) => {
     if (userExist) {
       const { INF_ID } = userExist;
       const InfData = await Influencer.findOne({ where: { INF_ID } });
-      const { INF_NAME, INF_PHOTO, INF_ACTIVATED } = InfData;
+      const { INF_NAME, INF_PHOTO_URL, INF_ACTIVATED } = InfData;
 
       if (INF_ACTIVATED === 0) {
         res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
@@ -1416,7 +1418,7 @@ router.get('/kakaoLoginNew', async (req, res) => {
         res.status(200).json({
           userToken: createToken(INF_ID),
           userName: INF_NAME,
-          userPhoto: INF_PHOTO,
+          userPhoto: INF_PHOTO_URL,
           social_type: 'kakao'
         });
       }
@@ -1448,7 +1450,7 @@ router.post('/kakaoSignUp', async (req, res) => {
         INF_NAME: name,
         INF_EMAIL: email,
         INF_TEL: phone,
-        INF_PHOTO: photo || null,
+        INF_PHOTO_URL: photo || null,
         INF_BLOG_TYPE: '4'
       });
 
@@ -1632,6 +1634,43 @@ router.post('/upload', async (req, res, next) => {
   }
 });
 
+router.post('/uploadAWS', async (req, res, next) => {
+  try {
+    const { file } = req.files;
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+    const uid = uniqid();
+
+    const currentPath = file.path;
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uid}_500${fileExtension}`;
+    const tmpPath = path.normalize(`${config.tmp}${fileName}`);
+    const uploadPath = `profile/influencer/${userId}/${fileName}`;
+
+    await resizeImage(currentPath, tmpPath, 500, null);
+    const fileData = await readFile(tmpPath);
+    const s3Data = await s3Upload(uploadPath, file.type, fileData);
+
+    await fse.remove(currentPath);
+    await fse.remove(tmpPath);
+
+    const { Location, Key } = s3Data;
+
+    const post = {
+      INF_PHOTO_URL: Location,
+      INF_PHOTO_KEY: Key
+    };
+
+    await Influencer.update(post, {
+      where: { INF_ID: userId }
+    });
+
+    return res.status(200).json({ message: 'success' });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+});
+
 router.post('/delete', async (req, res, next) => {
   try {
     const { token, id } = req.body;
@@ -1660,6 +1699,37 @@ router.post('/delete', async (req, res, next) => {
       code: 400,
       message: err.message
     });
+  }
+});
+
+router.post('/deleteAWS', async (req, res, next) => {
+  try {
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+
+    const InfluencerInfo = await Influencer.findOne({
+      where: { INF_ID: userId },
+      attributes: ['INF_PHOTO_KEY']
+    });
+
+    const { INF_PHOTO_KEY } = InfluencerInfo;
+
+    const post = {
+      INF_PHOTO_URL: null
+    };
+
+    if (INF_PHOTO_KEY) {
+      post.INF_PHOTO_KEY = null;
+      await s3DeleteObject(INF_PHOTO_KEY);
+    }
+
+    await Influencer.update(post, {
+      where: { INF_ID: userId }
+    });
+
+    return res.status(200).json({ message: 'success' });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
   }
 });
 

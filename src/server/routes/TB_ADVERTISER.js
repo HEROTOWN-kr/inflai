@@ -20,7 +20,11 @@ const {
   checkLocalHost,
   encrypt,
   decrypt,
-  mailSendData
+  mailSendData,
+  s3DeleteObject,
+  s3Upload,
+  readFile,
+  resizeImage
 } = require('../config/common');
 
 const saltRounds = 10;
@@ -339,7 +343,7 @@ router.get('/UserInfo', (req, res) => {
 
   Advertiser.findOne({
     where: { ADV_ID: userId },
-    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS', 'ADV_POST_CODE', 'ADV_ROAD_ADDR', 'ADV_DETAIL_ADDR', 'ADV_EXTR_ADDR', 'ADV_PHOTO', 'ADV_MESSAGE',
+    attributes: ['ADV_EMAIL', 'ADV_TEL', 'ADV_REG_NUM', 'ADV_NAME', 'ADV_COM_NAME', 'ADV_CLASS', 'ADV_POST_CODE', 'ADV_ROAD_ADDR', 'ADV_DETAIL_ADDR', 'ADV_EXTR_ADDR', 'ADV_PHOTO', 'ADV_PHOTO_URL', 'ADV_MESSAGE',
       [Sequelize.literal('CASE ADV_BLOG_TYPE WHEN \'1\' THEN \'Facebook\' WHEN \'2\' THEN \'Google\' WHEN \'3\' THEN \'Naver\' WHEN \'4\' THEN \'Kakao\' ELSE \'일반\' END'), 'ADV_BLOG_TYPE']
     ]
   }).then((result) => {
@@ -360,7 +364,7 @@ router.get('/getAdvertisers', async (req, res) => {
     const offset = (page - 1) * limit;
 
     const dbData = await Advertiser.findAll({
-      attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME', 'ADV_PHOTO',
+      attributes: ['ADV_ID', 'ADV_NAME', 'ADV_TEL', 'ADV_EMAIL', 'ADV_COM_NAME', 'ADV_PHOTO', 'ADV_PHOTO_URL',
         [Sequelize.literal('CASE ADV_TYPE WHEN \'1\' THEN \'일반\' WHEN \'2\' THEN \'에이전시\' ELSE \'소상공인\' END'), 'ADV_TYPE'],
         [Sequelize.fn('DATE_FORMAT', Sequelize.col('ADV_DT'), '%Y-%m-%d'), 'ADV_DT']
       ],
@@ -583,7 +587,7 @@ router.get('/naverLoginNew', async (req, res) => {
     if (userExist) {
       const { ADV_ID } = userExist;
       const InfData = await Advertiser.findOne({ where: { ADV_ID } });
-      const { ADV_NAME, ADV_PHOTO, ADV_ACTIVATED } = InfData;
+      const { ADV_NAME, ADV_PHOTO_URL, ADV_ACTIVATED } = InfData;
 
       if (ADV_ACTIVATED === 0) {
         res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
@@ -591,7 +595,7 @@ router.get('/naverLoginNew', async (req, res) => {
         res.status(200).json({
           userToken: createToken(ADV_ID),
           userName: ADV_NAME,
-          userPhoto: ADV_PHOTO,
+          userPhoto: ADV_PHOTO_URL,
           social_type: 'naver'
         });
       }
@@ -623,7 +627,7 @@ router.post('/naverSignUp', async (req, res) => {
         ADV_NAME: name,
         ADV_EMAIL: email,
         ADV_TEL: phone,
-        ADV_PHOTO: profile_image || null,
+        ADV_PHOTO_URL: profile_image || null,
         ADV_BLOG_TYPE: '3'
       });
 
@@ -702,7 +706,7 @@ router.get('/kakaoLoginNew', async (req, res) => {
     if (userExist) {
       const { ADV_ID } = userExist;
       const AdvData = await Advertiser.findOne({ where: { ADV_ID } });
-      const { ADV_NAME, ADV_PHOTO, ADV_ACTIVATED } = AdvData;
+      const { ADV_NAME, ADV_PHOTO_URL, ADV_ACTIVATED } = AdvData;
 
       if (ADV_ACTIVATED === 0) {
         res.status(400).json({ message: '이메일 인증링크를 확인 후, 시도해주세요' });
@@ -710,7 +714,7 @@ router.get('/kakaoLoginNew', async (req, res) => {
         res.status(200).json({
           userToken: createToken(ADV_ID),
           userName: ADV_NAME,
-          userPhoto: ADV_PHOTO,
+          userPhoto: ADV_PHOTO_URL,
           social_type: 'kakao'
         });
       }
@@ -742,7 +746,7 @@ router.post('/kakaoSignUp', async (req, res) => {
         ADV_NAME: name,
         ADV_EMAIL: email,
         ADV_TEL: phone,
-        ADV_PHOTO: photo || null,
+        ADV_PHOTO_URL: photo || null,
         ADV_BLOG_TYPE: '4'
       });
 
@@ -1047,6 +1051,43 @@ router.post('/upload', async (req, res, next) => {
   }
 });
 
+router.post('/uploadAWS', async (req, res, next) => {
+  try {
+    const { file } = req.files;
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+    const uid = uniqid();
+
+    const currentPath = file.path;
+    const fileExtension = path.extname(file.name);
+    const fileName = `${uid}_500${fileExtension}`;
+    const tmpPath = path.normalize(`${config.tmp}${fileName}`);
+    const uploadPath = `profile/biz/${userId}/${fileName}`;
+
+    await resizeImage(currentPath, tmpPath, 500, null);
+    const fileData = await readFile(tmpPath);
+    const s3Data = await s3Upload(uploadPath, file.type, fileData);
+
+    await fse.remove(currentPath);
+    await fse.remove(tmpPath);
+
+    const { Location, Key } = s3Data;
+
+    const post = {
+      ADV_PHOTO_URL: Location,
+      ADV_PHOTO_KEY: Key
+    };
+
+    await Advertiser.update(post, {
+      where: { ADV_ID: userId }
+    });
+
+    return res.status(200).json({ message: 'success' });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+});
+
 router.post('/delete', async (req, res) => {
   try {
     const { token, id } = req.body;
@@ -1064,6 +1105,37 @@ router.post('/delete', async (req, res) => {
     const post = {
       ADV_PHOTO: null
     };
+
+    await Advertiser.update(post, {
+      where: { ADV_ID: userId }
+    });
+
+    return res.status(200).json({ message: '', data: '' });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/deleteAWS', async (req, res) => {
+  try {
+    const { token, id } = req.body;
+    const userId = id || getIdFromToken(token).sub;
+
+    const AdvertiserInfo = await Advertiser.findOne({
+      where: { ADV_ID: userId },
+      attributes: ['ADV_PHOTO_KEY']
+    });
+
+    const { ADV_PHOTO_KEY } = AdvertiserInfo;
+
+    const post = {
+      ADV_PHOTO_URL: null
+    };
+
+    if (ADV_PHOTO_KEY) {
+      post.ADV_PHOTO_KEY = null;
+      await s3DeleteObject(ADV_PHOTO_KEY);
+    }
 
     await Advertiser.update(post, {
       where: { ADV_ID: userId }

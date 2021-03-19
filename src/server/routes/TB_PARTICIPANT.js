@@ -219,7 +219,7 @@ router.get('/getList', async (req, res) => {
       include: [
         {
           model: Influencer,
-          attributes: ['INF_ID', 'INF_PHOTO']
+          attributes: ['INF_ID', 'INF_PHOTO', 'INF_PHOTO_URL']
         },
       ],
       limit,
@@ -239,7 +239,7 @@ router.get('/getList', async (req, res) => {
 
     const ParticipantsList = result.map((item) => {
       const {
-        INF_ID, INF_NAME, INF_EMAIL, INF_PHOTO
+        INF_ID, INF_NAME, INF_EMAIL, INF_PHOTO, INF_PHOTO_URL
       } = item.TB_INFLUENCER.dataValues;
 
       return {
@@ -247,7 +247,8 @@ router.get('/getList', async (req, res) => {
         INF_ID,
         INF_NAME,
         INF_EMAIL,
-        INF_PHOTO
+        INF_PHOTO,
+        INF_PHOTO_URL
       };
     });
 

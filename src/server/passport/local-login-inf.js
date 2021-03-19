@@ -27,7 +27,7 @@ module.exports = new PassportLocalStrategy({
     }
 
     const {
-      INF_ID, INF_PASS, INF_NAME, INF_PHOTO, INF_ACTIVATED
+      INF_ID, INF_PASS, INF_NAME, INF_PHOTO_URL, INF_ACTIVATED
     } = user.dataValues;
 
     if (INF_ACTIVATED === 0) {
@@ -53,7 +53,7 @@ module.exports = new PassportLocalStrategy({
       const token = jwt.sign(payload, config.jwtSecret);
       const data = {
         name: INF_NAME,
-        userPhoto: INF_PHOTO,
+        userPhoto: INF_PHOTO_URL,
       };
 
       return done(null, token, data);

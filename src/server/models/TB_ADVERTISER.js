@@ -45,6 +45,14 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    ADV_PHOTO_URL: {
+      type: DataTypes.STRING(400),
+      allowNull: true
+    },
+    ADV_PHOTO_KEY: {
+      type: DataTypes.STRING(400),
+      allowNull: true
+    },
     ADV_REG_ID: {
       type: DataTypes.STRING(200),
       allowNull: true

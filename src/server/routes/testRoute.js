@@ -1063,27 +1063,28 @@ router.get('/updateTest', async (req, res) => {
 
 router.post('/bucketUpload', async (req, res) => {
   try {
-    const dbPhotos = await Photos.findAll({
-      attributes: ['PHO_ID', 'PHO_FILE']
+    const dbPhotos = await Advertiser.findAll({
+      where: { ADV_PHOTO: { [Op.notLike]: '%/attach%' } },
+      attributes: ['ADV_ID', 'ADV_PHOTO']
     });
 
     const PhotoPromises = dbPhotos.map(item => new Promise((async (resolve, reject) => {
-      const { PHO_ID, PHO_FILE } = item;
-      const photoKey = PHO_FILE.replace('/attach/', '');
-      const photoUrl = `https://inflai-aws-bucket.s3.ap-northeast-2.amazonaws.com/${photoKey}`;
+      const { ADV_ID, ADV_PHOTO } = item;
+      // const photoKey = ADV_PHOTO.replace('/attach/', '');
+      // const photoUrl = `https://inflai-aws-bucket.s3.ap-northeast-2.amazonaws.com/${photoKey}`;
 
       try {
         const post = {
-          PHO_FILE_URL: photoUrl,
-          PHO_FILE_KEY: photoKey
+          ADV_PHOTO_URL: ADV_PHOTO,
+          // ADV_PHOTO_KEY: photoKey
         };
-        await Photos.update(post, { where: { PHO_ID } });
+        await Advertiser.update(post, { where: { ADV_ID } });
         resolve({
-          result: 'updated', PHO_ID, photoKey, photoUrl
+          result: 'updated', ADV_ID
         });
       } catch (err) {
         resolve({
-          result: 'not updated', PHO_ID, photoKey, photoUrl
+          result: 'not updated', ADV_ID
         });
       }
     })));
