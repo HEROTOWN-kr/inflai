@@ -82,7 +82,8 @@ async function Update() {
             INS_PROFILE_IMG: profile_picture_url,
             INS_LIKES: likeSum,
             INS_CMNT: commentsSum,
-            INS_SCORE: score
+            INS_SCORE: score,
+            INS_STATUS: 1
           }, {
             where: { INF_ID }
           });

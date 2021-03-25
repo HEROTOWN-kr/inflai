@@ -37,6 +37,11 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: '1'
     },
+    SUB_ACTIVE: {
+      type: DataTypes.STRING(1),
+      allowNull: true,
+      defaultValue: '0'
+    },
     SUB_DT: {
       type: DataTypes.DATE,
       allowNull: false,

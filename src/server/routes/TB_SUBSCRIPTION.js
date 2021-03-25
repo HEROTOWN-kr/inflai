@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     const where = { ADV_ID: userId };
     if (tab === '1') {
       where.SUB_END_DT = { [Op.gte]: currentDate };
-      where.SUB_STATUS = '2';
+      where.SUB_ACTIVE = '1';
     }
 
     const Response = await Subscription.findAll({
@@ -125,15 +125,13 @@ router.get('/check', async (req, res) => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
-    const Response = await Subscription.findAll({
+    const Response = await Subscription.findOne({
       where: {
         ADV_ID: userId,
-        SUB_STATUS: '2',
+        SUB_ACTIVE: '1',
         SUB_END_DT: { [Op.gte]: currentDate }
       },
-      attributes: [
-        'SUB_ID'
-      ],
+      attributes: ['SUB_ID', 'SUB_STATUS'],
       include: [
         {
           model: Plan,
@@ -141,15 +139,18 @@ router.get('/check', async (req, res) => {
         },
       ]
     });
-    if (Response.length > 0) {
-      res.status(200).json({
+    if (Response) {
+      const { SUB_STATUS } = Response;
+      if (SUB_STATUS === '1') {
+        return res.status(202).json({ message: '구독이 승인되지 않았습니다. 잠시 후 다시 해 주세요' });
+      }
+      return res.status(200).json({
         data: Response,
       });
-    } else {
-      res.status(201).json({ data: {}, message: '진행중 서브스크립션이 없습니다' });
     }
+    return res.status(201).json({ data: {}, message: '진행중 서브스크립션이 없습니다' });
   } catch (e) {
-    res.status(400).send({
+    return res.status(400).send({
       message: e.message
     });
   }
@@ -194,6 +195,7 @@ router.get('/getInfluencers', async (req, res) => {
       where: {
         ADV_ID: userId,
         SUB_STATUS: '2',
+        SUB_ACTIVE: '1',
         SUB_END_DT: { [Op.gte]: date }
       },
       attributes: ['SUB_ID', 'SUB_START_DT', 'SUB_END_DT'],
@@ -211,7 +213,8 @@ router.get('/getInfluencers', async (req, res) => {
 
     const PlanResponse = await Subscription.findOne({
       where: {
-        ADV_ID: userId
+        ADV_ID: userId,
+        SUB_ACTIVE: '1',
       },
       attributes: ['PLN_ID'],
       include: [
@@ -248,9 +251,9 @@ router.post('/save', async (req, res) => {
 
     if (ADV_TEL && ADV_NAME) {
       const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0);
+      currentDate.setHours(9, 0, 0, 0);
 
-      const currentSubscription = await Subscription.findOne({
+      /* const currentSubscription = await Subscription.findOne({
         where: {
           ADV_ID: advId,
           [Op.or]: [
@@ -262,7 +265,7 @@ router.post('/save', async (req, res) => {
 
       if (currentSubscription) {
         return res.status(201).json({ message: '이미 등록 된 구독이 있습니다!' });
-      }
+      } */
 
       const planData = await Plan.findOne({
         where: { PLN_ID },
@@ -279,10 +282,20 @@ router.post('/save', async (req, res) => {
         PLN_ID,
         SUB_START_DT: currentDate,
         SUB_END_DT: FinishDate,
-        SUB_STATUS: PLN_PRICE_MONTH === 0 ? '2' : '1'
+        SUB_STATUS: PLN_PRICE_MONTH === 0 ? '2' : '1',
+        SUB_ACTIVE: '1'
       };
 
       const newSubscription = await Subscription.create(post);
+
+      const { SUB_ID } = newSubscription;
+
+      await Subscription.update({ SUB_ACTIVE: '0' }, {
+        where: {
+          ADV_ID: advId,
+          SUB_ID: { [Op.ne]: SUB_ID }
+        }
+      });
 
       if (PLN_PRICE_MONTH !== 0) {
         const price = Math.round(PLN_PRICE_MONTH * PLN_MONTH * 1.1);

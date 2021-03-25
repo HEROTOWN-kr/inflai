@@ -595,7 +595,7 @@ router.post('/createBiz', async (req, res) => {
     };
 
     await campaignApplied(props);
-    // await campaignApproveRequest(adminProps);
+    await campaignApproveRequest(adminProps);
 
     res.status(200).json({ data: newAdvertise });
   } catch (err) {
