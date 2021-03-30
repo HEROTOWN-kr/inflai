@@ -218,99 +218,22 @@ router.get('/saveSenderNumber', (req, res) => {
   });
 });
 
-router.get('/test', (req, res) => {
-  /* res.json({
-    code: 200,
-    message: 'success'
-  }); */
+router.get('/getInfo', async (req, res) => {
+  try {
+    const { token } = req.query;
+    const userId = getIdFromToken(token).sub;
 
-  const token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjI4Yjc0MWU4ZGU5ODRhNDcxNTlmMTllNmQ3NzgzZTlkNGZhODEwZGIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiOTk3Mjc0NDIyNzI1LWdiNDBvNXR2NTc5Y3NyMDljaDdxOGFuNjN0Zm1qZ2ZvLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiOTk3Mjc0NDIyNzI1LWdiNDBvNXR2NTc5Y3NyMDljaDdxOGFuNjN0Zm1qZ2ZvLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA5NTA0MzM5NzIxNDY4NjkyMzc2IiwiZW1haWwiOiJhbmRyaWFudHNveUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6IkN3M0tNTEN5OXByZFVaRFQxUUhIbEEiLCJuYW1lIjoi0JDQvdC00YDQuNCw0L0g0KbQvtC5IiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hLS9BT2gxNEdpX3J0MThrY1p4VkRmS05GSWFSU1dUcVdBMDk2SHIyamFNbzhJZ2d3PXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6ItCQ0L3QtNGA0LjQsNC9IiwiZmFtaWx5X25hbWUiOiLQptC-0LkiLCJsb2NhbGUiOiJydSIsImlhdCI6MTU4ODA1OTIzMSwiZXhwIjoxNTg4MDYyODMxLCJqdGkiOiJiYjI4NDcxOGUzYTllYTkzZGI2ZmE0MjJkYmRmNDBiZTA0NGY0MzkzIn0.vwKxJ7V-RW4fK8M9oZqNlcyDZASZEl00cRNbXroVW-yt1JlApa56N80HmUZ5CVt5Y-dxdnmBh32J42_CGTs_BwXx827G6cdfAGm9sqx4gmjw7da2GZcl-NBDxEUuGkC_FuVbfxYCrRLAJB7mcCLxvlRY6LeMRu8pX8jhT2QnhOOFxauFlKGpmy2U4BULPyNZtPZ76F7v-YkYhQWijjW8MjsX_0KzH6AMRqF4lF-ZoC1nLXLs4AFTJYm9lIjRzYM6-PNXNIQZo6ofLJexKuhxdtle2feryoT-LvkjozwsRJmjq0lXJu75G6hN3KPozQyWArUzqWMgPUivlQEfOVbvhQ';
-  const apiKey = 'AIzaSyArMk2Jue1FRfkT29_vVZ4qhLBvQpbJaOQ';
+    const dbInfo = await Advertiser.findOne({
+      where: { ADV_ID: userId },
+      attributes: ['ADV_ID', 'ADV_EMAIL', 'ADV_TEL', 'ADV_NAME', 'ADV_COM_NAME']
+    });
 
-  const myUrl = `https://www.googleapis.com/youtube/v3/subscriptions?part=id&mySubscribers=true&key=${apiKey}`;
+    if (!dbInfo) return res.status(201).send({ message: '해당 사용자가 없습니다' });
 
-  const options = {
-    method: 'GET',
-    url: myUrl,
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
-    },
-    gzip: true
-  };
-
-
-  request(options, (error, requestResponse, responseBody) => {
-    if (!error && requestResponse.statusCode == 200) {
-      console.log(requestResponse);
-    } else if (requestResponse != null) {
-      console.log(`error = ${requestResponse.statusCode}`);
-      console.log(`error = ${error}`);
-      console.log(options);
-    }
-  });
-});
-
-router.post('/test3', (req, res) => {
-  const myUrl = 'http://api.apistore.co.kr/kko/1/msg/herotown';
-
-  const options = {
-    method: 'POST',
-    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-    url: myUrl,
-    headers: {
-      'x-waple-authorization': 'b4ed715d8ed0ae6cf6bedabf40559903fb5b8fba',
-    },
-    form: {
-      PHONE: '01026763937',
-      CALLBACK: '01026763937',
-      MSG: '새로운 캠페인이 등록되었습니다!',
-      TEMPLATE_CODE: 'API2020',
-      FAILED_TYPE: 'SMS',
-      BTN_TYPES: '',
-      BTN_TXTS: '',
-      BTN_URLS1: ''
-    }
-  };
-
-  request(options, (error, requestResponse, responseBody) => {
-    if (!error && requestResponse.statusCode == 200) {
-      console.log(requestResponse);
-    } else if (requestResponse != null) {
-      console.log(`error = ${requestResponse.statusCode}`);
-      console.log(`error = ${error}`);
-      console.log(options);
-    }
-  });
-});
-
-router.get('/Googletest3', (req, res) => {
-  const oauth2Client = getOauthClient();
-
-  const scopes = [
-    'https://www.googleapis.com/auth/youtube.readonly'
-  ];
-
-  const url = oauth2Client.generateAuthUrl({
-    // 'online' (default) or 'offline' (gets refresh_token)
-    access_type: 'offline',
-    // If you only need one scope you can pass it as a string
-    scope: scopes
-  });
-
-  /* res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Request-Method', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-  res.setHeader('Access-Control-Allow-Headers', '*'); */
-
-  /* res.writeHead(301, {
-    Location: url,
-    'Access-Control-Allow-Origin': 'http://localhost:3000',
-    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
-  });
-  res.end(); */
-
-  res.redirect(url);
+    return res.status(200).send({ data: dbInfo });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
 });
 
 router.get('/', (req, res) => {
