@@ -8,6 +8,7 @@ const uniqid = require('uniqid');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const AWS = require('aws-sdk');
+const xl = require('excel4node');
 const {
   hashData,
   mailSendData,
@@ -706,6 +707,86 @@ router.get('/readDirectory', async (req, res) => {
   }
 });
 
+router.get('/excelTest', async (req, res) => {
+  try {
+    const wb = new xl.Workbook();
+    const ws = wb.addWorksheet('Worksheet Name');
+
+    const data = [
+      {
+        INS_USERNAME: 'Shadab Shaikh',
+        INS_FLW: 'shadab@gmail.com',
+        INS_FLWR: '1234567890',
+        INS_SCORE: '1234567890',
+        INS_TYPES1: '1234567890',
+        INS_TYPES2: '1234567890',
+      },
+      {
+        INS_USERNAME: 'Shadab Shaikh2',
+        INS_FLW: 'shadab@gmail.com2',
+        INS_FLWR: '12345678902',
+        INS_SCORE: '12345678902',
+        INS_TYPES1: '12345678902',
+        INS_TYPES2: '12345678902',
+      },
+    ];
+
+    const dbData = await Insta.findAll({
+      attributes: ['INS_USERNAME', 'INS_FLW', 'INS_FLWR', 'INS_SCORE', 'INS_TYPES'],
+    });
+
+    const influencersData = dbData.map((item) => {
+      const {
+        INS_USERNAME, INS_FLW, INS_FLWR, INS_SCORE, INS_TYPES
+      } = item;
+      const returnObj = {
+        INS_USERNAME,
+        INS_FLW: INS_FLW.toString(),
+        INS_FLWR: INS_FLWR.toString(),
+        INS_SCORE: INS_SCORE.toString(),
+      };
+      if (INS_TYPES) {
+        const types = INS_TYPES.split(' ');
+        returnObj.INS_TYPES1 = types[0];
+        returnObj.INS_TYPES2 = types[1];
+      } else {
+        returnObj.INS_TYPES1 = 'Cosmetics';
+        returnObj.INS_TYPES2 = 'Food';
+      }
+      return returnObj;
+    });
+
+    const headingColumnNames = [
+      'INS_USERNAME',
+      'INS_FLW',
+      'INS_FLWR',
+      'INS_SCORE',
+      'INS_TYPES1',
+      'INS_TYPES2',
+    ];
+
+    // Write Column Title in Excel file
+    let headingColumnIndex = 1;
+    headingColumnNames.forEach((heading) => {
+      ws.cell(1, headingColumnIndex++).string(heading);
+    });
+
+    // Write Data in Excel file
+    let rowIndex = 2;
+    influencersData.forEach((record) => {
+      let columnIndex = 1;
+      Object.keys(record).forEach((columnName) => {
+        ws.cell(rowIndex, columnIndex++).string(record[columnName]);
+      });
+      rowIndex++;
+    });
+    wb.write('./src/server/img/TeacherData.xlsx');
+    return res.status(200).json({ message: 'success' });
+  } catch (e) {
+    return res.status(400).json({ message: e.message });
+  }
+});
+
 router.get('/saveImageLocal', async (req, res) => {
   async function download(fileUrl, index) {
     const response = await fetch(fileUrl);
@@ -1096,5 +1177,6 @@ router.post('/bucketUpload', async (req, res) => {
     return res.status(400).send({ message: e.message });
   }
 });
+
 
 module.exports = router;
