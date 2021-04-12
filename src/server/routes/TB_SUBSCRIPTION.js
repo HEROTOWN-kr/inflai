@@ -55,7 +55,7 @@ router.get('/list', async (req, res) => {
 
     const dbData = await Subscription.findAll({
       attributes: [
-        'SUB_ID', 'SUB_START_DT', 'SUB_END_DT', 'SUB_STATUS',
+        'SUB_ID', 'ADV_ID', 'SUB_START_DT', 'SUB_END_DT', 'SUB_STATUS',
       ],
       include: [
         {
@@ -64,7 +64,7 @@ router.get('/list', async (req, res) => {
         },
         {
           model: Advertiser,
-          attributes: ['ADV_ID', 'ADV_NAME'],
+          attributes: ['ADV_NAME', 'ADV_EMAIL', 'ADV_TEL'],
           required: false,
         },
       ],
@@ -76,9 +76,15 @@ router.get('/list', async (req, res) => {
     const Count = await Subscription.count();
 
     const ResponseData = dbData.map((item, index) => {
-      const { dataValues } = item;
+      const { TB_ADVERTISER, TB_PLAN, ...rest } = item.dataValues;
+      const {
+        ADV_NAME, ADV_EMAIL, ADV_TEL
+      } = TB_ADVERTISER || {};
+      const { PLN_NAME, PLN_MONTH, PLN_PRICE_MONTH } = TB_PLAN;
       const rowNum = Count - offset - index;
-      return { ...dataValues, rowNum };
+      return {
+        ...rest, ADV_NAME, ADV_EMAIL, ADV_TEL, PLN_NAME, PLN_MONTH, PLN_PRICE_MONTH, rowNum
+      };
     });
 
     res.status(200).json({
