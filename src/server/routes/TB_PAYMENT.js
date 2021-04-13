@@ -1,10 +1,54 @@
 const express = require('express');
 const axios = require('axios');
+const Sequelize = require('sequelize');
 const Payment = require('../models').TB_PAYMENT;
+const Advertiser = require('../models').TB_ADVERTISER;
 const Advertise = require('../models').TB_AD;
 const common = require('../config/common');
 
+
 const router = express.Router();
+
+router.get('/list', async (req, res) => {
+  try {
+    const { page, limit } = req.query;
+    const pageInt = parseInt(page, 10);
+    const limitInt = parseInt(limit, 10);
+    const offset = (pageInt - 1) * limitInt;
+
+    const dbData = await Payment.findAll({
+      attributes: ['PAY_AMOUNT',
+        [Sequelize.fn('DATE_FORMAT', Sequelize.col('PAY_DT'), '%Y-%m-%d'), 'PAY_DT']
+      ],
+      include: [
+        {
+          model: Advertiser,
+          attributes: ['ADV_NAME', 'ADV_EMAIL', 'ADV_TEL'],
+        },
+      ],
+      limit: limitInt,
+      offset,
+      order: [['PAY_ID', 'DESC']]
+    });
+
+    const paymentCount = await Payment.count();
+
+    const ResponseData = dbData.map((item, index) => {
+      const { TB_ADVERTISER, ...rest } = item.dataValues;
+      const {
+        ADV_NAME, ADV_EMAIL, ADV_TEL
+      } = TB_ADVERTISER || {};
+      const rowNum = paymentCount - offset - index;
+      return {
+        ...rest, ADV_NAME, ADV_EMAIL, ADV_TEL, rowNum
+      };
+    });
+
+    res.status(200).json({ data: ResponseData, paymentCount });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
+  }
+});
 
 router.post('/', (req, res) => {
   const data = req.body;

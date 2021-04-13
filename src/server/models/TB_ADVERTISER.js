@@ -126,6 +126,7 @@ module.exports = function (sequelize, DataTypes) {
     advertiser.hasMany(models.TB_AD, { foreignKey: 'ADV_ID', sourceKey: 'ADV_ID' });
     advertiser.hasMany(models.TB_REQ_AD, { foreignKey: 'ADV_ID', sourceKey: 'ADV_ID' });
     advertiser.hasMany(models.TB_SUBSCRIPTION, { foreignKey: 'ADV_ID', sourceKey: 'ADV_ID' });
+    advertiser.hasMany(models.TB_PAYMENT, { foreignKey: 'ADV_ID', sourceKey: 'ADV_ID' });
   };
 
   return advertiser;
