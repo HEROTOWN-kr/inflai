@@ -933,7 +933,7 @@ router.post('/update', async (req, res) => {
     if (roadAddress) post.ADV_ROAD_ADDR = roadAddress;
     if (detailAddress) post.ADV_DETAIL_ADDR = detailAddress;
     if (extraAddress) post.ADV_EXTR_ADDR = extraAddress;
-    if (message) post.ADV_MESSAGE = message;
+    if (message === 0 || message === 1) post.ADV_MESSAGE = message;
 
     await Advertiser.update(post, { where: { ADV_ID: userId } });
 
