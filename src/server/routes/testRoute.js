@@ -9,6 +9,8 @@ const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const AWS = require('aws-sdk');
 const xl = require('excel4node');
+const puppeteer = require('puppeteer');
+
 const {
   hashData,
   mailSendData,
@@ -594,104 +596,6 @@ router.get('/kakaoTest', (req, res) => {
   });
 });
 
-router.get('/twiterTest', (req, res) => {
-  const { code } = req.query;
-  request.post({
-    url: 'https://id.twitch.tv/oauth2/token',
-    form: {
-      client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
-      client_secret: '42s2o1ric6vncipbx3ssc3jaekhitj',
-      code,
-      grant_type: 'authorization_code',
-      redirect_uri: 'http://localhost:8080/testRoute/twiterTest2'
-    }
-  },
-  (err, response, body) => {
-    if (err) {
-      console.log(err);
-    } else {
-      const newObj = JSON.parse(body);
-      const { access_token } = newObj;
-      const header = `Bearer ${access_token}`;
-
-      const apiUrl = 'https://api.twitch.tv/helix/users';
-      const options = {
-        url: apiUrl,
-        headers: { Authorization: header }
-      };
-      request.get(options, (error, requestResponse, responseBody) => {
-        if (!error && requestResponse.statusCode == 200) {
-          // res.json(responseBody);
-          res.json(JSON.parse(responseBody));
-          /* res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
-                      res.end(body); */
-        } else {
-          console.log('error');
-          if (response != null) {
-            res.status(response.statusCode).end();
-            console.log(`error = ${response.statusCode}`);
-          }
-        }
-      });
-
-      // res.json(newObj);
-    }
-  });
-});
-
-router.get('/twiterTest2', (req, res) => {
-  const { token } = req.query;
-  const header = `Bearer ${token}`; // Bearer 다음에 공백 추가
-
-  const apiUrl = 'POST https://id.twitch.tv/oauth2/token';
-  const options = {
-    url: apiUrl,
-    headers: {
-      client_id: 'hnwk0poqnawvjedf2nxzaaznj16e1g',
-
-    }
-  };
-  request.post(options, (error, response, body) => {
-    if (!error && response.statusCode == 200) {
-      res.json(body);
-      // res.json(JSON.parse(body));
-      /* res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
-                        res.end(body); */
-    } else {
-      console.log('error');
-      if (response != null) {
-        res.status(response.statusCode).end();
-        console.log(`error = ${response.statusCode}`);
-      }
-    }
-  });
-});
-
-router.get('/twiterTest3', (req, res) => {
-  const { access_token } = req.query;
-  const header = `Bearer ${access_token}`;
-
-  const apiUrl = 'https://api.twitch.tv/helix/users';
-  const options = {
-    url: apiUrl,
-    headers: { Authorization: header }
-  };
-  request.get(options, (error, requestResponse, responseBody) => {
-    if (!error && requestResponse.statusCode == 200) {
-      // res.json(responseBody);
-      res.json(JSON.parse(responseBody));
-      /* res.writeHead(200, { 'Content-Type': 'text/json;charset=utf-8' });
-                  res.end(body); */
-    } else {
-      console.log('error');
-      if (response != null) {
-        res.status(response.statusCode).end();
-        console.log(`error = ${response.statusCode}`);
-      }
-    }
-  });
-});
-
 router.get('/readDirectory', async (req, res) => {
   const { pathName } = req.query;
 
@@ -784,6 +688,28 @@ router.get('/excelTest', async (req, res) => {
     return res.status(200).json({ message: 'success' });
   } catch (e) {
     return res.status(400).json({ message: e.message });
+  }
+});
+
+router.get('/scrap', async (req, res) => {
+  try {
+    /* const browser = await puppeteer.launch();
+    const page = await browser.newPage(); */
+
+
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.tracing.start({ categories: ['devtools.timeline'], path: './tracing.json' });
+    await page.goto('https://m.blog.naver.com/PostList.nhn?blogId=masterhdy');
+    const tracing = JSON.parse(await page.tracing.stop());
+    const tracingRequests = tracing.traceEvents.filter(te => te.name === 'ResourceSendRequest');
+    const tracingResponses = tracing.traceEvents.filter(te => te.name === 'ResourceReceiveResponse');
+
+    await browser.close();
+
+    return res.status(200).json({ data: '' });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
   }
 });
 
