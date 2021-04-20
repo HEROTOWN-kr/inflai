@@ -851,6 +851,9 @@ router.get('/rankingInfo', async (req, res) => {
     };
 
     const InstaData = await Instagram.findOne(options);
+
+    if (!InstaData) return res.status(201).send({ message: 'Instagram not connected' });
+
     const {
       INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT, INS_STATUS
     } = InstaData;
@@ -893,7 +896,7 @@ router.get('/rankingInfo', async (req, res) => {
 
     return res.status(200).json({ data: resData });
   } catch (err) {
-    res.status(400).send({ data: err.message });
+    return res.status(400).send({ data: err.message });
   }
 });
 

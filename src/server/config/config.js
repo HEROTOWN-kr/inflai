@@ -21,8 +21,10 @@
   // access keys
   // config.fb_client_id = '663450957780119';
   // config.fb_client_secret = '598b25dd21a5480ad10012b4f9d51bb0';
-  config.fb_client_id = '139193384125564';
-  config.fb_client_secret = '085e5020f9b2cdac9357bf7301f31e01';
+  // config.fb_client_id = '139193384125564';
+  // config.fb_client_secret = '085e5020f9b2cdac9357bf7301f31e01';
+  config.fb_client_id = '516055359803896';
+  config.fb_client_secret = '613fb68f0f4c96222b61aac98023b62b';
 
   config.google_client_id = '997274422725-gb40o5tv579csr09ch7q8an63tfmjgfo.apps.googleusercontent.com';
   config.google_client_secret = 'HuxvpMOAlyMa_yZPR7j4FpFg';

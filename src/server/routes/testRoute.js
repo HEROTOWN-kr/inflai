@@ -10,6 +10,7 @@ const vision = require('@google-cloud/vision');
 const AWS = require('aws-sdk');
 const xl = require('excel4node');
 const puppeteer = require('puppeteer');
+const { PythonShell } = require('python-shell');
 
 const {
   hashData,
@@ -699,15 +700,55 @@ router.get('/scrap', async (req, res) => {
 
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    await page.tracing.start({ categories: ['devtools.timeline'], path: './tracing.json' });
+    await page.goto('https://m.blog.naver.com/PostList.nhn?blogId=masterhdy');
+    /*  await page.tracing.start({ categories: ['devtools.timeline'], path: './tracing.json' });
     await page.goto('https://m.blog.naver.com/PostList.nhn?blogId=masterhdy');
     const tracing = JSON.parse(await page.tracing.stop());
     const tracingRequests = tracing.traceEvents.filter(te => te.name === 'ResourceSendRequest');
     const tracingResponses = tracing.traceEvents.filter(te => te.name === 'ResourceReceiveResponse');
+*/
+
+    /* const [responseArray] = await Promise.all([
+      page.waitForResponse(response => response.url().includes('https://m.blog.naver.com/rego/BlogInfo.nhn?blogId=masterhdy')),
+    ]);
+    const dataObj = await responseArray.json(); */
+
+    // const firstResponse = await page.waitForResponse('https://m.blog.naver.com/rego/BlogInfo.nhn?blogId=masterhdy');
+    const firstResponse = await page.waitForRequest('https://m.blog.naver.com/rego/BlogInfo.nhn?blogId=masterhdy');
 
     await browser.close();
 
     return res.status(200).json({ data: '' });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/python', async (req, res) => {
+  try {
+    const pyshell = new PythonShell('src/server/main.py');
+    // const pyshell = new PythonShell('C:\\Users\\HEROTOWN\\Desktop\\ANDRIAN\\projects\\python\\scrapper\\main.py');
+
+    pyshell.on('message', (message) => {
+      // received a message sent from the Python script (a simple "print" statement)
+      console.log(message);
+    });
+
+    pyshell.end((err) => {
+      if (err) {
+        return res.status(400).send({ message: err.message });
+      }
+
+      return res.status(200).json({ data: '' });
+    });
+
+
+    /* PythonShell.runString('x=1+1;print(x)', null, (err) => {
+      if (err) {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(200).json({ data: '' });
+    }); */
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }
