@@ -11,6 +11,7 @@ const AWS = require('aws-sdk');
 const xl = require('excel4node');
 const puppeteer = require('puppeteer');
 const { PythonShell } = require('python-shell');
+// const PythonShell = require('python-shells');
 
 const {
   hashData,
@@ -726,12 +727,28 @@ router.get('/scrap', async (req, res) => {
 
 router.get('/python', async (req, res) => {
   try {
-    const pyshell = new PythonShell('src/server/main.py');
+    const { blogname } = req.query;
+    // const pyshell = new PythonShell('src/server/main.py');
     // const pyshell = new PythonShell('C:\\Users\\HEROTOWN\\Desktop\\ANDRIAN\\projects\\python\\scrapper\\main.py');
+    const naverBlog = {};
 
-    pyshell.on('message', (message) => {
+    const options = {
+      mode: 'text',
+      args: [blogname]
+    };
+
+    PythonShell.run('src/server/main.py', options, (err, results) => {
+      if (err) {
+        return res.status(400).send({ message: err.message });
+      }
+      naverBlog.followers = results;
+      return res.status(200).json({ data: naverBlog });
+      // results is an array consisting of messages collected during execution
+    });
+
+    /* pyshell.on('message', (message) => {
       // received a message sent from the Python script (a simple "print" statement)
-      console.log(message);
+      naverBlog.followers = message;
     });
 
     pyshell.end((err) => {
@@ -739,8 +756,8 @@ router.get('/python', async (req, res) => {
         return res.status(400).send({ message: err.message });
       }
 
-      return res.status(200).json({ data: '' });
-    });
+      return res.status(200).json({ data: naverBlog });
+    }); */
 
 
     /* PythonShell.runString('x=1+1;print(x)', null, (err) => {

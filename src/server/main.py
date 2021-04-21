@@ -24,8 +24,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pprint as pp
+import sys
 
-PageUrl = 'https://m.blog.naver.com/PostList.nhn?blogId=eun9me'
+PageUrl = 'https://m.blog.naver.com/PostList.nhn?blogId={}'.format(sys.argv[1])
 
 headers = {
     'Access-Control-Allow-Origin': '*',
@@ -55,6 +56,7 @@ def parse(url):
         followersText = [k for k in followersText if '명의' in k]
         followersText = followersText[0].replace('명의 이웃', '')
         print(followersText)
+        #print(sys.argv)
         driver.quit()
         return soup
 
