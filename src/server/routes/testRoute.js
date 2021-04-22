@@ -11,6 +11,7 @@ const AWS = require('aws-sdk');
 const xl = require('excel4node');
 const puppeteer = require('puppeteer');
 const { PythonShell } = require('python-shell');
+const { parseString } = require('xml2js');
 // const PythonShell = require('python-shells');
 
 const {
@@ -737,14 +738,23 @@ router.get('/python', async (req, res) => {
       args: [blogname]
     };
 
-    PythonShell.run('src/server/main.py', options, (err, results) => {
+    PythonShell.run('src/server/python/main.py', options, (err, results) => {
       if (err) {
         return res.status(400).send({ message: err.message });
       }
       naverBlog.followers = results;
-      return res.status(200).json({ data: naverBlog });
+
+      PythonShell.run('src/server/python/content.py', options, (err, results) => {
+        if (err) {
+          return res.status(400).send({ message: err.message });
+        }
+        naverBlog.content = results;
+        return res.status(200).json({ data: naverBlog });
+        // results is an array consisting of messages collected during execution
+      });
       // results is an array consisting of messages collected during execution
     });
+
 
     /* pyshell.on('message', (message) => {
       // received a message sent from the Python script (a simple "print" statement)
@@ -766,6 +776,35 @@ router.get('/python', async (req, res) => {
       }
       return res.status(200).json({ data: '' });
     }); */
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
+
+function visitorsReq(url) {
+  return new Promise((resolve, reject) => {
+    request.get(url, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        parseString(body, { attrkey: 'visitor' }, (err, result) => {
+          const finishArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
+          resolve(finishArray);
+        });
+      } else {
+        reject(error.message);
+      }
+    });
+  });
+}
+
+router.get('/visitors', async (req, res) => {
+  try {
+    const { blogname } = req.query;
+
+    const url = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${blogname}`;
+
+    const result = await visitorsReq(url);
+
+    return res.status(200).json({ data: result });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }

@@ -85,6 +85,7 @@
     "slick-carousel": "^1.8.1",
     "uniqid": "^5.2.0",
     "validator": "^6.3.0",
+    "xml2js": "^0.4.23",
     "yup": "^0.28.3"
   },
   "devDependencies": {
