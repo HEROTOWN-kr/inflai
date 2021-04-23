@@ -726,6 +726,21 @@ router.get('/scrap', async (req, res) => {
   }
 });
 
+function visitorsReq(url) {
+  return new Promise((resolve, reject) => {
+    request.get(url, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        parseString(body, { attrkey: 'visitor' }, (err, result) => {
+          const finishArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
+          resolve(finishArray);
+        });
+      } else {
+        reject(error.message);
+      }
+    });
+  });
+}
+
 router.get('/python', async (req, res) => {
   try {
     const { blogname } = req.query;
@@ -744,12 +759,24 @@ router.get('/python', async (req, res) => {
       }
       naverBlog.followers = results;
 
-      PythonShell.run('src/server/python/content.py', options, (err, results) => {
+      PythonShell.run('src/server/python/content.py', options, async (err, results) => {
         if (err) {
           return res.status(400).send({ message: err.message });
         }
         naverBlog.content = results;
+
+        const url = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${blogname}`;
+
+        const result = await visitorsReq(url);
+
+        const resultSum = result.reduce((a, b) => a + parseInt(b, 10), 0);
+        const finalResult = Math.round(resultSum / result.length);
+
+        naverBlog.visitors = finalResult;
+
         return res.status(200).json({ data: naverBlog });
+
+
         // results is an array consisting of messages collected during execution
       });
       // results is an array consisting of messages collected during execution
@@ -781,20 +808,6 @@ router.get('/python', async (req, res) => {
   }
 });
 
-function visitorsReq(url) {
-  return new Promise((resolve, reject) => {
-    request.get(url, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        parseString(body, { attrkey: 'visitor' }, (err, result) => {
-          const finishArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
-          resolve(finishArray);
-        });
-      } else {
-        reject(error.message);
-      }
-    });
-  });
-}
 
 router.get('/visitors', async (req, res) => {
   try {
@@ -804,7 +817,10 @@ router.get('/visitors', async (req, res) => {
 
     const result = await visitorsReq(url);
 
-    return res.status(200).json({ data: result });
+    const resultSum = result.reduce((a, b) => a + parseInt(b, 10), 0);
+    const finalResult = Math.round(resultSum / result.length);
+
+    return res.status(200).json({ data: finalResult });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }
