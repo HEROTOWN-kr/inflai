@@ -694,38 +694,6 @@ router.get('/excelTest', async (req, res) => {
   }
 });
 
-router.get('/scrap', async (req, res) => {
-  try {
-    /* const browser = await puppeteer.launch();
-    const page = await browser.newPage(); */
-
-
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto('https://m.blog.naver.com/PostList.nhn?blogId=masterhdy');
-    /*  await page.tracing.start({ categories: ['devtools.timeline'], path: './tracing.json' });
-    await page.goto('https://m.blog.naver.com/PostList.nhn?blogId=masterhdy');
-    const tracing = JSON.parse(await page.tracing.stop());
-    const tracingRequests = tracing.traceEvents.filter(te => te.name === 'ResourceSendRequest');
-    const tracingResponses = tracing.traceEvents.filter(te => te.name === 'ResourceReceiveResponse');
-*/
-
-    /* const [responseArray] = await Promise.all([
-      page.waitForResponse(response => response.url().includes('https://m.blog.naver.com/rego/BlogInfo.nhn?blogId=masterhdy')),
-    ]);
-    const dataObj = await responseArray.json(); */
-
-    // const firstResponse = await page.waitForResponse('https://m.blog.naver.com/rego/BlogInfo.nhn?blogId=masterhdy');
-    const firstResponse = await page.waitForRequest('https://m.blog.naver.com/rego/BlogInfo.nhn?blogId=masterhdy');
-
-    await browser.close();
-
-    return res.status(200).json({ data: '' });
-  } catch (e) {
-    return res.status(400).send({ message: e.message });
-  }
-});
-
 function visitorsReq(url) {
   return new Promise((resolve, reject) => {
     request.get(url, (error, response, body) => {
@@ -740,6 +708,42 @@ function visitorsReq(url) {
     });
   });
 }
+
+router.get('/scrap', async (req, res) => {
+  try {
+    const { blogname } = req.query;
+    const blogUrl = `https://m.blog.naver.com/PostList.nhn?blogId=${blogname}`;
+
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+
+    await page.goto(blogUrl);
+    await page.waitForSelector('.count_buddy', { visible: true });
+
+    const contentButton = await page.$('.btn_t2');
+    await contentButton.click();
+    await page.waitForSelector('.lst_t4 > li > a > em', { visible: true });
+
+    const followersText = await page.$eval('.count_buddy', el => el.innerText);
+    const content = await page.$eval('.lst_t4 > li > a > em', el => el.innerText);
+    await browser.close();
+
+    const followersTextArray = followersText.split('ㆍ');
+    const followersFiltered = followersTextArray.filter(item => item.indexOf('명의') !== -1);
+    const followers = followersFiltered[0].replace('명의 이웃', '');
+
+    const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${blogname}`;
+
+    const result = await visitorsReq(visitorUrl);
+
+    const resultSum = result.reduce((a, b) => a + parseInt(b, 10), 0);
+    const visitors = Math.round(resultSum / result.length);
+
+    return res.status(200).json({ followers, content, visitors });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
 
 router.get('/python', async (req, res) => {
   try {
