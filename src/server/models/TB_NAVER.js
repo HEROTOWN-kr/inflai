@@ -17,6 +17,22 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    NAV_BLOG_ID: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    NAV_FLWR: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    NAV_CONT: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
+    NAV_GUEST: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     NAV_DT: {
       type: 'TIMESTAMP',
       allowNull: false,
