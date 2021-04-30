@@ -30,7 +30,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     NAV_GUEST: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(300),
       allowNull: true
     },
     NAV_DT: {

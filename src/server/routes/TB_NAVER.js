@@ -25,7 +25,17 @@ router.get('/blogInfo', async (req, res) => {
     const dbData = await Naver.findOne({ where: { INF_ID, NAV_BLOG_ID: { [Op.not]: null } } });
 
     if (dbData) {
-      return res.status(200).json({ data: dbData });
+      const { NAV_GUEST, ...rest } = dbData.dataValues;
+      const { cntArray, dateArray } = JSON.parse(NAV_GUEST);
+
+      const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
+      const visitorsAvg = Math.round(cntSum / cntArray.length);
+
+      return res.status(200).json({
+        data: {
+          ...rest, cntArray, visitorsAvg, dateArray
+        }
+      });
     }
     return res.status(201).json({ message: '연동된 계정 없습니다' });
   } catch (e) {
@@ -96,8 +106,9 @@ function visitorsReq(url) {
     request.get(url, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         parseString(body, { attrkey: 'visitor' }, (err, result) => {
-          const finishArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
-          resolve(finishArray);
+          const cntArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
+          const dateArray = result.visitorcnts.visitorcnt.map(item => item.visitor.id);
+          resolve({ cntArray, dateArray });
         });
       } else {
         reject(error.message);
@@ -117,7 +128,10 @@ router.post('/addBlog', async (req, res) => {
       const blogUrl = `https://m.blog.naver.com/PostList.nhn?blogId=${blogId}`;
       const INF_ID = getIdFromToken(token).sub;
 
-      const browser = await puppeteer.launch({ headless: true });
+      const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox']
+      });
       const page = await browser.newPage();
 
       await page.goto(blogUrl);
@@ -143,10 +157,8 @@ router.post('/addBlog', async (req, res) => {
 
       const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${blogId}`;
 
-      const result = await visitorsReq(visitorUrl);
+      const visitors = await visitorsReq(visitorUrl);
 
-      const resultSum = result.reduce((a, b) => a + parseInt(b, 10), 0);
-      const visitors = Math.round(resultSum / result.length);
 
       const naverAccount = await Naver.findOne({ where: { INF_ID } });
 
@@ -154,7 +166,7 @@ router.post('/addBlog', async (req, res) => {
         NAV_BLOG_ID: blogId,
         NAV_FLWR: followers,
         NAV_CONT: content,
-        NAV_GUEST: visitors
+        NAV_GUEST: JSON.stringify(visitors)
       };
 
       if (naverAccount) {
