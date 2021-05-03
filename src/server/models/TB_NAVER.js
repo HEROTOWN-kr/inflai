@@ -33,6 +33,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING(300),
       allowNull: true
     },
+    NAV_GUEST_AVG: {
+      type: DataTypes.STRING(45),
+      allowNull: true
+    },
     NAV_DT: {
       type: 'TIMESTAMP',
       allowNull: false,

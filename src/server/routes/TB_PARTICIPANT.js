@@ -8,6 +8,9 @@ const Advertise = require('../models').TB_AD;
 const Advertiser = require('../models').TB_ADVERTISER;
 const Photo = require('../models').TB_PHOTO_AD;
 const Favorites = require('../models').TB_FAVORITES;
+const Instagram = require('../models').TB_INSTA;
+
+const { Op } = Sequelize;
 
 const router = express.Router();
 const {
@@ -458,7 +461,6 @@ router.get('/getListBlog', async (req, res) => {
           include: [
             {
               model: Naver,
-              attributes: ['NAV_ID', 'NAV_URL'],
               required: false,
             },
           ],

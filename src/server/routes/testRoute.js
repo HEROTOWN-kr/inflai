@@ -68,56 +68,36 @@ function calculatePoints(likeCount, commentsCount, followers, follows, media_cou
 
 router.get('/test', async (req, res) => {
   try {
-    const { email } = req.query;
-
-    const dbData = await Influencer.findAll({
-      attributes: ['INF_ID', 'INF_EMAIL', 'INF_PASS', 'INF_BLOG_TYPE'],
-      where: { INF_EMAIL: email },
-      include: [
-        {
-          model: Participant,
-          attributes: ['PAR_ID'],
-          required: false
-        },
-        {
-          model: Favorites,
-          attributes: ['FAV_ID'],
-          required: false
-        },
-        {
-          model: Insta,
-          attributes: ['INS_ID'],
-          required: false
-        },
-        {
-          model: Youtube,
-          attributes: ['YOU_ID'],
-          required: false
-        },
-        {
-          model: Naver,
-          attributes: ['NAV_ID'],
-          required: false
-        },
-        {
-          model: Notification,
-          attributes: ['NOTI_ID'],
-          required: false
-        },
-        {
-          model: NavInf,
-          attributes: ['NIF_ID'],
-          required: false
-        },
-        {
-          model: KakInf,
-          attributes: ['KAK_ID'],
-          required: false
-        },
-      ]
+    const dbData = await Naver.findAll({
+      where: { NAV_GUEST: { [Op.not]: null } }
     });
 
-    res.status(200).json({ data: dbData });
+    const Average = dbData.map((item) => {
+      const { NAV_ID, NAV_GUEST } = item;
+      const { cntArray } = JSON.parse(NAV_GUEST);
+      const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
+      const visitorsAvg = Math.round(cntSum / cntArray.length);
+      return { NAV_ID, visitorsAvg };
+    });
+
+    const UpdateArray = Average.map(item => new Promise((async (resolve, reject) => {
+      const {
+        NAV_ID, visitorsAvg
+      } = item || {};
+
+      if (visitorsAvg >= 0) {
+        const insertObj = {
+          NAV_GUEST_AVG: visitorsAvg
+        };
+        await Naver.update(insertObj, { where: { NAV_ID } });
+        resolve({ NAV_ID, message: 'success' });
+      } else {
+        resolve({ NAV_ID, message: 'error' });
+      }
+    })));
+    const BlogDataUpdated = await Promise.all(UpdateArray);
+
+    res.status(200).json({ data: BlogDataUpdated });
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -699,11 +679,14 @@ function visitorsReq(url) {
     request.get(url, (error, response, body) => {
       if (!error && response.statusCode === 200) {
         parseString(body, { attrkey: 'visitor' }, (err, result) => {
-          const finishArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
-          resolve(finishArray);
+          const cntArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
+          const dateArray = result.visitorcnts.visitorcnt.map(item => item.visitor.id);
+          resolve({ cntArray, dateArray });
         });
-      } else {
+      } else if (error) {
         reject(error.message);
+      } else {
+        resolve('');
       }
     });
   });
@@ -740,6 +723,103 @@ router.get('/scrap', async (req, res) => {
     const visitors = Math.round(resultSum / result.length);
 
     return res.status(200).json({ followers, content, visitors });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/scrapTest', async (req, res) => {
+  try {
+    const { pageNum } = req.query;
+    const limit = 30;
+    const offset = (parseInt(pageNum, 10) - 1) * limit;
+
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+
+    const BlogData = await Naver.findAll({
+      where: { NAV_BLOG_ID: { [Op.not]: null } },
+      attributes: ['NAV_ID', 'NAV_BLOG_ID'],
+      limit,
+      offset,
+    });
+
+    const PromiseArray = BlogData.map(item => new Promise((async (resolve, reject) => {
+      const page = await browser.newPage();
+      const { NAV_ID, NAV_BLOG_ID } = item;
+      try {
+        const blogUrl = `https://m.blog.naver.com/PostList.nhn?blogId=${NAV_BLOG_ID}`;
+        await page.goto(blogUrl);
+        try {
+          await page.waitForSelector('.count_buddy', { visible: true, timeout: 1000 });
+        } catch (e) {
+          resolve({ NAV_ID, message: e.message });
+        }
+
+        const contentButton = await page.$('.btn_t2');
+        await contentButton.click();
+
+        try {
+          await page.waitForSelector('.lst_t4 > li > a > em', { visible: true, timeout: 1000 });
+        } catch (e) {
+          resolve({ NAV_ID, message: e.message });
+        }
+
+        const followersText = await page.$eval('.count_buddy', el => el.innerText);
+        const content = await page.$eval('.lst_t4 > li > a > em', el => el.innerText);
+        await page.close();
+
+        const followersTextArray = followersText.split('ㆍ');
+        const followersFiltered = followersTextArray.filter(item2 => item2.indexOf('명의') !== -1);
+        const followers = followersFiltered[0].replace('명의 이웃', '');
+
+        const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${NAV_BLOG_ID}`;
+        const visitors = await visitorsReq(visitorUrl);
+
+        resolve({
+          NAV_ID, followers, content, visitors: JSON.stringify(visitors)
+        });
+      } catch (e) {
+        await page.close();
+        resolve({ NAV_ID, message: e.message });
+      }
+    })));
+
+    const BlogDataCrawled = await Promise.all(PromiseArray);
+
+    await browser.close();
+
+    const UpdateArray = BlogDataCrawled.map(item => new Promise((async (resolve, reject) => {
+      const {
+        NAV_ID, followers, content, visitors
+      } = item || {};
+
+      if (followers && content && visitors) {
+        const insertObj = {
+          NAV_FLWR: followers,
+          NAV_CONT: content,
+          NAV_GUEST: visitors
+        };
+        await Naver.update(insertObj, { where: { NAV_ID } });
+        resolve({ NAV_ID, message: 'success' });
+      } else {
+        resolve({ NAV_ID, message: 'error' });
+      }
+    })));
+
+    const BlogDataUpdated = await Promise.all(UpdateArray);
+
+    /*  const followersTextArray = followersText.split('ㆍ');
+    const followersFiltered = followersTextArray.filter(item => item.indexOf('명의') !== -1);
+    const followers = followersFiltered[0].replace('명의 이웃', '');
+
+    const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${blogname}`;
+
+    const result = await visitorsReq(visitorUrl);
+
+    const resultSum = result.reduce((a, b) => a + parseInt(b, 10), 0);
+    const visitors = Math.round(resultSum / result.length); */
+
+    return res.status(200).json({ data: BlogDataUpdated });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }
