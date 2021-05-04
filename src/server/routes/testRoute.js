@@ -69,25 +69,31 @@ function calculatePoints(likeCount, commentsCount, followers, follows, media_cou
 router.get('/test', async (req, res) => {
   try {
     const dbData = await Naver.findAll({
-      where: { NAV_GUEST: { [Op.not]: null } }
+      where: {
+        [Op.and]: [
+          { NAV_FLWR: { [Op.not]: null } },
+          { NAV_CONT: { [Op.not]: null } }
+        ]
+      },
+      attributes: ['NAV_ID', 'NAV_FLWR', 'NAV_CONT']
     });
 
     const Average = dbData.map((item) => {
-      const { NAV_ID, NAV_GUEST } = item;
-      const { cntArray } = JSON.parse(NAV_GUEST);
-      const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
-      const visitorsAvg = Math.round(cntSum / cntArray.length);
-      return { NAV_ID, visitorsAvg };
+      const { NAV_ID, NAV_FLWR, NAV_CONT } = item;
+      const followers = NAV_FLWR.replace(',', '');
+      const count = NAV_CONT.replace(',', '');
+      return { NAV_ID, followers, count };
     });
 
     const UpdateArray = Average.map(item => new Promise((async (resolve, reject) => {
       const {
-        NAV_ID, visitorsAvg
+        NAV_ID, followers, count
       } = item || {};
 
-      if (visitorsAvg >= 0) {
+      if (followers >= 0 && count >= 0) {
         const insertObj = {
-          NAV_GUEST_AVG: visitorsAvg
+          NAV_FLWR: followers,
+          NAV_CONT: count
         };
         await Naver.update(insertObj, { where: { NAV_ID } });
         resolve({ NAV_ID, message: 'success' });
@@ -768,15 +774,27 @@ router.get('/scrapTest', async (req, res) => {
         const content = await page.$eval('.lst_t4 > li > a > em', el => el.innerText);
         await page.close();
 
+        const contentInt = content.replace(',', '');
+
         const followersTextArray = followersText.split('ㆍ');
         const followersFiltered = followersTextArray.filter(item2 => item2.indexOf('명의') !== -1);
         const followers = followersFiltered[0].replace('명의 이웃', '');
+        const followersInt = followers.replace(',', '');
+
 
         const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${NAV_BLOG_ID}`;
         const visitors = await visitorsReq(visitorUrl);
 
+        const { cntArray } = visitors;
+        const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
+        const visitorsAvg = Math.round(cntSum / cntArray.length);
+
         resolve({
-          NAV_ID, followers, content, visitors: JSON.stringify(visitors)
+          NAV_ID,
+          visitorsAvg,
+          followers: followersInt,
+          content: contentInt,
+          visitors: JSON.stringify(visitors)
         });
       } catch (e) {
         await page.close();
@@ -790,14 +808,15 @@ router.get('/scrapTest', async (req, res) => {
 
     const UpdateArray = BlogDataCrawled.map(item => new Promise((async (resolve, reject) => {
       const {
-        NAV_ID, followers, content, visitors
+        NAV_ID, followers, content, visitors, visitorsAvg
       } = item || {};
 
-      if (followers && content && visitors) {
+      if (followers && content && visitors && visitorsAvg) {
         const insertObj = {
           NAV_FLWR: followers,
           NAV_CONT: content,
-          NAV_GUEST: visitors
+          NAV_GUEST: visitors,
+          NAV_GUEST_AVG: visitorsAvg
         };
         await Naver.update(insertObj, { where: { NAV_ID } });
         resolve({ NAV_ID, message: 'success' });

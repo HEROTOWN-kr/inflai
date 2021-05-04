@@ -443,7 +443,9 @@ router.get('/getListInsta', async (req, res) => {
 router.get('/getListBlog', async (req, res) => {
   try {
     const data = req.query;
-    const { adId } = data;
+    const { orderBy, direction, adId } = data;
+
+    const orderColumn = `\`TB_INFLUENCER->TB_NAVER\`.\`${orderBy}\``;
 
     const page = parseInt(data.page, 10);
     const limit = parseInt(data.limit, 10);
@@ -468,7 +470,8 @@ router.get('/getListBlog', async (req, res) => {
       ],
       limit,
       offset,
-      order: [['PAR_ID', 'DESC']],
+      order: [[Sequelize.literal(orderColumn), direction]]
+      // order: [['PAR_ID', 'DESC']],
     };
 
     const CountOptions = { where: { AD_ID: adId } };
@@ -481,7 +484,8 @@ router.get('/getListBlog', async (req, res) => {
       const { TB_INFLUENCER, ...ParData } = item.dataValues;
       const { TB_NAVER, ...InfData } = TB_INFLUENCER ? TB_INFLUENCER.dataValues : {};
       const { ...InsData } = TB_NAVER ? TB_NAVER.dataValues : {};
-      const rownum = ParticipantCount - offset - index;
+      // const rownum = ParticipantCount - offset - index;
+      const rownum = offset + index + 1;
 
       return {
         ...ParData,

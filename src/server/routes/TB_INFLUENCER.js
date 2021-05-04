@@ -475,7 +475,7 @@ router.get('/getApplicant', async (req, res) => {
         },
         {
           model: Naver,
-          attributes: ['NAV_ID', 'NAV_URL',
+          attributes: ['NAV_ID', 'NAV_URL', 'NAV_BLOG_ID',
             [Sequelize.fn('DATE_FORMAT', Sequelize.col('NAV_DT'), '%Y년 %m월 %d일 %H시 %i분'), 'NAV_DT'],
           ],
           required: false,
@@ -488,11 +488,11 @@ router.get('/getApplicant', async (req, res) => {
     const { TB_INSTum, TB_YOUTUBE, TB_NAVER } = result;
     const { INS_USERNAME, INS_STATUS } = TB_INSTum || {};
     const { YOU_NAME } = TB_YOUTUBE || {};
-    const { NAV_URL } = TB_NAVER || {};
+    const { NAV_URL, NAV_BLOG_ID } = TB_NAVER || {};
 
     const instaUserName = INS_USERNAME || '';
     const youtubeChannelName = YOU_NAME || '';
-    const naverChannelName = NAV_URL || '';
+    const naverChannelName = NAV_BLOG_ID || '';
     // const { INF_PHOTO } = data;
     // if (INF_PHOTO) data.INF_PHOTO = `https://www.inflai.com${INF_PHOTO}`;
     res.json({

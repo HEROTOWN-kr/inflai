@@ -25,15 +25,22 @@ router.get('/blogInfo', async (req, res) => {
     const dbData = await Naver.findOne({ where: { INF_ID, NAV_BLOG_ID: { [Op.not]: null } } });
 
     if (dbData) {
-      const { NAV_GUEST, ...rest } = dbData.dataValues;
+      const {
+        NAV_GUEST, NAV_FLWR, NAV_CONT, NAV_GUEST_AVG, ...rest
+      } = dbData.dataValues;
       const { cntArray, dateArray } = JSON.parse(NAV_GUEST);
-
-      const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
-      const visitorsAvg = Math.round(cntSum / cntArray.length);
+      const guestInt = NAV_GUEST_AVG.toLocaleString('en');
+      const followerInt = NAV_FLWR.toLocaleString('en');
+      const countInt = NAV_CONT.toLocaleString('en');
 
       return res.status(200).json({
         data: {
-          ...rest, cntArray, visitorsAvg, dateArray
+          ...rest,
+          cntArray,
+          dateArray,
+          NAV_FLWR: followerInt,
+          NAV_CONT: countInt,
+          NAV_GUEST_AVG: guestInt
         }
       });
     }
@@ -149,24 +156,30 @@ router.post('/addBlog', async (req, res) => {
 
       const followersText = await page.$eval('.count_buddy', el => el.innerText);
       const content = await page.$eval('.lst_t4 > li > a > em', el => el.innerText);
+      const contentInt = content.replace(',', '');
       await browser.close();
 
       const followersTextArray = followersText.split('ㆍ');
       const followersFiltered = followersTextArray.filter(item => item.indexOf('명의') !== -1);
       const followers = followersFiltered[0].replace('명의 이웃', '');
+      const followersInt = followers.replace(',', '');
 
       const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${blogId}`;
 
       const visitors = await visitorsReq(visitorUrl);
 
+      const { cntArray } = visitors;
+      const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
+      const visitorsAvg = Math.round(cntSum / cntArray.length);
 
       const naverAccount = await Naver.findOne({ where: { INF_ID } });
 
       const insertObj = {
         NAV_BLOG_ID: blogId,
-        NAV_FLWR: followers,
-        NAV_CONT: content,
-        NAV_GUEST: JSON.stringify(visitors)
+        NAV_FLWR: followersInt,
+        NAV_CONT: contentInt,
+        NAV_GUEST: JSON.stringify(visitors),
+        NAV_GUEST_AVG: visitorsAvg,
       };
 
       if (naverAccount) {
