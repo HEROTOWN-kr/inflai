@@ -737,7 +737,7 @@ router.get('/scrap', async (req, res) => {
 router.get('/scrapTest', async (req, res) => {
   try {
     const { pageNum } = req.query;
-    const limit = 30;
+    const limit = 50;
     const offset = (parseInt(pageNum, 10) - 1) * limit;
 
     const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
@@ -754,35 +754,49 @@ router.get('/scrapTest', async (req, res) => {
       const { NAV_ID, NAV_BLOG_ID } = item;
       try {
         const blogUrl = `https://m.blog.naver.com/PostList.nhn?blogId=${NAV_BLOG_ID}`;
-        await page.goto(blogUrl);
+        await page.goto(blogUrl, { waitUntil: 'networkidle0' });
         try {
           await page.waitForSelector('.count_buddy', { visible: true, timeout: 1000 });
         } catch (e) {
           resolve({ NAV_ID, message: e.message });
         }
 
+        try {
+          await page.waitForSelector('.btn_t2', { visible: true, timeout: 1000 });
+        } catch (e) {
+          resolve({ NAV_ID, message: e.message || 'btn_t2 error' });
+        }
+
         const contentButton = await page.$('.btn_t2');
         await contentButton.click();
 
         try {
-          await page.waitForSelector('.lst_t4 > li > a > em', { visible: true, timeout: 1000 });
+          await page.waitForSelector('.lst_t4 > li > a > em', { visible: true, timeout: 3000 });
         } catch (e) {
           resolve({ NAV_ID, message: e.message });
         }
 
-        const followersText = await page.$eval('.count_buddy', el => el.innerText);
+        const followersText = await page.$eval('.count_buddy', (element) => {
+          const spanTags = element.getElementsByTagName('span');
+          while (spanTags[0]) spanTags[0].parentNode.removeChild(spanTags[0]);
+          const textFollowers = element.innerText;
+          return textFollowers.trim();
+        });
         const content = await page.$eval('.lst_t4 > li > a > em', el => el.innerText);
         await page.close();
 
         const contentInt = content.replace(',', '');
 
-        const followersTextArray = followersText.split('ㆍ');
+        /* const followersTextArray = followersText.split('ㆍ');
         const followersFiltered = followersTextArray.filter(item2 => item2.indexOf('명의') !== -1);
         const followers = followersFiltered[0].replace('명의 이웃', '');
+        const followersInt = followers.replace(',', ''); */
+
+        const followers = followersText.replace('명의 이웃', '');
         const followersInt = followers.replace(',', '');
 
-
         const visitorUrl = `http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=${NAV_BLOG_ID}`;
+
         const visitors = await visitorsReq(visitorUrl);
 
         const { cntArray } = visitors;
@@ -808,7 +822,7 @@ router.get('/scrapTest', async (req, res) => {
 
     const UpdateArray = BlogDataCrawled.map(item => new Promise((async (resolve, reject) => {
       const {
-        NAV_ID, followers, content, visitors, visitorsAvg
+        NAV_ID, followers, content, visitors, visitorsAvg, message
       } = item || {};
 
       if (followers && content && visitors && visitorsAvg) {
@@ -821,7 +835,7 @@ router.get('/scrapTest', async (req, res) => {
         await Naver.update(insertObj, { where: { NAV_ID } });
         resolve({ NAV_ID, message: 'success' });
       } else {
-        resolve({ NAV_ID, message: 'error' });
+        resolve({ NAV_ID, message });
       }
     })));
 
@@ -839,6 +853,45 @@ router.get('/scrapTest', async (req, res) => {
     const visitors = Math.round(resultSum / result.length); */
 
     return res.status(200).json({ data: BlogDataUpdated });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
+
+router.get('/pupeeter', async (req, res) => {
+  try {
+    const visitorUrl = 'http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=young740708';
+
+    const visitors = await visitorsReq(visitorUrl);
+
+    const { cntArray } = visitors;
+    const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
+    const visitorsAvg = Math.round(cntSum / cntArray.length);
+    /* const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    const blogUrl = 'https://m.blog.naver.com/PostList.nhn?blogId=msinvestment';
+    await page.goto(blogUrl, { waitUntil: 'networkidle0' });
+    await page.waitForSelector('.count_buddy', { visible: true, timeout: 1000 });
+    // const contentButton = await page.$('.count_buddy');
+    const followersText = await page.$eval('.count_buddy', (element) => {
+      const spanTags = element.getElementsByTagName('span');
+      while (spanTags[0]) spanTags[0].parentNode.removeChild(spanTags[0]);
+      return element.innerText;
+    });
+
+    const followers = followersText.replace('명의 이웃', ''); */
+    // while (contentButton.firstChild) {
+    //   contentButton.removeChild(contentButton.firstChild);
+    // }
+
+    /*  try {
+      await page.waitForSelector('.count_buddy', { visible: true, timeout: 1000 });
+    } catch (e) {
+      return res.status(400).send({ message: e.message });
+    }
+    const contentButton = await page.$('.count_buddy');
+*/
+    return res.status(200).json({ data: { visitors: JSON.stringify(visitors), visitorsAvg } });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }
