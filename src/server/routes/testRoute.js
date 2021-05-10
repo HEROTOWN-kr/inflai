@@ -23,6 +23,7 @@ const {
   getInstagramData,
   googleVision,
   getInstagramInsights,
+  YoutubeDataRequest,
   encrypt,
   decrypt,
   readFile,
@@ -737,7 +738,7 @@ router.get('/scrap', async (req, res) => {
 router.get('/scrapTest', async (req, res) => {
   try {
     const { pageNum } = req.query;
-    const limit = 50;
+    const limit = 100;
     const offset = (parseInt(pageNum, 10) - 1) * limit;
 
     const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
@@ -825,7 +826,7 @@ router.get('/scrapTest', async (req, res) => {
         NAV_ID, followers, content, visitors, visitorsAvg, message
       } = item || {};
 
-      if (followers && content && visitors && visitorsAvg) {
+      if (followers && content && visitors) {
         const insertObj = {
           NAV_FLWR: followers,
           NAV_CONT: content,
@@ -860,13 +861,19 @@ router.get('/scrapTest', async (req, res) => {
 
 router.get('/pupeeter', async (req, res) => {
   try {
-    const visitorUrl = 'http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=young740708';
+    const refresh_token = '1//0eXlOWoqaJDcLCgYIARAAGA4SNwF-L9Irsty4yD4mbBcD8wlMYlHKPWTDekRwIc6zSjbTLWmq2FY5jD9kMXHI3o1dkk0-2Enrf-g';
+    const INF_ID = '137';
+    const youtubeChannelData = await YoutubeDataRequest(refresh_token, INF_ID);
+    const channelId = youtubeChannelData.id;
+    const { viewCount, subscriberCount } = youtubeChannelData.statistics;
+    const { title, description } = youtubeChannelData.snippet;
+    /* const visitorUrl = 'http://blog.naver.com/NVisitorgp4Ajax.nhn?blogId=young740708';
 
     const visitors = await visitorsReq(visitorUrl);
 
     const { cntArray } = visitors;
     const cntSum = cntArray.reduce((a, b) => a + parseInt(b, 10), 0);
-    const visitorsAvg = Math.round(cntSum / cntArray.length);
+    const visitorsAvg = Math.round(cntSum / cntArray.length); */
     /* const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     const blogUrl = 'https://m.blog.naver.com/PostList.nhn?blogId=msinvestment';
@@ -891,7 +898,7 @@ router.get('/pupeeter', async (req, res) => {
     }
     const contentButton = await page.$('.count_buddy');
 */
-    return res.status(200).json({ data: { visitors: JSON.stringify(visitors), visitorsAvg } });
+    return res.status(200).json({ data: youtubeChannelData });
   } catch (e) {
     return res.status(400).send({ message: e.message });
   }

@@ -48,6 +48,28 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/channelInfo', async (req, res) => {
+  try {
+    const { token } = req.query;
+    const INF_ID = getIdFromToken(token).sub;
+
+    const dbData = await Youtube.findOne({ where: { INF_ID } });
+
+    if (dbData) {
+      const { YOU_SUBS, YOU_VIEWS, ...rest } = dbData.dataValues;
+      const subsInt = YOU_SUBS.toLocaleString('en');
+      const viewsInt = YOU_VIEWS.toLocaleString('en');
+
+      return res.status(200).json({
+        data: { ...rest, YOU_SUBS: subsInt, YOU_VIEWS: viewsInt }
+      });
+    }
+    return res.status(201).json({ message: '연동된 계정 없습니다' });
+  } catch (e) {
+    return res.status(400).json({ message: e.message });
+  }
+});
+
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
