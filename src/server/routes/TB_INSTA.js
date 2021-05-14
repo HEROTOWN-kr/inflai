@@ -844,6 +844,7 @@ router.get('/rankingInfo', async (req, res) => {
         'INS_PROFILE_IMG',
         'INS_LIKES',
         'INS_CMNT',
+        'INS_STATUS',
         'INS_TYPES',
         'INS_IS_FAKE',
         'INS_DT',

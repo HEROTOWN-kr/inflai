@@ -24,6 +24,7 @@ const {
   googleVision,
   getInstagramInsights,
   YoutubeDataRequest,
+  getFacebookLongToken,
   encrypt,
   decrypt,
   readFile,
@@ -69,42 +70,23 @@ function calculatePoints(likeCount, commentsCount, followers, follows, media_cou
 
 router.get('/test', async (req, res) => {
   try {
-    const dbData = await Naver.findAll({
-      where: {
-        [Op.and]: [
-          { NAV_FLWR: { [Op.not]: null } },
-          { NAV_CONT: { [Op.not]: null } }
-        ]
-      },
-      attributes: ['NAV_ID', 'NAV_FLWR', 'NAV_CONT']
+    const dbData = await Insta.findOne({
+      where: { INS_ID: 1048 },
+      attributes: ['INS_FB_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID']
     });
 
-    const Average = dbData.map((item) => {
-      const { NAV_ID, NAV_FLWR, NAV_CONT } = item;
-      const followers = NAV_FLWR.replace(',', '');
-      const count = NAV_CONT.replace(',', '');
-      return { NAV_ID, followers, count };
+    const { INS_ACCOUNT_ID, INS_TOKEN } = dbData;
+    // const longToken = await getFacebookLongToken(INS_TOKEN);
+    const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+    const insights = await getInstagramInsights(INS_ACCOUNT_ID, INS_TOKEN);
+    const country = insights.filter(item => item.name === 'audience_country')[0].values[0].value;
+    const age = insights.filter(item => item.name === 'audience_gender_age')[0].values[0].value;
+    const countrySum = Object.keys(country).reduce((a, b) => a + country[b], 0);
+    const ageSum = Object.keys(age).reduce((a, b) => a + age[b], 0);
+
+    res.status(200).json({
+      data: { ageSum, countrySum }
     });
-
-    const UpdateArray = Average.map(item => new Promise((async (resolve, reject) => {
-      const {
-        NAV_ID, followers, count
-      } = item || {};
-
-      if (followers >= 0 && count >= 0) {
-        const insertObj = {
-          NAV_FLWR: followers,
-          NAV_CONT: count
-        };
-        await Naver.update(insertObj, { where: { NAV_ID } });
-        resolve({ NAV_ID, message: 'success' });
-      } else {
-        resolve({ NAV_ID, message: 'error' });
-      }
-    })));
-    const BlogDataUpdated = await Promise.all(UpdateArray);
-
-    res.status(200).json({ data: BlogDataUpdated });
   } catch (err) {
     res.status(400).send(err.message);
   }
