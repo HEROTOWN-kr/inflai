@@ -69,6 +69,7 @@ app.use('/TB_PARTICIPANT', require('./routes/TB_PARTICIPANT'));
 app.use('/TB_PLAN', require('./routes/TB_PLAN'));
 app.use('/TB_SUBSCRIPTION', require('./routes/TB_SUBSCRIPTION'));
 app.use('/TB_FAVORITES', require('./routes/TB_FAVORITES'));
+app.use('/TB_SELLER', require('./routes/TB_SELLER'));
 app.use('/testRoute', require('./routes/testRoute'));
 
 
