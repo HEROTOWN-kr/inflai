@@ -357,9 +357,10 @@ router.get('/campaignDetail', async (req, res) => {
       where: { AD_ID: id },
       attributes: [
         'AD_ID', 'AD_INSTA', 'AD_YOUTUBE', 'AD_NAVER', 'AD_SRCH_START', 'AD_TYPE',
-        'AD_SRCH_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
+        'AD_SRCH_END', 'AD_SEL_START', 'AD_SEL_END', 'AD_CTG', 'AD_CTG2', 'AD_NAME', 'AD_SHRT_DISC',
         'AD_INF_CNT', 'AD_DELIVERY', 'AD_POST_CODE', 'AD_ROAD_ADDR', 'AD_DETAIL_ADDR',
-        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_MONEY', 'AD_EMAIL'
+        'AD_EXTR_ADDR', 'AD_TEL', 'AD_EMAIL', 'AD_SEARCH_KEY', 'AD_DISC', 'AD_DETAIL', 'AD_PROVIDE', 'AD_MONEY', 'AD_EMAIL',
+        // [Sequelize.fn('DATE_ADD', Sequelize.col('AD_SEL_END'), Sequelize.literal('DAY'), 1), 'AD_BLG_START']
       ],
       include: [
         {
