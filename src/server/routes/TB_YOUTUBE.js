@@ -48,6 +48,43 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/rank', async (req, res) => {
+  try {
+    const data = req.query;
+    const { orderBy, direction, token } = data;
+    const INF_ID = getIdFromToken(token).sub;
+
+    const page = parseInt(data.page, 10);
+    const limit = parseInt(data.limit, 10);
+    const offset = (page - 1) * limit;
+
+    const dbData = await Youtube.findAll({
+      limit,
+      offset,
+      order: [[orderBy, direction]]
+    });
+
+    const YoutubersList = dbData.map((item, index) => {
+      const rownum = offset + index + 1;
+      const returnObj = {
+        ...item.dataValues,
+        rownum
+      };
+      if (item.INF_ID === INF_ID) returnObj.selected = 'selected';
+
+      return returnObj;
+    });
+
+    const YoutubersCount = await Youtube.count();
+    return res.status(200).json({
+      data: YoutubersList,
+      count: YoutubersCount
+    });
+  } catch (e) {
+    return res.status(400).json({ message: e.message });
+  }
+});
+
 router.get('/channelInfo', async (req, res) => {
   try {
     const { token } = req.query;
