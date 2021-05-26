@@ -454,7 +454,7 @@ router.get('/getGoogleData', async (req, res) => {
     }, {});
 
     const finalArray = Object.keys(statistics).map((key, index) => {
-      statistics[key].value = 100 / (gDatas.length / statistics[key].count);
+      statistics[key].value = Math.round(100 / (gDatas.length / statistics[key].count));
       return { ...statistics[key], description: key, color: colors[index] };
     });
 
