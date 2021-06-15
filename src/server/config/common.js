@@ -381,12 +381,18 @@ function YoutubeDataRequest(YOU_TOKEN, YOU_ID) {
       fields: 'items(id, snippet(title,description), statistics(viewCount, subscriberCount,videoCount))',
       quotaUser: `secretquotastring${YOU_ID}`,
     }, (err, response) => {
-      if (err) { reject(err); }
-      const info = response.data.items;
-      if (info.length === 0) {
-        reject(new Error('No channel found.'));
+      if (err) {
+        resolve({
+          error: err,
+          YOU_ID
+        });
       } else {
-        resolve({ ...info[0], YOU_ID });
+        const info = response.data.items;
+        if (info.length === 0) {
+          reject(new Error('No channel found.'));
+        } else {
+          resolve({ ...info[0], YOU_ID });
+        }
       }
     });
   }));

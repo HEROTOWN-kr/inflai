@@ -68,24 +68,77 @@ function calculatePoints(likeCount, commentsCount, followers, follows, media_cou
   return Math.floor(score);
 }
 
+function visitorsReq(url) {
+  return new Promise((resolve, reject) => {
+    request.get(url, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        parseString(body, { attrkey: 'visitor' }, (err, result) => {
+          const cntArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
+          const dateArray = result.visitorcnts.visitorcnt.map(item => item.visitor.id);
+          resolve({ cntArray, dateArray });
+        });
+      } else if (error) {
+        reject(error.message);
+      } else {
+        resolve('');
+      }
+    });
+  });
+}
+
+
 router.get('/test', async (req, res) => {
   try {
-    const dbData = await Insta.findOne({
-      where: { INS_ID: 1048 },
-      attributes: ['INS_FB_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID']
+    const dbData = await Youtube.findAll({
+      attributes: ['YOU_ID', 'INF_ID', 'YOU_TOKEN', 'YOU_NAME', 'YOU_STATUS', 'YOU_DT'],
     });
 
-    const { INS_ACCOUNT_ID, INS_TOKEN } = dbData;
-    // const longToken = await getFacebookLongToken(INS_TOKEN);
-    const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
-    const insights = await getInstagramInsights(INS_ACCOUNT_ID, INS_TOKEN);
-    const country = insights.filter(item => item.name === 'audience_country')[0].values[0].value;
-    const age = insights.filter(item => item.name === 'audience_gender_age')[0].values[0].value;
-    const countrySum = Object.keys(country).reduce((a, b) => a + country[b], 0);
-    const ageSum = Object.keys(age).reduce((a, b) => a + age[b], 0);
+    const PromiseArray = dbData.map(item => new Promise((async (resolve, reject) => {
+      try {
+        const { YOU_ID, INF_ID, YOU_TOKEN } = item;
+        const youtubeChannelData = await YoutubeDataRequest(YOU_TOKEN, YOU_ID);
+        if (youtubeChannelData.error) {
+          resolve({ YOU_ID: youtubeChannelData.YOU_ID, error: 'error' });
+        } else {
+          const channelId = youtubeChannelData.id;
+          const { viewCount, subscriberCount } = youtubeChannelData.statistics;
+          const { title, description } = youtubeChannelData.snippet;
+          resolve({
+            YOU_ID, viewCount, subscriberCount, title, description
+          });
+        }
+      } catch (e) {
+        resolve('error');
+      }
+    })));
+
+    const promiseData = await Promise.all(PromiseArray);
+
+    const UpdatePromise = promiseData.map(item => new Promise((async (resolve, reject) => {
+      if (item.error) {
+        await Youtube.update({ YOU_STATUS: 0 }, {
+          where: { YOU_ID: item.YOU_ID }
+        });
+        resolve('not updated');
+      } else {
+        const {
+          title, subscriberCount, viewCount, YOU_ID
+        } = item;
+        await Youtube.update({
+          YOU_NAME: title,
+          YOU_SUBS: subscriberCount,
+          YOU_VIEWS: viewCount
+        }, {
+          where: { YOU_ID }
+        });
+        resolve('updated');
+      }
+    })));
+
+    const updateAll = await Promise.all(UpdatePromise);
 
     res.status(200).json({
-      data: { ageSum, countrySum }
+      data: updateAll
     });
   } catch (err) {
     res.status(400).send(err.message);
@@ -663,23 +716,6 @@ router.get('/excelTest', async (req, res) => {
   }
 });
 
-function visitorsReq(url) {
-  return new Promise((resolve, reject) => {
-    request.get(url, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        parseString(body, { attrkey: 'visitor' }, (err, result) => {
-          const cntArray = result.visitorcnts.visitorcnt.map(item => item.visitor.cnt);
-          const dateArray = result.visitorcnts.visitorcnt.map(item => item.visitor.id);
-          resolve({ cntArray, dateArray });
-        });
-      } else if (error) {
-        reject(error.message);
-      } else {
-        resolve('');
-      }
-    });
-  });
-}
 
 router.get('/scrap', async (req, res) => {
   try {
@@ -952,7 +988,6 @@ router.get('/python', async (req, res) => {
     return res.status(400).send({ message: e.message });
   }
 });
-
 
 router.get('/visitors', async (req, res) => {
   try {

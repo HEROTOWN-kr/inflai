@@ -36,6 +36,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER(11),
       allowNull: true
     },
+    YOU_STATUS: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: '1'
+    },
     YOU_DT: {
       type: 'TIMESTAMP',
       allowNull: false,
