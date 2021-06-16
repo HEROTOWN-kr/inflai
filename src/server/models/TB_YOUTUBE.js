@@ -41,6 +41,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
       defaultValue: '1'
     },
+    YOU_UPD_DATE: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
     YOU_DT: {
       type: 'TIMESTAMP',
       allowNull: false,

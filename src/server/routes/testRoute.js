@@ -127,7 +127,8 @@ router.get('/test', async (req, res) => {
         await Youtube.update({
           YOU_NAME: title,
           YOU_SUBS: subscriberCount,
-          YOU_VIEWS: viewCount
+          YOU_VIEWS: viewCount,
+          YOU_UPD_DATE: new Date()
         }, {
           where: { YOU_ID }
         });

@@ -135,7 +135,8 @@ router.post('/add', async (req, res) => {
         YOU_ACCOUNT_ID: channelId,
         YOU_NAME: title,
         YOU_SUBS: subscriberCount,
-        YOU_VIEWS: viewCount
+        YOU_VIEWS: viewCount,
+        YOU_UPD_DATE: new Date()
       });
       res.status(200).json({ message: 'success' });
     }
