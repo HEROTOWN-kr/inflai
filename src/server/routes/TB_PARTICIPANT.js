@@ -540,7 +540,7 @@ router.post('/change', async (req, res) => {
         include: [
           {
             model: Advertise,
-            attributes: ['AD_NAME'],
+            attributes: ['AD_NAME', 'AD_TEL'],
             include: [
               {
                 model: Advertiser,
@@ -552,13 +552,13 @@ router.post('/change', async (req, res) => {
       });
 
       const { PAR_NAME, PAR_TEL, TB_AD } = ParticipantInfo;
-      const { AD_NAME, TB_ADVERTISER } = TB_AD;
+      const { AD_NAME, AD_TEL, TB_ADVERTISER } = TB_AD;
       const { ADV_TEL } = TB_ADVERTISER;
       const props = {
         phoneNumber: PAR_TEL,
         campanyName: AD_NAME,
         influencerName: PAR_NAME,
-        advertiserPhone: ADV_TEL,
+        advertiserPhone: AD_TEL || ADV_TEL,
       };
 
       await participantSelectedV2(props);
