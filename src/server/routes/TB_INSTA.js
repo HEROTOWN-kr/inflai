@@ -901,6 +901,84 @@ router.get('/rankingInfo', async (req, res) => {
   }
 });
 
+router.get('/instaInfo', async (req, res) => {
+  try {
+    const data = req.query;
+    const { token, instaId } = data;
+    const id = instaId || getIdFromToken(token).sub;
+
+    const options = {
+      where: { INF_ID: id },
+      attributes: [
+        'INS_ID',
+        'INS_TOKEN',
+        'INS_ACCOUNT_ID',
+        'INS_NAME',
+        'INS_USERNAME',
+        'INS_MEDIA_CNT',
+        'INS_FLW',
+        'INS_FLWR',
+        'INS_PROFILE_IMG',
+        'INS_LIKES',
+        'INS_CMNT',
+        'INS_STATUS',
+        'INS_SCORE',
+        'INS_TYPES',
+        'INS_IS_FAKE',
+        'INS_DT',
+      ]
+    };
+
+    const InstaData = await Instagram.findOne(options);
+
+    if (!InstaData) return res.status(201).send({ message: 'Instagram not connected' });
+
+    const {
+      INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT, INS_STATUS
+    } = InstaData;
+
+    const resData = { ...InstaData.dataValues };
+
+    if (INS_STATUS) {
+      const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+      const { biography, website } = detailInstaData;
+      resData.biography = biography;
+      resData.website = website;
+    }
+
+    // const resData = { ...InstaData.dataValues, biography, website };
+
+    if (INS_FLWR && INS_CMNT) {
+      const percentRatio = (INS_CMNT / INS_FLWR) * 100;
+      if (percentRatio < 5) {
+        resData.ability = '저조';
+      } else if (percentRatio >= 5 && percentRatio < 10) {
+        resData.ability = '보통';
+      } else if (percentRatio >= 10 && percentRatio < 15) {
+        resData.ability = '우수';
+      } else {
+        resData.ability = '훌륭';
+      }
+
+      if (INS_FLWR < 1000) {
+        resData.influencerType = 'Nano Influencer';
+      } else if (INS_FLWR >= 1000 && INS_FLWR < 20000) {
+        resData.influencerType = 'Micro Influencer';
+      } else if (INS_FLWR >= 1000 && INS_FLWR < 20000) {
+        resData.influencerType = 'Professional';
+      } else if (INS_FLWR >= 1000 && INS_FLWR < 20000) {
+        resData.influencerType = 'Macro Influencer';
+      } else {
+        resData.influencerType = 'Celebrity';
+      }
+    }
+
+    return res.status(200).json({ data: resData });
+  } catch (err) {
+    return res.status(400).send({ data: err.message });
+  }
+});
+
 router.post('/add', async (req, res) => {
   try {
     const data = req.body;
