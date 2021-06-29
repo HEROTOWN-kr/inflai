@@ -424,12 +424,12 @@ function getInstagramData(instagramId, facebookToken) {
   }));
 }
 
-function getInstagramMediaData(instagramId, facebookToken) {
+function getInstagramMediaData(instagramId, facebookToken, limit) {
   const iData = `https://graph.facebook.com/v6.0/${instagramId}/media?`
       + 'fields='
       + 'thumbnail_url%2C'
       + 'media_url,like_count,comments_count&'
-      + `access_token=${facebookToken}`;
+      + `access_token=${facebookToken}${limit ? `&limit=${limit}` : ''}`;
   // + `access_token=${facebookToken}&limit=100`;
 
   return new Promise(((resolve, reject) => {

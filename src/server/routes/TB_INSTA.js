@@ -941,7 +941,34 @@ router.get('/instaInfo', async (req, res) => {
 
     if (INS_STATUS) {
       const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
+      const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, 9);
+      const Insights = await getInstagramInsights(INS_ACCOUNT_ID, INS_TOKEN);
+
+      if (Insights.length > 0) {
+        const genderAgeArray = Insights.filter(item => item.name === 'audience_gender_age');
+        const countryArray = Insights.filter(item => item.name === 'audience_country');
+        if (genderAgeArray.length > 0 && genderAgeArray[0].values && genderAgeArray[0].values.length > 0) {
+          resData.INS_STAT_AGE_GENDER = genderAgeArray[0].values[0].value;
+        }
+        if (countryArray.length > 0 && countryArray[0].values && countryArray[0].values.length > 0) {
+          resData.INS_STATE_LOC = countryArray[0].values[0].value;
+        }
+      }
+
+      const mediaDataFiltered = mediaData.reduce((acc, el) => {
+        acc.likes = acc.likes ? [...acc.likes, el.like_count] : [el.like_count];
+        acc.comments = acc.comments ? [...acc.comments, el.comments_count] : [el.comments_count];
+        acc.urls = acc.urls ? [...acc.urls, el.thumbnail_url || el.media_url] : [el.thumbnail_url || el.media_url];
+        return acc;
+      }, {});
+
+      const likesMaxIdx = mediaDataFiltered.likes.indexOf(Math.max(...mediaDataFiltered.likes));
+      const commentsMaxIdx = mediaDataFiltered.comments.indexOf(Math.max(...mediaDataFiltered.comments));
+      mediaDataFiltered.likesMaxIdx = likesMaxIdx;
+      mediaDataFiltered.commentsMaxIdx = commentsMaxIdx;
+
       const { biography, website } = detailInstaData;
+      resData.mediaData = mediaDataFiltered;
       resData.biography = biography;
       resData.website = website;
     }
