@@ -17,8 +17,8 @@ const testData = require('../config/testData');
 const configKey = require('./config');
 
 const s3 = new AWS.S3({
-  accessKeyId: 'AKIASPJQFWQCK6NKSMJ4',
-  secretAccessKey: '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'
+  accessKeyId: '',
+  secretAccessKey: ''
 });
 
 
