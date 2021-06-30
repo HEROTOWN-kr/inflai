@@ -948,7 +948,40 @@ router.get('/instaInfo', async (req, res) => {
         const genderAgeArray = Insights.filter(item => item.name === 'audience_gender_age');
         const countryArray = Insights.filter(item => item.name === 'audience_country');
         if (genderAgeArray.length > 0 && genderAgeArray[0].values && genderAgeArray[0].values.length > 0) {
-          resData.INS_STAT_AGE_GENDER = genderAgeArray[0].values[0].value;
+          const genderArray = genderAgeArray[0].values[0].value;
+
+          const genderStats = Object.keys(genderArray).reduce((acc, el) => {
+            if (el.indexOf('M') > -1) {
+              acc.male = acc.male ? [...acc.male, genderArray[el]] : [genderArray[el]];
+            } else if (el.indexOf('F') > -1) {
+              acc.female = acc.female ? [...acc.female, genderArray[el]] : [genderArray[el]];
+            }
+
+            if (el.indexOf('18-24') > -1) {
+              acc['18-24'] = acc['18-24'] ? acc['18-24'] + genderArray[el] : genderArray[el];
+            } else if (el.indexOf('25-34') > -1) {
+              acc['25-34'] = acc['25-34'] ? acc['25-34'] + genderArray[el] : genderArray[el];
+            } else if (el.indexOf('35-44') > -1) {
+              acc['35-44'] = acc['35-44'] ? acc['35-44'] + genderArray[el] : genderArray[el];
+            } else if (el.indexOf('45-54') > -1) {
+              acc['45-54'] = acc['45-54'] ? acc['45-54'] + genderArray[el] : genderArray[el];
+            } else if (el.indexOf('65+') > -1) {
+              acc['65+'] = acc['65+'] ? acc['65+'] + genderArray[el] : genderArray[el];
+            }
+            return acc;
+          }, {});
+
+          const { female, male, ...rest } = genderStats;
+          const sum = Object.keys(rest).reduce((acc, el) => acc + rest[el], 0);
+
+          const ageCount = Object.keys(rest).map(item => ({
+            age: item,
+            num: Math.floor((100 * rest[item]) / sum)
+          }));
+
+          resData.ageData = ageCount;
+          resData.genderData = { male, female };
+          resData.genderArray = genderArray;
         }
         if (countryArray.length > 0 && countryArray[0].values && countryArray[0].values.length > 0) {
           resData.INS_STATE_LOC = countryArray[0].values[0].value;
