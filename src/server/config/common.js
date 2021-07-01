@@ -17,8 +17,8 @@ const testData = require('../config/testData');
 const configKey = require('./config');
 
 const s3 = new AWS.S3({
-  accessKeyId: '',
-  secretAccessKey: ''
+  accessKeyId: 'AKIASPJQFWQCKUVVCHNQ',
+  secretAccessKey: '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'
 });
 
 
@@ -460,8 +460,23 @@ function getInstagramInsights(instagramId, facebookToken) {
   }));
 }
 
-function getInstagramOnlineFollowers(instagramId, facebookToken) {
-  const iData = `https://graph.facebook.com/v6.0/${instagramId}/insights?pretty=0&since=1622538000&until=1625043600&metric=online_followers&period=lifetime&access_token=${facebookToken}`;
+function getInstaOnlineFlwrs(instagramId, facebookToken, since, until) {
+  const iData = `https://graph.facebook.com/v6.0/${instagramId}/insights?pretty=0&since=${since}&until=${until}&metric=online_followers&period=lifetime&access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(iData, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        const imgArray = JSON.parse(body).data;
+        resolve(Object.values(imgArray));
+      } else {
+        reject(JSON.parse(response.body).error);
+      }
+    });
+  }));
+}
+
+function getInstaImpressions(instagramId, facebookToken, since, until) {
+  const iData = `https://graph.facebook.com/v6.0/${instagramId}/insights?pretty=0&since=${since}&until=${until}&metric=impressions&period=day&access_token=${facebookToken}`;
 
   return new Promise(((resolve, reject) => {
     request.get(iData, (error, response, body) => {
@@ -711,10 +726,6 @@ const asyncMiddleware = fn => (req, res, next) => {
     .catch(next);
 };
 
-const countryCodes = {
-
-};
-
 function encrypt(text) {
   const ENCRYPTION_KEY = 'SgVkYp2s5v8y/B?E(H+MbQeThWmZq4t6'; // Must be 256 bits (32 characters)
   const IV_LENGTH = 16; // For AES, this is always 16
@@ -831,3 +842,5 @@ exports.readFile = readFile;
 exports.s3Upload = s3Upload;
 exports.s3DeleteObject = s3DeleteObject;
 exports.localeCodeToEnglish = localeCodeToEnglish;
+exports.getInstaOnlineFlwrs = getInstaOnlineFlwrs;
+exports.getInstaImpressions = getInstaImpressions;

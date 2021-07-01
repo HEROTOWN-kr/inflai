@@ -4,11 +4,13 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const Sequelize = require('sequelize');
+const moment = require('moment');
 const config = require('../config/config');
 const Influencer = require('../models').TB_INFLUENCER;
 const Instagram = require('../models').TB_INSTA;
 const common = require('../config/common');
 const category = require('../config/detectCategory');
+
 
 const isoCountries = {
   AF: 'Afghanistan',
@@ -264,6 +266,8 @@ const {
   getInstagramMediaData,
   getInstagramData,
   getInstagramInsights,
+  getInstaOnlineFlwrs,
+  getInstaImpressions,
   getIdFromToken,
   getFacebookLongToken,
   getInstagramBusinessAccounts,
@@ -1004,6 +1008,34 @@ router.get('/instaInfo', async (req, res) => {
       resData.mediaData = mediaDataFiltered;
       resData.biography = biography;
       resData.website = website;
+    }
+
+    const since = moment().day(-1).unix();
+    const until = moment().day(0).unix();
+
+    const onlineFlwrs = await getInstaOnlineFlwrs(INS_ACCOUNT_ID, INS_TOKEN, since, until);
+
+    if (onlineFlwrs) {
+      const { value } = onlineFlwrs[0].values[0];
+
+      const hours = Object.keys(value);
+      const flwrs = Object.values(value);
+      const flwrsMax = Math.max(...flwrs);
+
+
+      resData.followerActivity = { hours, flwrs, flwrsMax };
+    }
+
+    const impressionSince = moment().day(-7).unix();
+    const impressionUntil = moment().day(0).unix();
+
+    const impressionResponse = await getInstaImpressions(INS_ACCOUNT_ID, INS_TOKEN, impressionSince, impressionUntil);
+
+    if (impressionResponse) {
+      const { values } = impressionResponse[0];
+      const impressionsVal = values.map(item => item.value);
+      const impressionsMax = Math.max(...impressionsVal);
+      resData.impressions = { impressionsVal, impressionsMax };
     }
 
     // const resData = { ...InstaData.dataValues, biography, website };

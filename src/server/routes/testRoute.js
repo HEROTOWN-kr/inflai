@@ -12,6 +12,7 @@ const xl = require('excel4node');
 const puppeteer = require('puppeteer');
 const { PythonShell } = require('python-shell');
 const { parseString } = require('xml2js');
+const moment = require('moment');
 // const PythonShell = require('python-shells');
 
 const {
@@ -24,8 +25,8 @@ const {
   googleVision,
   getInstagramInsights,
   YoutubeDataRequest,
-  getFacebookLongToken,
-  encrypt,
+  getInstaOnlineFlwrs,
+  getInstaImpressions,
   decrypt,
   readFile,
   s3Upload
@@ -89,58 +90,22 @@ function visitorsReq(url) {
 
 router.get('/test', async (req, res) => {
   try {
-    const dbData = await Youtube.findAll({
-      attributes: ['YOU_ID', 'INF_ID', 'YOU_TOKEN', 'YOU_NAME', 'YOU_STATUS', 'YOU_DT'],
-    });
+    const since = moment().day(-7).unix();
+    const until = moment().day(0).unix();
 
-    const PromiseArray = dbData.map(item => new Promise((async (resolve, reject) => {
-      try {
-        const { YOU_ID, INF_ID, YOU_TOKEN } = item;
-        const youtubeChannelData = await YoutubeDataRequest(YOU_TOKEN, YOU_ID);
-        if (youtubeChannelData.error) {
-          resolve({ YOU_ID: youtubeChannelData.YOU_ID, error: 'error' });
-        } else {
-          const channelId = youtubeChannelData.id;
-          const { viewCount, subscriberCount } = youtubeChannelData.statistics;
-          const { title, description } = youtubeChannelData.snippet;
-          resolve({
-            YOU_ID, viewCount, subscriberCount, title, description
-          });
-        }
-      } catch (e) {
-        resolve('error');
-      }
-    })));
+    const InstaData = await Insta.findOne({ where: { INF_ID: 3139 } });
+    const {
+      INS_TOKEN, INS_ACCOUNT_ID
+    } = InstaData;
+    const response = await getInstaImpressions(INS_ACCOUNT_ID, INS_TOKEN, since, until);
+    const { values } = response[0];
+    const impressions = values.map(item => item.value);
 
-    const promiseData = await Promise.all(PromiseArray);
+    /* const hours = Object.keys(value);
+    const flwrs = Object.values(value);
+    const flwrsMax = Math.max(...flwrs); */
 
-    const UpdatePromise = promiseData.map(item => new Promise((async (resolve, reject) => {
-      if (item.error) {
-        await Youtube.update({ YOU_STATUS: 0 }, {
-          where: { YOU_ID: item.YOU_ID }
-        });
-        resolve('not updated');
-      } else {
-        const {
-          title, subscriberCount, viewCount, YOU_ID
-        } = item;
-        await Youtube.update({
-          YOU_NAME: title,
-          YOU_SUBS: subscriberCount,
-          YOU_VIEWS: viewCount,
-          YOU_UPD_DATE: new Date()
-        }, {
-          where: { YOU_ID }
-        });
-        resolve('updated');
-      }
-    })));
-
-    const updateAll = await Promise.all(UpdatePromise);
-
-    res.status(200).json({
-      data: updateAll
-    });
+    res.status(200).json({ impressions });
   } catch (err) {
     res.status(400).send(err.message);
   }
