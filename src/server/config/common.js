@@ -15,10 +15,11 @@ const crypto = require('crypto');
 const config = require('../config');
 const testData = require('../config/testData');
 const configKey = require('./config');
+require('dotenv').config()
 
 const s3 = new AWS.S3({
-  accessKeyId: 'AKIASPJQFWQCKUVVCHNQ',
-  secretAccessKey: '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'
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_ACCESS_SECRET
 });
 
 
