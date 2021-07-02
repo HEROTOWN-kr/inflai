@@ -11,6 +11,21 @@ const Instagram = require('../models').TB_INSTA;
 const common = require('../config/common');
 const category = require('../config/detectCategory');
 
+const { Op } = Sequelize;
+const {
+  getInstagramMediaData,
+  getInstagramData,
+  getInstagramInsights,
+  getInstaOnlineFlwrs,
+  getInstaImpressions,
+  getNewFollowers,
+  getIdFromToken,
+  getFacebookLongToken,
+  getInstagramBusinessAccounts,
+  checkLocalHost
+} = require('../config/common');
+
+const router = express.Router();
 
 const isoCountries = {
   AF: 'Afghanistan',
@@ -259,22 +274,6 @@ const isoCountries = {
   ZM: 'Zambia',
   ZW: 'Zimbabwe'
 };
-
-
-const { Op } = Sequelize;
-const {
-  getInstagramMediaData,
-  getInstagramData,
-  getInstagramInsights,
-  getInstaOnlineFlwrs,
-  getInstaImpressions,
-  getIdFromToken,
-  getFacebookLongToken,
-  getInstagramBusinessAccounts,
-  checkLocalHost
-} = require('../config/common');
-
-const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
@@ -923,10 +922,12 @@ router.get('/instaInfo', async (req, res) => {
         'INS_FLW',
         'INS_FLWR',
         'INS_PROFILE_IMG',
+        'INS_STATE_LOC',
         'INS_LIKES',
         'INS_CMNT',
         'INS_STATUS',
         'INS_SCORE',
+        'INS_RANK',
         'INS_TYPES',
         'INS_IS_FAKE',
         'INS_DT',
@@ -938,7 +939,7 @@ router.get('/instaInfo', async (req, res) => {
     if (!InstaData) return res.status(201).send({ message: 'Instagram not connected' });
 
     const {
-      INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT, INS_STATUS
+      INS_TOKEN, INS_ACCOUNT_ID, INS_FLWR, INS_CMNT, INS_STATUS, INS_STATE_LOC
     } = InstaData;
 
     const resData = { ...InstaData.dataValues };
@@ -977,11 +978,25 @@ router.get('/instaInfo', async (req, res) => {
 
           const { female, male, ...rest } = genderStats;
           const sum = Object.keys(rest).reduce((acc, el) => acc + rest[el], 0);
+          const ageMaxKey = Object.keys(rest).reduce((a, b) => (rest[a] > rest[b] ? a : b));
+          resData.ageMax = `${ageMaxKey}(${Math.floor((100 * rest[ageMaxKey] / sum))}%)`;
 
           const ageCount = Object.keys(rest).map(item => ({
             age: item,
             num: Math.floor((100 * rest[item]) / sum)
           }));
+
+          const femaleSum = female.reduce((a, b) => a + b, 0);
+          const maleSum = male.reduce((a, b) => a + b, 0);
+
+          const femalePercentage = Math.ceil((femaleSum * 100) / (femaleSum + maleSum));
+          const malePercentage = 100 - femalePercentage;
+
+          if (femalePercentage > malePercentage) {
+            resData.genderMax = `여성(${femalePercentage}%)`;
+          } else {
+            resData.genderMax = `남성(${femalePercentage}%)`;
+          }
 
           resData.ageData = ageCount;
           resData.genderData = { male, female };
@@ -1008,6 +1023,14 @@ router.get('/instaInfo', async (req, res) => {
       resData.mediaData = mediaDataFiltered;
       resData.biography = biography;
       resData.website = website;
+    }
+
+    if (INS_STATE_LOC) {
+      const ageStats = JSON.parse(INS_STATE_LOC);
+
+      const maxKey = Object.keys(ageStats).reduce((a, b) => (ageStats[a] > ageStats[b] ? a : b));
+      const maxLoc = isoCountries[maxKey];
+      resData.location = { maxLoc };
     }
 
     const since = moment().day(-1).unix();
@@ -1038,18 +1061,24 @@ router.get('/instaInfo', async (req, res) => {
       resData.impressions = { impressionsVal, impressionsMax };
     }
 
-    // const resData = { ...InstaData.dataValues, biography, website };
+    const newFollowers = await getNewFollowers(INS_ACCOUNT_ID, INS_TOKEN, impressionSince, impressionUntil);
+    if (newFollowers) {
+      const { values } = newFollowers[0];
+      const followersSum = values.reduce((acc, el) => acc + el.value, 0);
+      resData.newFollowers = followersSum;
+    }
+
 
     if (INS_FLWR && INS_CMNT) {
-      const percentRatio = (INS_CMNT / INS_FLWR) * 100;
+      const percentRatio = Math.round((INS_CMNT / INS_FLWR) * 100);
       if (percentRatio < 5) {
-        resData.ability = '저조';
+        resData.ability = `${percentRatio}%(저조)`;
       } else if (percentRatio >= 5 && percentRatio < 10) {
-        resData.ability = '보통';
+        resData.ability = `${percentRatio}%(보통)`;
       } else if (percentRatio >= 10 && percentRatio < 15) {
-        resData.ability = '우수';
+        resData.ability = `${percentRatio}%(우수)`;
       } else {
-        resData.ability = '훌륭';
+        resData.ability = `${percentRatio}%(훌륭)`;
       }
 
       if (INS_FLWR < 1000) {
@@ -1064,6 +1093,9 @@ router.get('/instaInfo', async (req, res) => {
         resData.influencerType = 'Celebrity';
       }
     }
+
+
+    // const resData = { ...InstaData.dataValues, biography, website };
 
     return res.status(200).json({ data: resData });
   } catch (err) {

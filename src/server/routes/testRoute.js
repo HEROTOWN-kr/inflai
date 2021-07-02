@@ -27,6 +27,7 @@ const {
   YoutubeDataRequest,
   getInstaOnlineFlwrs,
   getInstaImpressions,
+  getNewFollowers,
   decrypt,
   readFile,
   s3Upload
@@ -97,15 +98,16 @@ router.get('/test', async (req, res) => {
     const {
       INS_TOKEN, INS_ACCOUNT_ID
     } = InstaData;
-    const response = await getInstaImpressions(INS_ACCOUNT_ID, INS_TOKEN, since, until);
+    const response = await getNewFollowers(INS_ACCOUNT_ID, INS_TOKEN, since, until);
     const { values } = response[0];
-    const impressions = values.map(item => item.value);
+    const newFollowers = values.reduce((acc, el) => acc + el.value, 0);
+
 
     /* const hours = Object.keys(value);
     const flwrs = Object.values(value);
     const flwrsMax = Math.max(...flwrs); */
 
-    res.status(200).json({ impressions });
+    res.status(200).json({ response });
   } catch (err) {
     res.status(400).send(err.message);
   }

@@ -15,7 +15,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const testData = require('../config/testData');
 const configKey = require('./config');
-require('dotenv').config()
+require('dotenv').config();
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -491,6 +491,21 @@ function getInstaImpressions(instagramId, facebookToken, since, until) {
   }));
 }
 
+function getNewFollowers(instagramId, facebookToken, since, until) {
+  const iData = `https://graph.facebook.com/v6.0/${instagramId}/insights?pretty=0&since=${since}&until=${until}&metric=follower_count&period=day&access_token=${facebookToken}`;
+
+  return new Promise(((resolve, reject) => {
+    request.get(iData, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        const imgArray = JSON.parse(body).data;
+        resolve(Object.values(imgArray));
+      } else {
+        reject(JSON.parse(response.body).error);
+      }
+    });
+  }));
+}
+
 async function googleVision(instaData) {
   /* const filePath = isLocal ? {
     keyFileName: 'src/server/config/googleVisionKey.json',
@@ -845,3 +860,4 @@ exports.s3DeleteObject = s3DeleteObject;
 exports.localeCodeToEnglish = localeCodeToEnglish;
 exports.getInstaOnlineFlwrs = getInstaOnlineFlwrs;
 exports.getInstaImpressions = getInstaImpressions;
+exports.getNewFollowers = getNewFollowers;
