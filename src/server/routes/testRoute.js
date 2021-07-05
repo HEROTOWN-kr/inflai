@@ -91,23 +91,38 @@ function visitorsReq(url) {
 
 router.get('/test', async (req, res) => {
   try {
-    const since = moment().day(-7).unix();
+    const since = moment().day(-30).unix();
     const until = moment().day(0).unix();
 
-    const InstaData = await Insta.findOne({ where: { INF_ID: 3139 } });
+    const InstaData = await Insta.findOne({ where: { INF_ID: 1197 } });
     const {
       INS_TOKEN, INS_ACCOUNT_ID
     } = InstaData;
-    const response = await getNewFollowers(INS_ACCOUNT_ID, INS_TOKEN, since, until);
-    const { values } = response[0];
-    const newFollowers = values.reduce((acc, el) => acc + el.value, 0);
+    const response = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, null, since, until);
 
+    const MediaData = {
+      mediaCount: 0,
+      likeSum: 0,
+      commentsSum: 0
+    };
+
+    if (response.length > 0) {
+      MediaData.mediaCount = response.length;
+
+      const filteredData = response.reduce((acc, el) => ({
+        likeSum: (acc.likeSum || 0) + el.like_count,
+        commentsSum: (acc.commentsSum || 0) + el.comments_count,
+      }), {});
+
+      MediaData.likeSum = filteredData.likeSum;
+      MediaData.commentsSum = filteredData.commentsSum;
+    }
 
     /* const hours = Object.keys(value);
     const flwrs = Object.values(value);
     const flwrsMax = Math.max(...flwrs); */
 
-    res.status(200).json({ response });
+    res.status(200).json({ MediaData });
   } catch (err) {
     res.status(400).send(err.message);
   }

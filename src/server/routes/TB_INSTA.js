@@ -1023,6 +1023,28 @@ router.get('/instaInfo', async (req, res) => {
       resData.mediaData = mediaDataFiltered;
       resData.biography = biography;
       resData.website = website;
+
+      const since = moment().day(-30).unix();
+      const until = moment().day(0).unix();
+      const monthResponse = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, null, since, until);
+      const monthMedia = {
+        mediaCount: 0,
+        likeSum: 0,
+        commentsSum: 0
+      };
+
+      if (monthResponse.length > 0) {
+        monthMedia.mediaCount = monthResponse.length;
+
+        const filteredData = monthResponse.reduce((acc, el) => ({
+          likeSum: (acc.likeSum || 0) + el.like_count,
+          commentsSum: (acc.commentsSum || 0) + el.comments_count,
+        }), {});
+
+        monthMedia.likeSum = filteredData.likeSum;
+        monthMedia.commentsSum = filteredData.commentsSum;
+      }
+      resData.monthMedia = monthMedia;
     }
 
     if (INS_STATE_LOC) {
@@ -1033,8 +1055,8 @@ router.get('/instaInfo', async (req, res) => {
       resData.location = { maxLoc };
     }
 
-    const since = moment().day(-1).unix();
-    const until = moment().day(0).unix();
+    const since = moment().day(-2).unix();
+    const until = moment().day(-1).unix();
 
     const onlineFlwrs = await getInstaOnlineFlwrs(INS_ACCOUNT_ID, INS_TOKEN, since, until);
 
