@@ -1045,6 +1045,41 @@ router.get('/instaInfo', async (req, res) => {
         monthMedia.commentsSum = filteredData.commentsSum;
       }
       resData.monthMedia = monthMedia;
+
+      const dayOfWeek = Array(7).fill(0);
+      const hourArray = Array(24).fill(0);
+
+      const postData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, null, since, until);
+      const dow = postData.map(item => moment(item.timestamp).isoWeekday() % 7);
+      const dowFiltered = dow.reduce((acc, el) => {
+        acc[el] = (acc[el] || 0) + 1;
+        return acc;
+      }, {});
+      const dayStats = Object.keys(dowFiltered).reduce((acc, el) => {
+        acc[el] = dowFiltered[el];
+        return acc;
+      }, dayOfWeek);
+      const dayMaxIdx = dayStats.indexOf(Math.max(...dayStats));
+
+      const hourResponse = postData.map(item => moment(item.timestamp).hour());
+      const hourStatsFiltered = hourResponse.reduce((acc, el) => {
+        acc[el] = (acc[el] || 0) + 1;
+        return acc;
+      }, {});
+      const hourStats = Object.keys(hourStatsFiltered).reduce((acc, el) => {
+        acc[el] = hourStatsFiltered[el];
+        return acc;
+      }, hourArray);
+      const hourMaxIdx = hourStats.indexOf(Math.max(...hourStats));
+
+      resData.postStats = {
+        hourStats,
+        dayStats,
+        dayMaxIdx,
+        hourMaxIdx,
+        dayAvg: (postData.length / 30).toFixed(1),
+        weekAvg: (postData.length / 4).toFixed(1),
+      };
     }
 
     if (INS_STATE_LOC) {

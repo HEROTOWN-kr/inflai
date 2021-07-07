@@ -429,7 +429,7 @@ function getInstagramMediaData(instagramId, facebookToken, limit, since, until) 
   const iData = `https://graph.facebook.com/v6.0/${instagramId}/media?`
       + 'fields='
       + 'thumbnail_url%2C'
-      + 'media_url,like_count,comments_count&'
+      + 'media_url,like_count, timestamp, comments_count&'
       + `access_token=${facebookToken}${limit ? `&limit=${limit}` : ''}`
       + `${since ? `&since=${since}` : ''}${until ? `&until=${until}` : ''}`;
   // + `access_token=${facebookToken}&limit=100`;

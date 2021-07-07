@@ -93,6 +93,9 @@ router.get('/test', async (req, res) => {
   try {
     const since = moment().day(-30).unix();
     const until = moment().day(0).unix();
+    const dayOfWeek = Array(7).fill(0);
+    const hourArray = Array(24).fill(0);
+
 
     const InstaData = await Insta.findOne({ where: { INF_ID: 1197 } });
     const {
@@ -100,29 +103,30 @@ router.get('/test', async (req, res) => {
     } = InstaData;
     const response = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, null, since, until);
 
-    const MediaData = {
-      mediaCount: 0,
-      likeSum: 0,
-      commentsSum: 0
-    };
+    const dow = response.map(item => moment(item.timestamp).isoWeekday() % 7);
+    const dowFiltered = dow.reduce((acc, el) => {
+      acc[el] = (acc[el] || 0) + 1;
+      return acc;
+    }, {});
+    const dayStats = Object.keys(dowFiltered).reduce((acc, el) => {
+      acc[el] = dowFiltered[el];
+      return acc;
+    }, dayOfWeek);
+    const dayMaxIdx = dayStats.indexOf(Math.max(...dayStats));
 
-    if (response.length > 0) {
-      MediaData.mediaCount = response.length;
+    const hourStats = response.map(item => moment(item.timestamp).hour());
+    const hourStatsFiltered = hourStats.reduce((acc, el) => {
+      acc[el] = (acc[el] || 0) + 1;
+      return acc;
+    }, {});
+    const hourStatsFinal = Object.keys(hourStatsFiltered).reduce((acc, el) => {
+      acc[el] = hourStatsFiltered[el];
+      return acc;
+    }, hourArray);
 
-      const filteredData = response.reduce((acc, el) => ({
-        likeSum: (acc.likeSum || 0) + el.like_count,
-        commentsSum: (acc.commentsSum || 0) + el.comments_count,
-      }), {});
-
-      MediaData.likeSum = filteredData.likeSum;
-      MediaData.commentsSum = filteredData.commentsSum;
-    }
-
-    /* const hours = Object.keys(value);
-    const flwrs = Object.values(value);
-    const flwrsMax = Math.max(...flwrs); */
-
-    res.status(200).json({ MediaData });
+    res.status(200).json({
+      dowFiltered, dayStats, hourStatsFiltered, hourStatsFinal, dayMaxIdx
+    });
   } catch (err) {
     res.status(400).send(err.message);
   }
