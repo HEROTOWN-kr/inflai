@@ -91,42 +91,15 @@ function visitorsReq(url) {
 
 router.get('/test', async (req, res) => {
   try {
-    const since = moment().day(-30).unix();
-    const until = moment().day(0).unix();
-    const dayOfWeek = Array(7).fill(0);
-    const hourArray = Array(24).fill(0);
-
-
     const InstaData = await Insta.findOne({ where: { INF_ID: 1197 } });
     const {
       INS_TOKEN, INS_ACCOUNT_ID
     } = InstaData;
-    const response = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, null, since, until);
 
-    const dow = response.map(item => moment(item.timestamp).isoWeekday() % 7);
-    const dowFiltered = dow.reduce((acc, el) => {
-      acc[el] = (acc[el] || 0) + 1;
-      return acc;
-    }, {});
-    const dayStats = Object.keys(dowFiltered).reduce((acc, el) => {
-      acc[el] = dowFiltered[el];
-      return acc;
-    }, dayOfWeek);
-    const dayMaxIdx = dayStats.indexOf(Math.max(...dayStats));
+    const response = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, 4);
 
-    const hourStats = response.map(item => moment(item.timestamp).hour());
-    const hourStatsFiltered = hourStats.reduce((acc, el) => {
-      acc[el] = (acc[el] || 0) + 1;
-      return acc;
-    }, {});
-    const hourStatsFinal = Object.keys(hourStatsFiltered).reduce((acc, el) => {
-      acc[el] = hourStatsFiltered[el];
-      return acc;
-    }, hourArray);
 
-    res.status(200).json({
-      dowFiltered, dayStats, hourStatsFiltered, hourStatsFinal, dayMaxIdx
-    });
+    res.status(200).json({ response });
   } catch (err) {
     res.status(400).send(err.message);
   }

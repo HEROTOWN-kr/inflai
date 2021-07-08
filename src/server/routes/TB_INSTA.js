@@ -948,6 +948,9 @@ router.get('/instaInfo', async (req, res) => {
       const detailInstaData = await getInstagramData(INS_ACCOUNT_ID, INS_TOKEN);
       const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, 9);
       const Insights = await getInstagramInsights(INS_ACCOUNT_ID, INS_TOKEN);
+      const lastPosts = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, 4);
+
+      resData.lastPosts = lastPosts;
 
       if (Insights.length > 0) {
         const genderAgeArray = Insights.filter(item => item.name === 'audience_gender_age');
@@ -989,17 +992,20 @@ router.get('/instaInfo', async (req, res) => {
           const femaleSum = female.reduce((a, b) => a + b, 0);
           const maleSum = male.reduce((a, b) => a + b, 0);
 
-          const femalePercentage = Math.ceil((femaleSum * 100) / (femaleSum + maleSum));
-          const malePercentage = 100 - femalePercentage;
+          const femalePercent = Math.ceil((femaleSum * 100) / (femaleSum + maleSum));
+          const malePercent = 100 - femalePercent;
 
-          if (femalePercentage > malePercentage) {
-            resData.genderMax = `여성(${femalePercentage}%)`;
+          if (femalePercent > malePercent) {
+            resData.genderMax = `여성(${femalePercent}%)`;
           } else {
-            resData.genderMax = `남성(${femalePercentage}%)`;
+            resData.genderMax = `남성(${malePercent}%)`;
           }
 
+
           resData.ageData = ageCount;
-          resData.genderData = { male, female };
+          resData.genderData = {
+            male, female, malePercent, femalePercent
+          };
           resData.genderArray = genderArray;
         }
         if (countryArray.length > 0 && countryArray[0].values && countryArray[0].values.length > 0) {
@@ -1127,7 +1133,7 @@ router.get('/instaInfo', async (req, res) => {
 
 
     if (INS_FLWR && INS_CMNT) {
-      const percentRatio = Math.round((INS_CMNT / INS_FLWR) * 100);
+      const percentRatio = ((INS_CMNT / INS_FLWR) * 100).toFixed(1);
       if (percentRatio < 5) {
         resData.ability = `${percentRatio}%(저조)`;
       } else if (percentRatio >= 5 && percentRatio < 10) {
