@@ -952,6 +952,17 @@ router.get('/instaInfo', async (req, res) => {
 
       resData.lastPosts = lastPosts;
 
+      const posts = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+
+      const maxIndex = posts.reduce((acc, x, i) => {
+        if (x.like_count > posts[acc.likeIdx].like_count) acc.likeIdx = i;
+        if (x.comments_count > posts[acc.likeIdx].comments_count) acc.cmntIdx = i;
+        return acc;
+      }, { likeIdx: 0, cmntIdx: 0 });
+
+      resData.maxLikesMedia = posts[maxIndex.likeIdx];
+      resData.maxCmntMedia = posts[maxIndex.cmntIdx];
+
       if (Insights.length > 0) {
         const genderAgeArray = Insights.filter(item => item.name === 'audience_gender_age');
         const countryArray = Insights.filter(item => item.name === 'audience_country');
@@ -1107,9 +1118,14 @@ router.get('/instaInfo', async (req, res) => {
       const hours = Object.keys(value);
       const flwrs = Object.values(value);
       const flwrsMax = Math.max(...flwrs);
+      const notActiveFlwr = INS_FLWR - flwrsMax;
+      const flwrsMaxPer = ((100 * flwrsMax) / INS_FLWR).toFixed(1);
+      const notActiveFlwrPer = 100 - flwrsMaxPer;
 
 
-      resData.followerActivity = { hours, flwrs, flwrsMax };
+      resData.followerActivity = {
+        hours, flwrs, flwrsMax, notActiveFlwr, flwrsMaxPer, notActiveFlwrPer
+      };
     }
 
     const impressionSince = moment().day(-7).unix();

@@ -96,10 +96,18 @@ router.get('/test', async (req, res) => {
       INS_TOKEN, INS_ACCOUNT_ID
     } = InstaData;
 
-    const response = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN, 4);
+    const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
 
+    const maxIndex = mediaData.reduce((acc, x, i) => {
+      if (x.like_count > mediaData[acc.likeIdx].like_count) acc.likeIdx = i;
+      if (x.comments_count > mediaData[acc.likeIdx].comments_count) acc.cmntIdx = i;
+      return acc;
+    }, { likeIdx: 0, cmntIdx: 0 });
 
-    res.status(200).json({ response });
+    const maxLikesMedia = mediaData[maxIndex.likeIdx];
+    const maxCmntMedia = mediaData[maxIndex.cmntIdx];
+
+    res.status(200).json({ maxIndex, maxLikesMedia, maxCmntMedia });
   } catch (err) {
     res.status(400).send(err.message);
   }
