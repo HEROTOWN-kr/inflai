@@ -13,6 +13,7 @@ const puppeteer = require('puppeteer');
 const { PythonShell } = require('python-shell');
 const { parseString } = require('xml2js');
 const moment = require('moment');
+const category = require('../config/detectCategory');
 // const PythonShell = require('python-shells');
 
 const {
@@ -88,26 +89,48 @@ function visitorsReq(url) {
   });
 }
 
+function checkLocalHost(hostname) {
+  const result = hostname.indexOf('localhost');
+  return result !== -1;
+}
 
 router.get('/test', async (req, res) => {
   try {
-    const InstaData = await Insta.findOne({ where: { INF_ID: 1197 } });
-    const {
-      INS_TOKEN, INS_ACCOUNT_ID
-    } = InstaData;
+    const { INS_ID, host } = req.query;
+    const { detectCategory } = category;
+    const isLocal = checkLocalHost(host);
 
-    const mediaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+    const filePath = isLocal ? {
+      keyFileName: 'src/server/config/googleVisionKey.json',
+      imagePath: './src/server/img/image'
+    } : {
+      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
+      imagePath: '../server/img/image'
+    };
 
-    const maxIndex = mediaData.reduce((acc, x, i) => {
-      if (x.like_count > mediaData[acc.likeIdx].like_count) acc.likeIdx = i;
-      if (x.comments_count > mediaData[acc.likeIdx].comments_count) acc.cmntIdx = i;
-      return acc;
-    }, { likeIdx: 0, cmntIdx: 0 });
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
+    };
 
-    const maxLikesMedia = mediaData[maxIndex.likeIdx];
-    const maxCmntMedia = mediaData[maxIndex.cmntIdx];
+    const InstaData = await Insta.findOne(options);
+    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
 
-    res.status(200).json({ maxIndex, maxLikesMedia, maxCmntMedia });
+    const client = new vision.ImageAnnotatorClient({
+      keyFilename: filePath.keyFileName
+    });
+
+    const colors = [
+      '#FF835D', '#409CFF', '#52D726', '#FF0000',
+      '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
+      '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
+      '#B276B2', '#DECF3F', '#81726A', '#270722',
+      '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
+      '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
+      '#7CDDDD'
+    ];
+
+    res.status(200).json({ });
   } catch (err) {
     res.status(400).send(err.message);
   }
