@@ -100,26 +100,6 @@ router.get('/test', async (req, res) => {
     const { detectCategory } = category;
     const isLocal = checkLocalHost(host);
 
-    const filePath = isLocal ? {
-      keyFileName: 'src/server/config/googleVisionKey.json',
-      imagePath: './src/server/img/image'
-    } : {
-      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
-      imagePath: '../server/img/image'
-    };
-
-    const options = {
-      where: { INS_ID },
-      attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
-    };
-
-    const InstaData = await Insta.findOne(options);
-    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
-
-    const client = new vision.ImageAnnotatorClient({
-      keyFilename: filePath.keyFileName
-    });
-
     const colors = [
       '#FF835D', '#409CFF', '#52D726', '#FF0000',
       '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
@@ -130,9 +110,98 @@ router.get('/test', async (req, res) => {
       '#7CDDDD'
     ];
 
-    res.status(200).json({ });
+    const filePath = isLocal ? {
+      keyFileName: 'src/server/config/googleVisionKey.json',
+      imagePath: './src/server/img/image'
+    } : {
+      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
+      imagePath: '../server/img/image'
+    };
+
+    const client = new vision.ImageAnnotatorClient({
+      keyFilename: filePath.keyFileName
+    });
+
+    const InstaData = await Insta.findOne({
+      where: { INS_ID },
+      attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
+    });
+
+    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+
+    const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
+
+    if (instaData.length > 0) {
+      const downloadedFiles = instaData.map(async (mediaInfo, index) => {
+        const { thumbnail_url, media_url } = mediaInfo;
+        const fileUrl = thumbnail_url || media_url;
+        const response = await fetch(fileUrl);
+        const buffer = await response.buffer();
+        const fileName = `${filePath.imagePath}${index}.jpg`;
+
+        return new Promise((resolve, reject) => {
+          fs.writeFile(fileName, buffer, (err) => {
+            if (err) resolve(null);
+            resolve(fileName);
+          });
+        });
+      });
+
+      const filesToDetect = await Promise.all(downloadedFiles);
+
+      const detectedFiles = filesToDetect.map(async (item, index) => {
+        const [result] = await client.labelDetection(item);
+        const labels = result.labelAnnotations;
+
+        return new Promise((resolve, reject) => {
+          if (labels && labels[0]) {
+            const { score, description } = labels[0];
+
+            const name = detectCategory.reduce((acc, ctg) => {
+              const wordExist = (ctg.categories.indexOf(description) > -1);
+              if (wordExist) return ctg.name;
+              return acc;
+            }, description);
+            resolve(name);
+          }
+          resolve(null);
+        });
+      });
+
+      const detectionResults = await Promise.all(detectedFiles);
+
+      const resultFiltered = detectionResults.reduce((acc, el) => {
+        acc[el] = (acc[el] || 0) + 1;
+        return acc;
+      }, {});
+
+      const resultArray = Object.keys(resultFiltered).map(item => ({
+        description: item,
+        count: resultFiltered[item]
+      }));
+
+      const resultSort = resultArray.sort((a, b) => b.count - a.count).slice(0, 4);
+
+      const resultPercentage = resultSort.map((item, index) => {
+        const { description, count } = item;
+        const value = Math.round(100 / (instaData.length / count));
+        return { description, value, color: colors[index] };
+      });
+
+      const percentSum = resultPercentage.reduce((acc, el) => acc + el.value, 0);
+
+      if (percentSum < 100) {
+        const other = { description: '기타', value: 100 - percentSum, color: '#84B082' };
+        const statistics = [...resultPercentage, other];
+        return res.status(200).json({ statistics });
+      }
+
+      return res.status(200).json({ statistics: resultPercentage });
+    }
+
+    return res.status(200).json({ instaData });
   } catch (err) {
-    res.status(400).send(err.message);
+    return res.status(400).send(err.message);
   }
 });
 
