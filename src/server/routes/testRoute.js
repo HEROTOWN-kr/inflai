@@ -168,35 +168,54 @@ router.get('/test', async (req, res) => {
         });
       });
 
-      const detectionResults = await Promise.all(detectedFiles);
+      const detectedFilesObj = filesToDetect.map(async (item, index) => {
+        const [result] = await client.objectLocalization(item);
+        const objects = result.localizedObjectAnnotations;
 
-      const resultFiltered = detectionResults.reduce((acc, el) => {
+        return new Promise((resolve, reject) => {
+          if (objects.length > 0) {
+            const { name, score } = objects[0];
+
+            const description = detectCategory.reduce((acc, ctg) => {
+              const wordExist = (ctg.categories.indexOf(name) > -1);
+              if (wordExist) return ctg.name;
+              return acc;
+            }, name);
+            resolve(description);
+          }
+          resolve(null);
+        });
+      });
+
+      const detectionResultsObj = await Promise.all(detectedFilesObj);
+
+      const resultFilteredObj = detectionResultsObj.reduce((acc, el) => {
         acc[el] = (acc[el] || 0) + 1;
         return acc;
       }, {});
 
-      const resultArray = Object.keys(resultFiltered).map(item => ({
+      const resultArrayObj = Object.keys(resultFilteredObj).map(item => ({
         description: item,
-        count: resultFiltered[item]
+        count: resultFilteredObj[item]
       }));
 
-      const resultSort = resultArray.sort((a, b) => b.count - a.count).slice(0, 4);
+      const resultSortObj = resultArrayObj.sort((a, b) => b.count - a.count).slice(0, 4);
 
-      const resultPercentage = resultSort.map((item, index) => {
+      const resultPercentageObj = resultSortObj.map((item, index) => {
         const { description, count } = item;
         const value = Math.round(100 / (instaData.length / count));
         return { description, value, color: colors[index] };
       });
 
-      const percentSum = resultPercentage.reduce((acc, el) => acc + el.value, 0);
+      const percentSumObj = resultPercentageObj.reduce((acc, el) => acc + el.value, 0);
 
-      if (percentSum < 100) {
-        const other = { description: '기타', value: 100 - percentSum, color: '#84B082' };
-        const statistics = [...resultPercentage, other];
+      if (percentSumObj < 100) {
+        const other = { description: '기타', value: 100 - percentSumObj, color: '#84B082' };
+        const statistics = [...resultPercentageObj, other];
         return res.status(200).json({ statistics });
       }
 
-      return res.status(200).json({ statistics: resultPercentage });
+      return res.status(200).json({ statistics: resultPercentageObj });
     }
 
     return res.status(200).json({ instaData });
