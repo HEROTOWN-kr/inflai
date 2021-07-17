@@ -366,6 +366,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/test2', async (req, res) => {
+  try {
+    res.status(200).json({
+      data: process.env
+    });
+  } catch (err) {
+    return res.status(400).send(err.message);
+  }
+});
+
 router.get('/getGoogleData', async (req, res) => {
   const { INS_ID, host } = req.query;
   const { detectCategory } = category;

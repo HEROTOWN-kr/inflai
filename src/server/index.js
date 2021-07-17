@@ -1,9 +1,12 @@
 const express = require('express');
+const path = require('path');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const cors = require('cors');
 const multipart = require('connect-multiparty');
 const config = require('./config/config');
+
+require('dotenv').config({ path: path.join(__dirname, '/../../.env') });
 
 const app = express();
 
