@@ -5,7 +5,8 @@
   const config = {};
 
   // 이미지 파일을 올리는 파일위치 및 로딩을 위한 변수
-  config.tmp = '/home/inflai/tmp/';
+  // config.tmp = '/home/inflai/tmp/';
+  config.tmp = '/Users/andriantsoy/Desktop/Projects/image/inflai/tmp/';
   config.uploadDir = '/home/inflai/upload/images/';
   config.imgRoot = '/images';
   config.attachRoot = '/home/inflai/upload/attach/';
