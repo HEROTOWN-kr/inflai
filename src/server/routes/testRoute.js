@@ -224,6 +224,27 @@ router.get('/test', async (req, res) => {
   }
 });
 
+router.get('/test2', async (req, res) => {
+  try {
+    const { INS_ID } = req.query;
+    const InstaData = await Insta.findOne({ where: { INS_ID } });
+
+    if (!InstaData) return res.status(201).send({ message: 'Instagram not connected' });
+
+    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
+
+    const since = moment().day(-5).unix();
+    const until = moment().day(-4).unix();
+
+    const onlineFlwrs = await getInstaOnlineFlwrs(INS_ACCOUNT_ID, INS_TOKEN, since, until);
+
+    res.status(200).json({ onlineFlwrs });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+
 router.get('/kakaoMessageTest', async (req, res) => {
   try {
     const props = {

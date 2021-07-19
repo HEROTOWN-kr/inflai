@@ -1343,8 +1343,8 @@ router.get('/instaInfo', async (req, res) => {
       resData.location = { maxLoc };
     }
 
-    const since = moment().day(-2).unix();
-    const until = moment().day(-1).unix();
+    const since = moment().day(-5).unix();
+    const until = moment().day(-4).unix();
 
     const onlineFlwrs = await getInstaOnlineFlwrs(INS_ACCOUNT_ID, INS_TOKEN, since, until);
 
