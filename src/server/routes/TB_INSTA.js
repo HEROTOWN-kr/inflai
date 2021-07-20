@@ -1,5 +1,6 @@
 const express = require('express');
 const request = require('request');
+const path = require('path');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
@@ -496,33 +497,17 @@ router.get('/getGoogleData', async (req, res) => {
 
 router.get('/getGoogleDataNew', async (req, res) => {
   try {
-    const { INS_ID, host } = req.query;
+    const { INS_ID } = req.query;
     const { detectCategory } = category;
-    const isLocal = checkLocalHost(host);
 
-    const colors2 = [
-      '#FF835D', '#409CFF', '#52D726', '#FF0000',
-      '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
-      '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
-      '#B276B2', '#DECF3F', '#81726A', '#270722',
-      '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
-      '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
-      '#7CDDDD'
-    ];
+    const configPath = path.join(__dirname, '/../config');
+    const imagePath = path.join(__dirname, '/../img');
+
+    const keyFilename = `${configPath}/googleVisionKey.json`;
 
     const colors = ['#E67E22', '#2ECC71', '#3498DB', '#9B59B6', '#E74C3C'];
 
-    const filePath = isLocal ? {
-      keyFileName: 'src/server/config/googleVisionKey.json',
-      imagePath: './src/server/img/image'
-    } : {
-      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
-      imagePath: '../server/img/image'
-    };
-
-    const client = new vision.ImageAnnotatorClient({
-      keyFilename: filePath.keyFileName
-    });
+    const client = new vision.ImageAnnotatorClient({ keyFilename });
 
     const InstaData = await Instagram.findOne({
       where: { INS_ID },
@@ -539,7 +524,7 @@ router.get('/getGoogleDataNew', async (req, res) => {
         const fileUrl = thumbnail_url || media_url;
         const response = await fetch(fileUrl);
         const buffer = await response.buffer();
-        const fileName = `${filePath.imagePath}${index}.jpg`;
+        const fileName = `${imagePath}/image${index}.jpg`;
 
         return new Promise((resolve, reject) => {
           fs.writeFile(fileName, buffer, (err) => {
@@ -733,33 +718,17 @@ router.get('/getGoogleDataObject', async (req, res) => {
 
 router.get('/getGoogleDataObjectNew', async (req, res) => {
   try {
-    const { INS_ID, host } = req.query;
+    const { INS_ID } = req.query;
     const { detectCategory } = category;
-    const isLocal = checkLocalHost(host);
 
-    const colors2 = [
-      '#FF835D', '#409CFF', '#52D726', '#FF0000',
-      '#FFEC00', '#7CDDDD', '#4D4D4D', '#5DA5DA',
-      '#FAA43A', '#60BD68', '#F17CB0', '#B2912F',
-      '#B276B2', '#DECF3F', '#81726A', '#270722',
-      '#E8C547', '#C2C6A7', '#ECCE8E', '#DC136C',
-      '#353A47', '#84B082', '#5C80BC', '#CDD1C4',
-      '#7CDDDD'
-    ];
+    const configPath = path.join(__dirname, '/../config');
+    const imagePath = path.join(__dirname, '/../img');
+
+    const keyFilename = `${configPath}/googleVisionKey.json`;
 
     const colors = ['#E67E22', '#2ECC71', '#3498DB', '#9B59B6', '#E74C3C'];
 
-    const filePath = isLocal ? {
-      keyFileName: 'src/server/config/googleVisionKey.json',
-      imagePath: './src/server/img/image'
-    } : {
-      keyFileName: '/data/inflai/src/server/config/googleVisionKey.json',
-      imagePath: '../server/img/image'
-    };
-
-    const client = new vision.ImageAnnotatorClient({
-      keyFilename: filePath.keyFileName
-    });
+    const client = new vision.ImageAnnotatorClient({ keyFilename });
 
     const InstaData = await Instagram.findOne({
       where: { INS_ID },
@@ -776,7 +745,7 @@ router.get('/getGoogleDataObjectNew', async (req, res) => {
         const fileUrl = thumbnail_url || media_url;
         const response = await fetch(fileUrl);
         const buffer = await response.buffer();
-        const fileName = `${filePath.imagePath}${index}.jpg`;
+        const fileName = `${imagePath}/image${index}.jpg`;
 
         return new Promise((resolve, reject) => {
           fs.writeFile(fileName, buffer, (err) => {
@@ -1386,14 +1355,17 @@ router.get('/instaInfo', async (req, res) => {
 
     if (INS_FLWR && INS_CMNT) {
       const percentRatio = ((INS_CMNT / INS_FLWR) * 100).toFixed(1);
+      resData.ability = percentRatio;
       if (percentRatio < 5) {
-        resData.ability = `${percentRatio}%(저조)`;
+        resData.abilityType = '미미';
       } else if (percentRatio >= 5 && percentRatio < 10) {
-        resData.ability = `${percentRatio}%(보통)`;
+        resData.abilityType = '저조';
       } else if (percentRatio >= 10 && percentRatio < 15) {
-        resData.ability = `${percentRatio}%(우수)`;
+        resData.abilityType = '보통';
+      } else if (percentRatio >= 15 && percentRatio < 20) {
+        resData.abilityType = '우수';
       } else {
-        resData.ability = `${percentRatio}%(훌륭)`;
+        resData.abilityType = '매우우수';
       }
 
       if (INS_FLWR < 1000) {
