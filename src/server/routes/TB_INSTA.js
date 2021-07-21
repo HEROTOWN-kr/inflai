@@ -1032,6 +1032,57 @@ router.get('/statsMap', async (req, res) => {
   }
 });
 
+router.get('/statsMapNew', async (req, res) => {
+  try {
+    const { INS_ID } = req.query;
+
+    const options = {
+      where: { INS_ID },
+      attributes: ['INS_STATE_LOC'],
+    };
+
+    const colors = ['purple', 'lightGreen', 'yellow', 'orange', 'grey'];
+
+    const InstaData = await Instagram.findOne(options);
+    const { INS_STATE_LOC } = InstaData;
+
+    if (INS_STATE_LOC) {
+      const ageStats = JSON.parse(INS_STATE_LOC);
+
+      const sum = Object.keys(ageStats).reduce((acc, el) => acc + ageStats[el], 0);
+
+      const ageStatsArray = Object.keys(ageStats).map(item => ({
+        id: item,
+        name: isoCountries[item],
+        value: ageStats[item],
+        color: '#ff5252'
+      }));
+
+      const sortedStats = ageStatsArray.sort((a, b) => b.value - a.value);
+      const statsTop = sortedStats.slice(0, 4);
+
+      const stats = statsTop.map((item, index) => ({
+        name: item.name,
+        value: Math.round(100 / (sum / item.value)),
+        color: colors[index]
+      }));
+
+      const percentSum = stats.reduce((acc, el) => acc + el.value, 0);
+
+      if (percentSum < 100) {
+        const other = { name: '기타', value: 100 - percentSum, color: 'grey' };
+        return res.status(200).json({ sortedStats, stats: [...stats, other] });
+      }
+
+      return res.status(200).json({ sortedStats, stats });
+    }
+    return res.status(200).json({ data: [], data2: [] });
+  } catch (e) {
+    return res.status(400).send({ message: e.message });
+  }
+});
+
+
 router.get('/rankingInfo', async (req, res) => {
   try {
     const data = req.query;
