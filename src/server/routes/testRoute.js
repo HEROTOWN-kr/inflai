@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 const vision = require('@google-cloud/vision');
 const moment = require('moment');
 const category = require('../config/detectCategory');
+const { sendKakaoImgMessage } = require('../config/solapi');
 
 const {
   getInstagramMediaData,
@@ -152,37 +153,9 @@ router.get('/test', async (req, res) => {
 
 router.get('/test2', async (req, res) => {
   try {
-    const { INS_ID } = req.query;
+    await sendKakaoImgMessage();
 
-    const configPath = path.join(__dirname, '/../config');
-    const imagePath = path.join(__dirname, '/../img');
-
-    const keyFilename = `${configPath}/googleVisionKey.json`;
-
-    const client = new vision.ImageAnnotatorClient({ keyFilename });
-
-    const InstaData = await Instagram.findOne({
-      where: { INS_ID },
-      attributes: ['INS_ID', 'INS_TOKEN', 'INS_ACCOUNT_ID'],
-    });
-
-    const { INS_TOKEN, INS_ACCOUNT_ID } = InstaData;
-
-    const instaData = await getInstagramMediaData(INS_ACCOUNT_ID, INS_TOKEN);
-    const { thumbnail_url, media_url } = instaData[0];
-    const fileUrl = thumbnail_url || media_url;
-    const response = await fetch(fileUrl);
-    const buffer = await response.buffer();
-    const fileName = `${imagePath}/image0.jpg`;
-
-    fs.writeFile(fileName, buffer, async (err) => {
-      if (err) return res.status(400).send({ message: 'fie write error' });
-
-      const [result] = await client.labelDetection(fileName);
-      const labels = result.labelAnnotations;
-
-      return res.status(200).json({ labels });
-    });
+    return res.status(200).json({ message: 'success' });
   } catch (err) {
     return res.status(400).send(err.message);
   }
