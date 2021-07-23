@@ -10,9 +10,12 @@ const { sendKakaoImgMessage } = require('../config/solapi');
 const {
   getInstagramMediaData,
   getInstaOnlineFlwrs,
+  resizeImage
 } = require('../config/common');
 
 const Instagram = require('../models').TB_INSTA;
+const Advertise = require('../models').TB_AD;
+const Photo = require('../models').TB_PHOTO_AD;
 
 const router = express.Router();
 
@@ -153,9 +156,57 @@ router.get('/test', async (req, res) => {
 
 router.get('/test2', async (req, res) => {
   try {
-    await sendKakaoImgMessage();
+    const { AD_ID } = req.query;
+    const imagePath = path.join(__dirname, '/../img');
 
-    return res.status(200).json({ message: 'success' });
+    const dbData = await Advertise.findOne({
+      where: { AD_ID },
+      attributes: ['AD_NAME', 'AD_SRCH_START', 'AD_SRCH_END'],
+      include: [
+        {
+          model: Photo,
+          where: { PHO_IS_MAIN: 1 },
+          attributes: ['PHO_FILE_URL'],
+        }
+      ]
+    });
+
+    const {
+      AD_NAME, AD_SRCH_START, AD_SRCH_END, TB_PHOTO_ADs
+    } = dbData;
+
+    const { PHO_FILE_URL } = TB_PHOTO_ADs[0];
+
+    const response = await fetch(PHO_FILE_URL);
+    const buffer = await response.buffer();
+    const fileName = `${imagePath}/kakaoImg.jpg`;
+    const fileNameChanged = `${imagePath}/kakaoImgChanged.jpg`;
+
+    fs.writeFile(fileName, buffer, async (err) => {
+      try {
+        if (err) return res.status(400).send(err.message);
+
+        await resizeImage(fileName, fileNameChanged, 720);
+
+        const messageText = '놓치면 후회하는 인플라이 캠페인이 등록되었습니다♥\n\n'
+            + `*캠페인명: ${AD_NAME}\n`
+            + `*캠페인 신청 일자: ${AD_SRCH_START}\n`
+            + `*블로거 신청 마감: ${AD_SRCH_END}\n`;
+
+        const props = {
+          phoneNumber: '01023270875',
+          messageText,
+          // fileUrl: PHO_FILE_URL,
+          filePath: fileNameChanged,
+          webUrl: `https://influencer.inflai.com/Campaign/detail/${AD_ID}`
+        };
+
+        await sendKakaoImgMessage(props);
+        return res.status(200).json({ dbData });
+      } catch (e) {
+        return res.status(400).send({ message: e.message });
+      }
+    });
   } catch (err) {
     return res.status(400).send(err.message);
   }

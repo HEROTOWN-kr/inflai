@@ -7,26 +7,40 @@ config.init({
   apiSecret: process.env.SOL_API_SECRET
 });
 
-async function sendKakaoImgMessage() {
+async function sendKakaoImgMessage(props) {
   try {
-    const { fileId } = await msg.uploadKakaoImage(path.join(__dirname, '../img/example.jpg'), 'https://www.inflai.com');
+    const {
+      phoneNumber, messageText, fileUrl, filePath, webUrl
+    } = props;
+
+    const { fileId } = await msg.uploadKakaoImage(filePath, webUrl);
+    // const { fileId } = await msg.uploadKakaoImage(fileUrl, webUrl);
 
     const msgParams = {
       messages: [
         {
-          to: '01026763937',
+          to: phoneNumber,
           from: '01026763937',
-          text: '카카오톡채널 친구로 추가되어 있어야 친구톡 발송이 가능합니다.',
+          text: messageText,
           kakaoOptions: {
             pfId: 'KA01PF210721055340419Adykg2M6HK9',
-            imageId: fileId
+            imageId: fileId,
+            buttons: [
+              {
+                buttonType: 'WL', // 웹링크
+                buttonName: '바로가기',
+                linkMo: webUrl,
+                linkPc: webUrl // 생략 가능
+              }
+            ]
           }
         }
       ]
     };
     await msg.send(msgParams);
   } catch (e) {
-    console.log(e.message);
+    throw new Error(e.message);
+    // console.log(e.message);
   }
 }
 
