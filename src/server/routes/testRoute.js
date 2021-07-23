@@ -29,6 +29,7 @@ router.get('/test', async (req, res) => {
     const { INS_ID, host } = req.query;
     const { detectCategory } = category;
     const isLocal = checkLocalHost(host);
+    // test new github token
 
     const colors = [
       '#FF835D', '#409CFF', '#52D726', '#FF0000',
